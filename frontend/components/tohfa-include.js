@@ -19,13 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(html => {
                 navbarContainer.innerHTML = html;
+                document.dispatchEvent(new CustomEvent('tohfa-navbar-loaded'));
             })
             .catch(err => {
                 console.error("Error loading navbar:", err);
                 // Fallback attempt using standard relative path just in case
                 fetch("/components/tohfa-navbar.html")
                     .then(res => res.text())
-                    .then(html => { navbarContainer.innerHTML = html; })
+                    .then(html => {
+                        navbarContainer.innerHTML = html;
+                        document.dispatchEvent(new CustomEvent('tohfa-navbar-loaded'));
+                    })
                     .catch(e => console.error("Fallback navbar load failed:", e));
             });
     }

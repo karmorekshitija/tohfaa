@@ -6,7 +6,7 @@
   style.textContent = `
     /* Global layout design overrides */
     body, html {
-      background-color: #F7F3EC !important;
+      background-color: #FFFFFF !important;
       font-family: 'DM Sans', sans-serif !important;
       color: #1A1A1A !important;
       margin: 0 !important;
@@ -27,11 +27,11 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #E8E2D9;
+      background: #F7F3EC;
       border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #C1C9C0;
+      background: #8FAF82;
     }
 
     /* Component specific classes */
@@ -63,14 +63,14 @@
       display: block !important;
       width: 100% !important;
       min-height: 100vh !important;
-      background-color: #F7F3EC !important;
+      background-color: #FFFFFF !important;
     }
 
     .seller-layout-container {
       display: flex !important;
       min-height: 100vh !important;
       width: 100% !important;
-      background-color: #F7F3EC !important;
+      background-color: #FFFFFF !important;
     }
 
     seller-sidebar {
@@ -78,6 +78,7 @@
       width: 130px !important;
       flex-shrink: 0 !important;
       z-index: 50 !important;
+      transition: transform 0.3s ease-in-out !important;
     }
 
     .seller-main-panel {
@@ -87,8 +88,11 @@
       min-width: 0 !important;
       margin-left: 130px !important;
       position: relative !important;
-      background-color: #F7F3EC !important;
+      background-color: #FFFFFF !important;
       padding: 32px 64px 64px 64px !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      overflow-y: auto !important;
     }
 
     seller-topbar {
@@ -114,6 +118,34 @@
       padding-right: 64px !important;
       z-index: 40 !important;
     }
+
+    @media (max-width: 1023px) {
+      seller-sidebar {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        height: 100vh !important;
+        transform: translateX(-100%) !important;
+      }
+      
+      seller-sidebar.active {
+        transform: translateX(0) !important;
+      }
+
+      .seller-main-panel {
+        margin-left: 0 !important;
+        padding: 80px 16px 16px 16px !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+      }
+
+      .seller-topbar-header {
+        left: 0 !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+    }
   `;
   document.head.appendChild(style);
 })();
@@ -123,7 +155,7 @@ class SellerSidebar extends HTMLElement {
     const activeTab = this.getAttribute('active-tab') || '';
     
     this.innerHTML = `
-      <aside class="w-[130px] h-screen fixed left-0 top-0 bg-white border-r border-[#E8E2D9] shadow-sm flex flex-col py-8 z-50 overflow-y-auto custom-scrollbar font-['DM_Sans'] text-[#6B6B6B]">
+      <aside class="w-[130px] h-screen fixed left-0 top-0 bg-[#F7F3EC] border-r border-[#E8E2D9] shadow-sm flex flex-col py-8 z-50 overflow-y-auto custom-scrollbar font-['DM_Sans'] text-[#6B6B6B]">
         <!-- Brand Logo Header -->
         <div class="px-4 mb-8 flex flex-col items-center">
           <img alt="TOFA Logo" class="w-12 h-12 mb-3 rounded-full border border-[#E8E2D9]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjQjmSoJKqFl-kRbAH85_u94nMS-Ok8oPnG2PAsYIPao9rA7dhGe8UxdJrc2ZZAzrwZNabbn59QVEgS7BBnW9tgfg43AOgPPepQuKoNu9Y8LnAgELFnunu7fN4ziKFD3utWMnD1wUchu7IL5DN5S8YIbb4t6eImmC8IYIbyaXgktzANbK3Bp9S-uJUoxNyfKN0-3CdY6CCeB0ICMb4og8ToBCMSoIyIF4u5UejdhA3mwODAny-lA6K9JdMJHT5Qhp3buD-BTaEM0">
@@ -152,7 +184,7 @@ class SellerSidebar extends HTMLElement {
           <a class="sidebar-link \${activeTab === 'overflow' ? 'sidebar-link-active' : ''} relative" href="/seller/overflow-requests.html" id="sidebar-overflow" title="Overflow Requests">
             <span class="material-symbols-outlined mb-1 text-2xl">event_busy</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Overflow</span>
-            <span id="sidebar-overflow-badge" class="hidden absolute top-1 right-3 bg-[#ba1a1a] text-white font-bold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
+            <span id="sidebar-overflow-badge" class="hidden absolute top-1 right-3 bg-[#3D6B4F] text-white font-bold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
           </a>
           <!-- Payments (Payouts) -->
           <a class="sidebar-link \${activeTab === 'payments' ? 'sidebar-link-active' : ''}" href="/seller/payouts.html" id="sidebar-payments" title="Payments">
@@ -191,7 +223,7 @@ class SellerSidebar extends HTMLElement {
           <button id="view-store-btn" class="w-full py-2 bg-[#C8973A] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 transition-all shadow-sm">
             View Store
           </button>
-          <button id="logout-btn" class="w-full py-2 bg-[#ba1a1a] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 transition-all shadow-sm">
+          <button id="logout-btn" class="w-full py-2 bg-[#3D6B4F] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 transition-all shadow-sm">
             Logout
           </button>
         </div>
@@ -209,17 +241,16 @@ class SellerSidebar extends HTMLElement {
         .then(res => res.json())
         .then(data => {
           const profileData = data.data || data;
-          if (profileData && profileData.handle) {
-            window.location.href = `/store/${profileData.handle}`;
-          } else if (profileData && profileData.store_slug) {
-            window.location.href = `/${profileData.store_slug}`;
+          if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+            window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
           } else {
             window.location.href = '/';
           }
         })
         .catch(err => {
           console.error('Error viewing store:', err);
-          window.location.href = '/';
+                    // Display a user-friendly error message (e.g., using a toast notification)
+                    alert('Could not load store profile. Please try again later.');
         });
       });
     }
@@ -275,6 +306,9 @@ class SellerTopBar extends HTMLElement {
       <header class="seller-topbar-header font-['DM_Sans']">
         <!-- Left Side: Tohfa branding -->
         <div class="flex items-center gap-3">
+          <button id="seller-hamburger-btn" class="lg:hidden text-[#3D6B4F] flex items-center justify-center p-2 rounded-full hover:bg-[#8FAF82]/20 focus:outline-none border-none bg-transparent mr-1" style="cursor:pointer;">
+            <span class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
           <a href="/seller/dashboard.html" class="flex items-center gap-2">
             <span class="font-['Playfair_Display'] text-[20px] font-bold italic text-[#3D6B4F]">Tohfa</span>
             <span class="font-['DM_Sans'] text-xs uppercase tracking-widest text-[#6B6B6B] border-l border-[#E8E2D9] pl-3 py-1">Seller Studio</span>
@@ -310,10 +344,10 @@ class SellerTopBar extends HTMLElement {
       
       if (btn && icon) {
         if (enabled) {
-          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#573b81] text-white text-[12px] font-bold transition-all shadow-sm';
+          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#7B5EA7] text-white text-[12px] font-bold transition-all shadow-sm';
           icon.style.fontVariationSettings = "'FILL' 1";
         } else {
-          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#573b81]/30 text-[#573b81] text-[12px] font-bold hover:bg-[#573b81]/10 transition-all shadow-sm';
+          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#7B5EA7]/30 text-[#7B5EA7] text-[12px] font-bold hover:bg-[#7B5EA7]/10 transition-all shadow-sm';
           icon.style.fontVariationSettings = "'FILL' 0";
         }
       }
@@ -352,7 +386,13 @@ class SellerTopBar extends HTMLElement {
             },
             body: JSON.stringify({ enabled: nextEnabled })
           })
-          .catch(err => console.error("Error toggling ZAI Mode:", err));
+        .catch(err => {
+          console.error("Error toggling ZAI Mode:", err);
+          // Revert UI change and show an error message
+          alert('Failed to update ZAI mode. Please try again.');
+          // Revert the UI state
+          updateZaiState(!nextEnabled); 
+        });
         }
 
         // Notify page scripts
@@ -387,6 +427,25 @@ class SellerTopBar extends HTMLElement {
         }
       })
       .catch(err => console.error("Error populating topbar profile details:", err));
+    }
+
+    // Hook up hamburger toggle listener for mobile sidebar drawer
+    const hamburgerBtn = this.querySelector('#seller-hamburger-btn');
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sidebar = document.querySelector('seller-sidebar');
+        if (sidebar) {
+          sidebar.classList.toggle('active');
+        }
+      });
+      
+      document.addEventListener('click', (e) => {
+        const sidebar = document.querySelector('seller-sidebar');
+        if (sidebar && sidebar.classList.contains('active') && !sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+          sidebar.classList.remove('active');
+        }
+      });
     }
   }
 }

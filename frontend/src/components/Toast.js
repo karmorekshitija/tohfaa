@@ -2,17 +2,30 @@
 export default class Toast {
   static show(message, type = 'success') {
     let container = document.getElementById('global-toast-container');
+    const isMobile = window.innerWidth < 768;
+    
     if (!container) {
       container = document.createElement('div');
       container.id = 'global-toast-container';
       container.style.position = 'fixed';
-      container.style.top = '24px';
-      container.style.right = '24px';
       container.style.zIndex = '9999';
       container.style.display = 'flex';
       container.style.flexDirection = 'column';
       container.style.gap = '12px';
       document.body.appendChild(container);
+    }
+    
+    // Update container positioning based on screen size dynamically
+    if (isMobile) {
+      container.style.top = '12px';
+      container.style.left = '12px';
+      container.style.right = '12px';
+      container.style.width = 'calc(100% - 24px)';
+    } else {
+      container.style.top = '24px';
+      container.style.right = '24px';
+      container.style.left = '';
+      container.style.width = '';
     }
 
     const toast = document.createElement('div');
@@ -26,15 +39,15 @@ export default class Toast {
     toast.style.fontWeight = '500';
     toast.style.color = '#FFFFFF';
     toast.style.transition = 'all 0.3s ease';
-    toast.style.transform = 'translateX(120%)';
+    toast.style.transform = isMobile ? 'translateY(-100px)' : 'translateX(120%)';
     toast.style.opacity = '0';
 
     if (type === 'success') {
       toast.style.backgroundColor = '#255338'; // Tohfa primary
       toast.style.border = '1px solid #3d6b4f';
     } else if (type === 'error') {
-      toast.style.backgroundColor = '#ba1a1a'; // Tohfa error
-      toast.style.border = '1px solid #ffdad6';
+      toast.style.backgroundColor = '#3D6B4F'; // Tohfa error
+      toast.style.border = '1px solid #F7F3EC';
     } else {
       toast.style.backgroundColor = '#49663f'; // Secondary
       toast.style.border = '1px solid #caecbb';
@@ -51,13 +64,13 @@ export default class Toast {
 
     // Slide in
     setTimeout(() => {
-      toast.style.transform = 'translateX(0)';
+      toast.style.transform = 'translateY(0)';
       toast.style.opacity = '1';
     }, 10);
 
     // Slide out and remove
     setTimeout(() => {
-      toast.style.transform = 'translateX(120%)';
+      toast.style.transform = isMobile ? 'translateY(-100px)' : 'translateX(120%)';
       toast.style.opacity = '0';
       setTimeout(() => {
         toast.remove();
