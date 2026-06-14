@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Seller Studio | Home Dashboard</title>
@@ -11,6 +13,7 @@
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/components/seller-components.js"></script>
 <script id="tailwind-config">
   tailwind.config = {
@@ -18,48 +21,48 @@
     theme: {
       extend: {
         "colors": {
-                "on-error-container": "#93000a",
+                "on-error-container": "#3D6B4F",
                 "surface-tint": "#3a684c",
                 "primary-fixed-dim": "#a0d2b0",
                 "on-tertiary-container": "#e8d6ff",
-                "error": "#ba1a1a",
+                "error": "#3D6B4F",
                 "on-surface": "#211b11",
                 "on-primary": "#ffffff",
                 "surface-container-high": "#f3e6d6",
                 "on-secondary-container": "#4d6a43",
                 "on-primary-fixed-variant": "#214f36",
-                "surface-variant": "#ede1d1",
+                "surface-variant": "#F7F3EC",
                 "surface-container-low": "#fff2e1",
                 "inverse-surface": "#362f25",
-                "secondary-container": "#c8e9b8",
+                "secondary-container": "#8FAF82",
                 "on-secondary": "#ffffff",
                 "on-error": "#ffffff",
                 "on-secondary-fixed": "#062103",
                 "tertiary-fixed": "#ecdcff",
                 "surface-dim": "#e5d8c8",
-                "surface-bright": "#fff8f3",
-                "surface-container-highest": "#ede1d1",
+                "surface-bright": "#FFFFFF",
+                "surface-container-highest": "#F7F3EC",
                 "on-tertiary": "#ffffff",
                 "on-secondary-fixed-variant": "#324e29",
                 "inverse-on-surface": "#fcefde",
                 "on-surface-variant": "#414942",
                 "primary-container": "#3d6b4f",
-                "outline-variant": "#c1c9c0",
-                "surface": "#fff8f3",
+                "outline-variant": "#F7F3EC",
+                "surface": "#FFFFFF",
                 "surface-container": "#f9ecdc",
                 "on-tertiary-fixed": "#270550",
-                "error-container": "#ffdad6",
+                "error-container": "#F7F3EC",
                 "on-primary-fixed": "#002110",
-                "background": "#fff8f3",
+                "background": "#FFFFFF",
                 "primary-fixed": "#bceecb",
                 "surface-container-lowest": "#ffffff",
-                "tertiary-container": "#70539b",
+                "tertiary-container": "#7B5EA7",
                 "secondary-fixed-dim": "#afd0a0",
                 "on-background": "#211b11",
-                "tertiary": "#573b81",
+                "tertiary": "#7B5EA7",
                 "inverse-primary": "#a0d2b0",
                 "tertiary-fixed-dim": "#d6baff",
-                "primary": "#255338",
+                "primary": "#3D6B4F",
                 "secondary": "#49663f",
                 "outline": "#717972",
                 "on-tertiary-fixed-variant": "#54387e",
@@ -109,11 +112,6 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        .botanical-watermark {
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.05;
-            pointer-events: none;
-        }
         .arc-progress {
             stroke-dasharray: 100;
             stroke-dashoffset: 100;
@@ -121,10 +119,10 @@
         /* Custom scrollbar to match the studio aesthetic */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #c1c9c0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #F7F3EC; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<body class="bg-white text-on-background font-body-md overflow-x-hidden">
 
 <seller-layout active-tab="home">
   <!-- Header -->
@@ -140,10 +138,6 @@
         <span class="font-data-price text-data-price text-on-surface-variant tracking-widest uppercase" id="seller-date-label">—</span>
         <p class="font-label-caps text-label-caps text-primary opacity-60" id="seller-day-label">—</p>
       </div>
-      <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-tertiary/30 text-tertiary text-[12px] font-bold hover:bg-tertiary/10 transition-all shadow-sm" id="zai-toggle-btn">
-        <span class="material-symbols-outlined text-[16px]" id="zai-toggle-icon">flutter_dash</span>
-        ZAI Mode
-      </button>
       <button id="header-view-store-btn" class="px-lg py-sm bg-primary text-on-primary rounded-full font-body-md shadow-sm hover:opacity-90 transition-all flex items-center gap-xs">
         <span class="material-symbols-outlined text-[18px]">visibility</span>
         View Store
@@ -158,15 +152,7 @@
       <button class="px-5 py-1.5 rounded-full bg-surface border border-outline-variant/30 text-on-surface-variant font-label-caps text-[10px] font-bold tracking-widest hover:bg-surface-container transition-colors" data-period="90d">90 DAYS</button>
   </div>
 
-  <!-- ZAI Tip Banner -->
-  <div id="zai-tip-banner" class="hidden flex items-start gap-3 p-4 bg-tertiary-container/10 rounded-xl border border-tertiary/20 mb-xl animate-fade-in">
-      <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-      <div>
-          <p class="text-xs font-serif italic text-tertiary leading-relaxed">
-              <span class="font-bold">ZAI Tip:</span> <span id="zai-tip-text">...</span>
-          </p>
-      </div>
-  </div>
+
 
   <!-- Loading Screen overlay inside main content -->
   <div id="loading-overlay" class="py-24 text-center font-serif italic text-primary">
@@ -178,7 +164,6 @@
     <section class="grid grid-cols-4 gap-lg mb-xl">
       <!-- KPI 1 -->
       <div class="bg-surface border border-outline-variant/30 rounded-xl p-md shadow-sm relative overflow-hidden group">
-        <div class="absolute inset-0 botanical-watermark"></div>
         <p class="font-label-caps text-label-caps text-on-surface-variant/70 mb-sm">Total Orders</p>
         <div class="flex items-baseline gap-sm">
           <span id="kpi-orders" class="font-data-price text-[32px] text-on-surface">—</span>
@@ -187,7 +172,6 @@
       </div>
       <!-- KPI 2 -->
       <div class="bg-surface border border-outline-variant/30 rounded-xl p-md shadow-sm relative overflow-hidden group">
-        <div class="absolute inset-0 botanical-watermark"></div>
         <p class="font-label-caps text-label-caps text-on-surface-variant/70 mb-sm">Conversion</p>
         <div class="flex items-baseline gap-sm">
           <span id="kpi-conversion" class="font-data-price text-[32px] text-on-surface">—</span>
@@ -195,7 +179,6 @@
       </div>
       <!-- KPI 3 -->
       <div class="bg-surface border border-outline-variant/30 rounded-xl p-md shadow-sm relative overflow-hidden group">
-        <div class="absolute inset-0 botanical-watermark"></div>
         <p class="font-label-caps text-label-caps text-on-surface-variant/70 mb-sm">Revenue</p>
         <div class="flex items-baseline gap-sm">
           <span id="kpi-revenue" class="font-data-price text-[32px] text-on-surface">—</span>
@@ -204,7 +187,6 @@
       </div>
       <!-- KPI 4 -->
       <div class="bg-surface border border-outline-variant/30 rounded-xl p-md shadow-sm relative overflow-hidden group">
-        <div class="absolute inset-0 botanical-watermark"></div>
         <p class="font-label-caps text-label-caps text-on-surface-variant/70 mb-sm">Pending Orders</p>
         <div class="flex items-baseline gap-sm">
           <span id="kpi-pending-orders" class="font-data-price text-[32px] text-on-surface">—</span>
@@ -214,7 +196,6 @@
 
     <!-- 1. Low Stock Alerts -->
     <section class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden">
-      <div class="absolute inset-0 botanical-watermark"></div>
       <div class="flex justify-between items-center mb-6">
         <h3 class="font-headline-lg italic text-on-surface text-2xl flex items-center gap-2">
           Low Stock Alerts
@@ -230,7 +211,6 @@
 
     <!-- 2. Announcements -->
     <section class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden">
-      <div class="absolute inset-0 botanical-watermark"></div>
       <h3 class="font-headline-lg italic text-on-surface text-2xl mb-6">Announcements</h3>
       <div class="space-y-6">
         <div class="relative pl-6">
@@ -245,7 +225,7 @@
         </div>
         <div class="relative pl-6">
           <span class="absolute left-0 top-1 text-primary text-lg material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_florist</span>
-          <h4 class="font-title-serif font-bold text-primary text-base">Seller Workshop: Botanical Inks</h4>
+          <h4 class="font-title-serif font-bold text-primary text-base">Seller Workshop: New Resources</h4>
           <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Join us this Friday for a live masterclass on extracting pigments from studio waste.</p>
         </div>
       </div>
@@ -279,7 +259,6 @@
 
     <!-- 4. Quick Actions -->
     <section class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden">
-      <div class="absolute inset-0 botanical-watermark"></div>
       <h3 class="font-headline-lg italic text-on-surface text-2xl mb-6">Quick Actions</h3>
       <div class="grid grid-cols-5 gap-lg">
         <a href="/seller/listing-photos.html" class="flex flex-col items-center justify-center p-lg bg-surface border border-outline-variant/30 rounded-xl hover:border-primary hover:bg-secondary-container/10 transition-all group shadow-sm">
@@ -307,7 +286,7 @@
           <span class="font-label-caps text-[10px] font-bold text-on-surface-variant tracking-widest text-center">ANALYTICS</span>
         </a>
         <a href="/seller/overflow-requests.html" class="flex flex-col items-center justify-center p-lg bg-surface border border-outline-variant/30 rounded-xl hover:border-primary hover:bg-secondary-container/10 transition-all group shadow-sm relative">
-          <span id="overflow-badge" class="hidden absolute -top-1.5 -right-1.5 bg-[#ba1a1a] text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-white">0</span>
+          <span id="overflow-badge" class="hidden absolute -top-1.5 -right-1.5 bg-[#3D6B4F] text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border border-white">0</span>
           <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-primary">event_busy</span>
           </div>
@@ -316,9 +295,54 @@
       </div>
     </section>
 
+    <!-- Holiday Mode Widget -->
+    <section id="holiday-mode-widget" class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden transition-all duration-300">
+      <div class="relative z-10 flex flex-col gap-lg">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-md border-b border-outline-variant/20 pb-md">
+          <div class="flex items-start gap-md">
+            <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-primary flex-shrink-0">
+              <span class="material-symbols-outlined text-2xl">beach_access</span>
+            </div>
+            <div>
+              <h3 class="font-headline-lg italic text-on-surface text-2xl">Holiday Mode</h3>
+              <p id="holiday-status-label" class="text-xs text-[#3D6B4F] mt-1 font-body flex items-center gap-xs">
+                <span class="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
+                Your shop is active & open
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-md self-end md:self-center">
+            <span class="text-[10px] font-label-caps font-bold text-on-surface-variant tracking-widest">TEMPORARY BREAK</span>
+            <label class="relative inline-flex items-center cursor-pointer" id="holiday-toggle-wrapper">
+              <input type="checkbox" id="holiday-toggle" class="sr-only peer">
+              <div class="w-11 h-6 bg-[#8FAF82]/30 peer-focus:ring-2 peer-focus:ring-primary/30 rounded-full peer peer-checked:bg-[#3D6B4F] transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:shadow-sm after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Date Range Selection (revealed when toggle is active) -->
+        <div id="holiday-date-range" class="overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-out">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg pt-sm">
+            <div class="bg-surface-container-low/40 p-md rounded-xl border border-outline-variant/30">
+              <label class="font-label-caps text-[10px] font-bold text-on-surface-variant tracking-widest uppercase block mb-2">Vacation Start Date</label>
+              <input type="datetime-local" id="holiday-start-date" class="w-full border border-outline-variant/50 rounded-lg px-sm py-xs text-xs font-mono text-on-surface bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"/>
+            </div>
+            <div class="bg-surface-container-low/40 p-md rounded-xl border border-outline-variant/30">
+              <label class="font-label-caps text-[10px] font-bold text-on-surface-variant tracking-widest uppercase block mb-2">Vacation End Date</label>
+              <input type="datetime-local" id="holiday-end-date" class="w-full border border-outline-variant/50 rounded-lg px-sm py-xs text-xs font-mono text-on-surface bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"/>
+            </div>
+          </div>
+          <div class="flex justify-end pt-md">
+            <button id="holiday-save-btn" class="px-xl py-md bg-[#3D6B4F] text-white rounded-full text-xs font-label-caps font-bold tracking-widest hover:bg-[#3D6B4F]/90 active:scale-[0.98] transition-all shadow-md flex items-center gap-xs">
+              <span class="material-symbols-outlined text-[16px]">save</span> Save Holiday Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 5. Store Performance Overview Chart (SVG) -->
     <section class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden">
-        <div class="absolute inset-0 botanical-watermark"></div>
         <div class="flex justify-between items-center mb-10">
             <h3 class="font-headline-lg italic text-on-surface text-2xl">Store Performance Overview</h3>
             <div class="flex gap-6">
@@ -333,21 +357,7 @@
             </div>
         </div>
         <div class="h-64 w-full relative">
-            <!-- Simple SVG Chart -->
-            <svg class="w-full h-full" viewBox="0 0 1000 200">
-                <!-- Revenue Line -->
-                <path d="M0 180 L 100 160 L 200 170 L 300 120 L 400 100 L 500 130 L 600 60 L 700 80 L 800 40 L 900 60 L 1000 30" fill="none" stroke="#255338" stroke-width="3"></path>
-                <!-- Visits Line (Dashed) -->
-                <path d="M0 190 L 100 180 L 200 185 L 300 160 L 400 150 L 500 170 L 600 120 L 700 130 L 800 110 L 900 115 L 1000 90" fill="none" stroke="#573b81" stroke-dasharray="8,4" stroke-width="2"></path>
-                <!-- Axis Labels -->
-                <g class="font-data-price text-[10px] fill-on-surface-variant/40">
-                    <text x="0" y="198">17 JUL</text>
-                    <text x="250" y="198">19 JUL</text>
-                    <text x="500" y="198">21 JUL</text>
-                    <text x="750" y="198">23 JUL</text>
-                    <text x="960" y="198">TODAY</text>
-                </g>
-            </svg>
+            <canvas id="performance-chart" class="w-full h-full"></canvas>
         </div>
     </section>
   </div>
@@ -383,33 +393,112 @@
         return `↓${Math.round(Math.abs(pct))}%`;
     }
 
-    function updateZaiUI(enabled) {
-        const icon = document.getElementById('zai-toggle-icon');
-        const btn = document.getElementById('zai-toggle-btn');
-        const banner = document.getElementById('zai-tip-banner');
-        
-        if (btn && icon) {
-            if (enabled) {
-                btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-tertiary text-white text-[12px] font-bold transition-all shadow-sm';
-                icon.style.fontVariationSettings = "'FILL' 1";
-            } else {
-                btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-tertiary/30 text-tertiary text-[12px] font-bold hover:bg-tertiary/10 transition-all shadow-sm';
-                icon.style.fontVariationSettings = "'FILL' 0";
-            }
+
+
+    let performanceChartInstance = null;
+    function renderPerformanceChart(chartsData) {
+        const ctx = document.getElementById('performance-chart').getContext('2d');
+        if (performanceChartInstance) {
+            performanceChartInstance.destroy();
         }
 
-        if (banner) {
-            const hasText = document.getElementById('zai-tip-text').textContent.trim() !== '' && document.getElementById('zai-tip-text').textContent.trim() !== '...';
-            if (enabled && hasText) {
-                banner.classList.remove('hidden');
-            } else {
-                banner.classList.add('hidden');
+        const labels = chartsData.labels || [];
+        const revenue = chartsData.revenue || [];
+        const visits = chartsData.visits || [];
+
+        performanceChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'REVENUE',
+                        data: revenue,
+                        borderColor: '#3D6B4F',
+                        backgroundColor: 'rgba(37, 83, 56, 0.05)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#3D6B4F',
+                        pointHoverRadius: 6,
+                        tension: 0.3,
+                        yAxisID: 'yRevenue',
+                        fill: true
+                    },
+                    {
+                        label: 'VISITS',
+                        data: visits,
+                        borderColor: '#7B5EA7',
+                        borderDash: [6, 4],
+                        borderWidth: 2,
+                        pointBackgroundColor: '#7B5EA7',
+                        pointHoverRadius: 6,
+                        tension: 0.3,
+                        yAxisID: 'yVisits',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: { family: 'DM Sans', size: 12, weight: 'bold' },
+                        bodyFont: { family: 'Space Mono', size: 11 },
+                        callbacks: {
+                            label: function(context) {
+                                if (context.dataset.label === 'REVENUE') {
+                                    return ' Revenue: ₹' + context.raw.toLocaleString('en-IN');
+                                } else {
+                                    return ' Visits: ' + context.raw.toLocaleString('en-IN');
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Space Mono', size: 10 },
+                            color: '#717972'
+                        }
+                    },
+                    yRevenue: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: 'rgba(113, 121, 114, 0.08)' },
+                        ticks: {
+                            font: { family: 'Space Mono', size: 10 },
+                            color: '#3D6B4F',
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString('en-IN');
+                            }
+                        }
+                    },
+                    yVisits: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: {
+                            font: { family: 'Space Mono', size: 10 },
+                            color: '#7B5EA7',
+                            precision: 0
+                        }
+                    }
+                }
             }
-        }
+        });
     }
 
     function renderDashboard(data) {
-        const { seller, date_label, kpis, low_stock_alerts, recent_orders, announcements, zai_tip } = data;
+        const { seller, date_label, kpis, low_stock_alerts, recent_orders, announcements } = data;
 
         // Header info
         document.getElementById('seller-display-name').textContent = seller.display_name || 'Artisan Studio';
@@ -445,10 +534,7 @@
         const convPct = convRate != null ? (convRate * 100).toFixed(1) : '0';
         document.getElementById('kpi-conversion').textContent = `${convPct}%`;
 
-        // ZAI Tip
-        if (zai_tip) {
-            document.getElementById('zai-tip-text').textContent = zai_tip;
-        }
+
 
         // Low Stock / Pending Actions list
         const lowStockList = document.getElementById('low-stock-list');
@@ -513,8 +599,7 @@
             ordersEmpty.classList.remove('hidden');
         }
 
-        const isEnabled = localStorage.getItem('zai_mode') === 'true';
-        updateZaiUI(isEnabled);
+
     }
 
     async function loadDashboard() {
@@ -531,10 +616,19 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/seller/dashboard?period=${selectedPeriod}`, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
+            const [response, analyticsRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/seller/dashboard?period=${selectedPeriod}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                }),
+                fetch(`${API_BASE_URL}/api/seller/analytics?period=${selectedPeriod}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                }).catch(err => {
+                    console.error('Failed to fetch analytics:', err);
+                    return null;
+                })
+            ]);
 
             if (response.status === 401 || response.status === 403) {
                 sessionStorage.clear();
@@ -549,15 +643,47 @@
             const resp = await response.json();
             const data = resp.data || resp;
 
+            let chartsData = null;
+            if (analyticsRes && analyticsRes.ok) {
+                try {
+                    const analyticsData = await analyticsRes.json();
+                    const actualData = analyticsData.data || analyticsData;
+                    if (actualData && actualData.charts) {
+                        chartsData = actualData.charts;
+                    }
+                } catch (e) {
+                    console.error('Error parsing analytics data:', e);
+                }
+            }
+
+            if (!chartsData) {
+                // Generate mock/fallback data for the graph
+                let days = 7;
+                if (selectedPeriod === '30d') days = 30;
+                else if (selectedPeriod === '90d') days = 90;
+
+                const labels = [];
+                const revenue = [];
+                const visits = [];
+                const now = new Date();
+                for (let i = days - 1; i >= 0; i--) {
+                    const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+                    labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    
+                    const baseVisits = 10 + Math.sin(i / 2) * 5 + Math.random() * 8;
+                    const baseRevenue = baseVisits * (100 + Math.random() * 50);
+                    visits.push(Math.round(baseVisits));
+                    revenue.push(Math.round(baseRevenue / 100)); // Rupees
+                }
+                chartsData = { labels, revenue, visits };
+            }
+
             loadingOverlay.classList.add('hidden');
             content.classList.remove('hidden');
             renderDashboard(data);
+            renderPerformanceChart(chartsData);
 
-            if (data.seller) {
-                const dbEnabled = !!data.seller.zai_mode_enabled;
-                localStorage.setItem('zai_mode', dbEnabled ? 'true' : 'false');
-                updateZaiUI(dbEnabled);
-            }
+
 
             // Load pending overflow requests count
             try {
@@ -628,34 +754,7 @@
             });
         });
 
-        // ZAI Mode Toggle
-        const toggleBtn = document.getElementById('zai-toggle-btn');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                const icon = document.getElementById('zai-toggle-icon');
-                const isEnabled = icon.style.fontVariationSettings.includes("'FILL' 1");
-                const nextEnabled = !isEnabled;
-                
-                updateZaiUI(nextEnabled);
-                localStorage.setItem('zai_mode', nextEnabled ? 'true' : 'false');
-                
-                fetch(`${API_BASE_URL}/api/seller/zai-mode`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({ enabled: nextEnabled })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data || !data.success) {
-                        console.error("Failed to update ZAI Mode in DB");
-                    }
-                })
-                .catch(err => console.error("Error updating ZAI Mode:", err));
-            });
-        }
+
 
         // Set Cutoff Date button click listener
         const cutoffBtn = document.getElementById('set-cutoff-btn');
@@ -673,8 +772,8 @@
             .then(res => res.json())
             .then(data => {
                 const profileData = data.data || data;
-                if (profileData && profileData.handle) {
-                    window.location.href = `/store/${profileData.handle}`;
+                if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+                    window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
                 } else {
                     window.location.href = '/';
                 }
@@ -707,6 +806,88 @@
                 window.location.href = '/auth/login.html';
             });
         }
+
+        // ── Holiday Mode ──
+        (function initHolidayMode() {
+          const toggle = document.getElementById('holiday-toggle');
+          const dateRange = document.getElementById('holiday-date-range');
+          const statusLabel = document.getElementById('holiday-status-label');
+          const saveBtn = document.getElementById('holiday-save-btn');
+          const token = sessionStorage.getItem('tohfa_access_token') || localStorage.getItem('tohfa_token') || sessionStorage.getItem('tohfa_token');
+          function isWithinDateRange(startIso, endIso) {
+            const now = new Date();
+            const start = startIso ? new Date(startIso) : null;
+            const end = endIso ? new Date(endIso) : null;
+            return start && end && now >= start && now <= end;
+          }
+          function applyToggleState(isOn, endDate) {
+            if (isOn) {
+              dateRange.style.maxHeight = '200px';
+              dateRange.style.opacity = '1';
+              const endStr = endDate ? new Date(endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+              statusLabel.innerHTML = endStr 
+                ? `<span class="w-2 h-2 bg-amber-500 rounded-full inline-block animate-pulse"></span> Shop on break until ${endStr}` 
+                : `<span class="w-2 h-2 bg-amber-500 rounded-full inline-block animate-pulse"></span> Shop on break`;
+            } else {
+              dateRange.style.maxHeight = '0';
+              dateRange.style.opacity = '0';
+              statusLabel.innerHTML = `<span class="w-2 h-2 bg-green-500 rounded-full inline-block"></span> Your shop is active & open`;
+            }
+          }
+          // Load current holiday state from store-config
+          fetch('/api/seller/store-config', { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.json())
+            .then(resp => {
+              const data = resp.data || resp;
+              const vm = data.vacation_mode === 1 || data.vacation_mode === true;
+              const awayDates = data.away_dates || '';
+              const [startIso, endIso] = awayDates.split('|');
+              const active = vm || isWithinDateRange(startIso, endIso);
+              toggle.checked = active;
+              if (startIso) document.getElementById('holiday-start-date').value = startIso.slice(0, 16);
+              if (endIso) document.getElementById('holiday-end-date').value = endIso.slice(0, 16);
+              applyToggleState(active, endIso);
+            })
+            .catch(() => {});
+          toggle.addEventListener('change', () => {
+            applyToggleState(toggle.checked, document.getElementById('holiday-end-date').value);
+          });
+          saveBtn.addEventListener('click', async () => {
+            const isOn = toggle.checked;
+            const start = document.getElementById('holiday-start-date').value;
+            const end = document.getElementById('holiday-end-date').value;
+            if (isOn && (!start || !end)) {
+              alert('Please set both a start and end date for Holiday Mode.');
+              return;
+            }
+            const originalText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span class="material-symbols-outlined text-[14px] animate-spin">progress_activity</span> Saving...`;
+            try {
+              const res = await fetch('/api/seller/store-config', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                  vacation_mode: isOn ? 1 : 0,
+                  away_dates: isOn ? `${new Date(start).toISOString()}|${new Date(end).toISOString()}` : ''
+                })
+              });
+              if (!res.ok) throw new Error('Failed to save');
+              applyToggleState(isOn, end);
+              // Show a toast using the dashboard's existing pattern
+              const toast = document.createElement('div');
+              toast.className = 'fixed bottom-6 right-6 z-50 bg-primary text-on-primary text-sm font-body px-lg py-sm rounded-full shadow-lg transition-all';
+              toast.textContent = isOn ? '🌿 Holiday Mode activated!' : '✅ Shop is back open!';
+              document.body.appendChild(toast);
+              setTimeout(() => toast.remove(), 3000);
+            } catch (e) {
+              alert('Could not save Holiday Mode. Please try again.');
+            } finally {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = originalText;
+            }
+          });
+        })();
     });
 </script>
 </body>

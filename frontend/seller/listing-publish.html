@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Listing Published | TOFA Studio</title>
@@ -11,11 +13,6 @@
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .botanical-watermark {
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.08;
-            pointer-events: none;
         }
         @keyframes stroke {
             100% { stroke-dashoffset: 0; }
@@ -49,16 +46,16 @@
                       "secondary-fixed-dim": "#afd0a0",
                       "tertiary-fixed": "#ecdcff",
                       "on-primary": "#ffffff",
-                      "error": "#ba1a1a",
-                      "background": "#f9faf5",
+                      "error": "#3D6B4F",
+                      "background": "#FFFFFF",
                       "primary-fixed": "#bceecb",
                       "on-secondary-container": "#4d6a43",
                       "surface-container-high": "#e7e9e4",
-                      "tertiary-container": "#70539b",
-                      "surface": "#f9faf5",
-                      "primary": "#255338",
-                      "error-container": "#ffdad6",
-                      "outline-variant": "#c1c9c0",
+                      "tertiary-container": "#7B5EA7",
+                      "surface": "#FFFFFF",
+                      "primary": "#3D6B4F",
+                      "error-container": "#F7F3EC",
+                      "outline-variant": "#F7F3EC",
                       "tertiary-fixed-dim": "#d6baff",
                       "on-primary-fixed": "#002110",
                       "on-secondary": "#ffffff",
@@ -73,13 +70,13 @@
                       "surface-tint": "#3a684c",
                       "on-primary-container": "#b7e9c6",
                       "surface-dim": "#d9dad6",
-                      "secondary-container": "#c8e9b8",
-                      "surface-bright": "#f9faf5",
+                      "secondary-container": "#8FAF82",
+                      "surface-bright": "#FFFFFF",
                       "outline": "#717972",
-                      "on-error-container": "#93000a",
+                      "on-error-container": "#3D6B4F",
                       "on-tertiary": "#ffffff",
                       "surface-container-highest": "#e2e3df",
-                      "tertiary": "#573b81",
+                      "tertiary": "#7B5EA7",
                       "on-tertiary-container": "#e8d6ff",
                       "on-surface-variant": "#414942",
                       "surface-container-low": "#f3f4f0",
@@ -119,14 +116,9 @@
         }
 </script>
 </head>
-<body class="bg-parchment text-on-surface font-body-md overflow-hidden">
+<body class="bg-white text-on-surface font-body-md overflow-hidden">
 <seller-layout active-tab="catalog">
 <div class="min-h-screen relative flex flex-col h-screen">
-<!-- Botanical Watermark Overlay -->
-<div class="absolute inset-0 botanical-watermark overflow-hidden z-0">
-<span class="material-symbols-outlined absolute -bottom-20 -right-20 text-[300px] opacity-[0.03]">psychiatry</span>
-<span class="material-symbols-outlined absolute top-40 left-20 text-[180px] opacity-[0.03]">eco</span>
-</div>
 
 <!-- (1) Specialized Wizard Header -->
 <header class="h-[80px] bg-white border-b border-sage/20 px-12 flex justify-between items-center shrink-0 z-10">
@@ -136,8 +128,8 @@
     <h2 class="font-display-lg text-primary text-3xl font-serif">Listing Live!</h2>
   </div>
   <div class="flex gap-4">
-    <a href="/seller/catalog.html" class="px-6 py-2 border border-sage text-[#3D6B4F] rounded-full text-sm font-bold hover:bg-[#F7F3EC] transition-colors flex items-center justify-center">Catalog</a>
-    <a href="/seller/dashboard.html" class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center">Dashboard</a>
+    <a href="catalog.html" class="px-6 py-2 border border-sage text-[#3D6B4F] rounded-full text-sm font-bold hover:bg-[#F7F3EC] transition-colors flex items-center justify-center">Catalog</a>
+    <a href="dashboard.html" class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center">Dashboard</a>
   </div>
 </header>
 
@@ -148,40 +140,40 @@
     <div class="absolute top-1/2 left-8 right-8 h-[2px] bg-sage/20 -translate-y-1/2 z-0"></div>
     <div class="absolute top-1/2 left-8 w-[100%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
     <!-- Step 1: Photos (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Photos</span>
-    </div>
+    </a>
     <!-- Step 2: Details (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-details.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Details</span>
-    </div>
+    </a>
     <!-- Step 3: Pricing (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Pricing</span>
-    </div>
+    </a>
     <!-- Step 4: Shipping (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-shipping.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Shipping</span>
-    </div>
+    </a>
     <!-- Step 5: Preview (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-preview.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Preview</span>
-    </div>
+    </a>
     <!-- Step 6: Publish (Completed) -->
     <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center ring-2 ring-primary text-forest">
@@ -195,7 +187,6 @@
 <!-- (3) Main Content - Centered Card -->
 <div class="flex-1 overflow-y-auto custom-scrollbar z-10 bg-parchment flex items-center justify-center p-8">
   <section class="w-full max-w-[600px] bg-white rounded-3xl border border-sage/30 shadow-lg p-10 flex flex-col items-center text-center relative overflow-hidden">
-    <div class="botanical-watermark absolute inset-0 opacity-[0.03]"></div>
     
     <!-- Animated Checkmark -->
     <div class="mb-6 relative z-10">
@@ -222,13 +213,13 @@
       </button>
       
       <!-- Upload a Reel -->
-      <a href="/seller/upload-reel.html" class="flex flex-col items-center justify-center p-4 bg-[#3D6B4F] text-white rounded-2xl hover:scale-[1.02] transition-transform active:scale-95 group font-bold">
+      <a href="upload-reel.html" class="flex flex-col items-center justify-center p-4 bg-[#3D6B4F] text-white rounded-2xl hover:scale-[1.02] transition-transform active:scale-95 group font-bold">
         <span class="material-symbols-outlined mb-2 text-2xl group-hover:-translate-y-1 transition-transform">video_library</span>
         <span class="font-label-caps text-[10px] tracking-wider uppercase">Add Reel</span>
       </a>
       
       <!-- View in Catalog -->
-      <a href="/seller/catalog.html" class="flex flex-col items-center justify-center p-4 bg-[#F7F3EC] border border-sage/30 text-primary rounded-2xl hover:scale-[1.02] transition-transform active:scale-95 group font-bold">
+      <a href="catalog.html" class="flex flex-col items-center justify-center p-4 bg-[#F7F3EC] border border-sage/30 text-primary rounded-2xl hover:scale-[1.02] transition-transform active:scale-95 group font-bold">
         <span class="material-symbols-outlined mb-2 text-2xl group-hover:scale-110 transition-transform">library_books</span>
         <span class="font-label-caps text-[10px] tracking-wider uppercase">View Catalog</span>
       </a>
@@ -241,7 +232,7 @@
   <button id="view-store-btn-footer" class="px-8 py-3 rounded-full border border-sage text-forest font-label-caps uppercase tracking-widest text-[11px] hover:bg-parchment transition-colors">
     View Store
   </button>
-  <a href="/seller/dashboard.html" class="px-10 py-3 rounded-full bg-forest text-white font-label-caps uppercase tracking-widest text-[11px] shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all flex items-center gap-2">
+  <a href="dashboard.html" class="px-10 py-3 rounded-full bg-forest text-white font-label-caps uppercase tracking-widest text-[11px] shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all flex items-center gap-2">
     Go to Dashboard
     <span class="material-symbols-outlined text-sm">arrow_forward</span>
   </a>
@@ -293,8 +284,8 @@
                 .then(res => res.json())
                 .then(data => {
                     const profileData = data.data || data;
-                    if (profileData && profileData.handle) {
-                        window.location.href = `/store/${profileData.handle}`;
+                    if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+                        window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
                     } else {
                         window.location.href = '/';
                     }

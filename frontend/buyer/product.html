@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Product Details</title>
@@ -14,52 +16,52 @@
             theme: {
                 extend: {
                     "colors": {
-                        "error": "#ba1a1a",
-                        "primary-container": "#8fa382",
+                        "error": "#3D6B4F",
+                        "primary-container": "#8FAF82",
                         "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#cac6bd",
-                        "inverse-primary": "#b8cdaa",
+                        "secondary-fixed-dim": "#F7F3EC",
+                        "inverse-primary": "#8FAF82",
                         "on-surface": "#1f1b15",
                         "on-tertiary-fixed-variant": "#593d5d",
                         "on-secondary-fixed-variant": "#484740",
                         "on-tertiary": "#ffffff",
-                        "primary": "#255338",
-                        "surface-tint": "#255338",
-                        "tertiary-fixed": "#fcd6ff",
+                        "primary": "#3D6B4F",
+                        "surface-tint": "#3D6B4F",
+                        "tertiary-fixed": "#7B5EA7",
                         "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3a4c31",
+                        "on-primary-fixed-variant": "#3D6B4F",
                         "on-tertiary-container": "#452b4a",
                         "inverse-on-surface": "#f8efe5",
                         "on-secondary": "#ffffff",
-                        "surface-variant": "#eae1d7",
-                        "tertiary": "#725476",
+                        "surface-variant": "#F7F3EC",
+                        "tertiary": "#7B5EA7",
                         "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#fbf2e8",
+                        "surface-container-low": "#F7F3EC",
                         "on-error": "#ffffff",
                         "on-surface-variant": "#444840",
                         "outline": "#74786f",
                         "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#93000a",
-                        "secondary-container": "#e6e2d8",
-                        "secondary-fixed": "#e6e2d8",
-                        "primary-fixed-dim": "#b8cdaa",
+                        "on-error-container": "#3D6B4F",
+                        "secondary-container": "#F7F3EC",
+                        "secondary-fixed": "#F7F3EC",
+                        "primary-fixed-dim": "#8FAF82",
                         "secondary": "#605e57",
                         "on-secondary-fixed": "#1c1c16",
-                        "background": "#fff8f3",
+                        "background": "#FFFFFF",
                         "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#d4e9c4",
-                        "outline-variant": "#c4c8bd",
+                        "primary-fixed": "#8FAF82",
+                        "outline-variant": "#F7F3EC",
                         "on-primary": "#ffffff",
                         "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#fff8f3",
+                        "surface-bright": "#FFFFFF",
                         "on-primary-fixed": "#101f09",
                         "on-background": "#1f1b15",
                         "on-secondary-container": "#66645d",
                         "surface-container": "#f6ece3",
                         "on-primary-container": "#283920",
-                        "surface": "#fff8f3",
-                        "surface-container-highest": "#eae1d7",
-                        "error-container": "#ffdad6",
+                        "surface": "#FFFFFF",
+                        "surface-container-highest": "#F7F3EC",
+                        "error-container": "#F7F3EC",
                         "on-tertiary-fixed": "#2a122f"
                     },
                     "borderRadius": {
@@ -101,39 +103,39 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .watercolour-wash { background: linear-gradient(135deg, #F1EADD 0%, #E8F0E4 100%); }
+        .watercolour-wash { background: linear-gradient(135deg, #F7F3EC 0%, #8FAF82 100%); }
     </style>
 </head>
-<body class="bg-[#FFFFFF] text-on-background min-h-screen font-body-md overflow-x-hidden">
+<body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">
     <!-- TopNavBar -->
     <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#FAF7F0] border-b border-[#C1C9C0] flex justify-between items-center px-margin-desktop h-20">
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
-    <a class="font-['Playfair_Display'] text-[32px] italic text-[#255338] select-none" href="/buyer/home.html">
-      Tohfa<span class="text-[#D4AF37]">.</span>
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
     </a>
   </div>
   
   <!-- Navigation Links -->
   <nav class="hidden md:flex items-center justify-center gap-xl h-full">
     <!-- Home -->
-    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
     <!-- Category -->
-    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
     <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
     <!-- Profile -->
-    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -141,21 +143,21 @@
   
   <!-- Right side items -->
   <div class="flex items-center justify-end flex-1 gap-lg">
-    <a href="/buyer/categories.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+    <a href="/buyer/categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
       <span class="material-symbols-outlined">search</span>
     </a>
-    <a href="/buyer/saved-makes.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-gold-custom text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="/buyer/cart.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">shopping_cart</span>
-      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-gold-custom text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="/buyer/notifications.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">notifications</span>
-      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-gold-custom rounded-full hidden"></span>
-      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-gold-custom rounded-full hidden"></span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
     </a>
   
     <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
@@ -182,7 +184,7 @@
             <!-- Left: Product Image Gallery / Carousel -->
             <div class="lg:col-span-7 flex flex-col gap-md">
                 <!-- Main Image -->
-                <div class="bg-[#FCFAF5] border border-outline-variant/60 rounded-2xl overflow-hidden shadow-sm aspect-square relative flex items-center justify-center p-6">
+                <div class="bg-[#F7F3EC] border border-outline-variant/60 rounded-2xl overflow-hidden shadow-sm aspect-square relative flex items-center justify-center p-6">
                     <img id="main-product-image" class="max-w-full max-h-full object-contain animate-fade-in" src="https://placehold.co/600x600/f4ede3/516447?text=Loading..." alt="Product Image">
                     <!-- Wishlist toggle -->
                     <button id="wishlist-toggle-btn" class="absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none">
@@ -196,7 +198,7 @@
             </div>
 
             <!-- Right: Product Information -->
-            <div class="lg:col-span-5 space-y-lg bg-[#FCFAF5] p-lg border border-outline-variant/60 rounded-2xl">
+            <div class="lg:col-span-5 space-y-lg bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl">
                 <div class="space-y-sm">
                     <div id="product-tags-container" class="flex flex-wrap gap-2 mb-2"></div>
                     <h1 id="product-name" class="font-headline-lg text-primary text-3xl leading-tight">Product Name</h1>
@@ -234,12 +236,12 @@
                         <span>Add to Cart</span>
                     </button>
                     <div id="overflow-container" class="hidden space-y-xs">
-                        <button id="reschedule-btn" class="w-full border-2 border-amber-500 text-amber-600 hover:bg-amber-50/50 py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm">
-                            <span class="material-symbols-outlined">calendar_today</span>
-                            <span>Request Reschedule</span>
+                        <button id="chat-with-seller-btn" class="w-full bg-primary hover:bg-[#3D6B4F] text-white py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm">
+                            <span class="material-symbols-outlined">chat</span>
+                            <span>Chat with Seller</span>
                         </button>
                         <p id="overflow-msg" class="text-xs text-amber-700 bg-amber-50/50 border border-amber-200/60 rounded-lg p-sm leading-relaxed">
-                            Daily fulfillment capacity for this product has been reached. You can request the seller to schedule this for a later date.
+                            Today's daily fulfillment limit for this product has been reached. Chat with the seller to arrange your order.
                         </p>
                     </div>
                 </div>
@@ -263,7 +265,7 @@
             </div>
 
             <!-- Write a Review Form -->
-            <div id="write-review-container" class="mt-12 bg-[#FCFAF5] p-lg border border-outline-variant/60 rounded-2xl hidden">
+            <div id="write-review-container" class="mt-12 bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl hidden">
                 <h3 class="font-title-serif text-primary text-xl mb-md">Write a Review</h3>
                 <form id="review-form" class="space-y-md">
                     <div>
@@ -295,7 +297,7 @@
                     </button>
                 </form>
             </div>
-            <div id="review-gating-notice" class="mt-12 p-md bg-[#FCFAF5] border border-dashed border-outline-variant/60 rounded-xl text-center text-secondary text-sm">
+            <div id="review-gating-notice" class="mt-12 p-md bg-[#F7F3EC] border border-dashed border-outline-variant/60 rounded-xl text-center text-secondary text-sm">
                 Only verified buyers who received this item can write a review.
             </div>
         </section>
@@ -312,22 +314,22 @@
     <!-- BottomNavBar -->
     <nav class="hidden md:flex items-center justify-center gap-xl h-full">
     <!-- Home -->
-    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
     <!-- Category -->
-    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
     <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
     <!-- Profile -->
-    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -362,7 +364,7 @@
         (function() {
             const activeEl = document.getElementById('tab-search');
             if (activeEl) {
-                activeEl.style.color = '#255338';
+                activeEl.style.color = '#3D6B4F';
                 const icon = activeEl.querySelector('.material-symbols-outlined');
                 if (icon) {
                     icon.style.fontVariationSettings = "'FILL' 1, 'wght' 600";
@@ -376,6 +378,7 @@
 
         let product = null;
         let isCustomized = false;
+        let isSoldOut = false;
         let isWishlisted = false;
         let qty = 1;
         let maxStock = 99;
@@ -406,10 +409,10 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#C1C9C0] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
                 } else {
                     avatarHtml = `
-                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#C1C9C0] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
                             ${initial}
                         </a>
                     `;
@@ -427,8 +430,8 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#255338] hover:underline text-sm font-semibold">Login</a>
-                        <a href="/auth/signup-buyer.html" class="bg-[#255338] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
             }
@@ -468,6 +471,7 @@
                     }
 
                     isCustomized = product.is_customized || product.category?.slug === 'customized-gifts';
+                    isSoldOut = !isCustomized && (product.status === 'sold_out' || maxStock === 0);
 
                     // Populate badges/tags in the tags container
                     const tagsContainer = document.getElementById('product-tags-container');
@@ -478,7 +482,7 @@
                         if (isCustomized) {
                             const customTag = document.createElement('span');
                             customTag.innerText = 'Customized';
-                            customTag.className = 'font-data-price text-xs bg-[#255338] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            customTag.className = 'font-data-price text-xs bg-[#3D6B4F] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
                             tagsContainer.appendChild(customTag);
                         }
                         
@@ -502,7 +506,7 @@
                     // Show/hide qty selector and modify button
                     const qtySelector = document.getElementById('qty-selector-container');
                     const addToCartBtn = document.getElementById('add-to-cart-btn');
-                    if (isCustomized) {
+                    if (isCustomized || isSoldOut) {
                         if (qtySelector) qtySelector.style.display = 'none';
                         if (addToCartBtn) {
                             addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'chat';
@@ -525,12 +529,12 @@
                             addToCartBtn.disabled = false;
                             addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                         }
-                    } else if (product.status === 'sold_out' || maxStock === 0) {
+                    } else if (isSoldOut) {
                         stockBadge.innerText = 'Sold Out';
                         stockBadge.className = 'text-xs bg-red-100 text-red-700 border border-red-200 px-sm py-[2px] rounded font-semibold';
                         if (addToCartBtn) {
-                            addToCartBtn.disabled = true;
-                            addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                         }
                     } else if (maxStock <= 3) {
                         stockBadge.innerText = `Only ${maxStock} left!`;
@@ -564,7 +568,7 @@
                         if (productImages.length > 0) {
                             thumbnailsContainer.innerHTML = productImages.map((img, idx) => {
                                 const isSelected = idx === 0;
-                                const borderClass = isSelected ? 'border-[#255338]' : 'border-outline-variant/40';
+                                const borderClass = isSelected ? 'border-[#3D6B4F]' : 'border-outline-variant/40';
                                 return `
                                     <button class="w-16 h-16 rounded-lg overflow-hidden border-2 bg-white flex-shrink-0 p-1 flex items-center justify-center thumbnail-btn focus:outline-none transition-all ${borderClass}" data-url="${img.url}">
                                         <img src="${img.url}" class="max-w-full max-h-full object-contain rounded" alt="Thumbnail ${idx + 1}"/>
@@ -574,8 +578,8 @@
 
                             thumbnailsContainer.querySelectorAll('.thumbnail-btn').forEach(btn => {
                                 btn.addEventListener('click', () => {
-                                    thumbnailsContainer.querySelectorAll('.thumbnail-btn').forEach(b => b.classList.replace('border-[#255338]', 'border-outline-variant/40'));
-                                    btn.classList.replace('border-outline-variant/40', 'border-[#255338]');
+                                    thumbnailsContainer.querySelectorAll('.thumbnail-btn').forEach(b => b.classList.replace('border-[#3D6B4F]', 'border-outline-variant/40'));
+                                    btn.classList.replace('border-outline-variant/40', 'border-[#3D6B4F]');
                                     mainImage.src = btn.getAttribute('data-url');
                                 });
                             });
@@ -604,7 +608,7 @@
                     await checkReviewEligibility();
 
                     // Check capacity on page load for pre-made items
-                    if (!isCustomized && product.status !== 'sold_out' && maxStock > 0) {
+                    if (!product.holiday_mode_active && !isCustomized && !isSoldOut && product.status !== 'sold_out' && maxStock > 0) {
                         try {
                             const checkRes = await apiClient.post('/capacity/check', { 
                                 product_id: Number(productId), 
@@ -616,6 +620,31 @@
                             }
                         } catch (e) {
                             console.error("Error checking capacity status on load:", e);
+                        }
+                    }
+
+                    // Holiday Mode enforcement
+                    if (product.holiday_mode_active) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'beach_access';
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Shop on Break';
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        const chatBtn = document.getElementById('chat-with-seller-btn');
+                        if (chatBtn) {
+                            chatBtn.disabled = true;
+                            chatBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        // Insert notice below the button group
+                        const btnContainer = addToCartBtn?.parentElement;
+                        if (btnContainer && !document.getElementById('holiday-notice')) {
+                            const notice = document.createElement('p');
+                            notice.id = 'holiday-notice';
+                            notice.className = 'text-xs text-on-surface-variant italic text-center mt-2';
+                            notice.textContent = 'This artisan is currently on a break. Check back soon.';
+                            btnContainer.insertAdjacentElement('afterend', notice);
                         }
                     }
                 } else {
@@ -695,7 +724,7 @@
                 list.innerHTML = reviews.map(r => {
                     const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently';
                     return `
-                        <div class="bg-[#FCFAF5] p-md rounded-2xl border border-outline-variant/40 space-y-sm animate-fade-in">
+                        <div class="bg-[#F7F3EC] p-md rounded-2xl border border-outline-variant/40 space-y-sm animate-fade-in">
                             <div class="flex justify-between items-center">
                                 <div>
                                     <span class="font-semibold text-sm text-primary block">${r.reviewer_name}</span>
@@ -769,35 +798,86 @@
             }
         }
 
-        async function handleRequestReschedule() {
-            const rescheduleBtn = document.getElementById('reschedule-btn');
-            rescheduleBtn.disabled = true;
-            rescheduleBtn.querySelector('span:last-child').innerText = 'Processing...';
+        async function handleChatWithSeller() {
+            if (product && product.holiday_mode_active) return;
+            if (!isLoggedIn) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+            const btn = document.getElementById('chat-with-seller-btn');
+            if (!btn) return;
+            btn.disabled = true;
+            btn.querySelector('span:last-child').innerText = 'Starting chat...';
 
             try {
-                const res = await apiClient.post('/overflow/request', {
-                    product_id: Number(productId),
-                    quantity: qty
+                const res = await apiClient.post('/conversations', {
+                    listing_id: Number(productId),
+                    product_type_tag: 'overflow',
+                    quantity: qty,
+                    bypass_intake: true
                 });
-                if (res.data && res.data.success) {
-                    const { conversation_id, overflow_request_id } = res.data;
-                    window.Toast?.show("Reschedule request created!", "success");
-                    setTimeout(() => {
-                        window.location.href = `/buyer/profile.html?open_chat=true&conversation_id=${conversation_id}&overflow_request_id=${overflow_request_id}`;
-                    }, 1000);
-                }
-            } catch (err) {
-                console.error("Failed to create reschedule request:", err);
-                window.Toast?.show(err.response?.data?.message || "Failed to create reschedule request.", "error");
+                const convId = res.data.conversation_id;
+                window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+            } catch (e) {
+                console.error("Failed to start chat with seller:", e);
+                window.Toast?.show("Failed to start chat. Please try again.", "error");
             } finally {
-                rescheduleBtn.disabled = false;
-                rescheduleBtn.querySelector('span:last-child').innerText = 'Request Reschedule';
+                btn.disabled = false;
+                btn.querySelector('span:last-child').innerText = 'Chat with Seller';
             }
         }
 
         async function handleAddToCart() {
+            if (product && product.holiday_mode_active) return;
             if (isCustomized) {
-                window.location.href = `/buyer/seller-profile.html?id=${product.seller.id}&customise_listing_id=${product.id}&customise_listing_title=${encodeURIComponent(product.name)}&product_type_tag=${encodeURIComponent(product.category.slug)}`;
+                if (!isLoggedIn) {
+                    window.location.href = '/auth/login.html';
+                    return;
+                }
+                const btn = document.getElementById('add-to-cart-btn');
+                btn.disabled = true;
+                btn.querySelector('span:last-child').innerText = 'Starting chat...';
+                try {
+                    const res = await apiClient.post('/conversations', {
+                        listing_id: Number(productId),
+                        product_type_tag: 'custom',
+                        quantity: qty,
+                        bypass_intake: true
+                    });
+                    const convId = res.data.conversation_id;
+                    window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+                } catch (e) {
+                    console.error("Failed to start chat with seller:", e);
+                    window.Toast?.show("Failed to start chat. Please try again.", "error");
+                } finally {
+                    btn.disabled = false;
+                    btn.querySelector('span:last-child').innerText = 'Chat with Seller';
+                }
+                return;
+            }
+
+            if (isSoldOut) {
+                if (!isLoggedIn) {
+                    window.location.href = '/auth/login.html';
+                    return;
+                }
+                const btn = document.getElementById('add-to-cart-btn');
+                btn.disabled = true;
+                btn.querySelector('span:last-child').innerText = 'Starting chat...';
+                try {
+                    const res = await apiClient.post('/conversations', {
+                        listing_id: Number(productId),
+                        product_type_tag: 'sold_out'
+                    });
+                    const convId = res.data.conversation_id;
+                    window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+                } catch (e) {
+                    console.error("Failed to start chat with seller:", e);
+                    window.Toast?.show("Failed to start chat. Please try again.", "error");
+                } finally {
+                    btn.disabled = false;
+                    btn.querySelector('span:last-child').innerText = 'Chat with Seller';
+                }
                 return;
             }
 
@@ -933,7 +1013,7 @@
 
             document.getElementById('wishlist-toggle-btn')?.addEventListener('click', handleToggleWishlist);
             document.getElementById('add-to-cart-btn')?.addEventListener('click', handleAddToCart);
-            document.getElementById('reschedule-btn')?.addEventListener('click', handleRequestReschedule);
+            document.getElementById('chat-with-seller-btn')?.addEventListener('click', handleChatWithSeller);
         });
     </script>
 </body>

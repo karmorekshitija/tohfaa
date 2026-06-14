@@ -17,17 +17,17 @@
                 "on-primary-container": "#b7e9c6",
                 "secondary-fixed-dim": "#afd0a0",
                 "surface-dim": "#d9dad6",
-                "background": "#f9faf5",
+                "background": "#FFFFFF",
                 "tertiary-fixed": "#ffdadc",
                 "on-error": "#ffffff",
                 "on-surface": "#1a1c1a",
-                "surface-ivory": "#FCFAF5",
-                "primary-deep": "#2E5340",
-                "sage-soft": "#C5D6BC",
+                "surface-ivory": "#F7F3EC",
+                "primary-deep": "#3D6B4F",
+                "sage-soft": "#8FAF82",
                 "primary-fixed-dim": "#a0d2b0",
                 "inverse-surface": "#2e312e",
                 "surface-container-high": "#e7e9e4",
-                "on-error-container": "#93000a",
+                "on-error-container": "#3D6B4F",
                 "inverse-on-surface": "#f0f1ed",
                 "text-default": "#3A3328",
                 "primary-fixed": "#bceecb",
@@ -38,10 +38,10 @@
                 "inverse-primary": "#a0d2b0",
                 "on-secondary-container": "#4d6a43",
                 "secondary": "#49663f",
-                "error": "#ba1a1a",
+                "error": "#3D6B4F",
                 "on-tertiary-fixed-variant": "#6b373d",
                 "on-surface-variant": "#414942",
-                "primary": "#255338",
+                "primary": "#3D6B4F",
                 "on-background": "#1a1c1a",
                 "highlight-gold": "#C8973A",
                 "tertiary-container": "#8a5157",
@@ -49,8 +49,8 @@
                 "on-tertiary-fixed": "#360d14",
                 "text-faint": "#9A8F7A",
                 "on-primary-fixed": "#002110",
-                "surface-bright": "#f9faf5",
-                "surface": "#f9faf5",
+                "surface-bright": "#FFFFFF",
+                "surface": "#FFFFFF",
                 "surface-container-low": "#f3f4f0",
                 "bg-primary": "#FFFFFF",
                 "accent-violet": "#7B5EA7",
@@ -58,20 +58,20 @@
                 "tertiary-fixed-dim": "#fcb4ba",
                 "surface-container": "#edeeea",
                 "secondary-fixed": "#caecbb",
-                "error-container": "#ffdad6",
+                "error-container": "#F7F3EC",
                 "surface-variant": "#e2e3df",
                 "on-primary": "#ffffff",
-                "gold-soft": "#EBD7AE",
+                "gold-soft": "#C8973A",
                 "violet-soft": "#D8CBE9",
-                "secondary-container": "#c8e9b8",
+                "secondary-container": "#8FAF82",
                 "on-tertiary-container": "#ffd2d5",
                 "surface-container-lowest": "#ffffff",
                 "primary-container": "#3d6b4f",
                 "tertiary": "#6e3a40",
                 "surface-container-highest": "#e2e3df",
-                "danger-terracotta": "#B14B3E",
-                "bg-cream-deep": "#F1EADD",
-                "outline-variant": "#c1c9c0",
+                "danger-terracotta": "#3D6B4F",
+                "bg-cream-deep": "#F7F3EC",
+                "outline-variant": "#F7F3EC",
                 "surface-tint": "#3a684c"
             },
             "borderRadius": {
@@ -113,7 +113,7 @@
         }
         /* Custom Input Error Border */
         .input-error {
-            border-color: #ba1a1a !important;
+            border-color: #3D6B4F !important;
         }
         /* Password helper styles */
         .requirement-item {
@@ -125,7 +125,7 @@
             transition: color 0.3s ease;
         }
         .requirement-item.valid {
-            color: #255338;
+            color: #3D6B4F;
         }
         .requirement-item.invalid {
             color: #6E6453;
@@ -136,17 +136,17 @@
         }
         .requirement-item.valid span.material-symbols-outlined {
             font-variation-settings: 'FILL' 1;
-            color: #255338;
+            color: #3D6B4F;
         }
     </style>
 </head>
-<body class="bg-[#F0EDE6] text-text-default font-body-main selection:bg-violet-soft selection:text-accent-violet overflow-x-hidden">
+<body class="bg-white text-text-default font-body-main selection:bg-violet-soft selection:text-accent-violet overflow-x-hidden">
 
     <!-- Top Navigation -->
     <div id="tohfa-navbar"></div>
 
     <!-- Main Canvas -->
-    <main class="min-h-[calc(100vh-160px)] relative flex items-center justify-center py-16 px-4 bg-[#F0EDE6]">
+    <main class="min-h-[calc(100vh-160px)] relative flex items-center justify-center py-16 px-4 bg-[#F7F3EC]">
         <!-- Sketch Watermark -->
         <div class="absolute inset-0 pointer-events-none sketch-overlay"></div>
         
@@ -155,15 +155,15 @@
 
 
             <!-- The Parchment Card -->
-            <div class="bg-[#FDFAF5] border border-[#D4C9B8] rounded-[16px] p-[40px] relative overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
+            <div class="bg-[#F7F3EC] border border-[#F7F3EC] rounded-[16px] p-[40px] relative overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
                 <!-- Watercolor subtle wash in corner -->
                 <div class="absolute top-0 right-0 w-32 h-32 bg-violet-soft/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
                 
                 <!-- Header Section -->
                 <div class="text-center mb-8 relative">
                     <div class="inline-flex flex-col items-center justify-center mb-2">
-                        <span class="material-symbols-outlined text-[#2D5016] mb-2 opacity-60">brush</span>
-                        <h2 class="font-serif italic text-3xl text-[#2D5016] font-bold select-none">Tohfa<span class="text-[#C8973A]">.</span></h2>
+                        <span class="material-symbols-outlined text-[#3D6B4F] mb-2 opacity-60">brush</span>
+                        <h2 class="font-serif italic text-3xl text-[#3D6B4F] font-bold select-none">Tohfa<span class="text-[#C8973A]">.</span></h2>
                     </div>
                     <p class="font-sans text-[10px] font-semibold text-[#6B6B6B] tracking-[0.2em] uppercase mb-1">BEGIN YOUR COLLECTION</p>
                     <h3 class="font-serif text-xl text-[#1A1A1A] leading-tight">Join our community of craft lovers</h3>
@@ -180,7 +180,7 @@
                     <!-- Full Name -->
                     <div class="space-y-1.5">
                         <label class="block font-sans text-sm font-medium text-[#1A1A1A]" for="full_name">Full Name</label>
-                        <input class="w-full bg-[#FDFAF5] border-[1.5px] border-[#D4C9B8] rounded-[8px] px-[14px] py-[12px] font-sans text-sm text-[#1A1A1A] focus:ring-1 focus:ring-[#2D5016] focus:border-[#2D5016] transition-all outline-none" id="full_name" name="full_name" placeholder="Enter your full name" type="text" required>
+                        <input class="w-full bg-[#F7F3EC] border-[1.5px] border-[#F7F3EC] rounded-[8px] px-[14px] py-[12px] font-sans text-sm text-[#1A1A1A] focus:ring-1 focus:ring-[#3D6B4F] focus:border-[#3D6B4F] transition-all outline-none" id="full_name" name="full_name" placeholder="Enter your full name" type="text" required>
                         <!-- Inline Error -->
                         <p id="name-error" class="hidden text-error text-[12px] font-body-md mt-1.5 flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[15px]">error</span>
@@ -191,7 +191,7 @@
                     <!-- Email Address -->
                     <div class="space-y-1.5">
                         <label class="block font-sans text-sm font-medium text-[#1A1A1A]" for="email">Email Address</label>
-                        <input class="w-full bg-[#FDFAF5] border-[1.5px] border-[#D4C9B8] rounded-[8px] px-[14px] py-[12px] font-sans text-sm text-[#1A1A1A] focus:ring-1 focus:ring-[#2D5016] focus:border-[#2D5016] transition-all outline-none" id="email" name="email" placeholder="example@tohfa.com" type="email" required>
+                        <input class="w-full bg-[#F7F3EC] border-[1.5px] border-[#F7F3EC] rounded-[8px] px-[14px] py-[12px] font-sans text-sm text-[#1A1A1A] focus:ring-1 focus:ring-[#3D6B4F] focus:border-[#3D6B4F] transition-all outline-none" id="email" name="email" placeholder="example@tohfa.com" type="email" required>
                         <!-- Inline Error -->
                         <p id="email-error" class="hidden text-error text-[12px] font-body-md mt-1.5 flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[15px]">error</span>
@@ -203,8 +203,8 @@
                     <div class="space-y-1.5">
                         <label class="block font-sans text-sm font-medium text-[#1A1A1A]" for="password">Password</label>
                         <div class="relative">
-                            <input class="w-full bg-[#FDFAF5] border-[1.5px] border-[#D4C9B8] rounded-[8px] px-[14px] py-[12px] font-sans text-sm text-[#1A1A1A] focus:ring-1 focus:ring-[#2D5016] focus:border-[#2D5016] transition-all outline-none" id="password" name="password" placeholder="Create a password" type="password" required>
-                            <button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B6B6B] hover:text-[#2D5016] transition-colors" onclick="togglePassword()" type="button">
+                            <input class="w-full bg-[#F7F3EC] border-[1.5px] border-[#F7F3EC] rounded-[8px] px-[14px] py-[12px] font-sans text-sm text-[#1A1A1A] focus:ring-1 focus:ring-[#3D6B4F] focus:border-[#3D6B4F] transition-all outline-none" id="password" name="password" placeholder="Create a password" type="password" required>
+                            <button class="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B6B6B] hover:text-[#3D6B4F] transition-colors" onclick="togglePassword()" type="button">
                                 <span class="material-symbols-outlined text-xl" id="password-toggle-icon">visibility</span>
                             </button>
                         </div>
@@ -225,7 +225,7 @@
                     </div>
 
                     <!-- Submit Action -->
-                    <button class="w-full bg-[#2D5016] text-white font-semibold text-sm py-[14px] rounded-[8px] hover:bg-[#1e360f] transition-all duration-300 shadow-md active:scale-[0.98] mt-6" type="submit" id="submit-btn">
+                    <button class="w-full bg-[#3D6B4F] text-white font-semibold text-sm py-[14px] rounded-[8px] hover:bg-[#3D6B4F] transition-all duration-300 shadow-md active:scale-[0.98] mt-6" type="submit" id="submit-btn">
                         Create account
                     </button>
                 </form>
@@ -234,10 +234,10 @@
                 <div class="mt-8 pt-6 border-t border-sage-soft/30 text-center space-y-4">
                     <p class="text-sm text-[#6B6B6B]">
                         Already have an account? 
-                        <a class="text-[#2D5016] font-semibold hover:underline" href="/auth/login.html">Log in</a>
+                        <a class="text-[#3D6B4F] font-semibold hover:underline" href="/auth/login.html">Log in</a>
                     </p>
                     <div class="pt-2">
-                        <a class="font-sans text-xs text-[#2D5016] hover:text-[#C8973A] transition-colors tracking-widest font-semibold uppercase flex items-center justify-center gap-2" href="signup-seller.html">
+                        <a class="font-sans text-xs text-[#3D6B4F] hover:text-[#C8973A] transition-colors tracking-widest font-semibold uppercase flex items-center justify-center gap-2" href="signup-seller.html">
                             ✦ SELL ON TOHFA INSTEAD
                         </a>
                     </div>
@@ -247,7 +247,7 @@
 
         <!-- Back to Explore Button -->
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-center">
-            <a class="inline-flex items-center gap-1.5 font-sans text-xs text-[#6B6B6B] hover:text-[#2D5016] transition-colors uppercase tracking-wider font-semibold" href="/buyer/home.html">
+            <a class="inline-flex items-center gap-1.5 font-sans text-xs text-[#6B6B6B] hover:text-[#3D6B4F] transition-colors uppercase tracking-wider font-semibold" href="/buyer/home.html">
                 <span class="material-symbols-outlined text-[16px]">arrow_back</span>
                 Back to Explore
             </a>
@@ -414,7 +414,7 @@
         }
 
         // Lightweight hover animation for the card
-        const card = document.querySelector('.bg-\\[\\#FDFAF5\\]');
+        const card = document.querySelector('.bg-\\[\\#F7F3EC\\]');
         if (card) {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();

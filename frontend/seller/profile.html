@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Profile & Settings | Seller Studio | Tohfa</title>
@@ -19,10 +21,10 @@
           "on-primary-container": "#3c4628",
           "primary-container": "#a8b48e",
           "custom-primary": "#a8b48e",
-          "error": "#ba1a1a",
-          "error-container": "#ffdad6",
-          "on-error-container": "#93000a",
-          "background": "#fff8f1",
+          "error": "#3D6B4F",
+          "error-container": "#F7F3EC",
+          "on-error-container": "#3D6B4F",
+          "background": "#FFFFFF",
           "on-background": "#1e1b15",
           "inverse-surface": "#33302a",
           "inverse-on-surface": "#f7f0e6",
@@ -46,7 +48,7 @@
   }
 </script>
 <style>
-  body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #fff8f1; color: #1e1b15; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #FFFFFF; color: #1e1b15; }
   h1, h2, h3, .font-headline { font-family: 'EB Garamond', serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
@@ -81,7 +83,7 @@
   .progress-bar-track { height:4px; background:#e9e1d8; border-radius:4px; overflow:hidden; margin-top:6px; }
   .progress-bar-fill { height:100%; background:#a8b48e; border-radius:4px; transition:width .4s; }
 
-  body { font-family: 'DM Sans', sans-serif; background-color: #fff8f3; color: #211b11; }
+  body { font-family: 'DM Sans', sans-serif; background-color: #FFFFFF; color: #211b11; }
   h1, h2, h3, .font-headline { font-family: 'Playfair Display', serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
@@ -97,8 +99,8 @@
   /* Input style — matches other tabs */
   .field-input {
     width: 100%;
-    background: #fff8f3;
-    border: 1px solid #c1c9c0;
+    background: #FFFFFF;
+    border: 1px solid #F7F3EC;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 14px;
@@ -107,7 +109,7 @@
     transition: border-color .15s, box-shadow .15s;
     outline: none;
   }
-  .field-input:focus { border-color: #255338; box-shadow: 0 0 0 3px rgba(37,83,56,.10); }
+  .field-input:focus { border-color: #3D6B4F; box-shadow: 0 0 0 3px rgba(37,83,56,.10); }
   .field-label {
     font-size: 11px;
     font-weight: 700;
@@ -118,7 +120,7 @@
     display: block;
     font-family: 'DM Sans', sans-serif;
   }
-  .field-error { font-size: 11px; color: #C0392B; margin-top: 3px; min-height: 16px; }
+  .field-error { font-size: 11px; color: #3D6B4F; margin-top: 3px; min-height: 16px; }
 
   /* Tab indicator — matches filter tabs in reviews/analytics */
   .tab-btn {
@@ -156,28 +158,28 @@
     align-items: center;
     gap: 6px;
     padding: 7px 16px;
-    border: 1.5px solid #c1c9c0;
+    border: 1.5px solid #F7F3EC;
     border-radius: 999px;
     font-size: 13px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 500;
     color: #414942;
-    background: #fff8f3;
+    background: #FFFFFF;
     cursor: pointer;
     transition: all .2s ease;
   }
-  .badge-chip:hover { border-color: #8FAF82; color: #255338; background: #f9ecdc; }
+  .badge-chip:hover { border-color: #8FAF82; color: #3D6B4F; background: #f9ecdc; }
   .badge-chip.active {
-    background: #255338;
+    background: #3D6B4F;
     color: #ffffff;
-    border-color: #255338;
+    border-color: #3D6B4F;
   }
   .badge-chip.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
 
   /* Address card */
   .address-card {
-    background: #fff8f3;
-    border: 1px solid #c1c9c0;
+    background: #FFFFFF;
+    border: 1px solid #F7F3EC;
     border-radius: 10px;
     padding: 16px;
     position: relative;
@@ -185,7 +187,7 @@
 
   /* Drag-drop zone */
   .drop-zone {
-    border: 2px dashed #c1c9c0;
+    border: 2px dashed #F7F3EC;
     border-radius: 10px;
     padding: 32px 16px;
     text-align: center;
@@ -198,11 +200,11 @@
   }
 
   /* Embed preview */
-  .embed-preview { width: 100%; border-radius: 10px; overflow: hidden; background: #ede1d1; aspect-ratio: 16/9; }
+  .embed-preview { width: 100%; border-radius: 10px; overflow: hidden; background: #F7F3EC; aspect-ratio: 16/9; }
 
   /* Char counter */
   .char-counter { font-size: 11px; color: #717972; text-align: right; margin-top: 3px; }
-  .char-counter.warn { color: #C0392B; }
+  .char-counter.warn { color: #3D6B4F; }
 
   /* Modal overlay */
   .modal-overlay {
@@ -213,17 +215,17 @@
   .modal-overlay.hidden { display: none !important; }
 
   /* Inline confirm */
-  .inline-confirm { display: none; background: #ffdad6; border: 1px solid rgba(186,26,26,.2); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #93000a; margin-top: 8px; align-items: center; gap: 8px; }
+  .inline-confirm { display: none; background: #F7F3EC; border: 1px solid rgba(186,26,26,.2); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #3D6B4F; margin-top: 8px; align-items: center; gap: 8px; }
   .inline-confirm.show { display: flex; }
 
   /* Skeleton */
   @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
-  .skeleton { background: linear-gradient(90deg, #ede1d1 25%, #f3e6d6 50%, #ede1d1 75%); background-size: 400px 100%; animation: shimmer 1.4s infinite; border-radius: 10px; }
+  .skeleton { background: linear-gradient(90deg, #F7F3EC 25%, #f3e6d6 50%, #F7F3EC 75%); background-size: 400px 100%; animation: shimmer 1.4s infinite; border-radius: 10px; }
 
   @media(max-width: 768px) { .two-col { grid-template-columns: 1fr !important; } }
 </style>
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen opacity-0 transition-opacity duration-300" id="body-content">
+<body class="bg-white text-on-surface font-body-md min-h-screen opacity-0 transition-opacity duration-300" id="body-content">
 
 <seller-layout active-tab="profile">
 
@@ -398,6 +400,23 @@
       </div>
     </div>
 
+      <!-- Banner Image Upload -->
+      <div class="mb-5">
+        <label class="field-label mb-2">Banner Image</label>
+        <div id="banner-drop-zone" class="drop-zone" onclick="document.getElementById('input-banner').click()">
+          <div id="banner-placeholder">
+            <span class="material-symbols-outlined text-4xl text-outline mb-2 block">image</span>
+            <p class="text-sm font-semibold text-on-surface-variant">Drop your banner image here</p>
+            <p class="text-xs text-on-surface-variant/70 mt-1">or click to browse · JPG, PNG · max 5 MB</p>
+          </div>
+          <div id="banner-preview-wrap" class="hidden">
+            <img id="banner-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="Banner preview"/>
+            <p class="text-xs text-on-surface-variant mt-2 text-center">Click to change</p>
+          </div>
+        </div>
+        <input type="file" id="input-banner" class="hidden" accept="image/jpeg,image/png,image/jpg"/>
+      </div>
+
     <!-- Seller Badges -->
     <div class="mb-7">
       <label class="field-label mb-3">Seller Badges</label>
@@ -447,21 +466,21 @@
         <p class="char-counter" id="story-counter">0 / 1000</p>
       </div>
 
-      <!-- Banner Image Upload -->
+      <!-- About Image Upload -->
       <div>
-        <label class="field-label mb-2">Banner Image</label>
-        <div id="banner-drop-zone" class="drop-zone" onclick="document.getElementById('input-banner').click()">
-          <div id="banner-placeholder">
+        <label class="field-label mb-2">About Image</label>
+        <div id="about-image-drop-zone" class="drop-zone" onclick="document.getElementById('input-about-image').click()">
+          <div id="about-image-placeholder">
             <span class="material-symbols-outlined text-4xl text-outline mb-2 block">image</span>
-            <p class="text-sm font-semibold text-on-surface-variant">Drop your banner image here</p>
+            <p class="text-sm font-semibold text-on-surface-variant">Drop your about page image here</p>
             <p class="text-xs text-on-surface-variant/70 mt-1">or click to browse · JPG, PNG · max 5 MB</p>
           </div>
-          <div id="banner-preview-wrap" class="hidden">
-            <img id="banner-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="Banner preview"/>
+          <div id="about-image-preview-wrap" class="hidden">
+            <img id="about-image-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="About preview"/>
             <p class="text-xs text-on-surface-variant mt-2 text-center">Click to change</p>
           </div>
         </div>
-        <input type="file" id="input-banner" class="hidden" accept="image/jpeg,image/png,image/jpg"/>
+        <input type="file" id="input-about-image" class="hidden" accept="image/jpeg,image/png,image/jpg"/>
       </div>
 
       <!-- Working On -->
@@ -674,6 +693,54 @@ async function uploadBanner(file) {
     showToast('Banner updated!', 'success');
   } catch (err) {
     showToast(err.message || 'Failed to upload banner.', 'error');
+  }
+}
+
+// ─── About page image upload ───────────────────────────────────────────────────
+const aboutImageDropZone = document.getElementById('about-image-drop-zone');
+const aboutImageInput    = document.getElementById('input-about-image');
+
+function showAboutImagePreview(src) {
+  document.getElementById('about-image-placeholder').classList.add('hidden');
+  document.getElementById('about-image-preview-wrap').classList.remove('hidden');
+  document.getElementById('about-image-preview-img').src = src;
+}
+
+aboutImageDropZone.addEventListener('dragover', e => { e.preventDefault(); aboutImageDropZone.classList.add('drag-over'); });
+aboutImageDropZone.addEventListener('dragleave', () => aboutImageDropZone.classList.remove('drag-over'));
+aboutImageDropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  aboutImageDropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) uploadAboutImage(file);
+});
+aboutImageInput.addEventListener('change', e => {
+  if (e.target.files[0]) uploadAboutImage(e.target.files[0]);
+});
+
+async function uploadAboutImage(file) {
+  if (!['image/jpeg','image/png','image/jpg'].includes(file.type)) {
+    showToast('Only JPG/PNG allowed for about image.', 'error'); return;
+  }
+  const reader = new FileReader();
+  reader.onload = ev => showAboutImagePreview(ev.target.result);
+  reader.readAsDataURL(file);
+  const fd = new FormData();
+  fd.append('about_image', file);
+  try {
+    const res = await fetch(`${API}/api/seller/profile/about-image`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getToken()}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Upload failed');
+    if (data.data?.about_image_url || data.about_image_url) {
+      showAboutImagePreview(data.data?.about_image_url || data.about_image_url);
+    }
+    showToast('About image updated!', 'success');
+  } catch (err) {
+    showToast(err.message || 'Failed to upload about image.', 'error');
   }
 }
 
@@ -1003,6 +1070,7 @@ function populateProfile(data) {
   set('f-video-url', data.video_url);
   if (data.avatar_url) document.getElementById('profile-avatar').src = data.avatar_url;
   if (data.banner_url) showBannerPreview(data.banner_url);
+  if (data.about_image_url) showAboutImagePreview(data.about_image_url);
   if (data.video_url) {
     const embedUrl = getEmbedUrl(data.video_url);
     if (embedUrl) {

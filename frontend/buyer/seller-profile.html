@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Artisan Studio Profile</title>
@@ -19,7 +21,7 @@
             theme: {
                 extend: {
                     "colors": {
-                        "primary": "#061b0e",
+                        "primary": "#3D6B4F",
                         "on-primary": "#ffffff",
                         "primary-container": "#1b3022",
                         "on-primary-container": "#819986",
@@ -40,10 +42,10 @@
                         "on-surface-variant": "#434843",
                         "outline": "#737973",
                         "outline-variant": "#c3c8c1",
-                        "error": "#ba1a1a",
+                        "error": "#3D6B4F",
                         "on-error": "#ffffff",
-                        "error-container": "#ffdad6",
-                        "on-error-container": "#93000a",
+                        "error-container": "#F7F3EC",
+                        "on-error-container": "#3D6B4F",
                         "primary-fixed": "#d0e9d4",
                         "primary-fixed-dim": "#b4cdb8",
                         "on-primary-fixed": "#0b2013",
@@ -144,52 +146,107 @@
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Diagonal Corner Ribbon Styles */
+        .ribbon-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .ribbon-tag {
+            position: absolute;
+            top: 22px;
+            left: -32px;
+            width: 160px;
+            transform: rotate(-45deg);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #ffffff;
+            line-height: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        .ribbon-tag::before, .ribbon-tag::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            border-top: 3px solid rgba(0,0,0,0.4);
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+        }
+        .ribbon-tag::before { left: 0; }
+        .ribbon-tag::after { right: 0; }
+
+        .ribbon-sponsored {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .ribbon-bestseller {
+            background: #C85A32;
+        }
+        .ribbon-custom {
+            background: #B492B7;
+        }
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
+        .ribbon-custom-double {
+            top: 30px !important;
+            left: -24px !important;
+        }
     </style>
 </head>
-<body class="bg-[#FFFFFF] text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
+<body class="bg-white text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
 
     <!-- TopNavBar (Unified with buyer template) -->
-    <header class="w-full sticky top-0 z-50 bg-[#FAF7F0] border-b border-[#C1C9C0] flex justify-between items-center px-margin-desktop h-20">
+    <header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
         <div class="flex items-center flex-1">
-            <a class="font-['Playfair_Display'] text-[32px] italic text-[#255338] select-none" href="/buyer/home.html">
-                Tohfa<span class="text-[#D4AF37]">.</span>
+            <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+                Tohfa<span class="text-[#C8973A]">.</span>
             </a>
         </div>
         
         <nav class="hidden md:flex items-center justify-center gap-8 h-full">
-            <a href="/buyer/home.html" class="flex items-center gap-1 text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+            <a href="/buyer/home.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
                 <span class="material-symbols-outlined text-[20px]">home</span>
                 <span>Home</span>
             </a>
-            <a href="/buyer/categories.html" class="flex items-center gap-1 text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+            <a href="/buyer/categories.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
                 <span class="material-symbols-outlined text-[20px]">category</span>
                 <span>Category</span>
             </a>
-            <a href="/buyer/reels.html" class="flex items-center gap-1 text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+            <a href="/buyer/reels.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
                 <span class="material-symbols-outlined text-[20px]">movie</span>
                 <span>Reels</span>
             </a>
-            <a href="/buyer/profile.html" class="flex items-center gap-1 text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+            <a href="/buyer/profile.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
                 <span class="material-symbols-outlined text-[20px]">person</span>
                 <span>Profile</span>
             </a>
         </nav>
         
         <div class="flex items-center justify-end flex-1 gap-4">
-            <a href="/buyer/categories.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+            <a href="/buyer/categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
                 <span class="material-symbols-outlined">search</span>
             </a>
-            <a href="/buyer/saved-makes.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+            <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
                 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-                <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#255338] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#3D6B4F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
             </a>
-            <a href="/buyer/cart.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+            <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
                 <span class="material-symbols-outlined">shopping_cart</span>
-                <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#255338] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#3D6B4F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
             </a>
-            <a href="/buyer/notifications.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+            <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
                 <span class="material-symbols-outlined">notifications</span>
-                <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#255338] rounded-full hidden"></span>
+                <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#3D6B4F] rounded-full hidden"></span>
             </a>
         
             <div id="auth-buttons-container" class="flex items-center gap-4 ml-4"></div>
@@ -203,7 +260,7 @@
             <img id="seller-cover" class="w-full h-full object-cover hidden" src="" alt="Artisan Banner">
             <!-- Cozy fallback decor if no cover image -->
             <div id="cover-fallback" class="absolute inset-0 bg-cover bg-center opacity-35" style="background-image: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1470&auto=format&fit=crop');"></div>
-            <div id="cover-overlay" class="absolute inset-0 bg-[#061b0e]/15"></div>
+            <div id="cover-overlay" class="absolute inset-0 bg-[#3D6B4F]/15"></div>
             <span class="material-symbols-outlined text-white text-6xl opacity-20 absolute select-none">filter_vintage</span>
         </div>
 
@@ -304,6 +361,19 @@
 
             <!-- 1. Catalog Tab Panel -->
             <div id="panel-catalog" class="tab-panel animate-fade-in hidden">
+                <!-- Filter & Category Pills Row -->
+                <div class="flex items-center gap-sm mb-6 pb-4 border-b border-outline-variant/30">
+                    <div class="flex-shrink-0 bg-[#FFFFFF] pr-md border-r border-outline-variant/50 mr-md">
+                        <button id="filter-btn" class="p-sm bg-[#F7F3EC] border border-outline-variant rounded-lg text-primary flex items-center gap-sm hover:bg-surface-container transition-colors">
+                            <span class="material-symbols-outlined">tune</span>
+                            <span id="filter-btn-text" class="text-sm font-body-md pr-1">Filter</span>
+                        </button>
+                    </div>
+                    <div id="category-pills-container" class="flex items-center gap-sm overflow-x-auto scrollbar-hide flex-grow">
+                        <!-- Category pills will be injected dynamically -->
+                    </div>
+                </div>
+
                 <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
                     <!-- Loaded dynamically -->
                 </div>
@@ -515,6 +585,96 @@
         </div>
     </footer>
 
+    <!-- Filter Drawer Backdrop -->
+    <div id="filter-drawer-backdrop" class="fixed inset-0 bg-[#1f1b15]/40 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+    <!-- Filter Drawer Sidebar -->
+    <div id="filter-drawer" class="fixed top-0 left-0 h-full w-[360px] bg-background shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-r border-outline-variant/30">
+        <!-- Header -->
+        <div class="p-md flex items-center justify-between border-b border-outline-variant/30">
+            <div class="flex items-center gap-sm">
+                <span class="material-symbols-outlined text-primary">tune</span>
+                <h3 class="font-title-serif text-xl text-primary font-bold">Filters</h3>
+            </div>
+            <button id="filter-drawer-close" class="p-sm hover:bg-surface-container-high rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <!-- Body -->
+        <div class="flex-grow overflow-y-auto p-md space-y-lg">
+            <!-- Craft/Category Type -->
+            <div class="space-y-sm">
+                <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Craft/Category</h4>
+                <select id="filter-category" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
+                    <option value="">All Crafts</option>
+                    <!-- Dynamic categories loaded here -->
+                </select>
+            </div>
+
+            <!-- Price Range -->
+            <div class="space-y-sm">
+                <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Price Range</h4>
+                <div class="grid grid-cols-2 gap-sm">
+                    <div>
+                        <label class="text-[10px] text-outline font-label-caps block mb-1">Min Price (₹)</label>
+                        <input type="number" id="filter-price-min" min="0" placeholder="0" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-outline font-label-caps block mb-1">Max Price (₹)</label>
+                        <input type="number" id="filter-price-max" min="0" placeholder="10000" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating -->
+            <div class="space-y-sm">
+                <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Minimum Rating</h4>
+                <div class="flex flex-col gap-xs">
+                    <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                        <input type="radio" name="filter-rating" value="" checked class="text-primary focus:ring-primary border-outline-variant/50">
+                        <span class="text-sm font-body-md text-on-surface">Any Rating</span>
+                    </label>
+                    <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                        <input type="radio" name="filter-rating" value="4" class="text-primary focus:ring-primary border-outline-variant/50">
+                        <span class="text-sm font-body-md text-on-surface">⭐ 4+ Stars</span>
+                    </label>
+                    <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                        <input type="radio" name="filter-rating" value="3" class="text-primary focus:ring-primary border-outline-variant/50">
+                        <span class="text-sm font-body-md text-on-surface">⭐ 3+ Stars</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="space-y-sm">
+                <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Availability</h4>
+                <div class="flex flex-col gap-xs">
+                    <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                        <input type="radio" name="filter-availability" value="" checked class="text-primary focus:ring-primary border-outline-variant/50">
+                        <span class="text-sm font-body-md text-on-surface">All Items</span>
+                    </label>
+                    <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                        <input type="radio" name="filter-availability" value="in_stock" class="text-primary focus:ring-primary border-outline-variant/50">
+                        <span class="text-sm font-body-md text-on-surface">In Stock</span>
+                    </label>
+                    <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                        <input type="radio" name="filter-availability" value="made_to_order" class="text-primary focus:ring-primary border-outline-variant/50">
+                        <span class="text-sm font-body-md text-on-surface">Made to Order</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="p-md border-t border-outline-variant/30 flex items-center gap-md bg-surface">
+            <button id="filter-clear" class="flex-1 py-sm bg-transparent border border-outline-variant text-secondary rounded-lg font-body-md text-sm hover:bg-surface-container transition-colors">
+                Clear All
+            </button>
+            <button id="filter-apply" class="flex-1 py-sm bg-primary text-white rounded-lg font-body-md text-sm hover:bg-primary/95 shadow-md active:scale-95 transition-all">
+                Apply Filters
+            </button>
+        </div>
+    </div>
+
     <!-- ── Share Modal Overlay ── -->
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm hidden" id="share-modal" onclick="closeShareModal(event)">
         <div class="bg-white rounded-xl p-8 w-full max-w-md shadow-lg relative mx-4 animate-fade-in" onclick="event.stopPropagation()">
@@ -591,6 +751,16 @@
         let activeTab = 'catalog';
         let isLoggedIn = false;
         let isWishlistUpdating = {};
+        
+        let allSellerProducts = [];
+        let categoriesList = [];
+        let activeFilters = {
+            category_id: '',
+            min_price: '',
+            max_price: '',
+            rating: '',
+            availability: ''
+        };
 
         // Extract Seller ID from Query Param
         const urlParams = new URLSearchParams(window.location.search);
@@ -610,6 +780,17 @@
             await loadSellerProfile();
             await updateCartBadge();
             await updateWishlistBadge();
+            
+            // Load categories list for filters
+            try {
+                const catRes = await apiClient.get('/categories');
+                if (catRes.data && catRes.data.success) {
+                    categoriesList = catRes.data.data.categories || [];
+                }
+            } catch (err) {
+                console.error("Failed to load categories for filters:", err);
+            }
+            initFilterDrawer();
             
             const customiseListingId = urlParams.get('customise_listing_id');
             if (customiseListingId) {
@@ -645,10 +826,10 @@
                     
                     if (authContainer) {
                         if (avatarUrl) {
-                            authContainer.innerHTML = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#C1C9C0] object-cover cursor-pointer hover:opacity-85 duration-200" onclick="window.location.href='profile.html'"/>`;
+                            authContainer.innerHTML = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer hover:opacity-85 duration-200" onclick="window.location.href='profile.html'"/>`;
                         } else {
                             authContainer.innerHTML = `
-                                <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold border border-[#C1C9C0] text-sm overflow-hidden flex-shrink-0 cursor-pointer hover:bg-opacity-90 duration-200">
+                                <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer hover:bg-opacity-90 duration-200">
                                     ${initial}
                                 </a>
                             `;
@@ -730,6 +911,12 @@
                 storyEl.innerHTML = story 
                     ? story.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')
                     : `<p>Welcome to ${profile.shop_name}. Our studio focuses on traditional handmade techniques, crafting unique treasures for slow and intentional living. Each creation is shaped with detail, care, and organic mineral mixtures.</p>`;
+            }
+
+            // About Story Image
+            const aboutStoryImg = document.getElementById('about-story-img');
+            if (aboutStoryImg && profile.about_image_url) {
+                aboutStoryImg.src = profile.about_image_url;
             }
 
             // Bento Workspace Images Setup
@@ -834,51 +1021,268 @@
             const empty = document.getElementById('catalog-empty');
             grid.innerHTML = '';
             
-            const res = await apiClient.get(`/sellers/${sellerId}/products`);
+            const res = await apiClient.get(`/sellers/${sellerId}/products?limit=250`);
             if (res.data && res.data.success) {
-                const products = res.data.data.products || [];
-                if (products.length === 0) {
-                    empty.classList.remove('hidden');
-                    return;
-                }
-                empty.classList.add('hidden');
+                allSellerProducts = res.data.data.products || [];
                 
-                products.forEach(p => {
-                    const priceFormatted = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
-                    const card = document.createElement('div');
-                    card.className = "group bg-white rounded-xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-ambient transition-all duration-300 flex flex-col justify-between";
-                    
-                    const isSoldOut = p.status === 'sold_out' || p.stock_qty === 0;
+                // Load Category Pills
+                const uniqueCatIds = [...new Set(allSellerProducts.map(p => p.category_id))];
+                const sellerCats = categoriesList.filter(c => uniqueCatIds.includes(c.id));
+                
+                // Populate category select options inside filter drawer
+                const categorySelect = document.getElementById('filter-category');
+                if (categorySelect) {
+                    categorySelect.innerHTML = '<option value="">All Crafts</option>' + sellerCats.map(c => `
+                        <option value="${c.id}">${c.display_name || c.name}</option>
+                    `).join('');
+                }
+                
+                renderCategoryPills(sellerCats);
+                applyCatalogFiltersAndRender();
+            }
+        }
 
-                    card.innerHTML = `
-                        <div class="cursor-pointer" onclick="window.location.href='/buyer/product.html?id=${p.id}'">
-                            <div class="relative aspect-square overflow-hidden bg-surface-container-lowest flex items-center justify-center p-2">
-                                <img src="${p.image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Creation'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-lg"/>
-                                <button onclick="toggleWishlist(event, ${p.id})" class="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all shadow-sm flex items-center justify-center cursor-pointer">
-                                    <span class="material-symbols-outlined text-[20px] ${p.is_wishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" id="wishlist-icon-${p.id}">favorite</span>
-                                </button>
-                                ${isSoldOut ? `
-                                    <div class="absolute bottom-4 left-4 bg-red-100 text-red-700 px-3 py-1 rounded shadow-sm text-[10px] font-label-sm uppercase tracking-wider">
-                                        Sold Out
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <div class="p-5 space-y-2">
-                                <div class="flex justify-between items-baseline">
-                                    <h3 class="font-headline-sm text-lg text-primary font-bold line-clamp-1">${p.name}</h3>
-                                    <p class="font-label-md text-primary font-bold whitespace-nowrap ml-2">${priceFormatted}</p>
-                                </div>
-                                <p class="text-xs text-on-surface-variant font-body-md line-clamp-2">${p.description || 'Artisan creation.'}</p>
-                            </div>
-                        </div>
-                        <div class="px-5 pb-5">
-                            <button onclick="addToCart(event, ${p.id})" class="w-full py-2.5 bg-primary text-on-primary rounded-lg font-label-md text-xs flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 duration-200 cursor-pointer shadow-sm uppercase tracking-wider ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}">
-                                <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
-                                <span>Add to Cart</span>
-                            </button>
+        function renderCategoryPills(sellerCats) {
+            const container = document.getElementById('category-pills-container');
+            if (!container) return;
+            
+            const pills = [{ id: '', name: 'All', display_name: 'All' }, ...sellerCats];
+            container.innerHTML = pills.map(cat => {
+                const isActive = String(cat.id) === String(activeFilters.category_id);
+                const activeClasses = "bg-primary-container text-white shadow-md font-bold";
+                const inactiveClasses = "bg-[#F7F3EC] border border-outline-variant text-on-surface-variant font-body-md text-sm hover:border-primary hover:text-primary";
+                return `
+                    <button class="flex-shrink-0 px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-id="${cat.id}">
+                        ${cat.display_name || cat.name}
+                    </button>
+                `;
+            }).join('');
+            
+            container.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activeFilters.category_id = btn.getAttribute('data-id');
+                    renderCategoryPills(sellerCats);
+                    
+                    const categorySelect = document.getElementById('filter-category');
+                    if (categorySelect) {
+                        categorySelect.value = activeFilters.category_id;
+                    }
+                    applyCatalogFiltersAndRender();
+                });
+            });
+        }
+
+        function applyCatalogFiltersAndRender() {
+            const grid = document.getElementById('catalog-grid');
+            const empty = document.getElementById('catalog-empty');
+            grid.innerHTML = '';
+            
+            let filtered = allSellerProducts.filter(p => {
+                if (activeFilters.category_id && String(p.category_id) !== String(activeFilters.category_id)) {
+                    return false;
+                }
+                if (activeFilters.min_price !== '') {
+                    const min = Math.round(parseFloat(activeFilters.min_price) * 100);
+                    if (p.price_paise < min) return false;
+                }
+                if (activeFilters.max_price !== '') {
+                    const max = Math.round(parseFloat(activeFilters.max_price) * 100);
+                    if (p.price_paise > max) return false;
+                }
+                if (activeFilters.rating !== '') {
+                    if (p.avg_rating < parseFloat(activeFilters.rating)) return false;
+                }
+                if (activeFilters.availability === 'in_stock') {
+                    if (p.stock_qty <= 0) return false;
+                } else if (activeFilters.availability === 'made_to_order') {
+                    if (p.stock_qty > 0) return false;
+                }
+                return true;
+            });
+            
+            // Pin bestseller products to the top
+            filtered.sort((a, b) => {
+                const aBest = !!a.is_bestseller;
+                const bBest = !!b.is_bestseller;
+                if (aBest && !bBest) return -1;
+                if (!aBest && bBest) return 1;
+                return 0;
+            });
+            
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+                updateFilterBadge();
+                return;
+            }
+            empty.classList.add('hidden');
+            
+            filtered.forEach(p => {
+                const priceFormatted = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
+                const card = document.createElement('div');
+                card.className = "group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative";
+                card.onclick = () => window.location.href = `/buyer/product.html?id=${p.id}`;
+                
+                const isWishlisted = !!p.is_wishlisted;
+                const isSoldOut = p.status === 'sold_out' || p.stock_qty === 0;
+
+                let ribbonHtml = '';
+                if (p.is_bestseller && p.listing_type === 'custom') {
+                    ribbonHtml = `
+                        <div class="ribbon-wrapper">
+                            <div class="ribbon-tag ribbon-bestseller ribbon-bestseller-double">BEST SELLER</div>
+                            <div class="ribbon-tag ribbon-custom ribbon-custom-double">CUSTOM</div>
                         </div>
                     `;
-                    grid.appendChild(card);
+                } else if (p.is_bestseller) {
+                    ribbonHtml = `
+                        <div class="ribbon-wrapper">
+                            <div class="ribbon-tag ribbon-bestseller">BEST SELLER</div>
+                        </div>
+                    `;
+                } else if (p.listing_type === 'custom') {
+                    ribbonHtml = `
+                        <div class="ribbon-wrapper">
+                            <div class="ribbon-tag ribbon-custom">CUSTOM</div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                            ${ribbonHtml}
+                            <img src="${p.image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Creation'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl"/>
+                            <button onclick="toggleWishlist(event, ${p.id})" class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10">
+                                <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" id="wishlist-icon-${p.id}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
+                            </button>
+                            ${isSoldOut ? `
+                                <div class="absolute bottom-4 left-4 bg-red-100 text-red-700 px-3 py-1 rounded shadow-sm text-[10px] font-semibold uppercase tracking-wider z-10">
+                                    Sold Out
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <span class="font-bold text-lg text-[#C8973A] mb-1">${priceFormatted}</span>
+                            <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                            <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
+                                <span class="text-[#C8973A] font-bold">★</span>
+                                <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                <span>(${parseInt(p.review_count || 0, 10)})</span>
+                            </div>
+                            <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id || sellerId}'">By ${sellerProfile.shop_name}</span>
+                        </div>
+                    </div>
+                    <div class="w-full font-['DM_Sans']">
+                        <button onclick="addToCart(event, ${p.id})" class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}">
+                            Add to Cart
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            updateFilterBadge();
+        }
+
+        function updateFilterBadge() {
+            const filterBtnText = document.getElementById('filter-btn-text');
+            if (!filterBtnText) return;
+            let activeCount = 0;
+            if (activeFilters.min_price !== '') activeCount++;
+            if (activeFilters.max_price !== '') activeCount++;
+            if (activeFilters.rating !== '') activeCount++;
+            if (activeFilters.availability !== '') activeCount++;
+            if (activeFilters.category_id !== '') activeCount++;
+            
+            if (activeCount > 0) {
+                filterBtnText.innerText = `Filter (${activeCount})`;
+            } else {
+                filterBtnText.innerText = 'Filter';
+            }
+        }
+
+        function initFilterDrawer() {
+            const filterBtn = document.getElementById('filter-btn');
+            const filterDrawer = document.getElementById('filter-drawer');
+            const filterBackdrop = document.getElementById('filter-drawer-backdrop');
+            const filterCloseBtn = document.getElementById('filter-drawer-close');
+            const filterApplyBtn = document.getElementById('filter-apply');
+            const filterClearBtn = document.getElementById('filter-clear');
+
+            function openFilterDrawer() {
+                document.getElementById('filter-price-min').value = activeFilters.min_price;
+                document.getElementById('filter-price-max').value = activeFilters.max_price;
+                
+                const ratingRadios = document.getElementsByName('filter-rating');
+                ratingRadios.forEach(radio => {
+                    radio.checked = radio.value === activeFilters.rating;
+                });
+                
+                const availabilityRadios = document.getElementsByName('filter-availability');
+                availabilityRadios.forEach(radio => {
+                    radio.checked = radio.value === activeFilters.availability;
+                });
+                
+                const categorySelect = document.getElementById('filter-category');
+                if (categorySelect) {
+                    categorySelect.value = activeFilters.category_id;
+                }
+                
+                filterDrawer.classList.remove('-translate-x-full');
+                filterDrawer.classList.add('translate-x-0');
+                filterBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+                filterBackdrop.classList.add('opacity-100');
+            }
+
+            function closeFilterDrawer() {
+                filterDrawer.classList.remove('translate-x-0');
+                filterDrawer.classList.add('-translate-x-full');
+                filterBackdrop.classList.remove('opacity-100');
+                filterBackdrop.classList.add('opacity-0', 'pointer-events-none');
+            }
+
+            if (filterBtn) filterBtn.addEventListener('click', openFilterDrawer);
+            if (filterCloseBtn) filterCloseBtn.addEventListener('click', closeFilterDrawer);
+            if (filterBackdrop) filterBackdrop.addEventListener('click', closeFilterDrawer);
+
+            if (filterApplyBtn) {
+                filterApplyBtn.addEventListener('click', () => {
+                    activeFilters.min_price = document.getElementById('filter-price-min').value;
+                    activeFilters.max_price = document.getElementById('filter-price-max').value;
+                    
+                    const ratingRadios = document.getElementsByName('filter-rating');
+                    activeFilters.rating = Array.from(ratingRadios).find(r => r.checked)?.value || '';
+                    
+                    const availabilityRadios = document.getElementsByName('filter-availability');
+                    activeFilters.availability = Array.from(availabilityRadios).find(r => r.checked)?.value || '';
+                    
+                    const categorySelect = document.getElementById('filter-category');
+                    if (categorySelect) {
+                        activeFilters.category_id = categorySelect.value;
+                    }
+                    
+                    const uniqueCatIds = [...new Set(allSellerProducts.map(p => p.category_id))];
+                    const sellerCats = categoriesList.filter(c => uniqueCatIds.includes(c.id));
+                    renderCategoryPills(sellerCats);
+                    
+                    closeFilterDrawer();
+                    applyCatalogFiltersAndRender();
+                });
+            }
+
+            if (filterClearBtn) {
+                filterClearBtn.addEventListener('click', () => {
+                    activeFilters.min_price = '';
+                    activeFilters.max_price = '';
+                    activeFilters.rating = '';
+                    activeFilters.availability = '';
+                    activeFilters.category_id = '';
+                    
+                    const uniqueCatIds = [...new Set(allSellerProducts.map(p => p.category_id))];
+                    const sellerCats = categoriesList.filter(c => uniqueCatIds.includes(c.id));
+                    renderCategoryPills(sellerCats);
+                    
+                    closeFilterDrawer();
+                    applyCatalogFiltersAndRender();
                 });
             }
         }
@@ -889,7 +1293,7 @@
             const empty = document.getElementById('custom-empty');
             grid.innerHTML = '';
             
-            const res = await apiClient.get(`/sellers/${sellerId}/customizations`);
+            const res = await apiClient.get(`/sellers/${sellerId}/customizations?limit=50`);
             if (res.data && res.data.success) {
                 const list = res.data.data.customizations || [];
                 if (list.length === 0) {
@@ -899,34 +1303,47 @@
                 empty.classList.add('hidden');
                 
                 list.forEach(c => {
-                    const priceFormatted = `₹${c.base_price.toLocaleString('en-IN')}`;
+                    const priceFormatted = `Starting from ₹${c.base_price.toLocaleString('en-IN')}`;
                     const card = document.createElement('div');
-                    card.className = "group bg-white rounded-xl overflow-hidden border border-outline-variant/30 shadow-sm hover:shadow-ambient transition-all duration-300 flex flex-col justify-between";
+                    card.className = "group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative";
+                    
+                    let ribbonHtml = '';
+                    if (c.is_bestseller) {
+                        ribbonHtml = `
+                            <div class="ribbon-wrapper">
+                                <div class="ribbon-tag ribbon-bestseller ribbon-bestseller-double">BEST SELLER</div>
+                                <div class="ribbon-tag ribbon-custom ribbon-custom-double">CUSTOM</div>
+                            </div>
+                        `;
+                    } else {
+                        ribbonHtml = `
+                            <div class="ribbon-wrapper">
+                                <div class="ribbon-tag ribbon-custom">CUSTOM</div>
+                            </div>
+                        `;
+                    }
                     
                     card.innerHTML = `
                         <div>
-                            <div class="relative aspect-square overflow-hidden bg-surface-container-lowest flex items-center justify-center p-2">
-                                <img src="${c.cover_image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Custom'}" alt="${c.product_name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-lg"/>
-                                <div class="absolute bottom-4 left-4 bg-primary-container/90 text-on-primary-container backdrop-blur-sm px-3 py-1 rounded shadow-sm text-[10px] font-label-sm uppercase tracking-wider flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs">auto_awesome</span>
-                                    <span>Bespoke</span>
-                                </div>
+                            <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                                ${ribbonHtml}
+                                <img src="${c.cover_image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Custom'}" alt="${c.product_name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl"/>
                             </div>
-                            <div class="p-5 space-y-2">
-                                <div class="flex justify-between items-baseline">
-                                    <h3 class="font-headline-sm text-lg text-primary font-bold line-clamp-1">${c.product_name}</h3>
-                                    <p class="font-label-md text-primary font-bold whitespace-nowrap ml-2">${priceFormatted}</p>
+                            <div class="flex flex-col mb-4">
+                                <span class="font-bold text-lg text-[#C8973A] mb-1">${priceFormatted}</span>
+                                <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${c.product_name}</h4>
+                                <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
+                                    <span class="text-[#C8973A] font-bold">★</span>
+                                    <span class="font-semibold text-on-surface">${parseFloat(c.avg_rating || 0).toFixed(1)}</span>
+                                    <span>(${parseInt(c.review_count || 0, 10)})</span>
                                 </div>
-                                <div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-label-sm">
-                                    <span class="material-symbols-outlined text-sm">schedule</span>
-                                    <span>Lead time: ${c.lead_time_days} days</span>
-                                </div>
+                                <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='seller-profile.html?id=${sellerId}'">By ${sellerProfile.shop_name}</span>
+                                <span class="text-xs text-[#605e57] flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> ${c.lead_time_days} days</span>
                             </div>
                         </div>
-                        <div class="px-5 pb-5">
-                            <button onclick="startCustomisation(${c.listing_id}, '${c.product_type_tag}', '${c.product_name.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-primary-container text-white hover:bg-opacity-95 rounded-lg font-label-md text-xs flex items-center justify-center gap-2 active:scale-95 duration-200 cursor-pointer shadow-sm uppercase tracking-wider">
-                                <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
-                                <span>Request Customisation</span>
+                        <div class="w-full font-['DM_Sans']">
+                            <button onclick="startCustomisation(${c.listing_id}, '${c.product_type_tag}', '${c.product_name.replace(/'/g, "\\'")}')" class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm">
+                                Request Customisation
                             </button>
                         </div>
                     `;
@@ -1181,6 +1598,7 @@
                     if (res.data && res.data.success) {
                         iconEl.classList.remove('fill-icon', 'text-red-500');
                         iconEl.classList.add('text-secondary');
+                        iconEl.style.fontVariationSettings = "'FILL' 0";
                         window.Toast?.show("Removed from wishlist!", "success");
                     }
                 } else {
@@ -1188,6 +1606,7 @@
                     if (res.data && res.data.success) {
                         iconEl.classList.add('fill-icon', 'text-red-500');
                         iconEl.classList.remove('text-secondary');
+                        iconEl.style.fontVariationSettings = "'FILL' 1";
                         window.Toast?.show("Added to wishlist!", "success");
                     }
                 }

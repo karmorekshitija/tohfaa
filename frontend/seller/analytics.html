@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>TOFA Seller Studio | Analytics</title>
@@ -17,23 +19,23 @@
             theme: {
                 extend: {
                     "colors": {
-                        "primary": "#255338",
+                        "primary": "#3D6B4F",
                         "on-primary": "#ffffff",
                         "primary-container": "#3d6b4f",
                         "on-primary-container": "#b7e9c6",
                         "secondary": "#49663f",
-                        "secondary-container": "#c8e9b8",
-                        "tertiary": "#573b81",
-                        "tertiary-container": "#70539b",
-                        "surface": "#fff8f3",
-                        "surface-variant": "#ede1d1",
+                        "secondary-container": "#8FAF82",
+                        "tertiary": "#7B5EA7",
+                        "tertiary-container": "#7B5EA7",
+                        "surface": "#FFFFFF",
+                        "surface-variant": "#F7F3EC",
                         "surface-container": "#f9ecdc",
                         "surface-container-low": "#fff2e1",
-                        "background": "#fff8f3",
+                        "background": "#FFFFFF",
                         "outline": "#717972",
-                        "outline-variant": "#c1c9c0",
-                        "error": "#ba1a1a",
-                        "gold": "#d4af37",
+                        "outline-variant": "#F7F3EC",
+                        "error": "#3D6B4F",
+                        "gold": "#C8973A",
                         "sage": "#717972",
                         "parchment": "#F7F3EC"
                     },
@@ -61,15 +63,11 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
         }
-        .botanical-overlay {
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            mix-blend-mode: multiply;
-        }
-        .skeleton { background: linear-gradient(90deg, #ede1d1 25%, #f3e6d6 50%, #ede1d1 75%); background-size: 400px 100%; animation: shimmer 1.4s infinite; }
+        .skeleton { background: linear-gradient(90deg, #F7F3EC 25%, #f3e6d6 50%, #F7F3EC 75%); background-size: 400px 100%; animation: shimmer 1.4s infinite; }
         @keyframes shimmer { 0%{background-position:-200px 0} 100%{background-position:200px 0} }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden opacity-0 transition-opacity duration-300" id="body-content">
+<body class="bg-white text-on-surface font-body-md min-h-screen overflow-x-hidden opacity-0 transition-opacity duration-300" id="body-content">
 
 <seller-layout active-tab="analytics">
 
@@ -90,14 +88,7 @@
         <span class="material-symbols-outlined text-[200px] text-sage">local_florist</span>
     </div>
 
-    <!-- Section: ZAI Mode Recommendation Tip -->
-    <section id="zai-insight-banner" class="hidden mb-lg bg-tertiary-container/10 border border-tertiary-container/30 rounded-xl p-md flex items-start gap-md">
-        <span class="material-symbols-outlined text-tertiary text-2xl flex-shrink-0" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-        <div>
-            <h4 class="font-bold text-tertiary text-sm">ZAI Studio Sprout Recommendation</h4>
-            <p id="zai-insight-text" class="text-sm text-on-surface-variant mt-1 leading-relaxed"></p>
-        </div>
-    </section>
+
 
     <!-- Section: Filters -->
     <section class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-md">
@@ -484,7 +475,7 @@
                     labels: ['New Buyers', 'Repeat Buyers'],
                     datasets: [{
                         data: [newCount, repeatCount],
-                        backgroundColor: ['#717972', '#d4af37'],
+                        backgroundColor: ['#717972', '#C8973A'],
                         borderColor: '#fff',
                         borderWidth: 2
                     }]
@@ -522,12 +513,12 @@
                 datasets: [{
                     label: 'Revenue',
                     data: chartsData.revenue,
-                    borderColor: '#255338',
+                    borderColor: '#3D6B4F',
                     backgroundColor: 'rgba(37, 83, 88, 0.08)',
                     fill: true,
                     tension: 0.3,
                     borderWidth: 2,
-                    pointBackgroundColor: '#255338',
+                    pointBackgroundColor: '#3D6B4F',
                     pointBorderColor: '#fff',
                     pointHoverRadius: 6
                 }]
@@ -578,7 +569,7 @@
                     data: chartsData.orders,
                     backgroundColor: '#49663f',
                     borderRadius: 4,
-                    hoverBackgroundColor: '#255338'
+                    hoverBackgroundColor: '#3D6B4F'
                 }]
             },
             options: {
@@ -620,10 +611,10 @@
                     label: 'Units Sold',
                     data: top5.map(p => p.units_sold),
                     backgroundColor: function(context) {
-                        return context.dataIndex % 2 === 0 ? '#d4af37' : '#717972';
+                        return context.dataIndex % 2 === 0 ? '#C8973A' : '#717972';
                     },
                     borderRadius: 4,
-                    hoverBackgroundColor: '#255338'
+                    hoverBackgroundColor: '#3D6B4F'
                 }]
             },
             options: {
@@ -660,12 +651,12 @@
                 datasets: [{
                     label: 'Conversion Rate',
                     data: chartsData.conversion,
-                    borderColor: '#573b81',
+                    borderColor: '#7B5EA7',
                     backgroundColor: 'rgba(87, 59, 129, 0.08)',
                     fill: true,
                     tension: 0.3,
                     borderWidth: 2,
-                    pointBackgroundColor: '#573b81',
+                    pointBackgroundColor: '#7B5EA7',
                     pointBorderColor: '#fff',
                     pointHoverRadius: 6
                 }]
@@ -708,18 +699,7 @@
     async function loadAnalytics() {
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         
-        const updateZaiInsight = (zaiInsight) => {
-            const isZaiEnabled = localStorage.getItem('zai_mode') === 'true';
-            const banner = document.getElementById('zai-insight-banner');
-            const insightText = document.getElementById('zai-insight-text');
 
-            if (isZaiEnabled && zaiInsight) {
-                insightText.textContent = zaiInsight;
-                banner.classList.remove('hidden');
-            } else {
-                banner.classList.add('hidden');
-            }
-        };
 
         let loadedRealData = false;
 
@@ -740,7 +720,6 @@
                     const data = resp.data || resp;
                     if (data) {
                         updateUI(data);
-                        updateZaiInsight(data.zai_insight);
                         loadedRealData = true;
                     }
                 }
@@ -795,24 +774,11 @@
                     zai_insight: "ZAI Insight: Custom orders are currently driving most of your sales."
                 };
                 updateUI(convertedData);
-                updateZaiInsight(convertedData.zai_insight);
             }
         }
     }
 
-    function updateZaiUI(enabled) {
-        const toggleBtn = document.getElementById('zai-toggle-btn');
-        if (toggleBtn) {
-            if (enabled) {
-                toggleBtn.style.fontVariationSettings = "'FILL' 1";
-                toggleBtn.classList.add('text-primary');
-            } else {
-                toggleBtn.style.fontVariationSettings = "'FILL' 0";
-                toggleBtn.classList.remove('text-primary');
-            }
-        }
-        loadAnalytics();
-    }
+
 
     document.addEventListener('DOMContentLoaded', async () => {
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
@@ -835,8 +801,7 @@
         document.getElementById('body-content').classList.remove('opacity-0');
 
         // Init load
-        const zaiEnabled = localStorage.getItem('zai_mode') === 'true';
-        updateZaiUI(zaiEnabled);
+        loadAnalytics();
 
         // Period selectors Click Handler
         const chips = document.querySelectorAll('#period-chips button');
@@ -863,27 +828,7 @@
             loadAnalytics();
         });
 
-        // ZAI toggle button click
-        document.getElementById('zai-toggle-btn').addEventListener('click', () => {
-            const nextEnabled = !(localStorage.getItem('zai_mode') === 'true');
-            localStorage.setItem('zai_mode', nextEnabled ? 'true' : 'false');
-            
-            fetch(`${API_BASE_URL}/api/seller/zai-mode`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ enabled: nextEnabled })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.success) {
-                    updateZaiUI(nextEnabled);
-                }
-            })
-            .catch(err => console.error("Error setting ZAI mode:", err));
-        });
+
 
         // Export CSV button click
         const exportBtn = document.getElementById('export-csv-btn');
@@ -944,8 +889,8 @@
                 .then(res => res.json())
                 .then(data => {
                     const profileData = data.data || data;
-                    if (profileData && profileData.handle) {
-                        window.location.href = `/store/${profileData.handle}`;
+                    if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+                        window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
                     } else {
                         window.location.href = '/';
                     }

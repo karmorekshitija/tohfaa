@@ -1,738 +1,1100 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Artisan Studio | Messages</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="/components/seller-components.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@100..900&amp;family=DM+Sans:wght@100..900&amp;family=Merriweather:wght@100..900&amp;family=Playfair+Display:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "on-primary-fixed": "#002110",
-                    "tertiary-fixed-dim": "#d6baff",
-                    "on-surface-variant": "#414942",
-                    "on-secondary-fixed-variant": "#324e29",
-                    "on-primary-container": "#b7e9c6",
-                    "on-secondary": "#ffffff",
-                    "secondary": "#49663f",
-                    "surface-tint": "#3a684c",
-                    "on-secondary-fixed": "#062103",
-                    "on-tertiary-fixed": "#270550",
-                    "outline-variant": "#c1c9c0",
-                    "on-background": "#211b11",
-                    "outline": "#717972",
-                    "on-primary-fixed-variant": "#214f36",
-                    "on-tertiary-container": "#e8d6ff",
-                    "error-container": "#ffdad6",
-                    "tertiary": "#573b81",
-                    "primary-container": "#3d6b4f",
-                    "error": "#ba1a1a",
-                    "secondary-fixed-dim": "#afd0a0",
-                    "inverse-primary": "#a0d2b0",
-                    "primary": "#255338",
-                    "primary-fixed-dim": "#a0d2b0",
-                    "on-tertiary": "#ffffff",
-                    "surface-container-low": "#fff2e1",
-                    "surface-container-highest": "#ede1d1",
-                    "surface-container-lowest": "#ffffff",
-                    "on-tertiary-fixed-variant": "#54387e",
-                    "on-error-container": "#93000a",
-                    "tertiary-container": "#70539b",
-                    "tertiary-fixed": "#ecdcff",
-                    "surface-dim": "#e5d8c8",
-                    "inverse-surface": "#362f25",
-                    "inverse-on-surface": "#fcefde",
-                    "background": "#fff8f3",
-                    "surface-variant": "#ede1d1",
-                    "secondary-container": "#c8e9b8",
-                    "surface-container-high": "#f3e6d6",
-                    "secondary-fixed": "#caecbb",
-                    "on-surface": "#211b11",
-                    "surface": "#fff8f3",
-                    "primary-fixed": "#bceecb",
-                    "on-error": "#ffffff",
-                    "on-primary": "#ffffff",
-                    "surface-container": "#f9ecdc",
-                    "on-secondary-container": "#4d6a43",
-                    "surface-bright": "#fff8f3"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "margin-desktop": "64px",
-                    "xl": "40px",
-                    "margin-mobile": "20px",
-                    "sm": "8px",
-                    "xs": "4px",
-                    "unit": "4px",
-                    "gutter": "16px",
-                    "lg": "24px",
-                    "md": "16px"
-            },
-            "fontFamily": {
-                    "title-serif": ["Merriweather"],
-                    "display-hero": ["Playfair Display"],
-                    "label-caps": ["Cinzel"],
-                    "headline-lg-mobile": ["Playfair Display"],
-                    "body-md": ["DM Sans"],
-                    "headline-lg": ["Playfair Display"],
-                    "data-price": ["Space Mono"]
-            },
-            "fontSize": {
-                    "title-serif": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                    "display-hero": ["48px", {"lineHeight": "56px", "fontWeight": "300"}],
-                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                    "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
-            }
-          },
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#3D6B4F",
+          "gold": "#C8973A",
+          "surface-variant": "#F7F3EC",
+          "sage": "#8FAF82",
+          "on-surface": "#211b11",
+          "outline-variant": "#E8E2D5"
         },
+        fontFamily: {
+          display: ["Playfair Display", "serif"],
+          body: ["DM Sans", "sans-serif"],
+          mono: ["Space Mono", "monospace"],
+          eyebrow: ["Cinzel", "serif"]
+        }
       }
-    </script>
+    }
+  }
+</script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        
-        /* Custom parchment tint and forest elements */
-        .bg-parchment { background-color: #F7F3EC; }
-        .bg-sage-soft { background-color: #8FAF8220; }
-        .bg-sage-solid { background-color: #8FAF82; }
-        .border-sage { border-color: #8FAF82; }
-        .text-sage { color: #8FAF82; }
-
-        /* Signature pressed-flower watermark effect */
-        .botanical-watermark {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            height: 300px;
-            opacity: 0.04;
-            pointer-events: none;
-            z-index: 0;
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-        }
-
-        .chat-bubble-left {
-            border-radius: 20px 20px 20px 4px;
-        }
-
-        .chat-bubble-right {
-            border-radius: 20px 20px 4px 20px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #c1c9c0;
-            border-radius: 10px;
-        }
-    </style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .bg-parchment { background-color: #F7F3EC; }
+  .text-on-surface { color: #211b11; }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #E8E2D5;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #C8973A;
+  }
+  .interactive-hover {
+    transition: all 0.2s ease;
+  }
+  .interactive-hover:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+  .pulse-green {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+  }
+  .shimmer {
+    background: linear-gradient(90deg, #F7F3EC 25%, #E8E2D5 50%, #F7F3EC 75%);
+    background-size: 200% 100%;
+    animation: shimmer-anim 1.5s infinite;
+  }
+  @keyframes shimmer-anim {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
 </head>
-<body class="bg-background text-on-surface font-body-md overflow-hidden h-screen flex">
+<body class="bg-white text-on-surface font-body h-screen flex flex-col overflow-hidden">
 
 <seller-layout active-tab="messages">
-<div class="h-[calc(100vh-8rem)] flex overflow-hidden w-full">
-<!-- COLUMN 1: CONVERSATION LIST (320px) -->
-<aside class="w-80 border-r border-outline-variant bg-surface flex flex-col relative z-10">
-<!-- Search & Header -->
-<div class="p-md space-y-md">
-<div class="flex items-center justify-between">
-<h2 class="font-display-hero text-2xl text-primary font-bold">Inquiries</h2>
-<span class="material-symbols-outlined text-outline">edit_note</span>
-</div>
-<div class="relative group">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
-<input class="w-full pl-10 pr-4 py-2 bg-surface-container rounded-lg border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary font-data-price text-xs outline-none transition-all" placeholder="SEARCH_STUDIO_LOGS..." type="text"/>
-</div>
-</div>
-<!-- Filter Pills -->
-<div class="px-md pb-md flex gap-xs overflow-x-auto no-scrollbar" id="threads-filter-tabs">
-<button class="px-3 py-1 bg-primary text-white text-[10px] font-label-caps rounded-full whitespace-nowrap font-bold" data-tab="all">All</button>
-<button class="px-3 py-1 bg-surface-container text-on-surface-variant text-[10px] font-label-caps rounded-full whitespace-nowrap border border-outline-variant font-bold" data-tab="unread">Unread</button>
-</div>
-<!-- List Items -->
-<div id="threads-list" class="flex-grow overflow-y-auto custom-scrollbar">
-<!-- Loaded dynamically -->
-</div>
-</aside>
-<!-- COLUMN 2: CHAT THREAD (Flex-grow) -->
-<section id="chat-area" class="flex-grow flex flex-col bg-background relative hidden">
-<!-- Chat Header -->
-<header class="h-16 border-b border-outline-variant flex items-center justify-between px-lg bg-surface/80 backdrop-blur-sm z-10">
-<div class="flex items-center gap-md">
-<div id="chat-header-avatar" class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-title-serif text-xs">ES</div>
-<div>
-<div class="flex items-center gap-sm">
-<h3 id="chat-header-name" class="font-title-serif text-sm">Eleanor Shellstrop</h3>
-<span id="chat-header-badge" class="px-2 py-0.5 bg-secondary-container text-on-secondary-container font-label-caps text-[8px] rounded">VERIFIED BUYER</span>
-</div>
-<p id="chat-header-order-ref" class="font-data-price text-[10px] text-primary">ORDER #TF-99021-X</p>
-</div>
-</div>
-<div class="flex items-center gap-md text-outline">
-<button class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-tertiary/30 text-tertiary text-[11px] font-bold hover:bg-tertiary/10 transition-all shadow-sm" id="zai-toggle-btn">
-  <span class="material-symbols-outlined text-[14px]" id="zai-toggle-icon">flutter_dash</span>
-  ZAI Mode
-</button>
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">call</span></button>
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">videocam</span></button>
-<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
-</div>
-</header>
-<!-- Messages Area -->
-<div id="chat-messages-container" class="flex-grow overflow-y-auto p-lg space-y-lg flex flex-col custom-scrollbar relative">
-<div class="botanical-watermark"></div>
-<!-- Loaded dynamically -->
-</div>
-<!-- Footer/Input Area -->
-<div class="p-lg bg-surface border-t border-outline-variant space-y-md">
-<!-- Quick Reply Chips -->
-<div id="quick-replies-container" class="flex gap-xs overflow-x-auto no-scrollbar pb-xs">
-<button class="px-3 py-1.5 bg-white border border-outline-variant hover:border-primary text-[10px] font-label-caps text-on-surface rounded-lg transition-colors whitespace-nowrap font-bold">Order confirmed</button>
-<button class="px-3 py-1.5 bg-white border border-outline-variant hover:border-primary text-[10px] font-label-caps text-on-surface rounded-lg transition-colors whitespace-nowrap font-bold">Send photo?</button>
-<button class="px-3 py-1.5 bg-white border border-outline-variant hover:border-primary text-[10px] font-label-caps text-on-surface rounded-lg transition-colors whitespace-nowrap font-bold">Dispatched</button>
-<button class="px-3 py-1.5 bg-white border border-outline-variant hover:border-primary text-[10px] font-label-caps text-on-surface rounded-lg transition-colors whitespace-nowrap font-bold">Tracking ready</button>
-<button class="px-3 py-1.5 bg-white border border-outline-variant hover:border-primary text-[10px] font-label-caps text-on-surface rounded-lg transition-colors whitespace-nowrap font-bold">Delay notice</button>
-</div>
-<!-- Input Bar -->
-<div class="flex items-center gap-md">
-<button class="w-10 h-10 flex items-center justify-center text-outline hover:text-primary transition-colors">
-<span class="material-symbols-outlined">attachment</span>
-</button>
-<div class="flex-grow relative">
-<textarea id="chat-message-input" class="w-full py-3 px-4 bg-surface-container-low rounded-xl border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none" placeholder="Write a thoughtful reply..." rows="1"></textarea>
-</div>
-<button id="chat-send-btn" class="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-md hover:opacity-90 active:scale-95 transition-all">
-<span class="material-symbols-outlined">send</span>
-</button>
-</div>
-</div>
-</section>
-<!-- Empty State when no chat is active -->
-<section id="chat-empty-state" class="flex-grow flex flex-col items-center justify-center bg-background p-lg text-center space-y-md">
-<span class="material-symbols-outlined text-outline text-5xl">mail_outline</span>
-<h3 class="font-title-serif text-lg font-bold text-on-surface">Select a conversation</h3>
-<p class="text-xs text-on-surface-variant max-w-[280px]">Choose an inquiry from the left panel to read history and reply to buyer.</p>
-</section>
-<!-- COLUMN 3: ORDER CONTEXT (300px) -->
-<aside id="chat-context-sidebar" class="w-[300px] border-l border-outline-variant bg-surface-container-low p-lg overflow-y-auto custom-scrollbar space-y-xl hidden">
-<!-- Loaded dynamically -->
-</aside>
+<div class="h-[calc(100vh-5rem)] flex relative w-full overflow-hidden bg-white">
+  
+  <!-- COLUMN A: SIDEBAR (320px) -->
+  <aside class="w-80 border-r border-outline-variant bg-white flex flex-col shrink-0 h-full relative z-10">
+    <div class="p-4 space-y-4 border-b border-outline-variant">
+      <div class="flex items-center justify-between">
+        <h2 class="font-display text-2xl text-primary font-bold">Messages</h2>
+        <span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">edit_note</span>
+      </div>
+      <div class="relative group">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+        <input id="sidebar-search" oninput="renderSidebarList()" class="w-full pl-10 pr-4 py-2 bg-surface-variant rounded-lg border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary text-xs outline-none transition-all" placeholder="Search chats..." type="text"/>
+      </div>
+      <!-- Filter Tabs -->
+      <div class="flex border-b border-outline-variant">
+        <button onclick="setSidebarFilter('all')" id="tab-all" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-primary text-primary transition-all">All</button>
+        <button onclick="setSidebarFilter('overflow')" id="tab-overflow" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-transparent text-gray-500 hover:text-primary transition-all">Overflow</button>
+        <button onclick="setSidebarFilter('custom')" id="tab-custom" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-transparent text-gray-500 hover:text-primary transition-all">Custom</button>
+      </div>
+    </div>
+    <!-- Conversation list -->
+    <div id="conversation-list" class="flex-grow overflow-y-auto custom-scrollbar divide-y divide-outline-variant">
+      <!-- Loading shimmer state -->
+      <div class="p-4 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full shimmer"></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-3 shimmer rounded w-1/2"></div>
+            <div class="h-2 shimmer rounded w-3/4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- COLUMN B: CHAT AREA (flex-grow) -->
+  <section id="chat-area-empty" class="flex-grow flex flex-col items-center justify-center bg-[#FFFDFB] text-center p-8 space-y-4">
+    <div class="w-20 h-20 rounded-full bg-surface-variant flex items-center justify-center text-primary">
+      <span class="material-symbols-outlined text-4xl">chat_bubble_outline</span>
+    </div>
+    <h3 class="font-display text-xl font-bold text-primary italic">No Conversation Selected</h3>
+    <p class="text-xs text-gray-500 max-w-[280px]">Choose an artisan inquiry from the left sidebar to start collaborating.</p>
+  </section>
+
+  <section id="chat-area" class="flex-grow flex flex-col bg-white h-full relative hidden">
+    <!-- Chat Header -->
+    <header class="h-16 border-b border-outline-variant flex items-center justify-between px-6 bg-white shrink-0 z-10 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div id="chat-avatar" class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-display text-sm font-bold shadow-inner">KB</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="chat-name" class="font-display text-base font-bold text-primary">Buyer Name</h3>
+            <div class="w-2.5 h-2.5 rounded-full bg-green-500 pulse-green"></div>
+          </div>
+          <div id="chat-context-badges" class="flex items-center gap-1.5 mt-0.5">
+            <!-- Context badge chip -->
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="toggleRightPanel()" class="flex items-center gap-1 px-3 py-1.5 border border-primary text-primary hover:bg-primary/5 rounded-lg text-xs font-bold transition-all" id="btn-custom-order-toggle">
+          <span class="material-symbols-outlined text-sm">assignment</span>
+          <span>Custom Order</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Pinned banner when an offer is pending -->
+    <div id="pending-offer-banner" class="bg-surface-variant border-b border-primary/20 px-6 py-2 flex items-center justify-between text-xs text-primary font-medium hidden">
+      <span>✦ A custom offer has been sent — awaiting buyer response</span>
+      <button onclick="openCustomOrderPanel(true)" class="text-gold hover:underline font-bold transition-all">Edit Offer</button>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="messages-container" class="flex-grow overflow-y-auto p-6 space-y-6 bg-surface-variant/20 custom-scrollbar flex flex-col">
+      <!-- Injected dynamically -->
+    </div>
+
+    <!-- Image Attachment Preview Strip -->
+    <div id="attachment-preview-strip" class="bg-white px-6 py-2 border-t border-outline-variant hidden">
+      <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-1" id="preview-thumbnails">
+        <!-- Preview cards -->
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="p-4 bg-white border-t border-outline-variant shrink-0">
+      <div class="flex items-center gap-3">
+        <input type="file" id="file-picker" accept="image/*" class="hidden" multiple onchange="handleFileSelection(event)">
+        <button onclick="triggerFilePicker()" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-100 rounded-xl transition-all">
+          <span class="material-symbols-outlined">attach_file</span>
+        </button>
+        <div class="flex-grow relative">
+          <textarea id="message-input" rows="1" class="w-full pl-4 pr-12 py-3 bg-surface-variant rounded-xl border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none text-sm" placeholder="Write a message..." onkeydown="handleInputKeydown(event)"></textarea>
+          <button id="send-msg-btn" onclick="submitMessage()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-sm">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLUMN C: RIGHT ORDER PANEL (360px) -->
+  <div id="right-panel-backdrop" onclick="toggleRightPanel()" class="fixed inset-0 bg-black/40 z-20 xl:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+  <aside id="right-panel" class="w-[360px] border-l border-outline-variant bg-[#FFFDFB] flex flex-col shrink-0 h-full relative z-30 transition-transform duration-300 transform translate-x-full xl:translate-x-0 xl:flex hidden">
+    <header class="h-16 border-b border-outline-variant flex items-center justify-between px-6 shrink-0 bg-[#FFFDFB]">
+      <h3 id="panel-title" class="font-display text-lg font-bold text-primary">Custom Order</h3>
+      <button onclick="toggleRightPanel()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 rounded-lg transition-all">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
+
+    <div class="flex-grow overflow-y-auto p-6 space-y-6 custom-scrollbar">
+      <!-- Order Creation / Edit Form -->
+      <form id="custom-order-form" onsubmit="handleOfferSubmit(event)" class="space-y-4">
+        <input type="hidden" id="form-offer-id">
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Product Name</label>
+          <input type="text" id="form-product-name" required class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Price ₹</label>
+            <input type="number" id="form-price" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Quantity</label>
+            <input type="number" id="form-quantity" required min="1" value="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Delivery Date</label>
+          <input type="date" id="form-delivery-date" required class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider">Custom Notes</label>
+            <span id="char-counter" class="text-[10px] text-gray-400">0/300</span>
+          </div>
+          <textarea id="form-custom-notes" maxlength="300" oninput="updateCharCounter(this)" rows="3" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all resize-none" placeholder="Add custom notes or personalization requirements..."></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Offer Expiry</label>
+          <select id="form-expiry" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+            <option value="24">24 Hours</option>
+            <option value="48" selected>48 Hours</option>
+            <option value="72">72 Hours</option>
+          </select>
+        </div>
+        <button type="submit" id="btn-send-offer" class="w-full py-3 bg-primary text-white hover:bg-primary/95 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-widest uppercase">Send Offer</button>
+      </form>
+
+      <!-- Read-Only Order Details Card -->
+      <div id="accepted-order-card" class="space-y-4 hidden">
+        <h4 class="font-eyebrow text-xs text-gray-500 font-bold tracking-widest uppercase border-b border-outline-variant pb-1">Order Details</h4>
+        <div class="bg-[#FFFDFB] border-2 border-primary/20 p-4 rounded-xl space-y-3 relative shadow-sm">
+          <div class="absolute top-3 right-3 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[9px] font-bold">CONFIRMED</div>
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">ORDER CODE</p>
+            <p id="accepted-order-code" class="text-sm font-bold text-primary font-mono"></p>
+          </div>
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">PRODUCT</p>
+            <p id="accepted-order-product" class="text-xs text-primary font-medium"></p>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">DELIVERY DATE</p>
+              <p id="accepted-order-date" class="text-xs text-primary font-medium"></p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">TOTAL AMOUNT</p>
+              <p id="accepted-order-amount" class="text-xs text-gold font-bold font-mono"></p>
+            </div>
+          </div>
+          <a class="block text-center text-[10px] font-eyebrow text-primary hover:underline pt-2 border-t border-outline-variant font-bold uppercase tracking-widest" href="/seller/orders.html">View Studio Orders →</a>
+        </div>
+      </div>
+    </div>
+  </aside>
 </div>
 </seller-layout>
 
+<!-- Branded Error Toast / Dismissible Snackbar -->
+<div id="error-toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 bg-white border-2 border-gold rounded-xl shadow-2xl text-on-surface text-sm font-medium transform translate-y-20 transition-all duration-300 pointer-events-none opacity-0">
+  <span class="material-symbols-outlined text-gold">error</span>
+  <span id="error-toast-msg" class="flex-grow">An error occurred</span>
+  <button onclick="dismissErrorToast()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-primary rounded transition-all">
+    <span class="material-symbols-outlined text-base">close</span>
+  </button>
+</div>
+
+<!-- Image Lightbox Overlay -->
+<div id="lightbox-overlay" onclick="closeLightbox()" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+  <img id="lightbox-img" class="max-w-[90%] max-h-[90%] object-contain rounded-lg" src="">
+</div>
+
 <script>
-    const API_BASE_URL = window.location.origin;
+  const API_BASE = window.location.origin;
+  let activeConversationId = null;
+  let conversations = [];
+  let currentMessages = [];
+  let sidebarFilter = 'all';
+  let activePollingInterval = null;
+  let sidebarPollingInterval = null;
+  let selectedFiles = [];
+  let countdownIntervals = [];
 
-    // Toast helper
-    function showToast(message, type = 'success') {
-        let toast = document.getElementById('toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'toast';
-            document.body.appendChild(toast);
-        }
-        toast.className = `fixed top-20 right-6 z-[100] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-300`;
-        if (type === 'success') {
-            toast.style.backgroundColor = '#3D6B4F'; // Forest Green
-            toast.style.color = '#FFFFFF';
-            toast.style.border = '1px solid #255338';
-        } else {
-            toast.style.backgroundColor = '#BA1A1A'; // Terracotta Error Red
-            toast.style.color = '#FFFFFF';
-            toast.style.border = '1px solid #93000a';
-        }
-        toast.innerHTML = `
-            <span class="material-symbols-outlined text-lg">${type === 'success' ? 'check_circle' : 'error'}</span>
-            <span>${message}</span>
-        `;
-        toast.style.display = 'flex';
-        setTimeout(() => {
-            toast.style.display = 'none';
-        }, 3500);
+  function getAuthToken() {
+    return localStorage.getItem('token') || sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+  }
+
+  // Set default min date for form
+  const dateInput = document.getElementById('form-delivery-date');
+  if (dateInput) {
+    const today = new Date();
+    const minDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+  }
+
+  function triggerToastError(msg) {
+    const toast = document.getElementById('error-toast');
+    const msgContainer = document.getElementById('error-toast-msg');
+    msgContainer.textContent = msg;
+    toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(dismissErrorToast, 5000);
+  }
+
+  function dismissErrorToast() {
+    const toast = document.getElementById('error-toast');
+    toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.remove('translate-y-0', 'opacity-100');
+  }
+
+  function openLightbox(url) {
+    const overlay = document.getElementById('lightbox-overlay');
+    const img = document.getElementById('lightbox-img');
+    img.src = url;
+    overlay.classList.remove('pointer-events-none', 'opacity-0');
+    overlay.classList.add('opacity-100');
+  }
+
+  function closeLightbox() {
+    const overlay = document.getElementById('lightbox-overlay');
+    overlay.classList.add('pointer-events-none', 'opacity-0');
+    overlay.classList.remove('opacity-100');
+  }
+
+  function toggleRightPanel() {
+    const panel = document.getElementById('right-panel');
+    const backdrop = document.getElementById('right-panel-backdrop');
+    const isOpen = panel.classList.contains('translate-x-0');
+
+    if (isOpen) {
+      panel.classList.remove('translate-x-0');
+      panel.classList.add('translate-x-full');
+      panel.classList.add('hidden');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+      backdrop.classList.remove('opacity-100');
+    } else {
+      panel.classList.remove('hidden');
+      panel.offsetHeight;
+      panel.classList.remove('translate-x-full');
+      panel.classList.add('translate-x-0');
+      backdrop.classList.remove('pointer-events-none', 'opacity-0');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
     }
+  }
 
-    // ZAI Mode UI Styling sync helper
-    function updateZaiUI(enabled) {
-        const toggleBtn = document.getElementById('zai-toggle-btn');
-        if (toggleBtn) {
-            const icon = document.getElementById('zai-toggle-icon');
-            if (enabled) {
-                toggleBtn.classList.add('bg-tertiary', 'text-white');
-                toggleBtn.classList.remove('text-tertiary');
-                if (icon) icon.style.fontVariationSettings = "'FILL' 1";
-            } else {
-                toggleBtn.classList.remove('bg-tertiary', 'text-white');
-                toggleBtn.classList.add('text-tertiary');
-                if (icon) icon.style.fontVariationSettings = "'FILL' 0";
-            }
-        }
-        
-        // Find all zai tips / cards on the page and show/hide them
-        const selectors = [
-            '.zai-tip-card',
-            '[class*="zai-tip"]',
-            '[id*="zai-tip"]',
-            'aside .bg-tertiary-container\\/10',
-            'section .bg-tertiary-fixed-dim\\/40',
-            'div .bg-on-tertiary-fixed\\/10'
-        ];
-        selectors.forEach(sel => {
-            try {
-                const els = document.querySelectorAll(sel);
-                els.forEach(el => {
-                    if (el.id === 'zai-toggle-btn' || el.closest('#zai-toggle-btn')) return;
-                    el.style.display = enabled ? '' : 'none';
-                });
-            } catch (e) {}
-        });
+  function openCustomOrderPanel(isEdit = false, pendingOffer = null) {
+    const panel = document.getElementById('right-panel');
+    if (panel.classList.contains('translate-x-full') || panel.classList.contains('hidden')) {
+      toggleRightPanel();
     }
-
-    // Micro-interaction for input auto-expand
-    const textarea = document.getElementById('chat-message-input');
-    if (textarea) {
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            if(parseInt(this.style.height) > 150) {
-                this.style.overflowY = 'auto';
-                this.style.height = '150px';
-            } else {
-                this.style.overflowY = 'hidden';
-            }
-        });
+    
+    const title = document.getElementById('panel-title');
+    const submitBtn = document.getElementById('btn-send-offer');
+    
+    if (isEdit) {
+      title.textContent = "Edit Custom Offer";
+      submitBtn.textContent = "Update Offer";
+      
+      const offer = pendingOffer || (currentMessages.find(m => m.type === 'offer' && m.offer)?.offer) || {};
+      document.getElementById('form-offer-id').value = offer.id || '';
+      document.getElementById('form-product-name').value = offer.product_name || '';
+      document.getElementById('form-price').value = offer.price || '';
+      document.getElementById('form-quantity').value = offer.quantity || 1;
+      document.getElementById('form-delivery-date').value = offer.delivery_date || '';
+      const notesField = document.getElementById('form-custom-notes');
+      notesField.value = offer.custom_notes || '';
+      updateCharCounter(notesField);
+      document.getElementById('form-expiry').value = offer.expiry_hours || 48;
+    } else {
+      title.textContent = "Send Custom Offer";
+      submitBtn.textContent = "Send Offer";
+      document.getElementById('custom-order-form').reset();
+      document.getElementById('form-offer-id').value = '';
+      updateCharCounter(document.getElementById('form-custom-notes'));
     }
+  }
 
-    let currentThreadId = null;
-    let threads = [];
+  function updateCharCounter(el) {
+    const counter = document.getElementById('char-counter');
+    counter.textContent = `${el.value.length}/300`;
+  }
 
-    async function loadThreads(tab = 'all') {
-        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/seller/messages?tab=${tab}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.status === 401 || res.status === 403) {
-                sessionStorage.clear();
-                window.location.href = '/auth/login.html';
-                return;
-            }
-            if (!res.ok) throw new Error('Failed to load inquiries');
-            const resp = await res.json();
-            threads = resp.data ? resp.data.threads : [];
-            
-            renderThreadsList();
-        } catch (err) {
-            showToast(err.message, 'error');
-        }
+  async function loadConversations(isSilent = false) {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = '/auth/login.html';
+      return;
     }
-
-    function renderThreadsList() {
-        const container = document.getElementById('threads-list');
-        container.innerHTML = '';
-        if (threads.length === 0) {
-            container.innerHTML = `<p class="text-xs text-on-surface-variant italic p-md text-center">No inquiries found.</p>`;
-            return;
-        }
-
-        threads.forEach(t => {
-            const div = document.createElement('div');
-            const isActive = t.thread_id === currentThreadId;
-            div.className = `p-md cursor-pointer relative transition-colors border-l-4 ${
-                isActive ? 'bg-parchment border-primary' : 'hover:bg-surface-container-low border-transparent'
-            }`;
-            
-            let timeStr = '';
-            if (t.last_msg_at) {
-                const date = new Date(t.last_msg_at);
-                const now = new Date();
-                if (date.toDateString() === now.toDateString()) {
-                    timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-                } else {
-                    timeStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                }
-            }
-
-            const unreadDot = t.has_unread ? `<div class="absolute right-3 bottom-3 w-2 h-2 bg-primary rounded-full"></div>` : '';
-
-            div.innerHTML = `
-                <div class="flex gap-md">
-                    <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-title-serif text-sm">${t.buyer_initials || 'B'}</div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-start">
-                            <span class="font-bold text-sm text-on-surface font-body-md">${t.buyer_name}</span>
-                            <span class="font-data-price text-[10px] text-outline">${timeStr}</span>
-                        </div>
-                        <p class="text-xs text-on-surface-variant line-clamp-1 mt-0.5 font-medium">${t.last_message || 'No messages'}</p>
-                    </div>
-                </div>
-                ${unreadDot}
-            `;
-
-            div.addEventListener('click', () => {
-                currentThreadId = t.thread_id;
-                renderThreadsList(); 
-                loadThreadDetails(t.thread_id);
-            });
-
-            container.appendChild(div);
-        });
+    try {
+      const res = await fetch(`${API_BASE}/api/conversations`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to load inbox conversations.");
+      conversations = await res.json();
+      renderSidebarList();
+    } catch (e) {
+      if (!isSilent) triggerToastError(e.message);
     }
+  }
 
-    async function loadThreadDetails(threadId) {
-        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/seller/messages?thread_id=${threadId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Failed to load thread details');
-            const resp = await res.json();
-            const threadData = resp.data ? resp.data.active_thread : null;
-            if (!threadData) return;
-
-            document.getElementById('chat-empty-state').classList.add('hidden');
-            document.getElementById('chat-area').classList.remove('hidden');
-            document.getElementById('chat-context-sidebar').classList.remove('hidden');
-
-            const buyer = threadData.buyer;
-            document.getElementById('chat-header-name').textContent = buyer.name;
-            const parts = (buyer.name || '').split(' ');
-            const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
-            document.getElementById('chat-header-avatar').textContent = initials || 'B';
-            document.getElementById('chat-header-order-ref').textContent = buyer.order_ref ? `ORDER #${buyer.order_ref}` : 'NO LINKED ORDER';
-
-            const messagesContainer = document.getElementById('chat-messages-container');
-            messagesContainer.innerHTML = '<div class="botanical-watermark"></div>';
-            
-            let lastDate = null;
-            threadData.messages.forEach(m => {
-                const date = new Date(m.created_at);
-                const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
-                if (dateStr !== lastDate) {
-                    lastDate = dateStr;
-                    const dateDivider = document.createElement('div');
-                    dateDivider.className = 'flex flex-col items-center py-md';
-                    dateDivider.innerHTML = `<span class="px-4 py-1 bg-surface-container-highest/50 text-outline font-label-caps text-[9px] rounded-full font-bold">${dateStr}</span>`;
-                    messagesContainer.appendChild(dateDivider);
-                }
-
-                const isSeller = m.sender_role === 'seller';
-                const div = document.createElement('div');
-                const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-                if (isSeller) {
-                    div.className = 'flex flex-col items-end self-end max-w-[80%]';
-                    div.innerHTML = `
-                        <div class="chat-bubble-right bg-primary text-white p-md text-sm border border-primary shadow-md">
-                            ${m.body}
-                        </div>
-                        <span class="font-data-price text-[10px] text-outline mt-1 mr-2">${time}</span>
-                    `;
-                } else {
-                    div.className = 'flex flex-col items-start max-w-[80%]';
-                    div.innerHTML = `
-                        <div class="chat-bubble-left bg-surface-container-high p-md text-sm text-on-surface border border-outline-variant shadow-sm">
-                            ${m.body}
-                        </div>
-                        <span class="font-data-price text-[10px] text-outline mt-1 ml-2">${time}</span>
-                    `;
-                }
-                messagesContainer.appendChild(div);
-            });
-
-            setTimeout(() => {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 100);
-
-            renderSidebar(buyer);
-
-        } catch (err) {
-            showToast(err.message, 'error');
-        }
-    }
-
-    function renderSidebar(buyer) {
-        const sidebar = document.getElementById('chat-context-sidebar');
-        sidebar.innerHTML = '';
-
-        const profileSec = document.createElement('section');
-        profileSec.className = 'text-center space-y-md';
-        
-        const avatarUrl = buyer.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(buyer.name)}&background=caecbb&color=255338`;
-        const locationStr = buyer.city ? buyer.city : 'Verified Customer';
-
-        profileSec.innerHTML = `
-            <div class="relative inline-block">
-                <img alt="Buyer Profile" class="w-20 h-20 rounded-full mx-auto border-2 border-white shadow-sm" src="${avatarUrl}"/>
-                <div class="absolute bottom-0 right-0 w-5 h-5 bg-primary border-2 border-white rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[10px] text-white">verified</span>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-title-serif text-lg font-bold">${buyer.name}</h4>
-                <p class="text-xs text-outline">${locationStr}</p>
-            </div>
-            <div class="flex justify-center gap-xs">
-                <span class="px-2 py-1 bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-[9px] rounded font-bold">VIP</span>
-                <span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed font-label-caps text-[9px] rounded font-bold">CUSTOMER</span>
-            </div>
-        `;
-        sidebar.appendChild(profileSec);
-
-        if (buyer.current_order) {
-            const co = buyer.current_order;
-            const orderSec = document.createElement('section');
-            orderSec.className = 'space-y-md';
-            
-            const priceVal = (co.total_amount / 100).toFixed(2);
-            let statusBadge = `<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container font-label-caps text-[9px] rounded font-bold">${co.status.toUpperCase()}</span>`;
-            if (co.status === 'packed' || co.status === 'shipped' || co.status === 'delivered') {
-                statusBadge = `<span class="px-2 py-0.5 bg-primary-container text-on-primary-container font-label-caps text-[9px] rounded font-bold">${co.status.toUpperCase()}</span>`;
-            }
-
-            const deadline = co.deadline_at ? new Date(co.deadline_at).toLocaleDateString([], { day: 'numeric', month: 'short' }) : 'N/A';
-
-            orderSec.innerHTML = `
-                <h5 class="font-label-caps text-[10px] text-outline border-b border-outline-variant pb-1 font-bold">CURRENT ORDER</h5>
-                <div class="bg-surface border border-outline-variant p-md rounded-xl shadow-sm space-y-md">
-                    <div class="flex gap-md">
-                        <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary font-bold text-xs">P</div>
-                        <div class="flex-grow">
-                            <h6 class="text-xs font-bold font-body-md leading-tight">${co.product_title}</h6>
-                            <p class="font-data-price text-[10px] text-primary">₹${priceVal}</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-md pt-md border-t border-outline-variant">
-                        <div>
-                            <p class="text-[9px] font-label-caps text-outline font-bold">STATUS</p>
-                            ${statusBadge}
-                        </div>
-                        <div>
-                            <p class="text-[9px] font-label-caps text-outline font-bold">DEADLINE</p>
-                            <p class="font-data-price text-[10px] text-on-surface">${deadline}</p>
-                        </div>
-                        <div>
-                            <p class="text-[9px] font-label-caps text-outline font-bold">PAYMENT</p>
-                            <span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed font-label-caps text-[9px] rounded font-bold">${co.payment_status.toUpperCase()}</span>
-                        </div>
-                    </div>
-                    <a class="block text-center text-[10px] font-label-caps text-primary hover:underline pt-2 font-bold" href="/seller/orders.html">View full order →</a>
-                </div>
-            `;
-            sidebar.appendChild(orderSec);
-        }
-
-        if (buyer.order_history && buyer.order_history.length > 0) {
-            const histSec = document.createElement('section');
-            histSec.className = 'space-y-md';
-            
-            let itemsHtml = '';
-            buyer.order_history.forEach(h => {
-                const date = new Date(h.date).toLocaleDateString([], { month: 'short', year: 'numeric' });
-                itemsHtml += `
-                    <div class="flex justify-between items-center group cursor-pointer" onclick="window.location.href='/seller/orders.html'">
-                        <div>
-                            <p class="text-xs font-bold text-on-surface">${h.title}</p>
-                            <p class="font-data-price text-[9px] text-outline">#${h.order_ref} - ${date}</p>
-                        </div>
-                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
-                    </div>
-                `;
-            });
-
-            histSec.innerHTML = `
-                <h5 class="font-label-caps text-[10px] text-outline border-b border-outline-variant pb-1 font-bold">ORDER HISTORY</h5>
-                <div class="space-y-md">
-                    ${itemsHtml}
-                </div>
-            `;
-            sidebar.appendChild(histSec);
-        }
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chat-message-input');
-        if (!input) return;
-        const text = input.value.trim();
-        if (!text) return;
-
-        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
-        const btn = document.getElementById('chat-send-btn');
-        btn.disabled = true;
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/seller/messages/${currentThreadId}/send`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ body: text })
-            });
-            const resp = await res.json();
-            if (!res.ok) throw new Error(resp.message || 'Failed to send message');
-            
-            input.value = '';
-            input.style.height = 'auto'; 
-            showToast('Message sent!', 'success');
-            
-            await loadThreadDetails(currentThreadId);
-            await loadThreads();
-        } catch (err) {
-            showToast(err.message, 'error');
-        } finally {
-            btn.disabled = false;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
-        if (!token) { window.location.href = '/auth/login.html'; return; }
-
-        // Role verification
-        try {
-            const pr = await fetch(`${API_BASE_URL}/api/profile/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (!pr.ok) throw new Error();
-            const pd = await pr.json();
-            const u = pd.data || pd;
-            if (u.role !== 'seller') { window.location.href = '/buyer/profile.html'; return; }
-        } catch {
-            sessionStorage.clear();
-            window.location.href = '/auth/login.html';
-            return;
-        }
-
-        // Init load ZAI Mode
-        const zaiEnabled = localStorage.getItem('zai_mode') === 'true';
-        updateZaiUI(zaiEnabled);
-
-        // Load thread inbox list
-        await loadThreads();
-
-        // ZAI toggle button click
-        const toggleBtn = document.getElementById('zai-toggle-btn');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                const nextEnabled = !(localStorage.getItem('zai_mode') === 'true');
-                localStorage.setItem('zai_mode', nextEnabled ? 'true' : 'false');
-                
-                // Sync with backend
-                fetch(`${API_BASE_URL}/api/seller/zai-mode`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ enabled: nextEnabled })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.success) {
-                        updateZaiUI(nextEnabled);
-                    }
-                })
-                .catch(err => console.error("Error setting ZAI mode:", err));
-            });
-        }
-
-        // Quick replies clicks
-        document.querySelectorAll('#quick-replies-container button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const text = btn.textContent.trim();
-                const input = document.getElementById('chat-message-input');
-                if (input) {
-                    input.value = text;
-                    input.focus();
-                    input.dispatchEvent(new Event('input'));
-                }
-            });
-        });
-
-        // Send button click
-        const sendBtn = document.getElementById('chat-send-btn');
-        if (sendBtn) {
-            sendBtn.addEventListener('click', sendMessage);
-        }
-
-        // Textarea enter key
-        const inputField = document.getElementById('chat-message-input');
-        if (inputField) {
-            inputField.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-        }
-
-        // Filter tabs click
-        document.querySelectorAll('#threads-filter-tabs button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('#threads-filter-tabs button').forEach(b => {
-                    b.classList.remove('bg-primary', 'text-white');
-                    b.classList.add('bg-surface-container', 'text-on-surface-variant', 'border', 'border-outline-variant');
-                });
-                btn.classList.add('bg-primary', 'text-white');
-                btn.classList.remove('bg-surface-container', 'text-on-surface-variant', 'border', 'border-outline-variant');
-                
-                const tab = btn.getAttribute('data-tab');
-                loadThreads(tab);
-            });
-        });
-
-        // View Store
-        const viewStoreBtn = document.getElementById('view-store-btn');
-        if (viewStoreBtn) {
-            viewStoreBtn.addEventListener('click', () => {
-                fetch(`${API_BASE_URL}/api/seller/profile`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    const profileData = data.data || data;
-                    if (profileData && profileData.handle) {
-                        window.location.href = `/store/${profileData.handle}`;
-                    } else {
-                        window.location.href = '/';
-                    }
-                })
-                .catch(err => {
-                    console.error('Error fetching seller profile:', err);
-                    window.location.href = '/';
-                });
-            });
-        }
-
-        // Logout
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                const refresh = sessionStorage.getItem('tohfa_refresh_token');
-                if (token && refresh) {
-                    fetch('/api/auth/logout', { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({refresh_token:refresh}) }).catch(()=>{});
-                }
-                sessionStorage.clear(); window.location.href = '/auth/login.html';
-            });
-        }
+  function setSidebarFilter(filter) {
+    sidebarFilter = filter;
+    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+      btn.classList.remove('border-primary', 'text-primary');
+      btn.classList.add('border-transparent', 'text-gray-500');
     });
+    const activeBtn = document.getElementById(`tab-${filter}`);
+    activeBtn.classList.remove('border-transparent', 'text-gray-500');
+    activeBtn.classList.add('border-primary', 'text-primary');
+    renderSidebarList();
+  }
+
+  function renderSidebarList() {
+    const listContainer = document.getElementById('conversation-list');
+    const searchQuery = document.getElementById('sidebar-search').value.toLowerCase().trim();
+    
+    // Hide conversations in 'intake_in_progress' from the seller
+    let filtered = conversations.filter(c => c.status !== 'intake_in_progress');
+    
+    if (sidebarFilter !== 'all') {
+      if (sidebarFilter === 'custom') {
+        filtered = filtered.filter(c => c.product_type_tag !== 'overflow');
+      } else {
+        filtered = filtered.filter(c => c.product_type_tag === sidebarFilter);
+      }
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(c => c.other_party_name.toLowerCase().includes(searchQuery) || c.product_name.toLowerCase().includes(searchQuery));
+    }
+    
+    if (filtered.length === 0) {
+      listContainer.innerHTML = `<p class="p-6 text-center text-xs text-gray-400 italic">No conversations found.</p>`;
+      return;
+    }
+
+    listContainer.innerHTML = filtered.map(c => {
+      const isActive = c.conversation_id === activeConversationId;
+      const activeClass = isActive ? 'bg-parchment border-l-4 border-primary' : 'hover:bg-gray-50';
+      const initials = c.other_party_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const lastMsgText = c.last_message_preview || "No messages yet";
+      const timestamp = c.last_message_at ? formatRelativeTime(c.last_message_at) : '';
+      const unreadDot = c.unread_count > 0 ? `<span class="w-2.5 h-2.5 bg-primary rounded-full shrink-0"></span>` : '';
+      const tagBadge = c.product_type_tag === 'overflow' 
+        ? `<span class="text-[9px] font-eyebrow font-bold bg-sage/20 text-primary px-2 py-0.5 rounded">OVERFLOW</span>`
+        : `<span class="text-[9px] font-eyebrow font-bold bg-gold/20 text-gold px-2 py-0.5 rounded">CUSTOM</span>`;
+
+      return `
+        <div onclick="selectConversation(${c.conversation_id})" class="p-4 cursor-pointer flex gap-3 ${activeClass} transition-colors">
+          <div class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-display text-sm font-bold shadow-inner shrink-0">${initials}</div>
+          <div class="flex-grow min-w-0">
+            <div class="flex justify-between items-start">
+              <h4 class="text-xs font-bold text-primary truncate">${c.other_party_name}</h4>
+              <span class="text-[9px] text-gray-400 font-mono">${timestamp}</span>
+            </div>
+            <p class="text-xs text-gray-500 truncate mt-0.5">${lastMsgText}</p>
+            <div class="flex items-center justify-between mt-2">
+              ${tagBadge}
+              ${unreadDot}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectConversation(id) {
+    activeConversationId = id;
+    renderSidebarList();
+    
+    const url = new URL(window.location);
+    url.searchParams.set('conversationId', id);
+    window.history.pushState({}, '', url);
+
+    document.getElementById('chat-area-empty').classList.add('hidden');
+    document.getElementById('chat-area').classList.remove('hidden');
+
+    loadConversation(id);
+  }
+
+  async function loadConversation(id) {
+    if (activePollingInterval) clearInterval(activePollingInterval);
+    
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to load conversation details.");
+      const data = await res.json();
+      
+      document.getElementById('chat-name').textContent = data.other_party.name;
+      const initials = data.other_party.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('chat-avatar').textContent = initials;
+      
+      const badgesContainer = document.getElementById('chat-context-badges');
+      const typeLabel = data.status === 'completed' ? 'ACCEPTED' : data.status.toUpperCase();
+      const typeBadgeClass = data.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
+      
+      badgesContainer.innerHTML = `
+        <span class="text-[9px] font-eyebrow font-bold ${typeBadgeClass} px-2.5 py-0.5 rounded">${typeLabel}</span>
+        <span class="text-[9px] font-mono text-gray-400">#${data.listing.product_name || 'custom'}</span>
+      `;
+
+      const banner = document.getElementById('pending-offer-banner');
+      if (data.active_offer) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      const orderForm = document.getElementById('custom-order-form');
+      const orderCard = document.getElementById('accepted-order-card');
+      const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
+      
+      if (data.order_details) {
+        orderForm.classList.add('hidden');
+        orderCard.classList.remove('hidden');
+        document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
+        document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
+        document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
+        document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
+        
+        toggleBtnText.textContent = "Order Details";
+      } else {
+        orderForm.classList.remove('hidden');
+        orderCard.classList.add('hidden');
+        toggleBtnText.textContent = "Custom Order";
+        
+        if (data.active_offer) {
+          document.getElementById('form-offer-id').value = data.active_offer.id;
+          document.getElementById('form-product-name').value = data.active_offer.product_name || '';
+          document.getElementById('form-price').value = data.active_offer.price || '';
+          document.getElementById('form-quantity').value = data.active_offer.quantity || 1;
+          document.getElementById('form-delivery-date').value = data.active_offer.delivery_date || '';
+          document.getElementById('form-custom-notes').value = data.active_offer.custom_notes || '';
+          document.getElementById('form-expiry').value = data.active_offer.expiry_hours || 48;
+          updateCharCounter(document.getElementById('form-custom-notes'));
+        }
+      }
+
+      currentMessages = data.messages || [];
+      renderMessagesList(data.active_offer);
+      
+      const container = document.getElementById('messages-container');
+      container.scrollTop = container.scrollHeight;
+
+    } catch (e) {
+      triggerToastError(e.message);
+    }
+
+    activePollingInterval = setInterval(() => {
+      pollMessages(id);
+    }, 5000);
+  }
+
+  async function pollMessages(id) {
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        
+        const banner = document.getElementById('pending-offer-banner');
+        if (data.active_offer) {
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+        }
+
+        const container = document.getElementById('messages-container');
+        const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 120;
+        
+        currentMessages = data.messages || [];
+        renderMessagesList(data.active_offer);
+
+        if (isNearBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+
+        const orderForm = document.getElementById('custom-order-form');
+        const orderCard = document.getElementById('accepted-order-card');
+        const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
+        
+        if (data.order_details) {
+          orderForm.classList.add('hidden');
+          orderCard.classList.remove('hidden');
+          document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
+          document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
+          document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
+          document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
+          toggleBtnText.textContent = "Order Details";
+        }
+      }
+    } catch(e) {}
+  }
+
+  function renderMessagesList(activeOffer) {
+    const container = document.getElementById('messages-container');
+    container.innerHTML = '';
+    
+    let lastDate = null;
+    
+    currentMessages.forEach(msg => {
+      const date = new Date(msg.sent_at);
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+      if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        const separator = document.createElement('div');
+        separator.className = "flex justify-center my-4";
+        separator.innerHTML = `<span class="bg-[#E8E2D5] px-3 py-1 rounded-full text-[10px] font-eyebrow font-bold text-[#9C8E82] tracking-wider uppercase">${dateStr}</span>`;
+        container.appendChild(separator);
+      }
+
+      if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
+        const offerDiv = document.createElement('div');
+        offerDiv.className = "flex justify-start w-full";
+        offerDiv.innerHTML = renderOfferCardHtml(msg.offer);
+        container.appendChild(offerDiv);
+        return;
+      }
+
+      if (msg.type === 'product_inquiry') {
+        let inquiry = {};
+        try {
+          inquiry = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+        } catch(e) {
+          console.error("Failed to parse product_inquiry content:", e);
+        }
+        
+        const product_id = inquiry.product_id || '';
+        const product_name = inquiry.product_name || 'Product';
+        const quantity = inquiry.quantity || 1;
+        const base_price = inquiry.base_price || 0;
+        const product_type_tag = inquiry.product_type_tag || '';
+        
+        const isCustom = product_type_tag === 'custom';
+        const tagColor = isCustom ? '#3D6B4F' : '#C8973A';
+        const tagLabel = isCustom ? 'Custom Order Request' : 'Overflow Order Request';
+        
+        const imgSrc = msg.image_url ? (msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE}${msg.image_url}`) : '/placeholder.jpg';
+        
+        const isOutgoing = msg.sender_role === 'seller';
+        const div = document.createElement('div');
+        
+        const cardHtml = `
+          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='/buyer/product.html?id=${product_id}'">
+            <div class="flex items-center">
+              <span class="font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold text-white" style="background-color: ${tagColor};">
+                ${tagLabel}
+              </span>
+            </div>
+            <div class="flex gap-3 items-start">
+              <img class="w-16 h-16 object-cover rounded-lg border border-[#E8E2D5] shrink-0" src="${imgSrc}" alt="${product_name}">
+              <div class="flex flex-col min-w-0 flex-1">
+                <h4 class="font-display text-sm font-bold text-on-surface truncate leading-snug mb-1">
+                  ${product_name}
+                </h4>
+                <div class="font-body text-xs text-gray-500 space-y-0.5">
+                  <p>Qty: <span class="font-semibold text-gray-700">${quantity}</span></p>
+                  <p>Price: <span class="font-semibold text-gray-700">₹${(base_price / 100).toFixed(2)}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        if (isOutgoing) {
+          div.className = "flex justify-end w-full";
+          div.innerHTML = `
+            <div class="flex flex-col items-end gap-1 max-w-[80%]">
+              ${cardHtml}
+              <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
+            </div>
+          `;
+        } else {
+          div.className = "flex justify-start w-full";
+          div.innerHTML = `
+            <div class="flex items-start gap-3 max-w-[80%]">
+              <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">BY</div>
+              <div class="flex flex-col gap-1">
+                ${cardHtml}
+                <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
+              </div>
+            </div>
+          `;
+        }
+        container.appendChild(div);
+        return;
+      }
+
+      if (msg.sender_role === 'bot') {
+        const botDiv = document.createElement('div');
+        botDiv.className = "flex justify-start w-full";
+        botDiv.innerHTML = `
+          <div class="flex flex-col gap-1 max-w-[80%]">
+            <div class="bg-surface-variant p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+              <p class="text-xs text-primary font-bold mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">smart_toy</span> BOT ASSISTANT</p>
+              <p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>
+            </div>
+            <span class="text-[9px] text-gray-400 font-mono mt-1">${formatTime(msg.sent_at)}</span>
+          </div>
+        `;
+        container.appendChild(botDiv);
+        return;
+      }
+
+      const isOutgoing = msg.sender_role === 'seller';
+      const div = document.createElement('div');
+      
+      if (isOutgoing) {
+        div.className = "flex justify-end w-full";
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${msg.content}</p>` : '';
+        if (msg.image_url) {
+          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
+        }
+        div.innerHTML = `
+          <div class="flex flex-col items-end gap-1 max-w-[80%]">
+            <div class="bg-primary p-4 rounded-xl rounded-tr-none shadow-sm border border-primary/20">
+              ${contentHtml}
+            </div>
+            <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
+          </div>
+        `;
+      } else {
+        div.className = "flex justify-start w-full";
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>` : '';
+        if (msg.image_url) {
+          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
+        }
+        div.innerHTML = `
+          <div class="flex items-start gap-3 max-w-[80%]">
+            <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">BY</div>
+            <div class="flex flex-col gap-1">
+              <div class="bg-[#FFFDFB] p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+                ${contentHtml}
+              </div>
+              <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
+            </div>
+          </div>
+        `;
+      }
+      container.appendChild(div);
+    });
+
+    initCountdownTimers();
+  }
+
+  function renderOfferCardHtml(offer) {
+    if (!offer) return `<div class="p-4 bg-white border border-outline-variant rounded-xl text-xs text-gray-400 italic">Offer record missing.</div>`;
+    
+    let statusBadgeColor = 'bg-amber-100 text-amber-800';
+    let statusLabel = 'PENDING';
+    if (offer.status === 'accepted') {
+      statusBadgeColor = 'bg-green-100 text-green-800';
+      statusLabel = 'ACCEPTED';
+    } else if (offer.status === 'declined') {
+      statusBadgeColor = 'bg-red-100 text-red-800';
+      statusLabel = 'DECLINED';
+    } else if (offer.status === 'expired') {
+      statusBadgeColor = 'bg-gray-100 text-gray-800';
+      statusLabel = 'EXPIRED';
+    }
+
+    const isPending = offer.status === 'pending';
+    const cleanOfferJson = JSON.stringify(offer).replace(/"/g, '&quot;');
+    const editBtn = isPending ? `<button onclick="openCustomOrderPanel(true)" class="text-gold hover:text-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-sm">edit</span></button>` : '';
+
+    return `
+      <div class="max-w-[380px] w-full bg-[#FFFDFB] border-2 border-gold rounded-xl overflow-hidden shadow-lg relative my-2 interactive-hover">
+        <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
+          ${statusLabel}
+        </div>
+        <div class="p-5 space-y-3">
+          <header class="flex justify-between items-center pr-16">
+            <p class="font-eyebrow text-[9px] text-gray-400 tracking-wider uppercase font-bold">CUSTOM OFFER FROM YOU</p>
+            ${editBtn}
+          </header>
+          <hr class="border-outline-variant"/>
+          <div class="space-y-2 font-body text-xs text-on-surface">
+            <div class="flex justify-between">
+              <span class="text-gray-400">Product</span>
+              <span class="font-bold text-primary">${offer.product_name || 'Custom item'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Notes</span>
+              <span class="font-medium text-primary text-right truncate max-w-[200px]">${offer.custom_notes || '—'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Delivery Date</span>
+              <span class="font-medium text-primary">${formatReadableDate(offer.delivery_date)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Quantity</span>
+              <span class="font-medium text-primary">${offer.quantity || 1}</span>
+            </div>
+            <div class="flex justify-between items-center pt-2">
+              <span class="text-gray-400 text-xs font-bold">Amount</span>
+              <span class="font-mono text-base text-gold font-bold">₹${offer.price}</span>
+            </div>
+          </div>
+          <hr class="border-outline-variant"/>
+          <footer class="flex items-center justify-between pt-1 text-[10px] text-gray-400">
+            <div class="flex items-center gap-1 seller-countdown-timer" data-expiry="${offer.expires_at}" data-status="${offer.status}">
+              <span class="material-symbols-outlined text-[13px]">schedule</span>
+              <span>—</span>
+            </div>
+            <div class="flex items-center gap-0.5">
+              <span class="material-symbols-outlined text-[13px]">verified_user</span>
+              <span>Tohfa Secure</span>
+            </div>
+          </footer>
+        </div>
+      </div>
+    `;
+  }
+
+  function initCountdownTimers() {
+    countdownIntervals.forEach(clearInterval);
+    countdownIntervals = [];
+
+    document.querySelectorAll('.seller-countdown-timer').forEach(el => {
+      const expiresAt = el.getAttribute('data-expiry');
+      const status = el.getAttribute('data-status');
+      if (!expiresAt) return;
+
+      const updateTimer = () => {
+        if (status !== 'pending') {
+          el.querySelector('span:last-child').textContent = "Closed";
+          return;
+        }
+        const diff = new Date(expiresAt).getTime() - Date.now();
+        if (diff <= 0) {
+          el.querySelector('span:last-child').textContent = "Expired";
+          return;
+        }
+        const hours = Math.floor(diff / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        el.querySelector('span:last-child').textContent = `Expires in ${hours}:${String(mins).padStart(2, '0')} hrs`;
+      };
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 60000);
+      countdownIntervals.push(interval);
+    });
+  }
+
+  // File Selection and Thumbnails
+  function triggerFilePicker() {
+    document.getElementById('file-picker').click();
+  }
+
+  function handleFileSelection(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      if (selectedFiles.some(f => f.name === file.name && f.size === file.size)) return;
+      selectedFiles.push(file);
+    });
+    renderAttachmentStrip();
+  }
+
+  function removeSelectedFile(index) {
+    selectedFiles.splice(index, 1);
+    renderAttachmentStrip();
+  }
+
+  function renderAttachmentStrip() {
+    const strip = document.getElementById('attachment-preview-strip');
+    const container = document.getElementById('preview-thumbnails');
+    
+    if (selectedFiles.length === 0) {
+      strip.classList.add('hidden');
+      return;
+    }
+    
+    strip.classList.remove('hidden');
+    container.innerHTML = selectedFiles.map((file, idx) => {
+      const url = URL.createObjectURL(file);
+      return `
+        <div class="relative w-16 h-12 rounded-lg border border-outline-variant overflow-hidden shrink-0 shadow-sm">
+          <img class="w-full h-full object-cover" src="${url}">
+          <button onclick="removeSelectedFile(${idx})" class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors focus:outline-none">
+            <span class="material-symbols-outlined text-[10px]">close</span>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function submitMessage() {
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+    if (!content && selectedFiles.length === 0) return;
+
+    const token = getAuthToken();
+    const sendBtn = document.getElementById('send-msg-btn');
+    sendBtn.disabled = true;
+
+    try {
+      // 1. Upload files first
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append('photo', file);
+        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to upload attachment image.");
+        }
+      }
+
+      // 2. Upload text content if present
+      if (content) {
+        const formData = new FormData();
+        formData.append('content', content);
+        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to send text message.");
+        }
+      }
+
+      input.value = '';
+      input.style.height = 'auto';
+      selectedFiles = [];
+      renderAttachmentStrip();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  function handleInputKeydown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitMessage();
+    }
+  }
+
+  // Custom offer submit (Post / Put)
+  async function handleOfferSubmit(e) {
+    e.preventDefault();
+    const token = getAuthToken();
+    const offerId = document.getElementById('form-offer-id').value;
+    
+    const price = parseInt(document.getElementById('form-price').value, 10);
+    const quantity = parseInt(document.getElementById('form-quantity').value, 10) || 1;
+    const delivery_date = document.getElementById('form-delivery-date').value;
+    const custom_notes = document.getElementById('form-custom-notes').value;
+    const expiry_hours = parseInt(document.getElementById('form-expiry').value, 10);
+    const product_name = document.getElementById('form-product-name').value;
+
+    const payload = {
+      price,
+      quantity,
+      delivery_date,
+      custom_notes,
+      expiry_hours,
+      product_name
+    };
+
+    const submitBtn = document.getElementById('btn-send-offer');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+
+    try {
+      let res;
+      if (offerId) {
+        // Edit mode (PUT)
+        res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer/${offerId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        // Create mode (POST)
+        res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to process custom offer.");
+      }
+
+      // Success
+      toggleRightPanel();
+      document.getElementById('custom-order-form').reset();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = offerId ? "Update Offer" : "Send Offer";
+    }
+  }
+
+  // Formatting utilities
+  function formatRelativeTime(isoString) {
+    const date = new Date(isoString);
+    const now = new Date();
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function formatTime(isoString) {
+    return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  function formatReadableDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = '/auth/login.html';
+      return;
+    }
+    
+    // Check if initial conversation selected in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialConvId = urlParams.get('conversationId');
+    if (initialConvId) {
+      activeConversationId = parseInt(initialConvId, 10);
+      document.getElementById('chat-area-empty').classList.add('hidden');
+      document.getElementById('chat-area').classList.remove('hidden');
+    }
+
+    await loadConversations();
+    if (activeConversationId) {
+      await loadConversation(activeConversationId);
+    }
+
+    // Polling inbox list every 30s
+    sidebarPollingInterval = setInterval(() => {
+      loadConversations(true);
+    }, 30000);
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (activePollingInterval) clearInterval(activePollingInterval);
+    if (sidebarPollingInterval) clearInterval(sidebarPollingInterval);
+    countdownIntervals.forEach(clearInterval);
+  });
 </script>
 </body>
 </html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<script src="/src/components/AdminSidebar.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Tohfa Admin - UI Settings</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@400;700&amp;family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "error": "#3D6B4F",
+            "bg-cream-deep": "#F7F3EC",
+            "accent-violet": "#7B5EA7",
+            "surface-bright": "#FFFFFF",
+            "secondary-container": "#8FAF82",
+            "primary-container": "#3d6b4f",
+            "secondary": "#49663f",
+            "outline-variant": "#F7F3EC",
+            "primary": "#3D6B4F",
+            "highlight-gold": "#C8973A",
+            "text-default": "#3A3328",
+            "text-muted": "#6E6453",
+            "text-faint": "#9A8F7A",
+            "surface-ivory": "#F7F3EC",
+            "parchment": "#F7F3EC"
+          },
+          fontFamily: {
+            "display-hero": ["Playfair Display"],
+            "data-meta": ["Space Mono"],
+            "serif-ui-md": ["lora"],
+            "label-btn": ["DM Sans"],
+            "body-md": ["DM Sans"],
+            "headline-lg": ["Playfair Display"],
+            "headline-md": ["Playfair Display"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .watermark-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.05;
+      background-image: url('https://www.transparenttextures.com/patterns/pinstripe.png');
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-[#FFFFFF] text-text-default font-body-md min-h-screen overflow-x-hidden">
+  <div class="watermark-overlay"></div>
+
+  <!-- Shared Sidebar Component Injected Dynamically -->
+  <aside></aside>
+
+  <!-- Top Navigation Header -->
+  <header class="fixed top-0 right-0 w-[calc(100%-256px)] h-[60px] bg-[#F7F3EC] border-b border-outline-variant flex justify-between items-center px-8 z-40">
+    <h2 class="font-headline-md text-headline-md italic text-primary">UI Settings</h2>
+    <div class="flex items-center gap-6">
+      <button id="logout-btn" class="text-on-surface-variant hover:text-primary transition-colors text-[14px] font-label-btn">Logout</button>
+      <div class="h-8 w-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold text-xs">TA</div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="ml-64 pt-[60px] p-8 max-w-[1200px] mx-auto min-h-screen">
+    <!-- Header Section -->
+    <section class="mb-6 mt-4">
+      <h1 class="font-headline-lg text-headline-lg text-primary leading-tight">UI Settings</h1>
+      <p class="font-serif italic text-text-muted">Control the homepage layout slots and visual storefront settings</p>
+    </section>
+
+    <!-- Tabs header -->
+    <div class="flex border-b border-outline-variant/30 mb-8 gap-6">
+      <button id="tab-home" class="py-3 border-b-2 border-primary text-primary font-bold text-sm transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">home</span>
+        <span>Home Page Settings</span>
+      </button>
+      <button id="tab-categories" class="py-3 border-b-2 border-transparent text-text-muted hover:text-primary text-sm transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">category</span>
+        <span>Category Pages Banner</span>
+      </button>
+    </div>
+
+    <!-- Tab 1: Home Page Settings -->
+    <div id="section-home" class="space-y-8">
+      <!-- Hero Primary & Secondary Image Banner -->
+      <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm">
+        <h3 class="font-headline-md text-lg text-primary mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#C8973A]">photo_library</span>
+          <span>Hero Banners</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Primary Banner -->
+          <div class="flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-[#3D6B4F] uppercase tracking-wider block mb-1">Primary Hero Banner</span>
+              <p class="text-xs text-text-muted mb-4">Background image for the main storefront hero slider.</p>
+              <div class="border border-outline-variant/40 rounded-xl overflow-hidden h-[180px] bg-[#F7F3EC] flex items-center justify-center relative mb-4">
+                <img id="preview-hero-primary" class="w-full h-full object-cover hidden" />
+                <span id="placeholder-hero-primary" class="material-symbols-outlined text-4xl text-text-faint">image</span>
+              </div>
+            </div>
+            <div>
+              <input type="file" id="file-hero-primary" accept="image/*" class="hidden" />
+              <button onclick="document.getElementById('file-hero-primary').click()" class="px-5 py-2 border border-primary text-primary hover:bg-[#3D6B4F] hover:text-white rounded-full text-xs font-bold transition-all shadow-sm">
+                Choose Image
+              </button>
+              <button id="save-hero-primary" class="ml-2 px-5 py-2 bg-[#3D6B4F] hover:bg-[#2a4d38] text-white rounded-full text-xs font-bold transition-all shadow-sm">
+                Save
+              </button>
+            </div>
+          </div>
+
+          <!-- Secondary Banner -->
+          <div class="flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-[#3D6B4F] uppercase tracking-wider block mb-1">Secondary Hero Banner</span>
+              <p class="text-xs text-text-muted mb-4">Supporting banner or secondary card image in hero overlay.</p>
+              <div class="border border-outline-variant/40 rounded-xl overflow-hidden h-[180px] bg-[#F7F3EC] flex items-center justify-center relative mb-4">
+                <img id="preview-hero-secondary" class="w-full h-full object-cover hidden" />
+                <span id="placeholder-hero-secondary" class="material-symbols-outlined text-4xl text-text-faint">image</span>
+              </div>
+            </div>
+            <div>
+              <input type="file" id="file-hero-secondary" accept="image/*" class="hidden" />
+              <button onclick="document.getElementById('file-hero-secondary').click()" class="px-5 py-2 border border-primary text-primary hover:bg-[#3D6B4F] hover:text-white rounded-full text-xs font-bold transition-all shadow-sm">
+                Choose Image
+              </button>
+              <button id="save-hero-secondary" class="ml-2 px-5 py-2 bg-[#3D6B4F] hover:bg-[#2a4d38] text-white rounded-full text-xs font-bold transition-all shadow-sm">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seasonal Banner Section -->
+      <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm">
+        <h3 class="font-headline-md text-lg text-primary mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#7B5EA7]">celebration</span>
+          <span>Seasonal Highlight Banner</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs font-bold text-[#3D6B4F] uppercase tracking-wider mb-2">Select Active Occasion Banner</label>
+            <div class="flex gap-4 items-center mb-6">
+              <select id="select-seasonal-preset" class="flex-1 px-4 py-2 border border-outline-variant/40 rounded-xl text-sm focus:ring-1 focus:ring-primary focus:border-primary bg-white outline-none">
+                <option value="home_seasonal_banner">Custom Banner (No Preset)</option>
+                <option value="diwali_banner">Diwali Festival Preset</option>
+                <option value="rakhi_banner">Rakhi (Raksha Bandhan) Preset</option>
+                <option value="christmas_banner">Christmas Season Preset</option>
+              </select>
+              <button id="btn-activate-seasonal" class="px-5 py-2 bg-[#3D6B4F] hover:bg-[#2a4d38] text-white rounded-full text-xs font-bold transition-all shadow-sm shrink-0">
+                Go Live
+              </button>
+            </div>
+            <div class="bg-[#F7F3EC]/50 border border-outline-variant/30 p-4 rounded-xl">
+              <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-1">Seasonal Preset Metadata</span>
+              <div class="space-y-2 text-xs mt-3">
+                <div><span class="font-semibold text-text-muted">Label:</span> <span id="meta-seasonal-label">—</span></div>
+                <div><span class="font-semibold text-text-muted">Description:</span> <span id="meta-seasonal-desc">—</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-2">Active Seasonal Banner Preview</span>
+              <div class="border border-outline-variant/40 rounded-xl overflow-hidden h-[150px] bg-[#F7F3EC] flex items-center justify-center relative mb-4">
+                <img id="preview-seasonal-active" class="w-full h-full object-cover hidden" />
+                <span id="placeholder-seasonal-active" class="material-symbols-outlined text-4xl text-text-faint">image</span>
+              </div>
+            </div>
+            <div>
+              <input type="file" id="file-seasonal-banner" accept="image/*" class="hidden" />
+              <button onclick="document.getElementById('file-seasonal-banner').click()" class="px-5 py-2 border border-primary text-primary hover:bg-[#3D6B4F] hover:text-white rounded-full text-xs font-bold transition-all shadow-sm">
+                Upload New File
+              </button>
+              <button id="save-seasonal-custom" class="ml-2 px-5 py-2 bg-[#3D6B4F] hover:bg-[#2a4d38] text-white rounded-full text-xs font-bold transition-all shadow-sm">
+                Save Custom Banner
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured Products Slots (6 slots) -->
+      <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm">
+        <h3 class="font-headline-md text-lg text-primary mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#C8973A]">workspace_premium</span>
+          <span>Featured Product Slots (Homepage)</span>
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+          <!-- Slot cards populated via JS -->
+          <div id="featured-slots-container" class="contents"></div>
+        </div>
+      </div>
+
+      <!-- Category Spotlight Section -->
+      <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm">
+        <h3 class="font-headline-md text-lg text-primary mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#7B5EA7]">category</span>
+          <span>Home Category Spotlights (4 slots)</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div id="category-slots-container" class="contents"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Category Pages Banner Settings -->
+    <div id="section-categories" class="hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Categories List -->
+        <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm lg:col-span-1">
+          <h3 class="font-headline-md text-base text-primary mb-6">Select Category</h3>
+          <div class="space-y-2" id="category-settings-list">
+            <!-- Populated via JS -->
+            <div class="text-center text-text-muted py-6 text-xs">Loading categories...</div>
+          </div>
+        </div>
+
+        <!-- Banner Settings and Preview -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white p-6 rounded-xl border border-outline-variant/30 shadow-sm">
+            <h3 class="font-headline-md text-base text-primary mb-4" id="cat-setting-title">Banner Upload</h3>
+            <div class="space-y-4">
+              <div>
+                <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-2">Category Page Banner Image</span>
+                <div class="border border-outline-variant/40 rounded-xl overflow-hidden h-[180px] bg-[#F7F3EC] flex items-center justify-center relative mb-4">
+                  <img id="preview-category-banner" class="w-full h-full object-cover hidden" />
+                  <span id="placeholder-category-banner" class="material-symbols-outlined text-4xl text-text-faint">image</span>
+                </div>
+              </div>
+              <div>
+                <input type="file" id="file-category-banner" accept="image/*" class="hidden" />
+                <button id="btn-choose-cat-banner" onclick="document.getElementById('file-category-banner').click()" class="px-5 py-2 border border-primary text-primary hover:bg-[#3D6B4F] hover:text-white rounded-full text-xs font-bold transition-all shadow-sm" disabled>
+                  Choose Image
+                </button>
+                <button id="save-category-banner" class="ml-2 px-5 py-2 bg-[#3D6B4F] hover:bg-[#2a4d38] text-white rounded-full text-xs font-bold transition-all shadow-sm" disabled>
+                  Save Banner
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mock Header Preview -->
+          <div class="bg-[#F7F3EC] p-6 rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden">
+            <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-4">Artisan Storefront Live Preview (Buyer-Facing Category Header)</h4>
+            <!-- Category Page header mockup -->
+            <div class="relative rounded-lg overflow-hidden h-[180px] flex items-center justify-center text-center p-6 bg-cover bg-center shadow-inner" id="mock-cat-header-bg" style="background-color: #3D6B4F;">
+              <div class="absolute inset-0 bg-black/40"></div>
+              <div class="relative z-10 text-white">
+                <span class="text-xs font-bold tracking-widest uppercase text-highlight-gold" id="mock-cat-emoji">🏷️</span>
+                <h2 class="font-headline-lg text-2xl italic mt-1" id="mock-cat-name">Category Title</h2>
+                <p class="text-xs opacity-80 mt-1 max-w-sm mx-auto font-light" id="mock-cat-desc">A brief description of this category showcasing handmade goods.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for Product Selection -->
+  <div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-xl w-full max-w-lg p-6 mx-4 transform scale-95 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-outline-variant/20">
+        <h3 class="font-headline-md text-base text-primary">Select Product to Feature</h3>
+        <button onclick="closeProductModal()" class="text-text-muted hover:text-text-default">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div class="mb-4">
+        <input type="text" id="modal-product-search" placeholder="Search products..." class="w-full px-4 py-2 border border-outline-variant/40 rounded-xl text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" />
+      </div>
+      <div class="max-h-60 overflow-y-auto space-y-2 mb-6" id="modal-products-list">
+        <!-- List loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Category Selection -->
+  <div id="category-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-xl w-full max-w-lg p-6 mx-4 transform scale-95 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-outline-variant/20">
+        <h3 class="font-headline-md text-base text-primary">Select Spotlight Category</h3>
+        <button onclick="closeCategoryModal()" class="text-text-muted hover:text-text-default">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div class="max-h-60 overflow-y-auto space-y-2 mb-6" id="modal-categories-list">
+        <!-- List loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import adminApiClient from '/src/utils/adminApiClient.js';
+
+    // State
+    let allSlots = [];
+    let allCategories = [];
+    let selectedSlotName = null;
+    let selectedCategoryId = null;
+
+    // Load UI Slots
+    async function loadUiSlots() {
+      try {
+        const res = await adminApiClient.get('/admin/ui-settings');
+        if (res.data && res.data.success) {
+          allSlots = res.data.data;
+          renderHomeSettings();
+        }
+      } catch (err) {
+        console.error('Failed to load UI slots:', err);
+      }
+    }
+
+    // Load Categories
+    async function loadCategories() {
+      try {
+        const res = await adminApiClient.get('/admin/categories');
+        if (res.data && res.data.success) {
+          allCategories = res.data.data.categories;
+          renderCategorySettingsList();
+        }
+      } catch (err) {
+        console.error('Failed to load categories:', err);
+      }
+    }
+
+    // Render Tab 1 Home settings
+    function renderHomeSettings() {
+      // 1. Hero Primary
+      const heroPrimary = allSlots.find(s => s.slot_name === 'home_hero_primary');
+      const previewPrimary = document.getElementById('preview-hero-primary');
+      const placeholderPrimary = document.getElementById('placeholder-hero-primary');
+      if (heroPrimary && heroPrimary.content_url) {
+        previewPrimary.src = heroPrimary.content_url;
+        previewPrimary.classList.remove('hidden');
+        placeholderPrimary.classList.add('hidden');
+      } else {
+        previewPrimary.classList.add('hidden');
+        placeholderPrimary.classList.remove('hidden');
+      }
+
+      // 2. Hero Secondary
+      const heroSecondary = allSlots.find(s => s.slot_name === 'home_hero_secondary');
+      const previewSecondary = document.getElementById('preview-hero-secondary');
+      const placeholderSecondary = document.getElementById('placeholder-hero-secondary');
+      if (heroSecondary && heroSecondary.content_url) {
+        previewSecondary.src = heroSecondary.content_url;
+        previewSecondary.classList.remove('hidden');
+        placeholderSecondary.classList.add('hidden');
+      } else {
+        previewSecondary.classList.add('hidden');
+        placeholderSecondary.classList.remove('hidden');
+      }
+
+      // 3. Seasonal banner
+      const seasonalBanner = allSlots.find(s => s.slot_name === 'home_seasonal_banner');
+      const previewSeasonal = document.getElementById('preview-seasonal-active');
+      const placeholderSeasonal = document.getElementById('placeholder-seasonal-active');
+      if (seasonalBanner && seasonalBanner.content_url) {
+        previewSeasonal.src = seasonalBanner.content_url;
+        previewSeasonal.classList.remove('hidden');
+        placeholderSeasonal.classList.add('hidden');
+        document.getElementById('meta-seasonal-label').textContent = seasonalBanner.label || 'Active Seasonal banner';
+        document.getElementById('meta-seasonal-desc').textContent = seasonalBanner.description || 'Custom occasion showcase';
+      } else {
+        previewSeasonal.classList.add('hidden');
+        placeholderSeasonal.classList.remove('hidden');
+        document.getElementById('meta-seasonal-label').textContent = '—';
+        document.getElementById('meta-seasonal-desc').textContent = '—';
+      }
+
+      // 4. Featured Product Slots
+      const slotContainer = document.getElementById('featured-slots-container');
+      slotContainer.innerHTML = '';
+      for (let i = 1; i <= 6; i++) {
+        const slotName = `home_featured_product_${i}`;
+        const slot = allSlots.find(s => s.slot_name === slotName) || {};
+        const card = document.createElement('div');
+        card.className = 'bg-[#F7F3EC]/50 border border-outline-variant/30 rounded-xl p-4 flex flex-col justify-between text-center hover:shadow-sm transition-all relative cursor-pointer';
+        card.addEventListener('click', () => openProductModal(slotName));
+        card.innerHTML = `
+          <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2">Slot ${i}</div>
+          <div class="h-20 w-20 mx-auto rounded-lg overflow-hidden bg-white border border-outline-variant/20 flex items-center justify-center mb-3">
+            ${slot.content_url 
+              ? `<img src="${slot.content_url}" class="w-full h-full object-cover" />` 
+              : `<span class="material-symbols-outlined text-2xl text-text-faint">shopping_bag</span>`
+            }
+          </div>
+          <div class="text-xs font-semibold truncate px-1 text-primary">
+            ${slot.label || 'Empty Slot'}
+          </div>
+          <p class="text-[9px] text-text-faint truncate mt-0.5">${slot.description || 'Click to feature a product'}</p>
+        `;
+        slotContainer.appendChild(card);
+      }
+
+      // 5. Category Spotlight Slots
+      const catContainer = document.getElementById('category-slots-container');
+      catContainer.innerHTML = '';
+      for (let i = 1; i <= 4; i++) {
+        const slotName = `home_category_spotlight_${i}`;
+        const slot = allSlots.find(s => s.slot_name === slotName) || {};
+        const card = document.createElement('div');
+        card.className = 'bg-[#F7F3EC]/50 border border-outline-variant/30 rounded-xl p-4 flex items-center gap-4 hover:shadow-sm transition-all cursor-pointer';
+        card.addEventListener('click', () => openCategoryModal(slotName));
+        card.innerHTML = `
+          <div class="h-12 w-12 rounded-lg bg-white border border-outline-variant/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-2xl text-primary">category</span>
+          </div>
+          <div class="overflow-hidden">
+            <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Spotlight ${i}</span>
+            <h4 class="text-sm font-semibold truncate text-primary leading-tight mt-0.5">${slot.label || 'Select Category'}</h4>
+            <p class="text-[9px] text-text-faint truncate mt-0.5">${slot.description || 'Configure spotlight'}</p>
+          </div>
+        `;
+        catContainer.appendChild(card);
+      }
+    }
+
+    // Save hero banner slot with file upload
+    async function saveHeroBanner(slotName, fileInputId) {
+      const fileInput = document.getElementById(fileInputId);
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please choose an image file first.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+
+      try {
+        const res = await adminApiClient.put(`/admin/ui-settings/${slotName}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        if (res.data && res.data.success) {
+          alert('Hero banner updated successfully!');
+          loadUiSlots();
+        }
+      } catch (err) {
+        console.error('Failed to update hero banner:', err);
+        alert('Upload failed. Check server console.');
+      }
+    }
+
+    document.getElementById('save-hero-primary').addEventListener('click', () => saveHeroBanner('home_hero_primary', 'file-hero-primary'));
+    document.getElementById('save-hero-secondary').addEventListener('click', () => saveHeroBanner('home_hero_secondary', 'file-hero-secondary'));
+
+    // Handle Local file previews
+    function setupFileInputPreview(fileInputId, previewImgId) {
+      document.getElementById(fileInputId).addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const img = document.getElementById(previewImgId);
+          img.src = URL.createObjectURL(e.target.files[0]);
+          img.classList.remove('hidden');
+          const placeholder = img.nextElementSibling;
+          if (placeholder && placeholder.id && placeholder.id.startsWith('placeholder-')) {
+            placeholder.classList.add('hidden');
+          }
+        }
+      });
+    }
+    setupFileInputPreview('file-hero-primary', 'preview-hero-primary');
+    setupFileInputPreview('file-hero-secondary', 'preview-hero-secondary');
+    setupFileInputPreview('file-seasonal-banner', 'preview-seasonal-active');
+
+    // Seasonal preset activate
+    document.getElementById('btn-activate-seasonal').addEventListener('click', async () => {
+      const occasionSlot = document.getElementById('select-seasonal-preset').value;
+      if (occasionSlot === 'home_seasonal_banner') {
+        alert('Choose a preset option like Diwali, Rakhi, or Christmas.');
+        return;
+      }
+      try {
+        const res = await adminApiClient.post(`/admin/ui-settings/${occasionSlot}/activate-seasonal`);
+        if (res.data && res.data.success) {
+          alert('Seasonal preset banner is now live on storefront!');
+          loadUiSlots();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    // Save custom seasonal banner
+    document.getElementById('save-seasonal-custom').addEventListener('click', async () => {
+      const fileInput = document.getElementById('file-seasonal-banner');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Choose an image first.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+      formData.append('label', 'Custom Occasion Banner');
+      formData.append('description', 'Custom seasonal promotion');
+
+      try {
+        const res = await adminApiClient.put(`/admin/ui-settings/home_seasonal_banner`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        if (res.data && res.data.success) {
+          alert('Custom seasonal banner activated!');
+          loadUiSlots();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    // Modal product logic
+    window.openProductModal = function(slotName) {
+      selectedSlotName = slotName;
+      document.getElementById('product-modal').classList.remove('pointer-events-none', 'opacity-0');
+      document.getElementById('product-modal').querySelector('.transform').classList.remove('scale-95');
+      document.getElementById('product-modal').querySelector('.transform').classList.add('scale-100');
+      fetchModalProducts('');
+    }
+
+    window.closeProductModal = function() {
+      document.getElementById('product-modal').classList.add('pointer-events-none', 'opacity-0');
+      document.getElementById('product-modal').querySelector('.transform').classList.remove('scale-100');
+      document.getElementById('product-modal').querySelector('.transform').classList.add('scale-95');
+    }
+
+    async function fetchModalProducts(search = '') {
+      try {
+        const res = await adminApiClient.get(`/admin/products?search=${search}&per_page=15`);
+        const listEl = document.getElementById('modal-products-list');
+        listEl.innerHTML = '';
+        if (res.data && res.data.success && res.data.data.products.length > 0) {
+          res.data.data.products.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between p-3 border border-outline-variant/20 rounded-lg hover:bg-[#F7F3EC]/40 cursor-pointer';
+            div.addEventListener('click', () => selectProductForSlot(p));
+            div.innerHTML = `
+              <div>
+                <h4 class="text-sm font-semibold text-primary">${p.name}</h4>
+                <p class="text-[10px] text-text-muted mt-0.5">${p.category_name} • ${p.price_display}</p>
+              </div>
+              <span class="material-symbols-outlined text-xs text-text-faint">chevron_right</span>
+            `;
+            listEl.appendChild(div);
+          });
+        } else {
+          listEl.innerHTML = `<p class="text-xs text-text-muted py-4 text-center">No products found</p>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function selectProductForSlot(product) {
+      try {
+        // Fetch first primary image if available
+        const detailRes = await adminApiClient.get(`/admin/products/${product.id}`);
+        const detail = detailRes.data.success ? detailRes.data.data : {};
+        const primaryImg = detail.images && detail.images.length > 0 
+          ? detail.images.find(img => img.is_primary)?.url || detail.images[0].url 
+          : '';
+
+        const payload = {
+          content_ref_id: product.id,
+          label: product.name,
+          description: product.category_name,
+          content_url: primaryImg || null
+        };
+
+        const res = await adminApiClient.put(`/admin/ui-settings/${selectedSlotName}`, payload);
+        if (res.data && res.data.success) {
+          closeProductModal();
+          loadUiSlots();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById('modal-product-search').addEventListener('input', (e) => {
+      fetchModalProducts(e.target.value.trim());
+    });
+
+    // Category Spotlight slots modal
+    window.openCategoryModal = function(slotName) {
+      selectedSlotName = slotName;
+      document.getElementById('category-modal').classList.remove('pointer-events-none', 'opacity-0');
+      document.getElementById('category-modal').querySelector('.transform').classList.remove('scale-95');
+      document.getElementById('category-modal').querySelector('.transform').classList.add('scale-100');
+      
+      const listEl = document.getElementById('modal-categories-list');
+      listEl.innerHTML = '';
+      if (allCategories.length > 0) {
+        allCategories.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'flex items-center justify-between p-3 border border-outline-variant/20 rounded-lg hover:bg-[#F7F3EC]/40 cursor-pointer';
+          div.addEventListener('click', () => selectCategoryForSlot(c));
+          div.innerHTML = `
+            <div>
+              <h4 class="text-sm font-semibold text-primary">${c.display_name}</h4>
+              <p class="text-[10px] text-text-muted mt-0.5">${c.description || 'Artisan Category'}</p>
+            </div>
+            <span class="material-symbols-outlined text-xs text-text-faint">chevron_right</span>
+          `;
+          listEl.appendChild(div);
+        });
+      }
+    }
+
+    window.closeCategoryModal = function() {
+      document.getElementById('category-modal').classList.add('pointer-events-none', 'opacity-0');
+      document.getElementById('category-modal').querySelector('.transform').classList.remove('scale-100');
+      document.getElementById('category-modal').querySelector('.transform').classList.add('scale-95');
+    }
+
+    async function selectCategoryForSlot(category) {
+      try {
+        const payload = {
+          content_ref_id: category.id,
+          label: category.display_name,
+          description: category.description || 'Marketplace collection'
+        };
+
+        const res = await adminApiClient.put(`/admin/ui-settings/${selectedSlotName}`, payload);
+        if (res.data && res.data.success) {
+          closeCategoryModal();
+          loadUiSlots();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // --- Tab 2: Category settings and live preview ---
+    function renderCategorySettingsList() {
+      const container = document.getElementById('category-settings-list');
+      container.innerHTML = '';
+      if (allCategories.length > 0) {
+        allCategories.forEach(c => {
+          const button = document.createElement('button');
+          button.className = `w-full text-left p-3 rounded-lg flex items-center justify-between text-sm transition-all border outline-none ${selectedCategoryId === c.id ? 'bg-primary text-white border-primary shadow-sm' : 'bg-[#F7F3EC]/50 border-outline-variant/20 text-primary hover:bg-[#F7F3EC]'}`;
+          button.addEventListener('click', () => selectCategoryForBannerUpload(c));
+          button.innerHTML = `
+            <div class="truncate pr-2">
+              <span class="font-bold mr-1">${c.emoji_icon || '🏷️'}</span>
+              <span>${c.display_name}</span>
+            </div>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+          `;
+          container.appendChild(button);
+        });
+      }
+    }
+
+    function selectCategoryForBannerUpload(c) {
+      selectedCategoryId = c.id;
+      renderCategorySettingsList();
+
+      document.getElementById('cat-setting-title').textContent = `Banner Upload — ${c.display_name}`;
+      document.getElementById('btn-choose-cat-banner').disabled = false;
+      document.getElementById('save-category-banner').disabled = false;
+
+      // Update mock preview text
+      document.getElementById('mock-cat-emoji').textContent = c.emoji_icon || '🏷️';
+      document.getElementById('mock-cat-name').textContent = c.display_name;
+      document.getElementById('mock-cat-desc').textContent = c.description || 'Beautiful handmade items configured by Tohfa Artisans.';
+
+      // Check current category banner
+      const preview = document.getElementById('preview-category-banner');
+      const placeholder = document.getElementById('placeholder-category-banner');
+      const mockBg = document.getElementById('mock-cat-header-bg');
+
+      if (c.banner_image_url) {
+        preview.src = c.banner_image_url;
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        mockBg.style.backgroundImage = `url('${c.banner_image_url}')`;
+      } else {
+        preview.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        mockBg.style.backgroundImage = 'none';
+      }
+    }
+
+    // Save Category Page Banner
+    document.getElementById('save-category-banner').addEventListener('click', async () => {
+      const fileInput = document.getElementById('file-category-banner');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please choose an image banner first.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('banner', fileInput.files[0]);
+
+      try {
+        const res = await adminApiClient.patch(`/admin/categories/${selectedCategoryId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        if (res.data && res.data.success) {
+          alert('Category page banner image updated successfully!');
+          // Refresh category details and previews
+          const updatedCat = res.data.data;
+          // Refresh list state
+          await loadCategories();
+          const fresh = allCategories.find(c => c.id === selectedCategoryId);
+          if (fresh) selectCategoryForBannerUpload(fresh);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Upload failed.');
+      }
+    });
+
+    // Handle Category Local file preview
+    document.getElementById('file-category-banner').addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const url = URL.createObjectURL(e.target.files[0]);
+        document.getElementById('preview-category-banner').src = url;
+        document.getElementById('preview-category-banner').classList.remove('hidden');
+        document.getElementById('placeholder-category-banner').classList.add('hidden');
+        document.getElementById('mock-cat-header-bg').style.backgroundImage = `url('${url}')`;
+      }
+    });
+
+    // Tab Switchers
+    const tabHome = document.getElementById('tab-home');
+    const tabCategories = document.getElementById('tab-categories');
+    const secHome = document.getElementById('section-home');
+    const secCategories = document.getElementById('section-categories');
+
+    tabHome.addEventListener('click', () => {
+      tabHome.className = "py-3 border-b-2 border-primary text-primary font-bold text-sm transition-all flex items-center gap-2";
+      tabCategories.className = "py-3 border-b-2 border-transparent text-text-muted hover:text-primary text-sm transition-all flex items-center gap-2";
+      secHome.classList.remove('hidden');
+      secCategories.classList.add('hidden');
+    });
+
+    tabCategories.addEventListener('click', () => {
+      tabCategories.className = "py-3 border-b-2 border-primary text-primary font-bold text-sm transition-all flex items-center gap-2";
+      tabHome.className = "py-3 border-b-2 border-transparent text-text-muted hover:text-primary text-sm transition-all flex items-center gap-2";
+      secCategories.classList.remove('hidden');
+      secHome.classList.add('hidden');
+    });
+
+    // Logout Action
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.removeItem('tohfa_admin_token');
+      window.location.href = '/admin/login.html';
+    });
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUiSlots();
+      await loadCategories();
+    });
+  </script>
+</body>
+</html>

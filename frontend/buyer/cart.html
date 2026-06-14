@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Your basket | Tohfa</title>
@@ -14,56 +16,56 @@
             theme: {
                 extend: {
                     "colors": {
-                        "error": "#ba1a1a",
-                        "primary-container": "#8fa382",
+                        "error": "#3D6B4F",
+                        "primary-container": "#8FAF82",
                         "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#cac6bd",
-                        "inverse-primary": "#b8cdaa",
+                        "secondary-fixed-dim": "#F7F3EC",
+                        "inverse-primary": "#8FAF82",
                         "on-surface": "#1f1b15",
                         "on-tertiary-fixed-variant": "#593d5d",
                         "on-secondary-fixed-variant": "#484740",
                         "on-tertiary": "#ffffff",
                         "primary": "#516447",
                         "surface-tint": "#516447",
-                        "tertiary-fixed": "#fcd6ff",
+                        "tertiary-fixed": "#7B5EA7",
                         "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3a4c31",
+                        "on-primary-fixed-variant": "#3D6B4F",
                         "on-tertiary-container": "#452b4a",
                         "inverse-on-surface": "#f8efe5",
                         "on-secondary": "#ffffff",
-                        "surface-variant": "#eae1d7",
-                        "tertiary": "#725476",
+                        "surface-variant": "#F7F3EC",
+                        "tertiary": "#7B5EA7",
                         "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#fbf2e8",
+                        "surface-container-low": "#F7F3EC",
                         "on-error": "#ffffff",
                         "on-surface-variant": "#444840",
                         "outline": "#74786f",
                         "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#93000a",
-                        "secondary-container": "#e6e2d8",
-                        "secondary-fixed": "#e6e2d8",
-                        "primary-fixed-dim": "#b8cdaa",
+                        "on-error-container": "#3D6B4F",
+                        "secondary-container": "#F7F3EC",
+                        "secondary-fixed": "#F7F3EC",
+                        "primary-fixed-dim": "#8FAF82",
                         "secondary": "#605e57",
                         "on-secondary-fixed": "#1c1c16",
-                        "background": "#fff8f3",
+                        "background": "#FFFFFF",
                         "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#d4e9c4",
-                        "outline-variant": "#c4c8bd",
+                        "primary-fixed": "#8FAF82",
+                        "outline-variant": "#F7F3EC",
                         "on-primary": "#ffffff",
                         "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#fff8f3",
+                        "surface-bright": "#FFFFFF",
                         "on-primary-fixed": "#101f09",
                         "on-background": "#1f1b15",
                         "on-secondary-container": "#66645d",
                         "surface-container": "#f6ece3",
                         "on-primary-container": "#283920",
-                        "surface": "#fff8f3",
-                        "surface-container-highest": "#eae1d7",
-                        "error-container": "#ffdad6",
+                        "surface": "#FFFFFF",
+                        "surface-container-highest": "#F7F3EC",
+                        "error-container": "#F7F3EC",
                         "on-tertiary-fixed": "#2a122f",
-                        "gold-custom": "#D4AF37",
+                        "gold-custom": "#C8973A",
                         "ivory-card": "#FFFDFB",
-                        "sage": "#8fa382",
+                        "sage": "#8FAF82",
                         "sage-soft": "#F0F5EE",
                         "terracotta": "#C87A53"
                     },
@@ -112,40 +114,40 @@
     </script>
     <style>
         .paper-texture {
-            background-color: #fff8f3;
+            background-color: #FFFFFF;
         }
     </style>
 </head>
-<body class="paper-texture font-body-md text-on-surface antialiased">
+<body class="bg-white font-body-md text-on-surface antialiased">
 <!-- Top Navigation Bar -->
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#FAF7F0] border-b border-[#C1C9C0] flex justify-between items-center px-margin-desktop h-20">
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
-    <a class="font-['Playfair_Display'] text-[32px] italic text-[#255338] select-none" href="/buyer/home.html">
-      Tohfa<span class="text-[#D4AF37]">.</span>
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
     </a>
   </div>
   
   <!-- Navigation Links -->
   <nav class="hidden md:flex items-center justify-center gap-xl h-full">
     <!-- Home -->
-    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
     <!-- Category -->
-    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
     <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
     <!-- Profile -->
-    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -153,21 +155,21 @@
   
   <!-- Right side items -->
   <div class="flex items-center justify-end flex-1 gap-lg">
-    <a href="/buyer/categories.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+    <a href="/buyer/categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
       <span class="material-symbols-outlined">search</span>
     </a>
-    <a href="/buyer/saved-makes.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-gold-custom text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="/buyer/cart.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">shopping_cart</span>
-      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-gold-custom text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="/buyer/notifications.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">notifications</span>
-      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-gold-custom rounded-full hidden"></span>
-      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-gold-custom rounded-full hidden"></span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
     </a>
     <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
   </div>
@@ -180,8 +182,8 @@
 <button onclick="window.history.back()" class="material-symbols-outlined text-on-surface hover:bg-surface-container-low p-1 rounded-full transition-colors">chevron_left</button>
 <h1 class="font-headline-lg text-headline-lg text-primary">Your basket</h1>
 </div>
-<div class="bg-gold-custom/10 px-3 py-1 rounded-full">
-<span id="cart-badge-count" class="font-data-price text-data-price text-gold-custom">0 ITEMS</span>
+<div class="bg-[#C8973A]/10 px-3 py-1 rounded-full">
+<span id="cart-badge-count" class="font-data-price text-data-price text-[#C8973A]">0 ITEMS</span>
 </div>
 </header>
 
@@ -208,7 +210,7 @@
 
 <!-- Order Summary -->
 <section class="mb-xl">
-<div class="bg-sage-soft rounded-2xl p-lg relative botanical-overlay">
+<div class="bg-sage-soft rounded-2xl p-lg relative">
 <h4 class="font-label-caps text-label-caps text-primary tracking-widest mb-lg uppercase">ORDER SUMMARY</h4>
 <div class="space-y-md">
 <div class="flex justify-between items-center">
@@ -222,10 +224,9 @@
 <div class="h-[1px] bg-outline-variant/30 my-md"></div>
 <div class="flex justify-between items-center">
 <span class="font-title-serif text-primary">Total</span>
-<span id="summary-total" class="font-data-price text-[18px] font-bold text-gold-custom">₹0.00</span>
+<span id="summary-total" class="font-data-price text-[18px] font-bold text-[#C8973A]">₹0.00</span>
 </div>
 </div>
-<!-- Pressed Botanical Sprig Watermark -->
 <div class="absolute bottom-4 right-4 opacity-[0.08] pointer-events-none">
 <svg fill="none" height="60" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24" width="60">
 <path d="M12 22C12 22 12 18 15 15C18 12 22 12 22 12C22 12 18 12 15 9C12 6 12 2 12 2C12 2 12 6 9 9C6 12 2 12 2 12C2 12 6 12 9 15C12 18 12 22 12 22Z"></path>
@@ -260,7 +261,7 @@
       <div id="address-list-container" class="space-y-sm">
         <!-- Addresses loaded here -->
       </div>
-      <button onclick="showNewAddressForm()" class="w-full py-md border-2 border-dashed border-[#C1C9C0] hover:border-primary text-secondary hover:text-primary rounded-xl font-bold flex items-center justify-center gap-xs transition-all mt-sm">
+      <button onclick="showNewAddressForm()" class="w-full py-md border-2 border-dashed border-[#8FAF82] hover:border-primary text-secondary hover:text-primary rounded-xl font-bold flex items-center justify-center gap-xs transition-all mt-sm">
         <span class="material-symbols-outlined">add_location_alt</span>
         <span>Add New Address</span>
       </button>
@@ -446,7 +447,7 @@
                         ${ci.name}
                     </h3>
                     <p class="text-xs text-on-surface-variant mt-xs hover:underline cursor-pointer" onclick="window.location.href='/buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
-                    <p class="font-data-price text-[13px] text-gold-custom mt-xs font-semibold">${formatPaise(ci.price_paise)}</p>
+                    <p class="font-data-price text-[13px] text-[#C8973A] mt-xs font-semibold">${formatPaise(ci.price_paise)}</p>
                 </div>
                 <div class="flex flex-col items-end gap-sm">
                     <div class="flex items-center bg-ivory-card border border-sage/40 rounded-full px-2 py-0.5">
@@ -839,10 +840,10 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#C1C9C0] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
                 } else {
                     avatarHtml = `
-                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#C1C9C0] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
                             ${initial}
                         </a>
                     `;
@@ -860,8 +861,8 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#255338] hover:underline text-sm font-semibold">Login</a>
-                        <a href="/auth/signup-buyer.html" class="bg-[#255338] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
             }

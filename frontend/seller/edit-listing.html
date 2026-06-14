@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>TOFA Seller Studio | Edit Listing</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="/components/seller-components.js"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "forest": "#3D6B4F",
+              "sage": "#8FAF82",
+              "gold": "#C8973A",
+              "parchment": "#F7F3EC",
+              "on-surface": "#211b11",
+              "background": "#FFFFFF",
+              "primary": "#3D6B4F",
+              "secondary": "#49663f",
+              "outline-variant": "#F7F3EC",
+              "surface": "#FFFFFF",
+              "surface-container": "#f9ecdc",
+              "error": "#3D6B4F"
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-white text-on-surface font-body-md overflow-x-hidden">
+
+<seller-layout active-tab="catalog">
+  <!-- Header -->
+  <header class="flex justify-between items-end mb-8 px-8 pt-4">
+    <div>
+      <h1 class="font-display-hero text-3xl font-serif text-forest flex items-center gap-sm">
+        Edit Masterpiece <span class="text-gold">✦</span>
+      </h1>
+      <p class="text-on-surface-variant text-sm mt-1">Refine your listing details.</p>
+    </div>
+  </header>
+
+  <!-- Main Edit Form Container -->
+  <main class="max-w-4xl mx-auto px-8 pb-24">
+    <div id="toast" class="hidden fixed top-6 right-6 z-[300] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium transition-all bg-forest text-white border border-forest/20">
+      <span class="material-symbols-outlined" id="toast-icon">check_circle</span>
+      <span id="toast-msg">Listing saved.</span>
+    </div>
+
+    <!-- Dynamic Banner -->
+    <div id="warning-banner" class="mb-8 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-850 rounded-r-xl shadow-sm flex items-start gap-3">
+        <span class="material-symbols-outlined text-amber-600 shrink-0 mt-0.5">warning</span>
+        <div class="text-xs font-semibold leading-relaxed" id="warning-banner-text">
+            You can only edit photos, dimensions, description, price, and inventory. The product name and category stay locked to protect your reviews and purchase history.
+        </div>
+    </div>
+
+    <!-- Edit Form Box -->
+    <div class="bg-white border border-outline-variant/30 rounded-xl p-8 relative overflow-hidden shadow-sm space-y-8">
+
+      <!-- Product Details Section (Dynamic) -->
+      <section class="border-b border-sage/15 pb-6 space-y-4 relative z-10" id="product-details-section">
+          <label class="block text-xs font-bold uppercase tracking-wider text-forest" id="details-section-label">Product Details</label>
+          <div class="grid grid-cols-1 gap-4" id="details-fields-container">
+              <!-- Dynamically populated by JS -->
+          </div>
+      </section>
+
+      <!-- Photos Section -->
+      <section class="border-b border-sage/15 pb-6 space-y-4 relative z-10">
+          <label class="block text-xs font-bold uppercase tracking-wider text-forest">Photos</label>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="photo-slot border-2 border-dashed border-outline-variant/50 rounded-lg h-32 flex flex-col items-center justify-center relative cursor-pointer hover:border-forest transition-colors bg-parchment/30" data-slot="0">
+              <span class="material-symbols-outlined text-outline-variant text-2xl">add_a_photo</span>
+              <span class="text-[10px] text-on-surface-variant mt-1">Cover Image</span>
+              <input accept="image/*" class="hidden photo-input" type="file"/>
+              <img class="hidden w-full h-full object-cover rounded-lg absolute inset-0"/>
+              <button class="hidden absolute top-1 right-1 w-6 h-6 bg-error text-white rounded-full flex items-center justify-center text-xs font-bold remove-photo-btn">&times;</button>
+            </div>
+            <div class="photo-slot border-2 border-dashed border-outline-variant/50 rounded-lg h-32 flex flex-col items-center justify-center relative cursor-pointer hover:border-forest transition-colors bg-parchment/30" data-slot="1">
+              <span class="material-symbols-outlined text-outline-variant text-2xl">add_a_photo</span>
+              <span class="text-[10px] text-on-surface-variant mt-1">Photo 2</span>
+              <input accept="image/*" class="hidden photo-input" type="file"/>
+              <img class="hidden w-full h-full object-cover rounded-lg absolute inset-0"/>
+              <button class="hidden absolute top-1 right-1 w-6 h-6 bg-error text-white rounded-full flex items-center justify-center text-xs font-bold remove-photo-btn">&times;</button>
+            </div>
+            <div class="photo-slot border-2 border-dashed border-outline-variant/50 rounded-lg h-32 flex flex-col items-center justify-center relative cursor-pointer hover:border-forest transition-colors bg-parchment/30" data-slot="2">
+              <span class="material-symbols-outlined text-outline-variant text-2xl">add_a_photo</span>
+              <span class="text-[10px] text-on-surface-variant mt-1">Photo 3</span>
+              <input accept="image/*" class="hidden photo-input" type="file"/>
+              <img class="hidden w-full h-full object-cover rounded-lg absolute inset-0"/>
+              <button class="hidden absolute top-1 right-1 w-6 h-6 bg-error text-white rounded-full flex items-center justify-center text-xs font-bold remove-photo-btn">&times;</button>
+            </div>
+            <div class="photo-slot border-2 border-dashed border-outline-variant/50 rounded-lg h-32 flex flex-col items-center justify-center relative cursor-pointer hover:border-forest transition-colors bg-parchment/30" data-slot="3">
+              <span class="material-symbols-outlined text-outline-variant text-2xl">add_a_photo</span>
+              <span class="text-[10px] text-on-surface-variant mt-1">Photo 4</span>
+              <input accept="image/*" class="hidden photo-input" type="file"/>
+              <img class="hidden w-full h-full object-cover rounded-lg absolute inset-0"/>
+              <button class="hidden absolute top-1 right-1 w-6 h-6 bg-error text-white rounded-full flex items-center justify-center text-xs font-bold remove-photo-btn">&times;</button>
+            </div>
+          </div>
+      </section>
+
+      <!-- Pricing & Stock -->
+      <section class="border-b border-sage/15 pb-6 space-y-6 relative z-10">
+          <label class="block text-xs font-bold uppercase tracking-wider text-forest">Pricing & Stock</label>
+          <div class="grid grid-cols-2 gap-6">
+              <div>
+                  <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Listing Price (₹)</label>
+                  <input id="listing-price" type="number" step="1" min="0" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium"/>
+              </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+              <div>
+                  <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Units in Inventory</label>
+                  <input id="stock-count" type="number" step="1" min="0" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium"/>
+              </div>
+              <div class="flex flex-col justify-end">
+                  <div class="flex items-center justify-between p-4 bg-surface border border-outline-variant/30 rounded-xl">
+                      <div>
+                          <p class="text-xs font-bold text-forest">Pre-booking option</p>
+                          <p class="text-[10px] text-on-surface-variant">Allow buyers to order before dispatch</p>
+                      </div>
+                      <button id="prebook-toggle" class="w-12 h-6 bg-outline-variant/40 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center">
+                          <div id="prebook-toggle-circle" class="w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0"></div>
+                      </button>
+                  </div>
+              </div>
+          </div>
+
+          <div id="prebook-limit-container" class="hidden grid grid-cols-2 gap-6">
+              <div>
+                  <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Production Limit</label>
+                  <input id="prebook-limit" type="number" min="1" placeholder="Max pre-orders" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium"/>
+              </div>
+          </div>
+      </section>
+
+      <!-- Dimensions & Description -->
+      <section class="space-y-6 relative z-10">
+          <label class="block text-xs font-bold uppercase tracking-wider text-forest">Details <span class="text-[10px] text-on-surface-variant/70 lowercase font-medium">(optional)</span></label>
+          <div class="grid grid-cols-4 gap-4">
+              <div>
+                  <label class="block text-xs font-medium text-on-surface-variant/85 mb-1">L (cm)</label>
+                  <input id="dim-l" type="number" step="0.1" class="w-full px-3 py-2 bg-surface border border-outline-variant/40 rounded-xl text-xs font-medium focus:ring-forest focus:border-forest"/>
+              </div>
+              <div>
+                  <label class="block text-xs font-medium text-on-surface-variant/85 mb-1">W (cm)</label>
+                  <input id="dim-w" type="number" step="0.1" class="w-full px-3 py-2 bg-surface border border-outline-variant/40 rounded-xl text-xs font-medium focus:ring-forest focus:border-forest"/>
+              </div>
+              <div>
+                  <label class="block text-xs font-medium text-on-surface-variant/85 mb-1">H (cm)</label>
+                  <input id="dim-h" type="number" step="0.1" class="w-full px-3 py-2 bg-surface border border-outline-variant/40 rounded-xl text-xs font-medium focus:ring-forest focus:border-forest"/>
+              </div>
+              <div>
+                  <label class="block text-xs font-medium text-on-surface-variant/85 mb-1">Weight (g)</label>
+                  <input id="dim-weight" type="number" step="0.1" class="w-full px-3 py-2 bg-surface border border-outline-variant/40 rounded-xl text-xs font-medium focus:ring-forest focus:border-forest"/>
+              </div>
+          </div>
+
+          <div>
+              <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Product Description</label>
+              <textarea id="product-bio" rows="4" placeholder="Provide a detailed description of the product that you are offering..." class="w-full px-4 py-3 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm leading-relaxed"></textarea>
+          </div>
+      </section>
+
+      <!-- Action Footer Buttons -->
+      <div class="flex justify-end gap-4 border-t border-sage/15 pt-6 relative z-10">
+          <button id="cancel-btn" class="px-6 py-2.5 border border-outline-variant/60 rounded-full text-sm font-semibold text-on-surface-variant hover:bg-black/5 transition-all active:scale-95">
+              Cancel
+          </button>
+          <button id="save-btn" class="px-8 py-2.5 bg-forest text-white rounded-full text-sm font-bold shadow-md hover:bg-forest/90 transition-all active:scale-95 flex items-center gap-1">
+              Save Changes
+          </button>
+      </div>
+
+    </div>
+  </main>
+</seller-layout>
+
+<script>
+    const API_BASE = window.location.origin;
+    let productId = null;
+    let prebookEnabled = false;
+
+    // Photos state (up to 4 slots)
+    let photoFiles = [null, null, null, null];
+    let photoUrls = ['', '', '', ''];
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        const icon = document.getElementById('toast-icon');
+        const text = document.getElementById('toast-msg');
+        
+        icon.textContent = type === 'success' ? 'check_circle' : 'error';
+        text.textContent = msg;
+        toast.className = `fixed top-6 right-6 z-[300] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium transition-all ${
+            type === 'success' ? 'bg-forest text-white' : 'bg-red-600 text-white'
+        }`;
+        
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // Load Listing Data
+    async function loadListingData() {
+        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+        try {
+            const res = await fetch(`${API_BASE}/api/seller/listings/${productId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) {
+                    sessionStorage.clear();
+                    window.location.href = '/auth/login.html';
+                    return;
+                }
+                throw new Error(`HTTP ${res.status}`);
+            }
+
+            const resp = await res.json();
+            const data = resp.data || resp;
+            
+            // Let's store listing status
+            const listingStatus = data.status || 'draft';
+            
+            // Toggle view of banner and input fields based on status
+            const warningBanner = document.getElementById('warning-banner');
+            const detailsSectionLabel = document.getElementById('details-section-label');
+            const detailsFieldsContainer = document.getElementById('details-fields-container');
+            
+            if (listingStatus === 'draft') {
+                // Draft status: customizable name and category
+                warningBanner.className = "mb-8 p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-950 rounded-r-xl shadow-sm flex items-start gap-3";
+                warningBanner.innerHTML = `
+                    <span class="material-symbols-outlined text-emerald-600 shrink-0 mt-0.5">info</span>
+                    <div class="text-xs font-semibold leading-relaxed">
+                        You are editing a <strong>Draft</strong> listing. You can change any details, including the product name and category.
+                    </div>
+                `;
+                
+                detailsSectionLabel.textContent = "Product Details (Draft)";
+                detailsFieldsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+                detailsFieldsContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Product Name</label>
+                        <input id="edit-product-name" type="text" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium" value=""/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Category</label>
+                        <select id="edit-product-category" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium">
+                            <option value="Art Print">Art Print</option>
+                            <option value="Curated Seeds">Curated Seeds</option>
+                            <option value="Organic Soap">Organic Soap</option>
+                            <option value="Textiles">Textiles</option>
+                            <option value="Home Decor">Home Decor</option>
+                            <option value="Jewellery">Jewellery</option>
+                            <option value="Ceramics">Ceramics</option>
+                        </select>
+                    </div>
+                `;
+                document.getElementById('edit-product-name').value = data.title || '';
+                document.getElementById('edit-product-category').value = data.category || '';
+            } else {
+                // Non-draft status: locked name and category
+                warningBanner.className = "mb-8 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-850 rounded-r-xl shadow-sm flex items-start gap-3";
+                warningBanner.innerHTML = `
+                    <span class="material-symbols-outlined text-amber-600 shrink-0 mt-0.5">warning</span>
+                    <div class="text-xs font-semibold leading-relaxed">
+                        You can only edit photos, dimensions, description, price, and inventory. The product name and category stay locked to protect your reviews and purchase history.
+                    </div>
+                `;
+                
+                detailsSectionLabel.textContent = "Locked Product Details";
+                detailsFieldsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6"; 
+                detailsFieldsContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-medium text-on-surface-variant/80 mb-1 flex items-center gap-1">
+                            Product Name <span class="material-symbols-outlined text-xs text-outline">lock</span>
+                        </label>
+                        <div class="flex items-center gap-2 px-4 py-3 bg-surface-container rounded-lg border border-outline-variant/35 text-on-surface-variant font-medium text-sm">
+                            <span class="material-symbols-outlined text-sm text-outline">lock</span>
+                            <span id="locked-product-name">—</span>
+                        </div>
+                        <p class="text-[10px] text-on-surface-variant/70 mt-1">Locked to keep reviews and purchase history tied to this listing.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-on-surface-variant/80 mb-1 flex items-center gap-1">
+                            Category <span class="material-symbols-outlined text-xs text-outline">lock</span>
+                        </label>
+                        <div class="flex items-center gap-2 px-4 py-3 bg-surface-container rounded-lg border border-outline-variant/35 text-on-surface-variant font-medium text-sm">
+                            <span class="material-symbols-outlined text-sm text-outline">lock</span>
+                            <span id="locked-product-category">—</span>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('locked-product-name').textContent = data.title || '';
+                document.getElementById('locked-product-category').textContent = data.category || '';
+            }
+            document.getElementById('listing-price').value = data.price || (data.price_paise ? data.price_paise / 100 : 0) || data.base_price || '';
+            document.getElementById('stock-count').value = data.stock !== undefined ? data.stock : (data.stock_count !== undefined ? data.stock_count : 1);
+            document.getElementById('dim-l').value = data.dimensions_l || data.length_cm || '';
+            document.getElementById('dim-w').value = data.dimensions_w || data.width_cm || '';
+            document.getElementById('dim-h').value = data.dimensions_h || data.height_cm || '';
+            document.getElementById('dim-weight').value = data.dimensions_weight || data.weight_g || data.weight_grams || '';
+            document.getElementById('product-bio').value = data.bio || data.description || '';
+
+            // Prebook
+            prebookEnabled = data.prebook_enabled || data.allow_prebooking;
+            const prebookBtn = document.getElementById('prebook-toggle');
+            const prebookCircle = document.getElementById('prebook-toggle-circle');
+            const prebookLimitBox = document.getElementById('prebook-limit-container');
+            if (prebookEnabled) {
+                prebookBtn.classList.remove('bg-outline-variant/40');
+                prebookBtn.classList.add('bg-forest');
+                prebookCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-6';
+                prebookLimitBox.classList.remove('hidden');
+                document.getElementById('prebook-limit').value = data.prebook_limit || data.prebooking_window || '';
+            }
+
+            // Photos
+            if (data.photos && data.photos.length > 0) {
+                data.photos.forEach((photo, index) => {
+                    if (index < 4) {
+                        photoUrls[index] = photo.url;
+                        updatePhotoSlotUI(index, photo.url);
+                    }
+                });
+            }
+
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to load listing details.', 'error');
+        }
+    }
+
+    function updatePhotoSlotUI(index, url) {
+        const slot = document.querySelector(`.photo-slot[data-slot="${index}"]`);
+        if (!slot) return;
+        const img = slot.querySelector('img');
+        const icon = slot.querySelector('.material-symbols-outlined');
+        const span = slot.querySelector('span:last-of-type');
+        const removeBtn = slot.querySelector('.remove-photo-btn');
+
+        if (url) {
+            img.src = url;
+            img.classList.remove('hidden');
+            icon.classList.add('hidden');
+            span.classList.add('hidden');
+            removeBtn.classList.remove('hidden');
+        } else {
+            img.src = '';
+            img.classList.add('hidden');
+            icon.classList.remove('hidden');
+            span.classList.remove('hidden');
+            removeBtn.classList.add('hidden');
+        }
+    }
+
+    // Prebooking Toggle click binding
+    const prebookBtn = document.getElementById('prebook-toggle');
+    const prebookCircle = document.getElementById('prebook-toggle-circle');
+    const prebookLimitBox = document.getElementById('prebook-limit-container');
+
+    prebookBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        prebookEnabled = !prebookEnabled;
+        if (prebookEnabled) {
+            prebookBtn.classList.remove('bg-outline-variant/40');
+            prebookBtn.classList.add('bg-forest');
+            prebookCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-6';
+            prebookLimitBox.classList.remove('hidden');
+        } else {
+            prebookBtn.classList.add('bg-outline-variant/40');
+            prebookBtn.classList.remove('bg-forest');
+            prebookCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0';
+            prebookLimitBox.classList.add('hidden');
+        }
+    });
+
+    // Photos interactive binding
+    document.querySelectorAll('.photo-slot').forEach(slot => {
+        const input = slot.querySelector('.photo-input');
+        const img = slot.querySelector('img');
+        const removeBtn = slot.querySelector('.remove-photo-btn');
+        const index = parseInt(slot.dataset.slot);
+
+        slot.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-photo-btn')) return;
+            input.click();
+        });
+
+        input.addEventListener('change', () => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    updatePhotoSlotUI(index, e.target.result);
+                    photoFiles[index] = file;
+                    photoUrls[index] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            updatePhotoSlotUI(index, null);
+            input.value = '';
+            photoFiles[index] = null;
+            photoUrls[index] = '';
+        });
+    });
+
+    // Cancel Action
+    document.getElementById('cancel-btn').addEventListener('click', () => {
+        window.location.href = '/seller/catalog.html';
+    });
+
+    // Save changes (PATCH API)
+    document.getElementById('save-btn').addEventListener('click', async () => {
+        const price = parseFloat(document.getElementById('listing-price').value) || 0.0;
+        const stock = parseInt(document.getElementById('stock-count').value) || 0;
+        const prebook_limit = parseInt(document.getElementById('prebook-limit').value) || null;
+
+        // Optional details
+        const dimensions_l = parseFloat(document.getElementById('dim-l').value) || null;
+        const dimensions_w = parseFloat(document.getElementById('dim-w').value) || null;
+        const dimensions_h = parseFloat(document.getElementById('dim-h').value) || null;
+        const dimensions_weight = parseFloat(document.getElementById('dim-weight').value) || null;
+        const bio = document.getElementById('product-bio').value.trim() || null;
+
+        // Photo payloads
+        const photosPayload = [];
+        photoUrls.forEach((url, idx) => {
+            if (url) {
+                // If it's base64, mock a backend unsplash URL
+                const actualUrl = url.startsWith('data:image') 
+                    ? `https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500` 
+                    : url;
+                photosPayload.push({
+                    url: actualUrl,
+                    sort_order: idx,
+                    is_cover: idx === 0
+                });
+            }
+        });
+
+        const patchBody = {
+            price,
+            base_price: price,
+            price_paise: Math.round(price * 100),
+            stock,
+            stock_count: stock,
+            prebook_enabled: prebookEnabled,
+            allow_prebooking: prebookEnabled ? 1 : 0,
+            prebook_limit: prebookEnabled ? prebook_limit : null,
+            prebooking_window: prebookEnabled ? prebook_limit : null,
+            dimensions_l,
+            length_cm: dimensions_l,
+            dimensions_w,
+            width_cm: dimensions_w,
+            dimensions_h,
+            height_cm: dimensions_h,
+            dimensions_weight,
+            weight_g: dimensions_weight,
+            weight_grams: dimensions_weight,
+            bio,
+            description: bio,
+            photos: photosPayload
+        };
+
+        const nameInput = document.getElementById('edit-product-name');
+        const categoryInput = document.getElementById('edit-product-category');
+        if (nameInput) {
+            patchBody.title = nameInput.value.trim();
+        }
+        if (categoryInput) {
+            patchBody.category = categoryInput.value;
+        }
+
+        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+        try {
+            const res = await fetch(`${API_BASE}/api/seller/listings/${productId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(patchBody)
+            });
+
+            if (res.ok) {
+                showToast('Changes saved successfully! 🌸');
+                setTimeout(() => {
+                    window.location.href = '/seller/catalog.html';
+                }, 1500);
+            } else {
+                const err = await res.json();
+                showToast(err.message || err.detail || 'Failed to save changes.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Studio backend server connection error.', 'error');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        productId = getQueryParam('id');
+        if (!productId) {
+            window.location.href = '/seller/catalog.html';
+            return;
+        }
+        loadListingData();
+    });
+</script>
+</body>
+</html>

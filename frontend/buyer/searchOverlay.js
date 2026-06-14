@@ -36,10 +36,10 @@ class SearchOverlay {
         <div id="global-search-scrim" class="fixed inset-0 bg-[#1f1b15]/40 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-auto cursor-pointer"></div>
         
         <!-- Search Card -->
-        <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FAF7F0] rounded-2xl shadow-2xl border border-[#C1C9C0] flex flex-col max-h-[85vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[251]">
+        <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FAF7F0] rounded-2xl shadow-2xl border border-[#8FAF82] flex flex-col max-h-[85vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[251]">
           
           <!-- Search Header -->
-          <div class="relative flex items-center border-b border-[#C1C9C0]/50 px-4">
+          <div class="relative flex items-center border-b border-[#8FAF82]/50 px-4">
             <span class="material-symbols-outlined text-[#74786f] absolute left-4 pointer-events-none">search</span>
             
             <input type="text" id="global-search-input" placeholder="Search by item, tag, artisan..." class="w-full bg-transparent py-5 pl-12 pr-16 outline-none text-[#1f1b15] text-base border-0 focus:ring-0 placeholder:text-[#74786f]" autocomplete="off">
@@ -72,13 +72,13 @@ class SearchOverlay {
                   <h4 class="text-xs font-semibold tracking-wider text-[#74786f] uppercase">Recent Searches</h4>
                   <button id="global-search-clear-recents" class="text-xs text-[#255338] hover:underline">Clear all</button>
                 </div>
-                <div id="global-search-recents-list" class="divide-y divide-[#C1C9C0]/30 border border-[#C1C9C0]/30 rounded-xl overflow-hidden bg-white"></div>
+                <div id="global-search-recents-list" class="divide-y divide-[#8FAF82]/30 border border-[#8FAF82]/30 rounded-xl overflow-hidden bg-white"></div>
               </div>
             </div>
             
             <!-- Dynamic Autocomplete Results -->
             <div id="global-search-typing" class="hidden space-y-6">
-              <div id="global-suggestions-list" class="divide-y divide-[#C1C9C0]/30"></div>
+              <div id="global-suggestions-list" class="divide-y divide-[#8FAF82]/30"></div>
               
               <div id="global-sellers-section" class="hidden">
                 <h4 class="text-xs font-semibold tracking-wider text-[#74786f] uppercase mb-3">Artisans</h4>
@@ -93,7 +93,7 @@ class SearchOverlay {
 
             <!-- Full Product Grid Results -->
             <div id="global-search-results-view" class="hidden space-y-4">
-              <div class="flex justify-between items-center border-b border-[#C1C9C0]/30 pb-2">
+              <div class="flex justify-between items-center border-b border-[#8FAF82]/30 pb-2">
                 <h3 id="global-results-title" class="font-['Playfair_Display'] text-lg text-[#255338] italic font-semibold">Search Results</h3>
                 <span id="global-results-count" class="text-xs text-[#74786f]"></span>
               </div>
@@ -136,9 +136,12 @@ class SearchOverlay {
     document.addEventListener('click', (e) => {
       const searchBtn = e.target.closest('a[href="/buyer/categories.html"]');
       if (searchBtn && !searchBtn.closest('#global-search-overlay')) {
-        // Prevent default navigation
-        e.preventDefault();
-        this.open();
+        const icon = searchBtn.querySelector('.material-symbols-outlined');
+        if (icon && icon.textContent.trim() === 'search') {
+          // Prevent default navigation and open search overlay ONLY for the search icon button
+          e.preventDefault();
+          this.open();
+        }
       }
     });
 
@@ -369,7 +372,7 @@ class SearchOverlay {
       sellersSection.classList.remove('hidden');
       sellersList.innerHTML = sellers.map(s => `
         <a href="/buyer/seller-profile.html?id=${s.id}" class="flex flex-col items-center flex-shrink-0 w-20 text-center hover:scale-105 transition-transform duration-200">
-          <img src="${s.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuA1MlCvGNVC5kb3_0adXisBIXKR2kO5rDi5REC7Ws_jdqAl-d9k85WtM1zhT8kPt7miefUL2zB7ZWlht6gOBoOFf_yaM44xEDS_XDmP2CC3-O2XtWEbyNWU5d0aYrxHES2zAVOb4to55ZXc0JuEuYUxljiCZtgqH9k3hGJLepqGwKKZZmnmigxFXREVk5a9jUDkeBzDkZX8Z9jT_im_tJi4_Y8YVc3tbxMsxYFYLwpSOJOXUuN4y3YO7VUkGCQmkVDabJ6ip82gLbE'}" class="w-12 h-12 rounded-full border border-[#C1C9C0] object-cover">
+          <img src="${s.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuA1MlCvGNVC5kb3_0adXisBIXKR2kO5rDi5REC7Ws_jdqAl-d9k85WtM1zhT8kPt7miefUL2zB7ZWlht6gOBoOFf_yaM44xEDS_XDmP2CC3-O2XtWEbyNWU5d0aYrxHES2zAVOb4to55ZXc0JuEuYUxljiCZtgqH9k3hGJLepqGwKKZZmnmigxFXREVk5a9jUDkeBzDkZX8Z9jT_im_tJi4_Y8YVc3tbxMsxYFYLwpSOJOXUuN4y3YO7VUkGCQmkVDabJ6ip82gLbE'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
           <p class="text-[11px] text-[#1f1b15] font-semibold truncate w-full mt-1">${s.shop_name || s.username}</p>
         </a>
       `).join('');
@@ -383,7 +386,7 @@ class SearchOverlay {
     if (categories.length > 0) {
       categoriesSection.classList.remove('hidden');
       categoriesList.innerHTML = categories.map(c => `
-        <a href="/buyer/category.html?slug=${c.slug}" class="flex items-center gap-2 px-3 py-1.5 border border-[#C1C9C0]/50 rounded-full hover:bg-[#255338]/5 hover:border-[#255338] transition-colors text-xs text-[#255338] font-semibold flex-shrink-0">
+        <a href="/buyer/category.html?slug=${c.slug}" class="flex items-center gap-2 px-3 py-1.5 border border-[#8FAF82]/50 rounded-full hover:bg-[#255338]/5 hover:border-[#255338] transition-colors text-xs text-[#255338] font-semibold flex-shrink-0">
           <span class="material-symbols-outlined text-[14px]">category</span>
           <span>${c.name}</span>
         </a>
@@ -425,8 +428,8 @@ class SearchOverlay {
         } else {
           resultsGrid.classList.remove('hidden');
           resultsGrid.innerHTML = products.map(p => `
-            <a href="/buyer/product.html?id=${p.id}" class="flex gap-3 p-2 border border-[#C1C9C0]/30 rounded-xl hover:bg-[#255338]/5 hover:border-[#255338]/50 transition-all duration-200">
-              <img src="${p.image_url || 'https://placehold.co/100x100?text=Item'}" class="w-16 h-16 rounded-lg object-cover bg-white border border-[#C1C9C0]/20 flex-shrink-0">
+            <a href="/buyer/product.html?id=${p.id}" class="flex gap-3 p-2 border border-[#8FAF82]/30 rounded-xl hover:bg-[#255338]/5 hover:border-[#255338]/50 transition-all duration-200">
+              <img src="${p.image_url || 'https://placehold.co/100x100?text=Item'}" class="w-16 h-16 rounded-lg object-cover bg-white border border-[#8FAF82]/20 flex-shrink-0">
               <div class="flex-1 min-w-0 flex flex-col justify-center">
                 <h4 class="text-xs font-semibold text-[#255338] truncate leading-tight">${p.name}</h4>
                 <p class="text-[10px] text-[#74786f] truncate mt-0.5">By ${p.seller_name || 'Artisan'}</p>

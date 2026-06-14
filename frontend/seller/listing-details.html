@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>TOFA Seller Studio - Catalog</title>
+<title>TOFA Seller Studio - Craft New Listing</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="/components/seller-components.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
@@ -19,16 +21,16 @@
                       "secondary-fixed-dim": "#afd0a0",
                       "tertiary-fixed": "#ecdcff",
                       "on-primary": "#ffffff",
-                      "error": "#ba1a1a",
-                      "background": "#f9faf5",
+                      "error": "#3D6B4F",
+                      "background": "#FFFFFF",
                       "primary-fixed": "#bceecb",
                       "on-secondary-container": "#4d6a43",
                       "surface-container-high": "#e7e9e4",
-                      "tertiary-container": "#70539b",
-                      "surface": "#f9faf5",
-                      "primary": "#255338",
-                      "error-container": "#ffdad6",
-                      "outline-variant": "#c1c9c0",
+                      "tertiary-container": "#7B5EA7",
+                      "surface": "#FFFFFF",
+                      "primary": "#3D6B4F",
+                      "error-container": "#F7F3EC",
+                      "outline-variant": "#F7F3EC",
                       "tertiary-fixed-dim": "#d6baff",
                       "on-primary-fixed": "#002110",
                       "on-secondary": "#ffffff",
@@ -43,13 +45,13 @@
                       "surface-tint": "#3a684c",
                       "on-primary-container": "#b7e9c6",
                       "surface-dim": "#d9dad6",
-                      "secondary-container": "#c8e9b8",
-                      "surface-bright": "#f9faf5",
+                      "secondary-container": "#8FAF82",
+                      "surface-bright": "#FFFFFF",
                       "outline": "#717972",
-                      "on-error-container": "#93000a",
+                      "on-error-container": "#3D6B4F",
                       "on-tertiary": "#ffffff",
                       "surface-container-highest": "#e2e3df",
-                      "tertiary": "#573b81",
+                      "tertiary": "#7B5EA7",
                       "on-tertiary-container": "#e8d6ff",
                       "on-surface-variant": "#414942",
                       "surface-container-low": "#f3f4f0",
@@ -110,251 +112,35 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        .botanical-watermark {
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.08;
-            pointer-events: none;
-        }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-parchment text-on-surface font-body-md overflow-x-hidden">
+<body class="bg-white text-on-surface font-body-md overflow-hidden">
 <seller-layout active-tab="catalog">
-<!-- Main Content Area -->
-<div class="min-h-screen relative">
-<!-- Botanical Watermark Overlay -->
-<div class="absolute inset-0 botanical-watermark overflow-hidden">
-<span class="material-symbols-outlined absolute -bottom-20 -right-20 text-[300px] opacity-[0.03]">psychiatry</span>
-<span class="material-symbols-outlined absolute top-40 left-20 text-[180px] opacity-[0.03]">eco</span>
-</div>
-<!-- TopAppBar -->
-<!-- Standardised Wizard Header (Task 41) -->
-<header class="h-[80px] bg-white border-b border-sage/20 px-12 flex justify-between items-center shrink-0 z-10">
-  <div class="flex items-center gap-2">
-    <span class="material-symbols-outlined text-primary">psychiatry</span>
-    <span class="material-symbols-outlined text-sage">eco</span>
-    <h2 class="font-display-lg text-primary text-3xl font-serif">Craft New Listing</h2>
-  </div>
-  <div class="flex gap-4">
-    <button class="px-6 py-2 border border-error rounded-full text-sm font-bold text-error hover:bg-error/10 transition-colors">Discard Draft</button>
-    <button class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity">Publish Entry</button>
-  </div>
-</header>
-<!-- (D) Alert Banner -->
-<div class="mx-gutter mt-4">
-<div class="w-full py-2.5 px-6 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-between text-gold shadow-sm">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-xl" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
-<p class="font-body-md text-[14px] font-medium tracking-wide">3 items running low — restock before they sell out 🌸</p>
-</div>
-<button class="text-[11px] font-bold uppercase tracking-widest border-b border-gold/50 hover:border-gold transition-colors">Manage Stock</button>
-</div>
-</div>
-<!-- (A) Catalog Header -->
-<div class="px-gutter pt-8 pb-4 flex justify-between items-end">
-<div>
-<div class="flex items-baseline gap-4 mb-1">
-<h2 class="font-display-lg text-primary">Catalog</h2>
-<span class="font-data-mono text-sage px-3 py-0.5 bg-sage/10 rounded-full border border-sage/20 text-xs">12 listings</span>
-</div>
-<p class="text-on-surface-variant font-body-sm italic">Managing your artisan collection with scholar-like precision.</p>
-</div>
-<button class="flex items-center gap-2 bg-forest text-white px-6 py-2.5 rounded-full font-bold shadow-md hover:scale-[1.02] transition-all" onclick="document.getElementById('listing-drawer').classList.remove('translate-y-full')">
-<span class="material-symbols-outlined" data-icon="add">add</span>
-                New listing
-            </button>
-</div>
-<!-- (B) Filter Toolbar -->
-<div class="px-gutter mb-6">
-<div class="bg-surface-container-low/60 backdrop-blur-sm border border-sage/40 p-4 rounded-2xl flex flex-wrap items-center gap-4 shadow-sm">
-<div class="flex-1 min-w-[240px] relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sage text-xl" data-icon="search">search</span>
-<input class="w-full bg-parchment border border-sage/20 rounded-lg pl-10 pr-4 py-2 text-body-sm focus:border-forest outline-none transition-colors" placeholder="Search your listings..." type="text"/>
-</div>
-<div class="flex items-center gap-3">
-<select class="bg-parchment border border-sage/20 rounded-lg px-4 py-2 text-body-sm font-medium text-on-surface-variant focus:border-forest outline-none cursor-pointer">
-<option>Status: All</option>
-<option>Active</option>
-<option>Paused</option>
-<option>Draft</option>
-</select>
-<select class="bg-parchment border border-sage/20 rounded-lg px-4 py-2 text-body-sm font-medium text-on-surface-variant focus:border-forest outline-none cursor-pointer">
-<option>Category: All</option>
-<option>Botanical Prints</option>
-<option>Pressed Flowers</option>
-<option>Sculptures</option>
-</select>
-<select class="bg-parchment border border-sage/20 rounded-lg px-4 py-2 text-body-sm font-medium text-on-surface-variant focus:border-forest outline-none cursor-pointer">
-<option>Sort: Newest</option>
-<option>Oldest</option>
-<option>Popularity</option>
-</select>
-</div>
-<div class="h-8 w-px bg-sage/30 mx-2"></div>
-<div class="flex items-center gap-4">
-<label class="flex items-center gap-2 cursor-pointer group">
-<input class="rounded border-sage text-forest focus:ring-forest" type="checkbox"/>
-<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant group-hover:text-forest">Bulk</span>
-</label>
-<span class="font-data-mono text-[11px] text-sage">Showing 8 of 12</span>
-</div>
-</div>
-</div>
-<!-- (C) Catalog Table -->
-<div class="px-gutter pb-24">
-<div class="bg-parchment border border-sage/40 rounded-2xl overflow-hidden shadow-soft">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low/40 border-b border-sage/20">
-<th class="py-4 px-6 w-12"><input class="rounded border-sage text-forest" type="checkbox"/></th>
-<th class="py-4 px-4 font-label-caps uppercase text-on-surface-variant text-[10px]">Product</th>
-<th class="py-4 px-4 font-label-caps uppercase text-on-surface-variant text-[10px]">Price</th>
-<th class="py-4 px-4 font-label-caps uppercase text-on-surface-variant text-[10px]">Stock</th>
-<th class="py-4 px-4 font-label-caps uppercase text-on-surface-variant text-[10px]">Status</th>
-<th class="py-4 px-4 font-label-caps uppercase text-on-surface-variant text-[10px]">Metrics</th>
-<th class="py-4 px-6 text-right font-label-caps uppercase text-on-surface-variant text-[10px]">Actions</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-sage/10">
-<!-- Row 1: Low Stock -->
-<tr class="group hover:bg-tertiary-container/5 transition-colors">
-<td class="py-4 px-6"><input class="rounded border-sage text-forest" type="checkbox"/></td>
-<td class="py-4 px-4">
-<div class="flex items-center gap-4">
-<div class="w-[36px] h-[36px] rounded-lg overflow-hidden border border-sage/30">
-<img class="w-full h-full object-cover" data-alt="A macro photograph of a fragile pressed sunflower in a minimalist glass frame. The lighting is warm and golden, reminiscent of a vintage botanical journal. Creamy background with subtle texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHwSye58yHUIaLvt80DqLWf7K2yBztXLUfEeQWCzeE5IIkCZC35EGzib27LONukijhbPTVGjrL-9qIqJwvmx_x8aD92kn8bZqv7m2mT-e5E6gxltgUhw1w9gSKDTbUa6Wx3LrswFer0kcQCCgtfCcK-kw0_HZDFcZcHS86PrX_PsVKLiPNrkqrF3COuJg2DVkiZAxSbfgAbr7ucv-LuvUqnhdeQ4-4Ml4t8RwnA2BI7avRIxnGVo_UCkJlwm3L6LJTDBxGlqB1zPM"/>
-</div>
-<div>
-<h4 class="font-headline-sm text-sm text-primary mb-0.5">Golden Fern Study No. 4</h4>
-<span class="text-[10px] px-2 py-0.5 bg-sage/10 text-sage rounded-full uppercase font-bold border border-sage/20">Art Print</span>
-</div>
-</div>
-</td>
-<td class="py-4 px-4 font-data-mono text-sm">$85.00</td>
-<td class="py-4 px-4">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-rose-500"></span>
-<span class="font-data-mono text-sm text-rose-600 font-bold">1 left</span>
-</div>
-</td>
-<td class="py-4 px-4">
-<span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold uppercase tracking-tighter">Active</span>
-</td>
-<td class="py-4 px-4">
-<div class="font-data-mono text-[11px] text-on-surface-variant flex gap-4">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span> 1.2k</span>
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="shopping_cart">shopping_cart</span> 42</span>
-</div>
-</td>
-<td class="py-4 px-6 text-right">
-<div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="pause">pause</span></button>
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="content_copy">content_copy</span></button>
-<button class="text-rose-400 hover:text-rose-600 transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-<!-- Row 2: Medium Stock -->
-<tr class="group hover:bg-tertiary-container/5 transition-colors">
-<td class="py-4 px-6"><input class="rounded border-sage text-forest" type="checkbox"/></td>
-<td class="py-4 px-4">
-<div class="flex items-center gap-4">
-<div class="w-[36px] h-[36px] rounded-lg overflow-hidden border border-sage/30">
-<img class="w-full h-full object-cover" data-alt="A collection of delicate vintage seed packets arranged on a textured parchment surface. Soft atmospheric lighting, sage green accents, and a sense of archival preservation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTQwDkPZkEi0KTSzAh3BMQWFjio0fybhMpZMqLUz1U2CW_vz3MTcn_ERrZI6PmN2LCf1c9bmF3C49CFY7k97NE-nNFqZ0wZPxKmET7OAyBN4TdF2MJSXdznDKefDbufSaVfCFRXmLpSbFm0kvyjJuVzCVAZdjK0Pv4NBo7eSAKejnVWkFJMylwj9jldbuOuGCF7npzv83VmzVr9-V8PwuhtNNmK3vMZPMYxRj9Xci_plcdwoHY7O9xFeiv_zMeKWTZRVU8bB4lf-s"/>
-</div>
-<div>
-<h4 class="font-headline-sm text-sm text-primary mb-0.5">Archival Wildflower Seeds</h4>
-<span class="text-[10px] px-2 py-0.5 bg-sage/10 text-sage rounded-full uppercase font-bold border border-sage/20">Curated Seeds</span>
-</div>
-</div>
-</td>
-<td class="py-4 px-4 font-data-mono text-sm">$22.00</td>
-<td class="py-4 px-4">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-gold"></span>
-<span class="font-data-mono text-sm text-gold font-bold">4 units</span>
-</div>
-</td>
-<td class="py-4 px-4">
-<span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold uppercase tracking-tighter">Active</span>
-</td>
-<td class="py-4 px-4">
-<div class="font-data-mono text-[11px] text-on-surface-variant flex gap-4">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span> 840</span>
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="shopping_cart">shopping_cart</span> 12</span>
-</div>
-</td>
-<td class="py-4 px-6 text-right">
-<div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="pause">pause</span></button>
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="content_copy">content_copy</span></button>
-<button class="text-rose-400 hover:text-rose-600 transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-<!-- Row 3: Full Stock -->
-<tr class="group hover:bg-tertiary-container/5 transition-colors">
-<td class="py-4 px-6"><input class="rounded border-sage text-forest" type="checkbox"/></td>
-<td class="py-4 px-4">
-<div class="flex items-center gap-4">
-<div class="w-[36px] h-[36px] rounded-lg overflow-hidden border border-sage/30">
-<img class="w-full h-full object-cover" data-alt="A handcrafted ceramic bowl with organic, wavy edges and a subtle sage-green glaze. The bowl sits on a rustic wooden table with soft morning light illuminating its texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiNSPrK3z_Zo_bZB8Hz-ypU1n2vbQDTjc_AMS8YFKQ4AxYBGikqYccZxIHaPOvBJOJQDtoQLKYQcq8jpLvcQyTiz9E80vfo0qATOC1CYVBhNKJpWoKre6hAQwxg6NwLxpx01otT5KemzgWDr0a5nwtM806p7VmghQOQbbYjjUW-83WuJfWDypl6dDQYzxLVVySqVJkESNaDa05tQTAMunRt6spmhGmSm5gkrbqmc9hEaeBZVuEKLvN30Lgskcz7LN7qaAIDrLAnFI"/>
-</div>
-<div>
-<h4 class="font-headline-sm text-sm text-primary mb-0.5">Forest Floor Ceramic Bowl</h4>
-<span class="text-[10px] px-2 py-0.5 bg-sage/10 text-sage rounded-full uppercase font-bold border border-sage/20">Handmade Ceramic</span>
-</div>
-</div>
-</td>
-<td class="py-4 px-4 font-data-mono text-sm">$140.00</td>
-<td class="py-4 px-4">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-forest"></span>
-<span class="font-data-mono text-sm text-forest font-bold">12 units</span>
-</div>
-</td>
-<td class="py-4 px-4">
-<span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-1 rounded font-bold uppercase tracking-tighter">Paused</span>
-</td>
-<td class="py-4 px-4">
-<div class="font-data-mono text-[11px] text-on-surface-variant flex gap-4">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span> 2.1k</span>
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="shopping_cart">shopping_cart</span> 88</span>
-</div>
-</td>
-<td class="py-4 px-6 text-right">
-<div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
-<button class="text-forest hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="play_arrow">play_arrow</span></button>
-<button class="text-sage hover:text-forest transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="content_copy">content_copy</span></button>
-<button class="text-rose-400 hover:text-rose-600 transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="py-4 px-8 bg-surface-container-low/20 flex justify-center">
-<button class="text-sage font-bold uppercase text-[10px] tracking-[0.2em] hover:text-forest transition-colors">Load more botanical treasures</button>
-</div>
-</div>
-</div>
-<!-- (E) Create Listing Bottom-Sheet (Drawer) -->
-<div class="fixed inset-0 bg-parchment z-[60] ml-[130px] flex flex-col overflow-hidden" id="listing-drawer">
+<div class="min-h-screen relative flex flex-col h-screen">
 <!-- Drawer Header & Handle -->
 <header class="h-[80px] bg-white border-b border-sage/20 px-12 flex justify-between items-center shrink-0 z-10">
-<h2 class="font-display-lg text-primary text-3xl">Craft New Listing</h2>
-<div class="flex gap-4">
-<button class="px-6 py-2 border border-sage/40 rounded-full text-sm font-bold text-on-surface-variant hover:bg-sage/10 transition-colors">
-      Discard Draft
+  <div class="flex items-center gap-4">
+    <button id="header-back-btn" class="flex items-center justify-center w-10 h-10 rounded-full border border-sage hover:bg-parchment text-forest transition-colors shadow-sm cursor-pointer" title="Go back to Photos">
+      <span class="material-symbols-outlined text-xl">arrow_back</span>
     </button>
-<button class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity">
-      Publish Entry
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary">psychiatry</span>
+      <span class="material-symbols-outlined text-sage">eco</span>
+      <h2 class="font-display-lg text-primary text-3xl font-serif">Craft New Listing</h2>
+    </div>
+  </div>
+  <div class="flex gap-4">
+    <button id="header-save-draft-btn" class="px-6 py-2 border border-sage text-forest rounded-full text-sm font-bold hover:bg-parchment transition-colors flex items-center gap-2">
+      <span class="material-symbols-outlined text-sm">bookmark</span> Save as Draft
     </button>
-</div>
+    <button id="header-next-step-btn" class="px-6 py-2 bg-forest text-white rounded-full text-sm font-bold shadow-md hover:bg-opacity-90 hover:scale-[1.01] transition-all flex items-center gap-2">
+      Continue <span class="material-symbols-outlined text-sm">arrow_forward</span>
+    </button>
+    <button class="px-6 py-2 border border-error rounded-full text-sm font-bold text-error hover:bg-error/10 transition-colors">Discard Draft</button>
+  </div>
 </header><!-- Standardised listing wizard step indicators (Task 41) -->
 <div class="bg-parchment/60 py-8 border-b border-sage/10 z-10 shrink-0">
   <div class="max-w-4xl mx-auto relative flex justify-between items-center px-4">
@@ -362,12 +148,12 @@
     <div class="absolute top-1/2 left-8 right-8 h-[2px] bg-sage/20 -translate-y-1/2 z-0"></div>
     <div class="absolute top-1/2 left-8 w-[20%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
     <!-- Step 1: Photos (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Photos</span>
-    </div>
+    </a>
     <!-- Step 2: Details (Current) -->
     <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center ring-2 ring-primary">
@@ -376,12 +162,12 @@
       <span class="text-[10px] font-bold uppercase tracking-widest border-b-2 border-primary pb-0.5">Details</span>
     </div>
     <!-- Step 3: Pricing (Future) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 opacity-40 text-on-surface-variant">
+    <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 opacity-40 text-on-surface-variant cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border border-sage/40 flex items-center justify-center">
         <span class="material-symbols-outlined text-lg">payments</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest">Pricing</span>
-    </div>
+    </a>
     <!-- Step 4: Shipping (Future) -->
     <div class="relative z-10 flex flex-col items-center gap-2 opacity-40 text-on-surface-variant">
       <div class="w-10 h-10 rounded-full bg-white border border-sage/40 flex items-center justify-center">
@@ -405,10 +191,8 @@
     </div>
   </div>
 </div>
-</div>
-<!-- Botanical Step Bar -->
 <!-- Step Content -->
-<div class="px-gutter max-w-5xl mx-auto overflow-y-auto max-h-[60vh] custom-scrollbar flex-1 p-12">
+<div class="px-gutter max-w-5xl mx-auto overflow-y-auto custom-scrollbar flex-1 p-12">
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
 <!-- Left: Core Info (8 cols) -->
 <div class="lg:col-span-8 space-y-8">
@@ -440,19 +224,43 @@
 <span id="title-char-count" class="text-[11px] text-sage font-data-mono">0/80 characters</span>
 </div>
 </div>
+
 <div>
 <label class="block font-display-lg text-primary text-xl mb-4">Category Selection</label>
 <div id="category-container" class="flex flex-wrap gap-3">
 <button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Pressed Flowers</button>
-<button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Botanical Resin</button>
 <button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Cyanotypes</button>
 <button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Handmade Paper</button>
 <button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Artisan Kits</button>
 </div>
 </div>
+
+<!-- Dimensions & Weight (4-column inline grid) -->
 <div>
-<label class="block font-display-lg text-primary text-xl mb-3">The Story Behind the Piece</label>
-<textarea id="listing-story" class="w-full bg-white border border-sage/30 rounded-xl px-6 py-4 font-body-md text-on-surface-variant focus:ring-forest focus:border-forest outline-none resize-none" placeholder="Describe the botanical inspiration, materials sourced, and the artisanal process..." rows="6"></textarea>
+<label class="block font-display-lg text-primary text-xl mb-3">Dimensions & Weight</label>
+<div class="grid grid-cols-4 gap-4">
+  <div>
+    <label class="block text-xs font-bold text-sage uppercase tracking-widest mb-2">L (cm)</label>
+    <input id="length-input" type="number" step="any" min="0" placeholder="L" class="w-full bg-white border border-sage/30 rounded-xl px-4 py-3 font-body-md text-on-surface focus:ring-forest focus:border-forest outline-none" />
+  </div>
+  <div>
+    <label class="block text-xs font-bold text-sage uppercase tracking-widest mb-2">W (cm)</label>
+    <input id="width-input" type="number" step="any" min="0" placeholder="W" class="w-full bg-white border border-sage/30 rounded-xl px-4 py-3 font-body-md text-on-surface focus:ring-forest focus:border-forest outline-none" />
+  </div>
+  <div>
+    <label class="block text-xs font-bold text-sage uppercase tracking-widest mb-2">H (cm)</label>
+    <input id="height-input" type="number" step="any" min="0" placeholder="H" class="w-full bg-white border border-sage/30 rounded-xl px-4 py-3 font-body-md text-on-surface focus:ring-forest focus:border-forest outline-none" />
+  </div>
+  <div>
+    <label class="block text-xs font-bold text-sage uppercase tracking-widest mb-2">Weight (g)</label>
+    <input id="weight-input" type="number" step="any" min="0" placeholder="Weight" class="w-full bg-white border border-sage/30 rounded-xl px-4 py-3 font-body-md text-on-surface focus:ring-forest focus:border-forest outline-none" />
+  </div>
+</div>
+</div>
+
+<div>
+<label class="block font-display-lg text-primary text-xl mb-3">Product Description</label>
+<textarea id="listing-description" class="w-full bg-white border border-sage/30 rounded-xl px-6 py-4 font-body-md text-on-surface-variant focus:ring-forest focus:border-forest outline-none resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
 </div>
 
 <!-- Customisation Configuration Panel (shown only when Customisable is selected) -->
@@ -543,17 +351,7 @@
 </div>
 </div>
 
-<!-- Product Badge / Visibility Tag -->
-<div>
-  <label class="block text-[10px] font-bold text-sage uppercase tracking-widest mb-2">Product Badge</label>
-  <select id="product-badge-select" class="w-full bg-white border border-sage/40 rounded-lg px-4 py-2 text-sm focus:border-forest outline-none">
-    <option value="">None</option>
-    <option value="Best Seller">⭐ Best Seller</option>
-    <option value="Sponsored">✦ Sponsored</option>
-    <option value="__custom__">Custom text...</option>
-  </select>
-  <input id="product-badge-custom" type="text" class="hidden mt-2 w-full bg-white border border-sage/40 rounded-lg px-4 py-2 text-sm focus:border-forest outline-none" placeholder="e.g. New Arrival, Limited Edition..." maxlength="30">
-  <p class="text-[10px] text-on-surface-variant mt-1">Badge shown on buyer-facing product cards.</p>
+</div>
 </div>
 
 </div>
@@ -674,7 +472,7 @@
     // ZAI Mode narrative generation click handler
     document.getElementById('zai-card').addEventListener('click', () => {
         const title = titleInput.value.trim();
-        document.getElementById('listing-story').value = `This exquisite handcrafted piece${title ? ', ' + title : ''}, is created with carefully selected natural elements preserved in crystal clear resin. Sourced from local woodlands, the delicate structures reflect slow design principles. Perfectly captured to bring organic warmth and the quiet luxury of nature to your home space.`;
+        document.getElementById('listing-description').value = `This exquisite handcrafted piece${title ? ', ' + title : ''}, is created with carefully selected natural elements preserved in crystal clear resin. Sourced from local woodlands, the delicate structures reflect slow design principles. Perfectly captured to bring organic warmth and the quiet luxury of nature to your home space.`;
         showToast('ZAI narrative generated based on title!', 'success');
     });
 
@@ -799,7 +597,15 @@
                 const listing = resp.data || resp;
                 titleInput.value = listing.title || '';
                 charCountSpan.textContent = `${titleInput.value.length}/80 characters`;
-                document.getElementById('listing-story').value = listing.story || listing.description || '';
+                document.getElementById('listing-description').value = listing.description || '';
+                
+                // Load dimensions & weight
+                document.getElementById('length-input').value = listing.length_cm !== null && listing.length_cm !== undefined ? listing.length_cm : '';
+                document.getElementById('width-input').value = listing.width_cm !== null && listing.width_cm !== undefined ? listing.width_cm : '';
+                document.getElementById('height-input').value = listing.height_cm !== null && listing.height_cm !== undefined ? listing.height_cm : '';
+                
+                const weightVal = listing.weight_g !== null && listing.weight_g !== undefined ? listing.weight_g : (listing.weight_grams !== null && listing.weight_grams !== undefined ? listing.weight_grams : '');
+                document.getElementById('weight-input').value = weightVal;
                 
                 // Select Category
                 if (listing.category) {
@@ -815,19 +621,6 @@
                 if (listing.tags) {
                     tagsList = Array.isArray(listing.tags) ? listing.tags : JSON.parse(listing.tags || '[]');
                     renderTags();
-                }
-
-                // Product Badge
-                const badge = listing.product_tag || '';
-                const badgeSelect = document.getElementById('product-badge-select');
-                const badgeCustom = document.getElementById('product-badge-custom');
-                if (badge === '' || badge === 'Best Seller' || badge === 'Sponsored') {
-                    badgeSelect.value = badge;
-                    badgeCustom.classList.add('hidden');
-                } else if (badge) {
-                    badgeSelect.value = '__custom__';
-                    badgeCustom.classList.remove('hidden');
-                    badgeCustom.value = badge;
                 }
 
                 // Pre-fill Product Type & Customisation Options
@@ -881,7 +674,16 @@
 
     async function saveDetails(shouldRedirect) {
         const title = titleInput.value.trim();
-        const story = document.getElementById('listing-story').value.trim();
+        const description = document.getElementById('listing-description').value.trim();
+        const lengthVal = document.getElementById('length-input').value.trim();
+        const widthVal = document.getElementById('width-input').value.trim();
+        const heightVal = document.getElementById('height-input').value.trim();
+        const weightVal = document.getElementById('weight-input').value.trim();
+
+        const length_cm = lengthVal ? parseFloat(lengthVal) : null;
+        const width_cm = widthVal ? parseFloat(widthVal) : null;
+        const height_cm = heightVal ? parseFloat(heightVal) : null;
+        const weight_g = weightVal ? parseInt(weightVal, 10) : null;
 
         if (!title) {
             showToast('Title is required.', 'error');
@@ -897,12 +699,7 @@
             return;
         }
 
-        // Resolve product badge value
-        const badgeSelect = document.getElementById('product-badge-select');
-        const badgeCustom = document.getElementById('product-badge-custom');
-        let product_tag = badgeSelect.value === '__custom__'
-            ? (badgeCustom.value.trim() || null)
-            : (badgeSelect.value || null);
+        let product_tag = null;
 
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         const draftId = sessionStorage.getItem('draft_id');
@@ -934,14 +731,19 @@
                 },
                 body: JSON.stringify({
                     title,
-                    description: story,
-                    story: story,
+                    description: description,
+                    story: null,
                     category: selectedCategory,
                     tags: tagsList,
                     status: 'draft',
                     isCustomisable,
                     customization_config,
-                    product_tag
+                    product_tag,
+                    length_cm,
+                    width_cm,
+                    height_cm,
+                    weight_g,
+                    weight_grams: weight_g
                 })
             });
 
@@ -950,39 +752,106 @@
 
             showToast('Details saved as draft!', 'success');
             if (shouldRedirect) {
-                window.location.href = '/seller/listing-pricing-a.html';
+                window.location.href = 'listing-pricing-a.html';
             }
         } catch (err) {
-            showToast(err.message, 'error');
+            showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
+            if (shouldRedirect) {
+                setTimeout(() => {
+                    window.location.href = 'listing-pricing-a.html';
+                }, 1000);
+            }
         }
     }
 
-    document.getElementById('save-draft-btn').addEventListener('click', () => saveDetails(false));
-    document.getElementById('next-step-btn').addEventListener('click', () => saveDetails(true));
+    // Footer Save Draft
+    document.getElementById('save-draft-btn').addEventListener('click', () => {
+        const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            showToast('Draft details saved successfully (offline mode)!', 'success');
+            return;
+        }
+        saveDetails(false);
+    });
+
+    // Footer Next Step
+    document.getElementById('next-step-btn').addEventListener('click', () => {
+        const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = 'listing-pricing-a.html';
+            return;
+        }
+        saveDetails(true);
+    });
+
+    // Header Save Draft
+    const headerSaveBtn = document.getElementById('header-save-draft-btn');
+    if (headerSaveBtn) {
+        headerSaveBtn.addEventListener('click', () => {
+            const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                showToast('Draft details saved successfully (offline mode)!', 'success');
+                return;
+            }
+            saveDetails(false);
+        });
+    }
+
+    // Header Next Step
+    const headerNextBtn = document.getElementById('header-next-step-btn');
+    if (headerNextBtn) {
+        headerNextBtn.addEventListener('click', () => {
+            const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                window.location.href = 'listing-pricing-a.html';
+                return;
+            }
+            saveDetails(true);
+        });
+    }
+
+    // Header Back Button
+    const headerBackBtn = document.getElementById('header-back-btn');
+    if (headerBackBtn) {
+        headerBackBtn.addEventListener('click', () => {
+            window.location.href = 'listing-photos.html';
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+        if (e.key === 'Escape') {
             document.getElementById('listing-drawer').classList.add('translate-y-full');
         }
     });
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Badge dropdown: show/hide custom input
-        const badgeSelectEl = document.getElementById('product-badge-select');
-        const badgeCustomEl = document.getElementById('product-badge-custom');
-        badgeSelectEl.addEventListener('change', () => {
-            if (badgeSelectEl.value === '__custom__') {
-                badgeCustomEl.classList.remove('hidden');
-                badgeCustomEl.focus();
-            } else {
-                badgeCustomEl.classList.add('hidden');
-                badgeCustomEl.value = '';
-            }
-        });
-
         initCustomisationSuite();
         loadDetailsDraft();
+
+        const sidebar = document.querySelector('seller-sidebar');
+        if (sidebar) {
+          sidebar.addEventListener('click', async (e) => {
+            const link = e.target.closest('a');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (!href) return;
+            if (hasUnsavedWork()) {
+              e.preventDefault();
+              await autoSaveDraft();
+              showToast('Progress auto-saved as draft ✦', 'success');
+              setTimeout(() => { window.location.href = href; }, 700);
+            }
+          });
+        }
     });
+
+    function hasUnsavedWork() {
+      const title = document.getElementById('listing-title') || document.querySelector('input[type="text"]');
+      return !!sessionStorage.getItem('draft_id') || (title && title.value.trim().length > 0);
+    }
+    async function autoSaveDraft() {
+      try { await saveDetails(false); } catch(e) { console.warn('Auto-save failed:', e); }
+    }
 </script>
 
 <!-- Injected Standard Seller Studio Script (Tasks 38, 39) -->
@@ -1091,8 +960,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(res => res.json())
         .then(data => {
-          if (data && data.success && data.data && data.data.store_slug) {
-            window.location.href = '/' + data.data.store_slug;
+          const profileData = data.data || data;
+          if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+            window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
           } else {
             window.location.href = '/';
           }

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+<script src="/src/components/AdminSidebar.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Tohfa Admin - Kavita Arts Detail</title>
@@ -16,28 +19,28 @@
                     "violet-soft": "#D8CBE9",
                     "bg-primary": "#FFFFFF",
                     "inverse-surface": "#2e312e",
-                    "bg-cream-deep": "#F1EADD",
+                    "bg-cream-deep": "#F7F3EC",
                     "on-secondary-fixed-variant": "#324e29",
-                    "error": "#ba1a1a",
+                    "error": "#3D6B4F",
                     "tertiary-fixed": "#ffdadc",
-                    "surface-bright": "#f9faf5",
+                    "surface-bright": "#FFFFFF",
                     "on-secondary-container": "#4d6a43",
                     "accent-violet": "#7B5EA7",
                     "tertiary-fixed-dim": "#fcb4ba",
-                    "surface": "#f9faf5",
+                    "surface": "#FFFFFF",
                     "on-secondary-fixed": "#062103",
                     "primary-container": "#3d6b4f",
                     "surface-container": "#edeeea",
-                    "secondary-container": "#c8e9b8",
+                    "secondary-container": "#8FAF82",
                     "surface-container-lowest": "#ffffff",
-                    "sage-soft": "#C5D6BC",
+                    "sage-soft": "#8FAF82",
                     "primary-fixed-dim": "#a0d2b0",
                     "surface-container-low": "#f3f4f0",
                     "primary-fixed": "#bceecb",
                     "on-tertiary-container": "#ffd2d5",
                     "on-surface-variant": "#414942",
                     "highlight-gold": "#C8973A",
-                    "primary-deep": "#2E5340",
+                    "primary-deep": "#3D6B4F",
                     "text-faint": "#9A8F7A",
                     "on-surface": "#1a1c1a",
                     "on-background": "#1a1c1a",
@@ -51,14 +54,14 @@
                     "on-tertiary-fixed-variant": "#6b373d",
                     "text-muted": "#6E6453",
                     "on-primary-fixed": "#002110",
-                    "gold-soft": "#EBD7AE",
-                    "background": "#f9faf5",
+                    "gold-soft": "#C8973A",
+                    "background": "#FFFFFF",
                     "surface-container-highest": "#e2e3df",
-                    "primary": "#255338",
+                    "primary": "#3D6B4F",
                     "tertiary-container": "#8a5157",
-                    "surface-ivory": "#FCFAF5",
+                    "surface-ivory": "#F7F3EC",
                     "tertiary": "#6e3a40",
-                    "danger-terracotta": "#B14B3E",
+                    "danger-terracotta": "#3D6B4F",
                     "on-tertiary": "#ffffff",
                     "secondary-fixed-dim": "#afd0a0",
                     "surface-variant": "#e2e3df"
@@ -133,11 +136,11 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-surface min-h-screen font-body-md overflow-x-hidden">
+<body class="bg-white text-on-surface min-h-screen font-body-md overflow-x-hidden">
 <!-- New Sidebar Navigation (Updated style from Image_4) -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#FCFAF5]">
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#F7F3EC]">
 <div class="mb-14">
-<h1 class="font-headline-lg text-headline-lg italic text-[#255338] leading-tight">Tohfa</h1>
+<h1 class="font-headline-lg text-headline-lg italic text-[#3D6B4F] leading-tight">Tohfa</h1>
 <p class="text-accent-caps font-accent-caps text-text-faint tracking-widest text-[10px] mt-1 opacity-70">Admin Console</p>
 </div>
 <nav class="flex-1 space-y-1">

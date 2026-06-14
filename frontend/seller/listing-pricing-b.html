@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Seller Studio - Pricing &amp; Stock</title>
@@ -15,10 +17,10 @@
             extend: {
               "colors": {
                       "primary-container": "#3d6b4f",
-                      "background": "#f9faf5",
-                      "surface": "#f9faf5",
-                      "primary": "#255338",
-                      "outline-variant": "#c1c9c0",
+                      "background": "#FFFFFF",
+                      "surface": "#FFFFFF",
+                      "primary": "#3D6B4F",
+                      "outline-variant": "#F7F3EC",
                       "on-surface": "#1a1c1a",
                       "primary-fixed-dim": "#a0d2b0",
                       "inverse-on-surface": "#f0f1ed",
@@ -28,13 +30,13 @@
                       "on-secondary-container": "#4d6a43",
                       "surface-container-lowest": "#ffffff",
                       "secondary-fixed": "#caecbb",
-                      "secondary-container": "#c8e9b8",
+                      "secondary-container": "#8FAF82",
                       "on-primary": "#ffffff",
                       "inverse-primary": "#a0d2b0",
-                      "error-container": "#ffdad6",
-                      "on-error-container": "#93000a",
+                      "error-container": "#F7F3EC",
+                      "on-error-container": "#3D6B4F",
                       "on-background": "#1a1c1a",
-                      "tertiary": "#573b81",
+                      "tertiary": "#7B5EA7",
                       "on-secondary": "#ffffff",
                       "inverse-surface": "#2e312e",
                       "surface-container-high": "#e7e9e4",
@@ -46,22 +48,25 @@
                       "on-secondary-fixed-variant": "#324e29",
                       "surface-container-highest": "#e2e3df",
                       "on-tertiary-fixed-variant": "#54387e",
-                      "surface-bright": "#f9faf5",
+                      "surface-bright": "#FFFFFF",
                       "outline": "#717972",
                       "on-surface-variant": "#414942",
-                      "tertiary-container": "#70539b",
+                      "tertiary-container": "#7B5EA7",
                       "surface-variant": "#e2e3df",
                       "surface-container-low": "#f3f4f0",
                       "on-primary-container": "#b7e9c6",
                       "primary-fixed": "#bceecb",
-                      "error": "#ba1a1a",
+                      "error": "#3D6B4F",
                       "secondary-fixed-dim": "#afd0a0",
                       "on-primary-fixed-variant": "#214f36",
                       "surface-tint": "#3a684c",
                       "on-secondary-fixed": "#062103",
                       "tertiary-fixed-dim": "#d6baff",
                       "on-primary-fixed": "#002110",
-                      "parchment": "#F7F3EC"
+                      "parchment": "#F7F3EC",
+                      "sage": "#8FAF82",
+                      "forest": "#3D6B4F",
+                      "gold": "#C8973A"
               },
               "borderRadius": {
                       "DEFAULT": "0.25rem",
@@ -117,7 +122,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-surface font-body-md text-on-surface h-screen flex overflow-hidden">
+<body class="bg-white font-body-md text-on-surface h-screen flex overflow-hidden">
 <seller-layout active-tab="catalog">
 <div class="flex-1 flex flex-col h-full overflow-hidden bg-surface-container-lowest relative z-10">
 <!-- Header Actions -->
@@ -131,7 +136,6 @@
   </div>
   <div class="flex gap-4">
     <button class="px-6 py-2 border border-error rounded-full text-sm font-bold text-error hover:bg-error/10 transition-colors">Discard Draft</button>
-    <button class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity">Publish Entry</button>
   </div>
 </header>
 <!-- Standardised listing wizard step indicators (Task 41) -->
@@ -325,10 +329,6 @@
       <span>Retail Price:</span>
       <span id="proj-retail" class="font-data-mono font-bold">₹0.00</span>
     </div>
-    <div class="flex justify-between text-xs text-on-surface-variant">
-      <span>Studio Platform Fee (8%):</span>
-      <span id="proj-fee" class="font-data-mono font-bold text-error">- ₹0.00</span>
-    </div>
     <div class="flex justify-between text-sm font-bold text-primary border-t border-dashed border-secondary/20 pt-2">
       <span>Est. Payout:</span>
       <span id="proj-payout" class="font-data-mono text-gold">₹0.00</span>
@@ -355,7 +355,7 @@
 <label class="text-[10px] font-bold text-secondary uppercase tracking-widest">Shipping Profile</label>
 <div class="relative">
 <select id="shipping-profile-select" class="w-full bg-surface-container-low border border-secondary/10 rounded-lg px-3 py-2.5 text-sm focus:border-primary outline-none appearance-none">
-<option value="1">Standard Botanical</option>
+<option value="1">Standard</option>
 <option value="2">Express Artisan</option>
 </select>
 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-sm">expand_more</span>
@@ -433,17 +433,14 @@
     // Live Payout update
     const priceInput = document.getElementById('price-input');
     const projRetail = document.getElementById('proj-retail');
-    const projFee = document.getElementById('proj-fee');
     const projPayout = document.getElementById('proj-payout');
 
     function updateProjection() {
         const valStr = priceInput.value.replace(/,/g, '').trim();
         const price = parseFloat(valStr) || 0;
-        const fee = price * 0.08;
-        const payout = price - fee;
+        const payout = price;
 
         projRetail.textContent = `₹${price.toFixed(2)}`;
-        projFee.textContent = `- ₹${fee.toFixed(2)}`;
         projPayout.textContent = `₹${payout.toFixed(2)}`;
     }
 
@@ -656,7 +653,7 @@
 
             showToast('Pricing saved successfully!', 'success');
             if (shouldRedirect) {
-                window.location.href = '/seller/listing-shipping.html';
+                window.location.href = 'listing-shipping.html';
             }
         } catch (err) {
             showToast(err.message, 'error');
@@ -667,10 +664,55 @@
     document.getElementById('next-step-btn').addEventListener('click', () => savePricing(true));
 
     document.getElementById('back-step-btn').addEventListener('click', () => {
-        window.location.href = '/seller/listing-details.html';
+        window.location.href = 'listing-details.html';
     });
 
-    window.addEventListener('DOMContentLoaded', loadPricingDraft);
+    // Tax Toggle Interaction
+    const taxToggleBtn = document.getElementById('tax-toggle-btn');
+    if (taxToggleBtn) {
+        taxToggleBtn.addEventListener('click', () => {
+            const dot = taxToggleBtn.querySelector('div');
+            const isActive = taxToggleBtn.classList.contains('bg-primary');
+            if (isActive) {
+                taxToggleBtn.classList.remove('bg-primary');
+                taxToggleBtn.classList.add('bg-outline-variant');
+                dot.classList.remove('ml-auto');
+                dot.classList.add('mr-auto');
+            } else {
+                taxToggleBtn.classList.add('bg-primary');
+                taxToggleBtn.classList.remove('bg-outline-variant');
+                dot.classList.add('ml-auto');
+                dot.classList.remove('mr-auto');
+            }
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadPricingDraft();
+
+        const sidebar = document.querySelector('seller-sidebar');
+        if (sidebar) {
+          sidebar.addEventListener('click', async (e) => {
+            const link = e.target.closest('a');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (!href) return;
+            if (hasUnsavedWork()) {
+              e.preventDefault();
+              await autoSaveDraft();
+              showToast('Progress auto-saved as draft ✦', 'success');
+              setTimeout(() => { window.location.href = href; }, 700);
+            }
+          });
+        }
+    });
+
+    function hasUnsavedWork() {
+      return !!sessionStorage.getItem('draft_id');
+    }
+    async function autoSaveDraft() {
+      try { await savePricing(false); } catch(e) { console.warn('Auto-save failed:', e); }
+    }
 </script>
 
 <!-- Micro-interaction scales -->

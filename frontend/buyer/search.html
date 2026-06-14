@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Search Handcrafted Goods</title>
@@ -15,36 +17,36 @@
                         "surface-tint": "#3a684c",
                         "surface-container-lowest": "#ffffff",
                         "primary-fixed": "#bceecb",
-                        "primary": "#255338",
+                        "primary": "#3D6B4F",
                         "surface-dim": "#e5d8c8",
                         "on-secondary-fixed": "#062103",
-                        "surface-variant": "#ede1d1",
+                        "surface-variant": "#F7F3EC",
                         "on-surface": "#211b11",
                         "tertiary-fixed": "#ecdcff",
                         "on-tertiary-fixed": "#270550",
-                        "secondary-container": "#c8e9b8",
+                        "secondary-container": "#8FAF82",
                         "on-tertiary-fixed-variant": "#54387e",
                         "on-tertiary": "#ffffff",
                         "secondary-fixed-dim": "#afd0a0",
                         "on-secondary-fixed-variant": "#324e29",
-                        "surface": "#fff8f3",
+                        "surface": "#FFFFFF",
                         "primary-fixed-dim": "#a0d2b0",
                         "surface-container-low": "#fff2e1",
-                        "background": "#fff8f3",
+                        "background": "#FFFFFF",
                         "primary-container": "#3d6b4f",
-                        "error": "#ba1a1a",
-                        "tertiary-container": "#70539b",
+                        "error": "#3D6B4F",
+                        "tertiary-container": "#7B5EA7",
                         "inverse-primary": "#a0d2b0",
                         "secondary": "#49663f",
                         "on-primary": "#ffffff",
                         "secondary-fixed": "#caecbb",
-                        "tertiary": "#573b81",
-                        "outline-variant": "#c1c9c0",
-                        "on-error-container": "#93000a",
+                        "tertiary": "#7B5EA7",
+                        "outline-variant": "#F7F3EC",
+                        "on-error-container": "#3D6B4F",
                         "outline": "#717972",
                         "on-tertiary-container": "#e8d6ff",
                         "inverse-surface": "#362f25",
-                        "surface-container-highest": "#ede1d1",
+                        "surface-container-highest": "#F7F3EC",
                         "surface-container": "#f9ecdc",
                         "tertiary-fixed-dim": "#d6baff",
                         "on-surface-variant": "#414942",
@@ -54,14 +56,14 @@
                         "on-error": "#ffffff",
                         "on-primary-container": "#b7e9c6",
                         "surface-container-high": "#f3e6d6",
-                        "surface-bright": "#fff8f3",
+                        "surface-bright": "#FFFFFF",
                         "on-background": "#211b11",
-                        "error-container": "#ffdad6",
+                        "error-container": "#F7F3EC",
                         "on-primary-fixed-variant": "#214f36",
                         "on-primary-fixed": "#002110",
-                        "gold": "#D4AF37",
+                        "gold": "#C8973A",
                         "sage": "#717972",
-                        "ivory": "#FCFAF5",
+                        "ivory": "#F7F3EC",
                         "ink": "#3A3328"
                     },
                     borderRadius: {
@@ -127,7 +129,7 @@
             transform: translateY(-50%);
             border-width: 10px 10px 10px 0;
             border-style: solid;
-            border-color: transparent #FCFAF5 transparent transparent;
+            border-color: transparent #F7F3EC transparent transparent;
         }
         .speech-bubble::before {
             content: '';
@@ -196,11 +198,22 @@
             background: linear-gradient(135deg, #f59e0b, #d97706);
         }
         .ribbon-bestseller {
-            background: linear-gradient(135deg, #d57744, #C4622D);
+            background: #C85A32;
+        }
+        .ribbon-custom {
+            background: #B492B7;
+        }
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
+        .ribbon-custom-double {
+            top: 30px !important;
+            left: -24px !important;
         }
     </style>
 </head>
-<body class="bg-surface-container-lowest min-h-screen relative overflow-x-hidden text-ink font-body-md antialiased">
+<body class="bg-white min-h-screen relative overflow-x-hidden text-ink font-body-md antialiased">
     <!-- Subtle Textures -->
     <div class="fixed top-[-20px] left-[-20px] w-48 h-12 wax-tape z-0 pointer-events-none"></div>
     <div class="fixed bottom-margin-desktop right-margin-desktop w-64 h-64 leaf-sprig z-0 pointer-events-none">
@@ -210,33 +223,33 @@
     <div class="artisan-texture-bottom"></div>
 
     <!-- Top Navigation Bar (same as home page, with search input embedded) -->
-    <header class="w-full sticky top-0 z-50 bg-[#FAF7F0] border-b border-[#C1C9C0] flex justify-between items-center px-margin-desktop h-20">
+    <header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
         <!-- Brand Logo -->
         <div class="flex items-center flex-1">
-            <a class="font-['Playfair_Display'] text-[32px] italic text-[#255338] select-none" href="/buyer/home.html">
-                Tohfa<span class="text-[#D4AF37]">.</span>
+            <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+                Tohfa<span class="text-[#C8973A]">.</span>
             </a>
         </div>
 
         <!-- Navigation Links -->
         <nav class="hidden md:flex items-center justify-center gap-xl h-full">
     <!-- Home -->
-    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
     <!-- Category -->
-    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
     <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
     <!-- Profile -->
-    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -251,21 +264,21 @@
                 </div>
                 <input id="search-input" autofocus type="text" autocomplete="off"
                     placeholder="Search gifts, sellers, occasions…"
-                    class="w-[260px] bg-white border border-[#C1C9C0] focus:border-[#3d6b4f] rounded-full py-2 pl-10 pr-9 text-[14px] font-['DM_Sans'] text-[#3A3328] placeholder-[#717972]/70 focus:outline-none focus:ring-0 transition-all shadow-sm"/>
+                    class="w-[260px] bg-white border border-[#8FAF82] focus:border-[#3d6b4f] rounded-full py-2 pl-10 pr-9 text-[14px] font-['DM_Sans'] text-[#3A3328] placeholder-[#717972]/70 focus:outline-none focus:ring-0 transition-all shadow-sm"/>
                 <button id="clear-search-btn" class="absolute inset-y-0 right-3 flex items-center text-[#717972] hover:text-[#3A3328] transition-colors hidden">
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
             <!-- Wishlist -->
-            <a href="/buyer/saved-makes.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+            <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
             </a>
             <!-- Cart -->
-            <a href="/buyer/cart.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+            <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
                 <span class="material-symbols-outlined">shopping_cart</span>
             </a>
             <!-- Notifications -->
-            <a href="/buyer/notifications.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+            <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
                 <span class="material-symbols-outlined">notifications</span>
             </a>
         
@@ -301,7 +314,6 @@
                     <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">ceramics</button>
                     <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">wildflower jewelry</button>
                     <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">leather journal</button>
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">botanical wraps</button>
                     <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">woodworking</button>
                     <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">custom portrait</button>
                 </div>
@@ -815,46 +827,61 @@
             resultsGrid.innerHTML = products.map(p => {
                 const img = p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
                 const price = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
-                
                 const isWishlisted = !!p.is_wishlisted;
-                const heartFill = isWishlisted ? 1 : 0;
 
-                const tagType = p.id % 3 === 0 ? 'sponsored' : (p.id % 3 === 1 ? 'bestseller' : '');
                 let ribbonHtml = '';
-                if (tagType === 'sponsored') {
+                if (p.product_tag === 'Sponsored' || p.type === 'sponsored') {
                     ribbonHtml = `
                         <div class="ribbon-wrapper">
                             <div class="ribbon-tag ribbon-sponsored">Sponsored</div>
                         </div>
                     `;
-                } else if (tagType === 'bestseller') {
+                } else if (p.is_bestseller && p.listing_type === 'custom') {
                     ribbonHtml = `
                         <div class="ribbon-wrapper">
-                            <div class="ribbon-tag ribbon-bestseller">Best Seller</div>
+                            <div class="ribbon-tag ribbon-bestseller ribbon-bestseller-double">BEST SELLER</div>
+                            <div class="ribbon-tag ribbon-custom ribbon-custom-double">CUSTOM</div>
+                        </div>
+                    `;
+                } else if (p.is_bestseller) {
+                    ribbonHtml = `
+                        <div class="ribbon-wrapper">
+                            <div class="ribbon-tag ribbon-bestseller">BEST SELLER</div>
+                        </div>
+                    `;
+                } else if (p.listing_type === 'custom') {
+                    ribbonHtml = `
+                        <div class="ribbon-wrapper">
+                            <div class="ribbon-tag ribbon-custom">CUSTOM</div>
                         </div>
                     `;
                 }
 
                 return `
-                    <div class="bg-[#FCFAF5] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative" data-product-id="${p.id}">
-                        <div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF] cursor-pointer" onclick="window.location.href='product.html?id=${p.id}'">
-                            ${ribbonHtml}
-                            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${img}" alt="${p.name}">
-                            <button class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity toggle-wishlist-btn hover:scale-110 active:scale-95" data-id="${p.id}" data-wishlisted="${isWishlisted}">
-                                <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' ${heartFill};">favorite</span>
-                            </button>
-                        </div>
-                        <div class="p-md flex flex-col flex-grow justify-between">
-                            <div>
-                                <h3 class="font-title-serif text-title-serif text-primary line-clamp-2 cursor-pointer hover:underline" onclick="window.location.href='product.html?id=${p.id}'">${p.name}</h3>
-                                <p class="text-xs text-outline mt-1 hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</p>
-                            </div>
-                            <div class="flex items-center justify-between mt-md pt-sm border-t border-outline-variant/20">
-                                <p class="font-data-price text-lg text-secondary-fixed-variant font-bold">${price}</p>
-                                <button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors add-to-cart-btn active:scale-95" data-id="${p.id}">
-                                    <span class="material-symbols-outlined text-md">add_shopping_cart</span>
+                    <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='/buyer/product.html?id=${p.id}'" data-product-id="${p.id}">
+                        <div>
+                            <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                                ${ribbonHtml}
+                                <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${img}" alt="${p.name}">
+                                <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                                    <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                                 </button>
                             </div>
+                            <div class="flex flex-col mb-4">
+                                <span class="font-bold text-lg text-[#C8973A] mb-1">${price}</span>
+                                <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                                <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
+                                    <span class="text-[#C8973A] font-bold">★</span>
+                                    <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                    <span>(${parseInt(p.review_count || 0, 10)})</span>
+                                </div>
+                                <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
+                            </div>
+                        </div>
+                        <div class="w-full font-['DM_Sans']">
+                            <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                                Add to Cart
+                            </button>
                         </div>
                     </div>
                 `;
@@ -902,25 +929,83 @@
                     grid.innerHTML = items.map(p => {
                         const img = p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
                         const price = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
-                        
-                        return `
-                            <div class="bg-[#FCFAF5] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer" onclick="window.location.href='product.html?id=${p.id}'">
-                                <div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF] mb-sm">
-                                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${img}" alt="${p.name}">
+                        const isWishlisted = !!p.is_wishlisted;
+
+                        let ribbonHtml = '';
+                        if (p.product_tag === 'Sponsored' || p.type === 'sponsored') {
+                            ribbonHtml = `
+                                <div class="ribbon-wrapper">
+                                    <div class="ribbon-tag ribbon-sponsored">Sponsored</div>
                                 </div>
-                                <div class="p-xs flex flex-col flex-grow justify-between text-left">
-                                    <div>
-                                        <h4 class="font-title-serif text-title-serif text-primary text-[15px] line-clamp-2">${p.name}</h4>
-                                        <p class="text-xs text-outline mt-0.5 hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</p>
+                            `;
+                        } else if (p.is_bestseller && p.listing_type === 'custom') {
+                            ribbonHtml = `
+                                <div class="ribbon-wrapper">
+                                    <div class="ribbon-tag ribbon-bestseller ribbon-bestseller-double">BEST SELLER</div>
+                                    <div class="ribbon-tag ribbon-custom ribbon-custom-double">CUSTOM</div>
+                                </div>
+                            `;
+                        } else if (p.is_bestseller) {
+                            ribbonHtml = `
+                                <div class="ribbon-wrapper">
+                                    <div class="ribbon-tag ribbon-bestseller">BEST SELLER</div>
+                                </div>
+                            `;
+                        } else if (p.listing_type === 'custom') {
+                            ribbonHtml = `
+                                <div class="ribbon-wrapper">
+                                    <div class="ribbon-tag ribbon-custom">CUSTOM</div>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='/buyer/product.html?id=${p.id}'">
+                                <div>
+                                    <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                                        ${ribbonHtml}
+                                        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${img}" alt="${p.name}">
+                                        <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                                            <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
+                                        </button>
                                     </div>
-                                    <div class="flex items-center justify-between mt-sm pt-xs border-t border-outline-variant/10">
-                                        <p class="font-data-price text-sm text-secondary-fixed-variant font-bold">${price}</p>
-                                        <span class="material-symbols-outlined text-outline text-md">arrow_forward</span>
+                                    <div class="flex flex-col mb-4">
+                                        <span class="font-bold text-lg text-[#C8973A] mb-1">${price}</span>
+                                        <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                                        <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
+                                            <span class="text-[#C8973A] font-bold">★</span>
+                                            <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                            <span>(${parseInt(p.review_count || 0, 10)})</span>
+                                        </div>
+                                        <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
                                     </div>
+                                </div>
+                                <div class="w-full font-['DM_Sans']">
+                                    <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                                        Add to Cart
+                                    </button>
                                 </div>
                             </div>
                         `;
                     }).join('');
+
+                    // Bind click handlers for related treasures
+                    grid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            await handleAddToCart(id);
+                        });
+                    });
+
+                    grid.querySelectorAll('.toggle-wishlist-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            const wishlisted = btn.getAttribute('data-wishlisted') === 'true';
+                            await handleToggleWishlist(id, wishlisted, btn);
+                        });
+                    });
                 }
             } catch (err) {
                 console.error("Failed to load related feeds:", err);
@@ -954,18 +1039,27 @@
             }
 
             try {
+                const iconEl = btn.querySelector('.material-symbols-outlined');
                 if (isWishlisted) {
                     const res = await apiClient.delete(`/wishlist/${productId}`);
                     if (res.data && res.data.success) {
                         btn.setAttribute('data-wishlisted', 'false');
-                        btn.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                        if (iconEl) {
+                            iconEl.classList.remove('fill-icon', 'text-red-500');
+                            iconEl.classList.add('text-secondary');
+                            iconEl.style.fontVariationSettings = "'FILL' 0";
+                        }
                         showToast("Removed from favorites", "success");
                     }
                 } else {
                     const res = await apiClient.post(`/wishlist/${productId}`);
                     if (res.data && res.data.success) {
                         btn.setAttribute('data-wishlisted', 'true');
-                        btn.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+                        if (iconEl) {
+                            iconEl.classList.add('fill-icon', 'text-red-500');
+                            iconEl.classList.remove('text-secondary');
+                            iconEl.style.fontVariationSettings = "'FILL' 1";
+                        }
                         showToast("Saved to favorites", "success");
                     }
                 }
@@ -1087,10 +1181,10 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#C1C9C0] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
                 } else {
                     avatarHtml = `
-                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#C1C9C0] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
                             ${initial}
                         </a>
                     `;
@@ -1108,8 +1202,8 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#255338] hover:underline text-sm font-semibold">Login</a>
-                        <a href="/auth/signup-buyer.html" class="bg-[#255338] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
             }

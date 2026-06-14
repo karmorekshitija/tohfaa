@@ -315,12 +315,8 @@ class SellerTopBar extends HTMLElement {
           </a>
         </div>
         
-        <!-- Right Side: User Name + Avatar + ZAI Toggle -->
+        <!-- Right Side: User Name + Avatar -->
         <div class="flex items-center gap-6">
-          <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#3D6B4F]/30 text-[#3D6B4F] text-[12px] font-bold hover:bg-[#3D6B4F]/10 transition-all shadow-sm" id="zai-toggle-btn">
-            <span class="material-symbols-outlined text-[16px]" id="zai-toggle-icon">flutter_dash</span>
-            ZAI Mode
-          </button>
           <div class="flex items-center gap-3">
             <div class="text-right">
               <p class="text-xs font-bold text-[#1A1A1A] line-clamp-1" id="topbar-seller-name">Loading...</p>
@@ -336,77 +332,6 @@ class SellerTopBar extends HTMLElement {
 
     const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
     
-    // ZAI toggle state management
-    const updateZaiState = (enabled) => {
-      const btn = this.querySelector('#zai-toggle-btn');
-      const icon = this.querySelector('#zai-toggle-icon');
-      const banner = document.getElementById('zai-tip-banner');
-      
-      if (btn && icon) {
-        if (enabled) {
-          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#7B5EA7] text-white text-[12px] font-bold transition-all shadow-sm';
-          icon.style.fontVariationSettings = "'FILL' 1";
-        } else {
-          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#7B5EA7]/30 text-[#7B5EA7] text-[12px] font-bold hover:bg-[#7B5EA7]/10 transition-all shadow-sm';
-          icon.style.fontVariationSettings = "'FILL' 0";
-        }
-      }
-      
-      if (banner) {
-        const tipTextEl = document.getElementById('zai-tip-text');
-        const hasText = tipTextEl && tipTextEl.textContent.trim() !== '' && tipTextEl.textContent.trim() !== '...';
-        if (enabled && hasText) {
-          banner.classList.remove('hidden');
-        } else {
-          banner.classList.add('hidden');
-        }
-      }
-    };
-
-    // Initial load from localStorage
-    const initialEnabled = localStorage.getItem('zai_mode') === 'true';
-    updateZaiState(initialEnabled);
-
-    // ZAI Toggle Click Event
-    const toggleBtn = this.querySelector('#zai-toggle-btn');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const isEnabled = localStorage.getItem('zai_mode') === 'true';
-        const nextEnabled = !isEnabled;
-        
-        localStorage.setItem('zai_mode', nextEnabled ? 'true' : 'false');
-        updateZaiState(nextEnabled);
-        
-        if (token) {
-          fetch('/api/seller/zai-mode', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ enabled: nextEnabled })
-          })
-        .catch(err => {
-          console.error("Error toggling ZAI Mode:", err);
-          // Revert UI change and show an error message
-          alert('Failed to update ZAI mode. Please try again.');
-          // Revert the UI state
-          updateZaiState(!nextEnabled); 
-        });
-        }
-
-        // Notify page scripts
-        window.dispatchEvent(new CustomEvent('zai-mode-change', { detail: { enabled: nextEnabled } }));
-      });
-    }
-
-    // Listen to changes from page-level toggle actions to keep synced
-    window.addEventListener('zai-mode-change', (e) => {
-      if (e.detail && typeof e.detail.enabled === 'boolean') {
-        updateZaiState(e.detail.enabled);
-      }
-    });
-
     // Fetch profile and update display name and avatar dynamically
     if (token) {
       fetch('/api/seller/profile', {
@@ -420,10 +345,6 @@ class SellerTopBar extends HTMLElement {
           const avatarEl = this.querySelector('#sidebar-avatar');
           if (nameEl) nameEl.textContent = profile.display_name || 'Artisan';
           if (avatarEl && profile.avatar_url) avatarEl.src = profile.avatar_url;
-          
-          const dbEnabled = !!profile.zai_mode_enabled;
-          localStorage.setItem('zai_mode', dbEnabled ? 'true' : 'false');
-          updateZaiState(dbEnabled);
         }
       })
       .catch(err => console.error("Error populating topbar profile details:", err));

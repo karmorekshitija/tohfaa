@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+<script src="/src/components/AdminSidebar.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Order #ORD-89215 | Tohfa Admin</title>
@@ -16,16 +19,16 @@
                         "text-muted": "#6E6453",
                         "text-faint": "#9A8F7A",
                         "bg-primary": "#FFFFFF",
-                        "bg-cream-deep": "#F1EADD",
-                        "surface-ivory": "#FCFAF5",
+                        "bg-cream-deep": "#F7F3EC",
+                        "surface-ivory": "#F7F3EC",
                         "primary-forest": "#3D6B4F",
-                        "primary-deep": "#2E5340",
-                        "sage-soft": "#C5D6BC",
+                        "primary-deep": "#3D6B4F",
+                        "sage-soft": "#8FAF82",
                         "accent-violet": "#7B5EA7",
                         "violet-soft": "#D8CBE9",
                         "highlight-gold": "#C8973A",
-                        "gold-soft": "#EBD7AE",
-                        "danger-terracotta": "#B14B3E",
+                        "gold-soft": "#C8973A",
+                        "danger-terracotta": "#3D6B4F",
                         "outline-sage": "#8FAF82",
                     },
                     fontFamily: {
@@ -73,7 +76,7 @@
             top: 24px;
             bottom: -24px;
             width: 2px;
-            border-left: 2px dashed #C5D6BC;
+            border-left: 2px dashed #8FAF82;
         }
         .step-last::after {
             display: none;
@@ -90,16 +93,16 @@
             width: 4px;
         }
         .sidebar-scroll::-webkit-scrollbar-thumb {
-            background: #EBD7AE;
+            background: #C8973A;
             border-radius: 10px;
         }
     </style>
 </head>
-<body class="bg-bg-primary text-text-default font-body-md min-h-screen flex overflow-hidden">
+<body class="bg-white text-text-default font-body-md min-h-screen flex overflow-hidden">
 <!-- Side Navigation Bar -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#FCFAF5]">
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#F7F3EC]">
 <div class="mb-14">
-<h1 class="font-headline-lg text-headline-lg italic text-[#255338] leading-tight">Tohfa</h1>
+<h1 class="font-headline-lg text-headline-lg italic text-[#3D6B4F] leading-tight">Tohfa</h1>
 <p class="text-accent-caps font-accent-caps text-text-faint tracking-widest text-[10px] mt-1 opacity-70">Admin Console</p>
 </div>
 <nav class="flex-1 space-y-1">
@@ -347,7 +350,7 @@ function renderOrderDetail(order) {
   } else if (st === 'delivered') {
     statusBadgeClass = 'bg-primary-forest text-white border-primary-forest/20';
   } else if (st === 'cancelled') {
-    statusBadgeClass = 'bg-[#E2E3DF] text-[#6E6453] border-outline-variant/20';
+    statusBadgeClass = 'bg-[#F7F3EC] text-[#6E6453] border-outline-variant/20';
   } else {
     statusBadgeClass = 'bg-surface-variant text-on-surface-variant border-outline-variant/20';
   }
@@ -395,7 +398,7 @@ function renderOrderDetail(order) {
   if (order.is_refund_flagged) {
     flagBtn.disabled = true;
     flagBtn.textContent = 'Flagged for Refund';
-    flagBtn.className = 'w-full bg-[#EBD7AE]/30 text-highlight-gold border border-highlight-gold/30 rounded-lg py-2 text-[13px] font-bold cursor-not-allowed flex items-center justify-center gap-2';
+    flagBtn.className = 'w-full bg-[#C8973A]/30 text-highlight-gold border border-highlight-gold/30 rounded-lg py-2 text-[13px] font-bold cursor-not-allowed flex items-center justify-center gap-2';
   } else {
     flagBtn.disabled = false;
     flagBtn.textContent = 'Flag this order';

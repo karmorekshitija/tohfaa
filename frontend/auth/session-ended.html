@@ -14,31 +14,31 @@
         theme: {
           extend: {
             "colors": {
-                    "primary": "#255338",
+                    "primary": "#3D6B4F",
                     "tertiary-container": "#8a5157",
-                    "sage-soft": "#C5D6BC",
+                    "sage-soft": "#8FAF82",
                     "primary-container": "#3d6b4f",
                     "text-muted": "#6E6453",
-                    "surface-bright": "#f9faf5",
-                    "on-error-container": "#93000a",
-                    "bg-cream-deep": "#F1EADD",
+                    "surface-bright": "#FFFFFF",
+                    "on-error-container": "#3D6B4F",
+                    "bg-cream-deep": "#F7F3EC",
                     "on-error": "#ffffff",
                     "text-faint": "#9A8F7A",
                     "surface-container-highest": "#e2e3df",
                     "inverse-surface": "#2e312e",
                     "secondary-fixed-dim": "#afd0a0",
-                    "gold-soft": "#EBD7AE",
+                    "gold-soft": "#C8973A",
                     "highlight-gold": "#C8973A",
                     "surface-variant": "#e2e3df",
                     "on-tertiary-fixed": "#360d14",
                     "outline": "#717972",
                     "on-primary-fixed": "#002110",
                     "surface-container-low": "#f3f4f0",
-                    "outline-variant": "#c1c9c0",
-                    "danger-terracotta": "#B14B3E",
+                    "outline-variant": "#F7F3EC",
+                    "danger-terracotta": "#3D6B4F",
                     "on-primary-fixed-variant": "#214f36",
-                    "secondary-container": "#c8e9b8",
-                    "surface-ivory": "#FCFAF5",
+                    "secondary-container": "#8FAF82",
+                    "surface-ivory": "#F7F3EC",
                     "on-background": "#1a1c1a",
                     "secondary": "#49663f",
                     "on-secondary-container": "#4d6a43",
@@ -52,10 +52,10 @@
                     "tertiary-fixed-dim": "#fcb4ba",
                     "tertiary": "#6e3a40",
                     "surface-container": "#edeeea",
-                    "surface": "#f9faf5",
+                    "surface": "#FFFFFF",
                     "on-primary": "#ffffff",
                     "surface-container-lowest": "#ffffff",
-                    "primary-deep": "#2E5340",
+                    "primary-deep": "#3D6B4F",
                     "surface-container-high": "#e7e9e4",
                     "secondary-fixed": "#caecbb",
                     "on-primary-container": "#b7e9c6",
@@ -65,13 +65,13 @@
                     "on-tertiary-container": "#ffd2d5",
                     "surface-dim": "#d9dad6",
                     "inverse-primary": "#a0d2b0",
-                    "error": "#ba1a1a",
+                    "error": "#3D6B4F",
                     "on-tertiary-fixed-variant": "#6b373d",
                     "on-secondary-fixed-variant": "#324e29",
                     "accent-violet": "#7B5EA7",
                     "primary-fixed": "#bceecb",
-                    "background": "#f9faf5",
-                    "error-container": "#ffdad6",
+                    "background": "#FFFFFF",
+                    "error-container": "#F7F3EC",
                     "text-default": "#3A3328",
                     "surface-tint": "#3a684c"
             },
@@ -127,7 +127,7 @@
         }
     </style>
 </head>
-<body class="bg-[#D8E8D0] font-body-main text-on-surface overflow-x-hidden">
+<body class="bg-white font-body-main text-on-surface overflow-x-hidden">
     
     <!-- Top Navigation -->
     <div id="tohfa-navbar"></div>
@@ -135,9 +135,9 @@
     <div class="fixed inset-0 sketch-texture z-0"></div>
 
     <!-- Main Canvas -->
-    <main class="min-h-[calc(100vh-128px)] flex items-center justify-center py-12 px-6 bg-[#D8E8D0] relative z-10">
+    <main class="min-h-[calc(100vh-128px)] flex items-center justify-center py-12 px-6 bg-[#8FAF82] relative z-10">
         <!-- Session Ended Modal Card -->
-        <div class="bg-[#FDFAF5] w-full max-w-[360px] border border-[#D4C9B8] rounded-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.07)] overflow-hidden flex flex-col items-center p-10 relative bg-surface-ivory">
+        <div class="bg-[#F7F3EC] w-full max-w-[360px] border border-[#F7F3EC] rounded-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.07)] overflow-hidden flex flex-col items-center p-10 relative bg-surface-ivory">
             <!-- Hand-drawn line motif -->
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sage-soft via-gold-soft to-sage-soft opacity-40"></div>
             
@@ -147,7 +147,7 @@
             </div>
 
             <!-- Typography -->
-            <h1 class="font-serif italic text-2xl text-[#2D5016] text-center mb-2">
+            <h1 class="font-serif italic text-2xl text-[#3D6B4F] text-center mb-2">
                 Your session has rested
             </h1>
             <p class="font-serif italic text-sm text-[#6B6B6B] text-center mb-6">
@@ -155,10 +155,10 @@
             </p>
 
             <!-- Actions -->
-            <button onclick="window.location.href='/auth/login.html'" class="w-full bg-[#2D5016] text-white py-[14px] rounded-[8px] font-sans font-semibold text-sm hover:bg-[#1e360f] transition-all active:scale-[0.98] shadow-md">
+            <button onclick="window.location.href='/auth/login.html'" class="w-full bg-[#3D6B4F] text-white py-[14px] rounded-[8px] font-sans font-semibold text-sm hover:bg-[#3D6B4F] transition-all active:scale-[0.98] shadow-md">
                 Log in
             </button>
-            <a href="/" class="mt-4 text-sm text-[#6B6B6B] hover:text-[#2D5016] transition-colors font-medium">
+            <a href="/" class="mt-4 text-sm text-[#6B6B6B] hover:text-[#3D6B4F] transition-colors font-medium">
                 Return to gallery
             </a>
         </div>

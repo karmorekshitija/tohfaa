@@ -8,13 +8,13 @@ export function initCategoryDrawer() {
 
   // 1. Inject Drawer & Backdrop
   const drawerHtml = `
-    <div id="category-drawer" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[100] transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-[#C1C9C0] flex flex-col font-['DM_Sans']">
-      <div class="p-6 border-b border-[#C1C9C0] flex justify-between items-center bg-[#FCFAF5]">
+    <div id="category-drawer" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[100] transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-[#8FAF82] flex flex-col font-['DM_Sans']">
+      <div class="p-6 border-b border-[#8FAF82] flex justify-between items-center bg-[#FCFAF5]">
         <div>
           <h3 class="font-['Playfair_Display'] text-2xl italic text-[#255338] select-none">Tohfa.</h3>
           <p class="text-[10px] text-outline tracking-wider uppercase mt-1">Explore Crafts</p>
         </div>
-        <button id="close-category-drawer" class="text-secondary hover:text-primary transition-colors focus:outline-none p-1 rounded-full hover:bg-[#C1C9C0]/20 flex items-center justify-center">
+        <button id="close-category-drawer" class="text-secondary hover:text-primary transition-colors focus:outline-none p-1 rounded-full hover:bg-[#8FAF82]/20 flex items-center justify-center">
           <span class="material-symbols-outlined text-2xl">close</span>
         </button>
       </div>
@@ -91,7 +91,7 @@ async function loadCategories() {
         const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
 
         return `
-          <button class="w-full flex items-center justify-between p-4 bg-[#FCFAF5] hover:bg-[#E8F0E4] active:scale-[0.98] border border-[#C1C9C0]/40 rounded-xl transition-all duration-200 group text-left" data-slug="${cat.slug}">
+          <button class="w-full flex items-center justify-between p-4 bg-[#FCFAF5] hover:bg-[#E8F0E4] active:scale-[0.98] border border-[#8FAF82]/40 rounded-xl transition-all duration-200 group text-left" data-slug="${cat.slug}">
             <div class="flex items-center gap-4">
               <span class="text-2xl">${emoji}</span>
               <div>

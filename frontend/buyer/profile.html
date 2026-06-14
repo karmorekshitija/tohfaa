@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Buyer Profile</title>
@@ -13,52 +15,52 @@
             theme: {
                 extend: {
                     "colors": {
-                        "error": "#ba1a1a",
-                        "primary-container": "#8fa382",
+                        "error": "#3D6B4F",
+                        "primary-container": "#8FAF82",
                         "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#cac6bd",
-                        "inverse-primary": "#b8cdaa",
+                        "secondary-fixed-dim": "#F7F3EC",
+                        "inverse-primary": "#8FAF82",
                         "on-surface": "#1f1b15",
                         "on-tertiary-fixed-variant": "#593d5d",
                         "on-secondary-fixed-variant": "#484740",
                         "on-tertiary": "#ffffff",
-                        "primary": "#255338",
-                        "surface-tint": "#255338",
-                        "tertiary-fixed": "#fcd6ff",
+                        "primary": "#3D6B4F",
+                        "surface-tint": "#3D6B4F",
+                        "tertiary-fixed": "#7B5EA7",
                         "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3a4c31",
+                        "on-primary-fixed-variant": "#3D6B4F",
                         "on-tertiary-container": "#452b4a",
                         "inverse-on-surface": "#f8efe5",
                         "on-secondary": "#ffffff",
-                        "surface-variant": "#eae1d7",
-                        "tertiary": "#725476",
+                        "surface-variant": "#F7F3EC",
+                        "tertiary": "#7B5EA7",
                         "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#fbf2e8",
+                        "surface-container-low": "#F7F3EC",
                         "on-error": "#ffffff",
                         "on-surface-variant": "#444840",
                         "outline": "#74786f",
                         "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#93000a",
-                        "secondary-container": "#e6e2d8",
-                        "secondary-fixed": "#e6e2d8",
-                        "primary-fixed-dim": "#b8cdaa",
+                        "on-error-container": "#3D6B4F",
+                        "secondary-container": "#F7F3EC",
+                        "secondary-fixed": "#F7F3EC",
+                        "primary-fixed-dim": "#8FAF82",
                         "secondary": "#605e57",
                         "on-secondary-fixed": "#1c1c16",
-                        "background": "#fff8f3",
+                        "background": "#FFFFFF",
                         "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#d4e9c4",
-                        "outline-variant": "#c4c8bd",
+                        "primary-fixed": "#8FAF82",
+                        "outline-variant": "#F7F3EC",
                         "on-primary": "#ffffff",
                         "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#fff8f3",
+                        "surface-bright": "#FFFFFF",
                         "on-primary-fixed": "#101f09",
                         "on-background": "#1f1b15",
                         "on-secondary-container": "#66645d",
                         "surface-container": "#f6ece3",
                         "on-primary-container": "#283920",
-                        "surface": "#fff8f3",
-                        "surface-container-highest": "#eae1d7",
-                        "error-container": "#ffdad6",
+                        "surface": "#FFFFFF",
+                        "surface-container-highest": "#F7F3EC",
+                        "error-container": "#F7F3EC",
                         "on-tertiary-fixed": "#2a122f"
                     },
                     "borderRadius": {
@@ -80,19 +82,29 @@
                         "gutter": "24px"
                     },
                     "fontFamily": {
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "body-sm": ["DM Sans"],
                         "headline-lg": ["Playfair Display"],
+                        "title-md": ["DM Sans"],
+                        "label-caps": ["DM Sans"],
+                        "display-lg": ["Playfair Display"],
                         "title-serif": ["Playfair Display"],
                         "body-md": ["DM Sans"],
-                        "data-price": ["DM Sans"],
-                        "label-caps": ["DM Sans"],
-                        "display-hero": ["Playfair Display"]
+                        "data-price": ["DM Sans"]
                     },
                     "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
                         "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "display-hero": ["56px", {"lineHeight": "64px", "fontWeight": "700"}],
                         "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
                         "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
+                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}]
                     }
                 },
             },
@@ -100,7 +112,7 @@
     </script>
     <style>
         .ink-wash-gradient {
-            background: linear-gradient(135deg, #C8D7BF 0%, #E8F0E4 50%, #F1EADD 100%);
+            background: linear-gradient(135deg, #8FAF82 0%, #8FAF82 50%, #F7F3EC 100%);
         }
         .artisan-card-hover {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -122,49 +134,48 @@
             animation: chatSlideIn 0.35s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
         .chat-bubble-seller {
-            background: #D4E9C4;
+            background: #8FAF82;
             border-radius: 18px 18px 18px 4px;
         }
         .chat-bubble-me {
-            background: #255338;
+            background: #3D6B4F;
             color: white;
             border-radius: 18px 18px 4px 18px;
         }
         .chat-scroll::-webkit-scrollbar { width: 3px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #c4c8bd; border-radius: 2px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #F7F3EC; border-radius: 2px; }
     </style>
 </head>
-<body class="bg-surface text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<body class="bg-white text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
 <!-- Top Navigation -->
-<!-- Standardised Top Navigation Bar (Task 57) -->
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#FAF7F0] border-b border-[#C1C9C0] flex justify-between items-center px-margin-desktop h-20">
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
-    <a class="font-['Playfair_Display'] text-[32px] italic text-[#255338] select-none" href="/buyer/home.html">
-      Tohfa<span class="text-[#D4AF37]">.</span>
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
     </a>
   </div>
   
   <!-- Navigation Links -->
   <nav class="hidden md:flex items-center justify-center gap-xl h-full">
     <!-- Home -->
-    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
     <!-- Category -->
-    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
     <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#255338] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
     <!-- Profile -->
-    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#255338] border-b-2 border-[#255338] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -172,21 +183,21 @@
   
   <!-- Right side items -->
   <div class="flex items-center justify-end flex-1 gap-lg">
-    <a href="/buyer/categories.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+    <a href="/buyer/search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
       <span class="material-symbols-outlined">search</span>
     </a>
-    <a href="/buyer/saved-makes.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-gold-custom text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="/buyer/cart.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">shopping_cart</span>
-      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-gold-custom text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="/buyer/notifications.html" class="text-[#255338] p-2 hover:bg-[#C1C9C0]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">notifications</span>
-      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-gold-custom rounded-full hidden"></span>
-      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-gold-custom rounded-full hidden"></span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
     </a>
   
     <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
@@ -209,7 +220,7 @@
 <!-- Profile Info Overlay -->
 <div class="flex flex-col items-center -mt-24 pb-lg">
 <div class="relative group">
-<div class="relative group w-32 h-32 rounded-full border-[3px] border-[#255338] overflow-hidden bg-surface-container shadow-lg flex-shrink-0">
+<div class="relative group w-32 h-32 rounded-full border-[3px] border-[#3D6B4F] overflow-hidden bg-surface-container shadow-lg flex-shrink-0">
   <img class="w-full h-full object-cover" data-alt="A portrait of a creative individual with a warm smile, captured in a studio with soft, natural lighting. The aesthetic is clean and minimalist with a tactile quality, reflecting an artisan spirit. The background is a soft ivory tone, consistent with a high-end journal style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1MlCvGNVC5kb3_0adXisBIXKR2kO5rDi5REC7Ws_jdqAl-d9k85WtM1zhT8kPt7miefUL2zB7ZWlht6gOBoOFf_yaM44xEDS_XDmP2CC3-O2XtWEbyNWU5d0aYrxHES2zAVOb4to55ZXc0JuEuYUxljiCZtgqH9k3hGJLepqGwKKZZmnmigxFXREVk5a9jUDkeBzDkZX8Z9jT_im_tJi4_Y8YVc3tbxMsxYFYLwpSOJOXUuN4y3YO7VUkGCQmkVDabJ6ip82gLbE">
   <!-- Camera overlay → go to edit profile -->
   <a href="/buyer/edit-profile.html" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -247,38 +258,33 @@
       <p class="font-title-serif text-on-surface">Saved Reels</p>
       <p id="hub-reels-count" class="text-xs text-outline mt-xs">0 saved reels</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/payment-history.html">
-      <span class="material-symbols-outlined text-primary mb-md" data-icon="receipt_long">receipt_long</span>
-      <p class="font-title-serif text-on-surface">Payments</p>
-      <p class="text-xs text-outline mt-xs">Tax invoices</p>
-    </a>
     <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/addresses.html">
       <span class="material-symbols-outlined text-tertiary mb-md" data-icon="location_on">location_on</span>
       <p class="font-title-serif text-on-surface">Addresses</p>
       <p id="hub-addresses-count" class="text-xs text-outline mt-xs">0 saved locations</p>
     </a>
     <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/occasions.html">
-      <span class="material-symbols-outlined text-[#725476] mb-md" data-icon="celebration">celebration</span>
+      <span class="material-symbols-outlined text-[#7B5EA7] mb-md" data-icon="celebration">celebration</span>
       <p class="font-title-serif text-on-surface">Occasions</p>
       <p id="hub-occasions-count" class="text-xs text-outline mt-xs">0 occasions saved</p>
+    </a>
+    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/followers.html">
+      <span id="hub-followers-icon" class="material-symbols-outlined text-[#C87A53] mb-md" data-icon="group">group</span>
+      <p id="hub-followers-title" class="font-title-serif text-on-surface">Followers & Following</p>
+      <p id="hub-followers-count" class="text-xs text-outline mt-xs">0 followers • 0 following</p>
     </a>
     <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/notifications.html">
       <span class="material-symbols-outlined text-secondary mb-md" data-icon="notifications">notifications</span>
       <p class="font-title-serif text-on-surface">Notifications</p>
       <p class="text-xs text-outline mt-xs">Recent alerts</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/overflow-requests.html">
-      <span class="material-symbols-outlined text-primary mb-md" data-icon="event_busy">event_busy</span>
-      <p class="font-title-serif text-on-surface">Overflow Requests</p>
-      <p id="hub-overflow-count" class="text-xs text-outline mt-xs">View custom timeline offers</p>
-    </a>
     <!-- T-12: Custom Orders Chat — for personalised/customised gift orders -->
-    <button id="custom-chat-card" onclick="openChatModal()"
-            class="p-lg bg-gradient-to-br from-[#fcd6ff]/60 to-[#D4E9C4]/40 rounded-xl artisan-card-hover group border border-transparent hover:border-[#b492b7] text-left transition-all col-span-2 md:col-span-1">
-      <span class="material-symbols-outlined text-[#725476] mb-md">chat</span>
+    <a id="custom-chat-card" href="/buyer/chat.html"
+            class="p-lg bg-gradient-to-br from-[#7B5EA7]/60 to-[#8FAF82]/40 rounded-xl artisan-card-hover group border border-transparent hover:border-[#b492b7] text-left transition-all col-span-2 md:col-span-3">
+      <span class="material-symbols-outlined text-[#7B5EA7] mb-md">chat</span>
       <p class="font-title-serif text-on-surface">Custom Orders Chat</p>
       <p id="chat-card-subtitle" class="text-xs text-outline mt-xs">3 conversations about personalised gifts</p>
-    </button>
+    </a>
   </div>
   <!-- Shipping & Payment Details -->
   <div class="mt-xl grid grid-cols-1 md:grid-cols-2 gap-gutter">
@@ -379,103 +385,6 @@
 <span class="w-12 h-[1px] bg-outline"></span>
 </footer>
 
-<!-- ════════════════════════════════════════ -->
-<!-- T-12: Custom Orders Chat Modal          -->
-<!-- ════════════════════════════════════════ -->
-<div id="chat-modal-scrim" class="fixed inset-0 z-[200] chat-scrim hidden flex items-center justify-center p-4">
-  <div id="chat-modal" class="w-full max-w-lg bg-[#FCFAF5] rounded-2xl shadow-2xl flex flex-col chat-modal-animate" style="max-height: 85vh;">
-    <!-- Modal Header -->
-    <div class="px-lg py-md border-b border-outline-variant flex items-center justify-between flex-shrink-0">
-      <div class="flex items-center gap-md">
-        <div class="w-10 h-10 bg-[#fcd6ff] rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-[#725476] text-xl">chat</span>
-        </div>
-        <div>
-          <h3 class="font-title-serif text-on-surface text-base font-semibold">Custom Orders Chat</h3>
-          <p class="text-xs text-on-surface-variant">Only for personalised &amp; customised gift orders</p>
-        </div>
-      </div>
-      <button onclick="closeChatModal()" class="text-outline hover:text-error transition-colors p-xs rounded-lg">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <!-- Conversation List -->
-    <div class="flex-1 overflow-y-auto chat-scroll" id="chat-conversation-area">
-      <!-- Active Conversation (default: first one open) -->
-      <div id="chat-thread" class="p-lg space-y-md">
-        <!-- Thread header -->
-        <div class="flex items-center gap-sm pb-md border-b border-outline-variant mb-md">
-          <div class="w-8 h-8 rounded-full bg-[#D4E9C4] flex items-center justify-center text-sm font-bold text-primary">P</div>
-          <div>
-            <p class="font-semibold text-on-surface text-sm">Priya Sharma</p>
-            <p class="text-xs text-on-surface-variant">Custom Macramé Wall Hanging · Order #TF-0284</p>
-          </div>
-          <span class="ml-auto text-xs text-outline">Today</span>
-        </div>
-
-        <!-- Messages -->
-        <div class="space-y-sm">
-          <div class="flex gap-sm">
-            <div class="w-7 h-7 rounded-full bg-[#D4E9C4] flex-shrink-0 flex items-center justify-center text-xs font-bold text-primary">P</div>
-            <div class="chat-bubble-seller px-md py-sm max-w-[75%]">
-              <p class="text-sm text-on-surface">Hi! I'd love the wall hanging in sage green with my initials "PS" woven in. Is that possible?</p>
-              <p class="text-xs text-outline mt-xs">2:14 PM</p>
-            </div>
-          </div>
-          <div class="flex gap-sm justify-end">
-            <div class="chat-bubble-me px-md py-sm max-w-[75%]">
-              <p class="text-sm">Absolutely! Sage green with initials is doable. It'll be a 24×36" piece. Should take about 5-6 days. Want me to send a sample swatch first?</p>
-              <p class="text-xs text-white/60 mt-xs text-right">2:31 PM</p>
-            </div>
-          </div>
-          <div class="flex gap-sm">
-            <div class="w-7 h-7 rounded-full bg-[#D4E9C4] flex-shrink-0 flex items-center justify-center text-xs font-bold text-primary">P</div>
-            <div class="chat-bubble-seller px-md py-sm max-w-[75%]">
-              <p class="text-sm text-on-surface">Yes please! Also, can we add a small dried flower accent at the bottom?</p>
-              <p class="text-xs text-outline mt-xs">2:45 PM</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Separator for other conversations -->
-        <div class="pt-md border-t border-outline-variant">
-          <button onclick="switchConversation(1)" class="w-full text-left p-md rounded-xl hover:bg-surface-container transition-colors flex items-center gap-md">
-            <div class="w-8 h-8 rounded-full bg-[#fcd6ff] flex-shrink-0 flex items-center justify-center text-sm font-bold text-[#725476]">A</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-semibold text-on-surface text-sm">Arjun Mehra</p>
-              <p class="text-xs text-on-surface-variant truncate">Can you engrave "Happy Anniversary" on the ceramic mug?</p>
-            </div>
-            <span class="text-xs text-outline flex-shrink-0">Yesterday</span>
-          </button>
-          <button onclick="switchConversation(2)" class="w-full text-left p-md rounded-xl hover:bg-surface-container transition-colors flex items-center gap-md mt-xs">
-            <div class="w-8 h-8 rounded-full bg-[#E6E2D8] flex-shrink-0 flex items-center justify-center text-sm font-bold text-secondary">R</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-semibold text-on-surface text-sm">Riya Kapoor</p>
-              <p class="text-xs text-on-surface-variant truncate">Custom resin bookmarks with pressed flowers — batch of 20 pls!</p>
-            </div>
-            <span class="text-xs text-outline flex-shrink-0">Mon</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reply Input -->
-    <div class="px-lg py-md border-t border-outline-variant flex-shrink-0 bg-[#FCFAF5] rounded-b-2xl">
-      <div class="flex gap-sm items-end">
-        <textarea id="chat-reply-input"
-                  class="flex-1 resize-none border border-outline-variant rounded-xl px-md py-sm text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all bg-white"
-                  rows="2"
-                  placeholder="Type your reply about the custom order..."
-                  onkeydown="handleChatKeydown(event)"></textarea>
-        <button onclick="sendChatReply()"
-                class="bg-primary text-white p-sm rounded-xl hover:opacity-90 active:scale-95 transition-all flex-shrink-0">
-          <span class="material-symbols-outlined">send</span>
-        </button>
-      </div>
-      <p class="text-xs text-on-surface-variant mt-xs">Press Ctrl+Enter to send</p>
-    </div>
-  </div>
 </div>
 <script type="module">
     import apiClient from '/src/utils/apiClient.js';
@@ -488,9 +397,7 @@
         window.location.href = '/auth/login.html';
     }
 
-    let profileData = null;
-
-    // Load profile and addresses data on startup
+     // Load profile and addresses data on startup
     async function init() {
         try {
             // Fetch profile
@@ -518,26 +425,6 @@
                     const occEl = document.getElementById('hub-occasions-count');
                     if (occEl) {
                         occEl.innerText = count === 1 ? '1 occasion saved' : `${count} occasions saved`;
-                    }
-                }
-            } catch (e) { /* silently ignore */ }
-
-            // Fetch overflow requests count
-            try {
-                const overRes = await apiClient.get('/buyer/overflow-requests');
-                if (overRes.data && overRes.data.success) {
-                    const reqs = overRes.data.data || [];
-                    const pendingOffers = reqs.filter(r => r.status === 'accepted').length;
-                    const overEl = document.getElementById('hub-overflow-count');
-                    if (overEl) {
-                        if (pendingOffers > 0) {
-                            overEl.innerText = `${pendingOffers} offer${pendingOffers !== 1 ? 's' : ''} received!`;
-                            overEl.className = 'text-xs text-primary font-bold mt-xs';
-                        } else {
-                            const totalReqs = reqs.length;
-                            overEl.innerText = totalReqs === 0 ? 'View custom timeline offers' : `${totalReqs} request${totalReqs !== 1 ? 's' : ''} total`;
-                            overEl.className = 'text-xs text-outline mt-xs';
-                        }
                     }
                 }
             } catch (e) { /* silently ignore */ }
@@ -584,6 +471,29 @@
             addressesCountEl.innerText = `${profile.address_count || 0} saved locations`;
         }
 
+        const followersCountEl = document.getElementById('hub-followers-count');
+        const followersTitleEl = document.getElementById('hub-followers-title');
+        const followersIconEl = document.getElementById('hub-followers-icon');
+        if (profile.role === 'buyer') {
+            if (followersTitleEl) followersTitleEl.innerText = "Artisans You Follow";
+            if (followersIconEl) {
+                followersIconEl.innerText = "person_add";
+                followersIconEl.className = "material-symbols-outlined text-primary mb-md";
+            }
+            if (followersCountEl) {
+                followersCountEl.innerText = `${profile.following_count || 0} followed artisan${profile.following_count !== 1 ? 's' : ''}`;
+            }
+        } else {
+            if (followersTitleEl) followersTitleEl.innerText = "Followers & Following";
+            if (followersIconEl) {
+                followersIconEl.innerText = "group";
+                followersIconEl.className = "material-symbols-outlined text-[#C87A53] mb-md";
+            }
+            if (followersCountEl) {
+                followersCountEl.innerText = `${profile.followers_count || 0} follower${profile.followers_count !== 1 ? 's' : ''} • ${profile.following_count || 0} following`;
+            }
+        }
+
         const joinCard = document.getElementById('join-studio-card');
         if (joinCard) {
             if (profile.role !== 'seller') {
@@ -597,33 +507,18 @@
         const chatCard = document.getElementById('custom-chat-card');
         if (!chatCard) return;
         try {
-            const res = await apiClient.get('/orders');
-            if (res.data && res.data.success) {
-                const orders = res.data.data.orders || res.data.data || [];
-                const customOrders = orders.filter(o =>
-                    o.order_type === 'custom' ||
-                    o.listing_type === 'custom' ||
-                    (o.customization && o.customization !== 'null')
-                );
-                if (customOrders.length > 0) {
-                    chatCard.classList.remove('hidden');
-                    const subtitle = document.getElementById('chat-card-subtitle');
-                    if (subtitle) {
-                        subtitle.textContent = `${customOrders.length} active conversation${customOrders.length > 1 ? 's' : ''}`;
-                    }
-                } else {
-                    // Show anyway with mock data for demo (so it's always visible in this demo)
-                    chatCard.classList.remove('hidden');
-                    const subtitle = document.getElementById('chat-card-subtitle');
-                    if (subtitle) subtitle.textContent = '3 conversations (demo)';
+            const res = await apiClient.get('/conversations');
+            if (res.data && res.data.conversations) {
+                const count = res.data.conversations.length;
+                const subtitle = document.getElementById('chat-card-subtitle');
+                if (subtitle) {
+                    subtitle.textContent = `${count} conversation${count !== 1 ? 's' : ''}`;
                 }
-            } else {
-                // Fallback: always show in demo
-                chatCard.classList.remove('hidden');
             }
         } catch (_) {
             // Fallback: always show in demo
-            chatCard.classList.remove('hidden');
+            const subtitle = document.getElementById('chat-card-subtitle');
+            if (subtitle) subtitle.textContent = '3 conversations (demo)';
         }
     }
 
@@ -687,283 +582,16 @@
     updateCartBadge();
     checkCustomOrders();
 
-    async function loadAndOpenChat() {
+    function loadAndOpenChat() {
         const urlParams = new URLSearchParams(window.location.search);
         const openChat = urlParams.get('open_chat');
         const conversationId = urlParams.get('conversation_id');
         
         if (openChat === 'true' && conversationId) {
-            await loadConversations(Number(conversationId));
-            window.openChatModal();
-        } else {
-            await loadConversations();
+            window.location.href = `/buyer/chat.html?conversationId=${conversationId}`;
         }
     }
     loadAndOpenChat();
-
-    // ── T-12: Chat Modal Functions ──
-    window.openChatModal = function() {
-        const scrim = document.getElementById('chat-modal-scrim');
-        scrim.classList.remove('hidden');
-        // Reset scroll to bottom of thread
-        setTimeout(() => {
-            const area = document.getElementById('chat-conversation-area');
-            if (area) area.scrollTop = area.scrollHeight;
-        }, 100);
-    };
-
-    window.closeChatModal = function() {
-        document.getElementById('chat-modal-scrim').classList.add('hidden');
-    };
-
-    // Close on backdrop click
-    document.getElementById('chat-modal-scrim').addEventListener('click', function(e) {
-        if (e.target === this) window.closeChatModal();
-    });
-
-    let allConversations = [];
-    let currentActiveConvId = null;
-
-    async function loadConversations(openAndSelectId = null) {
-        try {
-            const res = await apiClient.get('/conversations');
-            if (res.data && res.data.conversations && res.data.conversations.length > 0) {
-                allConversations = res.data.conversations;
-                
-                // Update subtitle count
-                const subtitle = document.getElementById('chat-card-subtitle');
-                if (subtitle) {
-                    subtitle.textContent = `${allConversations.length} conversation${allConversations.length !== 1 ? 's' : ''}`;
-                }
-
-                let selectId = openAndSelectId || allConversations[0].conversation_id;
-                await switchConversation(selectId);
-            } else {
-                renderMockConversations();
-            }
-        } catch (e) {
-            console.error("Failed to load real conversations:", e);
-            renderMockConversations();
-        }
-    }
-
-    function renderMockConversations() {
-        switchConversationMock(0);
-    }
-
-    window.sendChatReply = async function() {
-        const input = document.getElementById('chat-reply-input');
-        const text = input.value.trim();
-        if (!text) return;
-
-        if (currentActiveConvId) {
-            try {
-                const res = await apiClient.post(`/conversations/${currentActiveConvId}/messages`, {
-                    content: text,
-                    message_type: 'text'
-                });
-                if (res.data && res.data.success) {
-                    input.value = '';
-                    await switchConversation(currentActiveConvId);
-                }
-            } catch (err) {
-                console.error("Failed to send message:", err);
-                alert("Failed to send message.");
-            }
-        } else {
-            const thread = document.getElementById('chat-thread');
-            const messagesContainer = thread.querySelector('.space-y-sm');
-            if (!messagesContainer) return;
-
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const msgEl = document.createElement('div');
-            msgEl.className = 'flex gap-sm justify-end';
-            msgEl.innerHTML = `
-                <div class="chat-bubble-me px-md py-sm max-w-[75%]">
-                    <p class="text-sm">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
-                    <p class="text-xs text-white/60 mt-xs text-right">${timeStr}</p>
-                </div>`;
-            messagesContainer.appendChild(msgEl);
-
-            input.value = '';
-            const area = document.getElementById('chat-conversation-area');
-            if (area) area.scrollTop = area.scrollHeight;
-        }
-    };
-
-    window.handleChatKeydown = function(e) {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            e.preventDefault();
-            window.sendChatReply();
-        }
-    };
-
-    // Mock conversation data for switching
-    const mockConversations = [
-        {
-            initial: 'P', color: '#D4E9C4', textColor: '#255338', name: 'Priya Sharma',
-            orderLabel: 'Custom Macramé Wall Hanging · Order #TF-0284', timeLabel: 'Today',
-            messages: [
-                { from: 'buyer', text: 'Hi! I\'d love the wall hanging in sage green with my initials "PS" woven in. Is that possible?', time: '2:14 PM' },
-                { from: 'me', text: 'Absolutely! Sage green with initials is doable. It\'ll be a 24×36" piece. Should take about 5-6 days. Want me to send a sample swatch first?', time: '2:31 PM' },
-                { from: 'buyer', text: 'Yes please! Also, can we add a small dried flower accent at the bottom?', time: '2:45 PM' }
-            ]
-        },
-        {
-            initial: 'A', color: '#fcd6ff', textColor: '#725476', name: 'Arjun Mehra',
-            orderLabel: 'Custom Ceramic Mug · Order #TF-0291', timeLabel: 'Yesterday',
-            messages: [
-                { from: 'buyer', text: 'Can you engrave "Happy Anniversary" on the ceramic mug?', time: '11:22 AM' },
-                { from: 'me', text: 'Yes, I can hand-letter that in my signature style. Would you prefer a rustic or clean font?', time: '11:45 AM' },
-                { from: 'buyer', text: 'Rustic please! And maybe a small heart after the text?', time: '12:03 PM' }
-            ]
-        },
-        {
-            initial: 'R', color: '#E6E2D8', textColor: '#605e57', name: 'Riya Kapoor',
-            orderLabel: 'Custom Resin Bookmarks · Order #TF-0298', timeLabel: 'Mon',
-            messages: [
-                { from: 'buyer', text: 'Custom resin bookmarks with pressed flowers — batch of 20 pls!', time: '9:10 AM' },
-                { from: 'me', text: 'Lovely! Which flowers do you prefer — lavender, marigold, or baby\'s breath?', time: '9:45 AM' },
-                { from: 'buyer', text: 'Mix of all three! And can we do pastel gradient resin?', time: '10:02 AM' }
-            ]
-        }
-    ];
-
-    window.switchConversation = async function(idxOrId) {
-        if (typeof idxOrId === 'number' && idxOrId < 3 && allConversations.length === 0) {
-            switchConversationMock(idxOrId);
-            return;
-        }
-
-        const conversationId = idxOrId;
-        currentActiveConvId = conversationId;
-        try {
-            const res = await apiClient.get(`/conversations/${conversationId}`);
-            if (res.data) {
-                const convData = res.data;
-                const thread = document.getElementById('chat-thread');
-                if (!thread) return;
-
-                const msgHtml = convData.messages.map(m => {
-                    const isMe = m.sender_role === 'buyer';
-                    const timeStr = m.sent_at ? new Date(m.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-                    if (!isMe) {
-                        const avatarLetter = convData.other_party.name ? convData.other_party.name.substring(0, 1).toUpperCase() : 'S';
-                        const avatar = convData.other_party.avatar_url 
-                            ? `<img src="${convData.other_party.avatar_url}" class="w-full h-full object-cover rounded-full"/>`
-                            : avatarLetter;
-                        return `<div class="flex gap-sm">
-                            <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold bg-[#D4E9C4] text-primary">${avatar}</div>
-                            <div class="chat-bubble-seller px-md py-sm max-w-[75%]">
-                                <p class="text-sm text-on-surface">${m.content || ''}</p>
-                                <p class="text-xs text-outline mt-xs">${timeStr}</p>
-                            </div>
-                        </div>`;
-                    } else {
-                        return `<div class="flex gap-sm justify-end">
-                            <div class="chat-bubble-me px-md py-sm max-w-[75%]">
-                                <p class="text-sm">${m.content || ''}</p>
-                                <p class="text-xs text-white/60 mt-xs text-right">${timeStr}</p>
-                            </div>
-                        </div>`;
-                    }
-                }).join('');
-
-                const otherBtns = allConversations.filter(c => c.conversation_id !== conversationId).map(c => {
-                    const avatarLetter = c.other_party_name ? c.other_party_name.substring(0, 1).toUpperCase() : 'S';
-                    const avatar = c.other_party_avatar 
-                        ? `<img src="${c.other_party_avatar}" class="w-full h-full object-cover rounded-full"/>`
-                        : avatarLetter;
-                    const formattedTime = c.last_message_at ? new Date(c.last_message_at).toLocaleDateString() : '';
-                    return `<button onclick="switchConversation(${c.conversation_id})" class="w-full text-left p-md rounded-xl hover:bg-surface-container transition-colors flex items-center gap-md mt-xs">
-                        <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold bg-[#E6E2D8] text-secondary">${avatar}</div>
-                        <div class="flex-grow min-w-0">
-                            <p class="font-semibold text-on-surface text-sm">${c.other_party_name}</p>
-                            <p class="text-xs text-on-surface-variant truncate">${c.last_message_preview}</p>
-                        </div>
-                        <span class="text-xs text-outline flex-shrink-0">${formattedTime}</span>
-                    </button>`;
-                }).join('');
-
-                const detailLabel = `${convData.listing.title} · Status: ${convData.status}`;
-
-                thread.innerHTML = `
-                    <div class="flex items-center gap-sm pb-md border-b border-outline-variant mb-md">
-                        <div class="w-8 h-8 rounded-full bg-[#D4E9C4] flex items-center justify-center text-sm font-bold text-primary">
-                            ${convData.other_party.avatar_url ? `<img src="${convData.other_party.avatar_url}" class="w-full h-full object-cover rounded-full"/>` : (convData.other_party.name ? convData.other_party.name.substring(0, 1).toUpperCase() : 'S')}
-                        </div>
-                        <div>
-                            <p class="font-semibold text-on-surface text-sm">${convData.other_party.name}</p>
-                            <p class="text-xs text-on-surface-variant">${detailLabel}</p>
-                        </div>
-                        <span class="ml-auto text-xs text-outline">Active</span>
-                    </div>
-                    <div class="space-y-sm">${msgHtml}</div>
-                    ${otherBtns ? `<div class="pt-md border-t border-outline-variant mt-md">${otherBtns}</div>` : ''}
-                `;
-
-                const area = document.getElementById('chat-conversation-area');
-                if (area) area.scrollTop = area.scrollHeight;
-            }
-        } catch (e) {
-            console.error("Failed to switch real conversation:", e);
-        }
-    };
-
-    window.switchConversationMock = function(idx) {
-        const conv = mockConversations[idx];
-        if (!conv) return;
-        const thread = document.getElementById('chat-thread');
-        if (!thread) return;
-
-        const msgHtml = conv.messages.map(m => {
-            if (m.from === 'buyer') {
-                return `<div class="flex gap-sm">
-                    <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold" style="background:${conv.color};color:${conv.textColor};">${conv.initial}</div>
-                    <div class="chat-bubble-seller px-md py-sm max-w-[75%]">
-                        <p class="text-sm text-on-surface">${m.text}</p>
-                        <p class="text-xs text-outline mt-xs">${m.time}</p>
-                    </div>
-                </div>`;
-            } else {
-                return `<div class="flex gap-sm justify-end">
-                    <div class="chat-bubble-me px-md py-sm max-w-[75%]">
-                        <p class="text-sm">${m.text}</p>
-                        <p class="text-xs text-white/60 mt-xs text-right">${m.time}</p>
-                    </div>
-                </div>`;
-            }
-        }).join('');
-
-        const otherBtns = mockConversations.filter((_, i) => i !== idx).map((c, i) => {
-            const origIdx = i >= idx ? i + 1 : i;
-            return `<button onclick="switchConversation(${origIdx === 0 ? 0 : origIdx})" class="w-full text-left p-md rounded-xl hover:bg-surface-container transition-colors flex items-center gap-md mt-xs">
-                <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold" style="background:${c.color};color:${c.textColor};">${c.initial}</div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-on-surface text-sm">${c.name}</p>
-                    <p class="text-xs text-on-surface-variant truncate">${c.messages[0].text}</p>
-                </div>
-                <span class="text-xs text-outline flex-shrink-0">${c.timeLabel}</span>
-            </button>`;
-        }).join('');
-
-        thread.innerHTML = `
-            <div class="flex items-center gap-sm pb-md border-b border-outline-variant mb-md">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:${conv.color};color:${conv.textColor};">${conv.initial}</div>
-                <div>
-                    <p class="font-semibold text-on-surface text-sm">${conv.name}</p>
-                    <p class="text-xs text-on-surface-variant">${conv.orderLabel}</p>
-                </div>
-                <span class="ml-auto text-xs text-outline">${conv.timeLabel}</span>
-            </div>
-            <div class="space-y-sm">${msgHtml}</div>
-            <div class="pt-md border-t border-outline-variant">${otherBtns}</div>`;
-
-        const area = document.getElementById('chat-conversation-area');
-        if (area) area.scrollTop = area.scrollHeight;
-    };
 
     let isLoggedIn = false;
     async function checkAuthState() {
@@ -989,10 +617,10 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#C1C9C0] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
                 } else {
                     avatarHtml = `
-                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#C1C9C0] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
                             ${initial}
                         </a>
                     `;
@@ -1010,8 +638,8 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#255338] hover:underline text-sm font-semibold">Login</a>
-                        <a href="/auth/signup-buyer.html" class="bg-[#255338] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
             }

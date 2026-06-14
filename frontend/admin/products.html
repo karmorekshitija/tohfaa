@@ -1,4 +1,7 @@
 <!DOCTYPE html><html class="light" lang="en"><head>
+<script src="/src/components/AdminSidebar.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Tohfa Admin - Products &amp; Visibility</title>
@@ -11,26 +14,26 @@
             theme: {
                 extend: {
                     "colors": {
-                        "outline-variant": "#c1c9c0",
-                        "secondary-container": "#c8e9b8",
+                        "outline-variant": "#F7F3EC",
+                        "secondary-container": "#8FAF82",
                         "on-primary": "#ffffff",
                         "on-primary-fixed": "#002110",
-                        "primary-deep": "#2E5340",
+                        "primary-deep": "#3D6B4F",
                         "tertiary": "#6e3a40",
                         "highlight-gold": "#C8973A",
-                        "gold-soft": "#EBD7AE",
-                        "surface": "#f9faf5",
+                        "gold-soft": "#C8973A",
+                        "surface": "#FFFFFF",
                         "primary-container": "#3d6b4f",
                         "inverse-surface": "#2e312e",
                         "accent-violet": "#7B5EA7",
                         "surface-container": "#edeeea",
                         "secondary-fixed-dim": "#afd0a0",
                         "surface-container-lowest": "#ffffff",
-                        "background": "#f9faf5",
+                        "background": "#FFFFFF",
                         "tertiary-fixed-dim": "#fcb4ba",
                         "on-secondary-container": "#4d6a43",
                         "inverse-primary": "#a0d2b0",
-                        "surface-bright": "#f9faf5",
+                        "surface-bright": "#FFFFFF",
                         "on-tertiary-container": "#ffd2d5",
                         "bg-primary": "#FFFFFF",
                         "text-default": "#3A3328",
@@ -52,18 +55,18 @@
                         "on-error": "#ffffff",
                         "primary-fixed-dim": "#a0d2b0",
                         "text-muted": "#6E6453",
-                        "on-error-container": "#93000a",
+                        "on-error-container": "#3D6B4F",
                         "violet-soft": "#D8CBE9",
                         "surface-container-highest": "#e2e3df",
                         "on-primary-fixed-variant": "#214f36",
-                        "error-container": "#ffdad6",
-                        "error": "#ba1a1a",
-                        "surface-ivory": "#FCFAF5",
-                        "sage-soft": "#C5D6BC",
+                        "error-container": "#F7F3EC",
+                        "error": "#3D6B4F",
+                        "surface-ivory": "#F7F3EC",
+                        "sage-soft": "#8FAF82",
                         "on-secondary-fixed-variant": "#324e29",
-                        "bg-cream-deep": "#F1EADD",
+                        "bg-cream-deep": "#F7F3EC",
                         "surface-container-high": "#e7e9e4",
-                        "danger-terracotta": "#B14B3E",
+                        "danger-terracotta": "#3D6B4F",
                         "surface-tint": "#3a684c",
                         "on-primary-container": "#b7e9c6",
                         "inverse-on-surface": "#f0f1ed",
@@ -120,12 +123,12 @@
         }
     </style>
 </head>
-<body class="bg-bg-primary text-text-default font-body-md overflow-x-hidden">
+<body class="bg-white text-text-default font-body-md overflow-x-hidden">
 <div class="flex min-h-screen">
 <!-- Sidebar Navigation (Refined Style) -->
-<aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#FCFAF5]">
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#F7F3EC]">
 <div class="mb-14">
-<h1 class="font-headline-lg text-headline-lg italic text-[#255338] leading-tight">Tohfa</h1>
+<h1 class="font-headline-lg text-headline-lg italic text-[#3D6B4F] leading-tight">Tohfa</h1>
 <p class="text-accent-caps font-accent-caps text-text-faint tracking-widest text-[10px] mt-1 opacity-70">Admin Console</p>
 </div>
 <nav class="flex-1 space-y-1">

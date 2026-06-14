@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Seller Studio - Listing Wizard</title>
@@ -15,10 +17,10 @@
                 extend: {
                     "colors": {
                         "primary-container": "#3d6b4f",
-                        "background": "#f9faf5",
-                        "surface": "#f9faf5",
-                        "primary": "#255338",
-                        "outline-variant": "#c1c9c0",
+                        "background": "#FFFFFF",
+                        "surface": "#FFFFFF",
+                        "primary": "#3D6B4F",
+                        "outline-variant": "#F7F3EC",
                         "on-surface": "#1a1c1a",
                         "primary-fixed-dim": "#a0d2b0",
                         "inverse-on-surface": "#f0f1ed",
@@ -28,13 +30,13 @@
                         "on-secondary-container": "#4d6a43",
                         "surface-container-lowest": "#ffffff",
                         "secondary-fixed": "#caecbb",
-                        "secondary-container": "#c8e9b8",
+                        "secondary-container": "#8FAF82",
                         "on-primary": "#ffffff",
                         "inverse-primary": "#a0d2b0",
-                        "error-container": "#ffdad6",
-                        "on-error-container": "#93000a",
+                        "error-container": "#F7F3EC",
+                        "on-error-container": "#3D6B4F",
                         "on-background": "#1a1c1a",
-                        "tertiary": "#573b81",
+                        "tertiary": "#7B5EA7",
                         "on-secondary": "#ffffff",
                         "inverse-surface": "#2e312e",
                         "surface-container-high": "#e7e9e4",
@@ -46,15 +48,15 @@
                         "on-secondary-fixed-variant": "#324e29",
                         "surface-container-highest": "#e2e3df",
                         "on-tertiary-fixed-variant": "#54387e",
-                        "surface-bright": "#f9faf5",
+                        "surface-bright": "#FFFFFF",
                         "outline": "#717972",
                         "on-surface-variant": "#414942",
-                        "tertiary-container": "#70539b",
+                        "tertiary-container": "#7B5EA7",
                         "surface-variant": "#e2e3df",
                         "surface-container-low": "#f3f4f0",
                         "on-primary-container": "#b7e9c6",
                         "primary-fixed": "#bceecb",
-                        "error": "#ba1a1a",
+                        "error": "#3D6B4F",
                         "secondary-fixed-dim": "#afd0a0",
                         "on-primary-fixed-variant": "#214f36",
                         "surface-tint": "#3a684c",
@@ -115,10 +117,6 @@
             background: rgba(25, 28, 26, 0.4);
             backdrop-filter: blur(4px);
         }
-        .botanical-watermark {
-            opacity: 0.08;
-            pointer-events: none;
-        }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
@@ -129,52 +127,59 @@
         }
     </style>
 </head>
-<body class="bg-parchment text-on-surface font-body-md overflow-hidden">
+<body class="bg-white text-on-surface font-body-md overflow-hidden">
 <seller-layout active-tab="catalog">
-<div class="min-h-screen relative flex flex-col h-screen">
-<!-- Botanical Line Art Watermark -->
-<div class="absolute bottom-4 right-4 pointer-events-none opacity-[0.08] w-48 h-48 z-0">
-<img alt="Botanical illustration" class="w-full h-full object-contain mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5jBWNJUR5FjAR11VzQVyUvGPWJuIP9bSNFxTsbqeoGuVTByNaKCcTHBEUjwr_EwzDHFSyQSj99b2WwBcsHfY8i7l4QgNFS6utBGJkYOzyn7s4AD9l4cmzS_C5ngydg06MtIcBDPG8NHqXxZuJABYbGFU5GpBDY7YSfNgF4s0hZUQtz3WntZ1GBX2TKi41CcAw-aX-ujbULBUmVRvg8zEtE7xz2CRCxx383Hxi-G_-LzXFD1Ii23ZiCWYI6ESX63EA4RHI_jaidbM"/>
-</div>
+<div class="flex-1 flex flex-col h-full overflow-hidden bg-surface-container-lowest relative z-10">
 <!-- Header -->
 <!-- Standardised Wizard Header (Task 41) -->
 <header class="h-[80px] bg-white border-b border-sage/20 px-12 flex justify-between items-center shrink-0 z-10">
-  <div class="flex items-center gap-2">
-    <span class="material-symbols-outlined text-primary">psychiatry</span>
-    <span class="material-symbols-outlined text-sage">eco</span>
-    <h2 class="font-display-lg text-primary text-3xl font-serif">Craft New Listing</h2>
+  <div class="flex items-center gap-4">
+    <button id="header-back-btn" class="flex items-center justify-center w-10 h-10 rounded-full border border-sage hover:bg-parchment text-forest transition-colors shadow-sm cursor-pointer" title="Go back to Pricing">
+      <span class="material-symbols-outlined text-xl">arrow_back</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary">psychiatry</span>
+      <span class="material-symbols-outlined text-sage">eco</span>
+      <h2 class="font-display-lg text-primary text-3xl font-serif">Craft New Listing</h2>
+    </div>
   </div>
   <div class="flex gap-4">
-    <button class="px-6 py-2 border border-error rounded-full text-sm font-bold text-error hover:bg-error/10 transition-colors">Discard Draft</button>
-    <button class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity">Publish Entry</button>
+    <button id="header-save-draft-btn" class="px-6 py-2 border border-sage text-forest rounded-full text-sm font-bold hover:bg-parchment transition-colors flex items-center gap-2">
+      <span class="material-symbols-outlined text-sm">bookmark</span> Save as Draft
+    </button>
+    <button id="header-next-step-btn" class="px-6 py-2 bg-forest text-white rounded-full text-sm font-bold shadow-md hover:bg-opacity-90 hover:scale-[1.01] transition-all flex items-center gap-2">
+      Continue <span class="material-symbols-outlined text-sm">arrow_forward</span>
+    </button>
+    <button id="header-discard-btn" class="px-6 py-2 border border-error rounded-full text-sm font-bold text-error hover:bg-error/10 transition-colors">Discard Draft</button>
   </div>
-</header><!-- Standardised listing wizard step indicators (Task 41) -->
+</header>
+<!-- Standardised listing wizard step indicators (Task 41) -->
 <div class="bg-parchment/60 py-8 border-b border-sage/10 z-10 shrink-0">
   <div class="max-w-4xl mx-auto relative flex justify-between items-center px-4">
     <!-- Connecting Line -->
     <div class="absolute top-1/2 left-8 right-8 h-[2px] bg-sage/20 -translate-y-1/2 z-0"></div>
     <div class="absolute top-1/2 left-8 w-[60%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
     <!-- Step 1: Photos (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Photos</span>
-    </div>
+    </a>
     <!-- Step 2: Details (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-details.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Details</span>
-    </div>
+    </a>
     <!-- Step 3: Pricing (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Pricing</span>
-    </div>
+    </a>
     <!-- Step 4: Shipping (Current) -->
     <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center ring-2 ring-primary">
@@ -197,141 +202,88 @@
       <span class="text-[10px] font-bold uppercase tracking-widest">Publish</span>
     </div>
   </div>
-</div></div>
+</div>
 <!-- Scrollable Content -->
 <div class="flex-1 overflow-y-auto flex custom-scrollbar relative z-10">
 <!-- Main Content (Organized by sections) -->
-<div class="flex-1 p-12 max-w-4xl space-y-12">
-<!-- Shipping Origin -->
-<section>
-<h3 class="font-headline-sm text-on-surface mb-6 flex items-center gap-3">
-<span class="text-sage text-base italic">01</span> Shipping Origin
-                        </h3>
-<div class="bg-white/60 rounded-xl p-6 border border-sage/20 flex justify-between items-center shadow-sm">
-<div class="flex items-start gap-4">
-<div class="bg-primary-container/10 p-3 rounded-lg">
-<span class="material-symbols-outlined text-forest">location_on</span>
-</div>
-<div>
-<p class="font-ui-serif font-semibold text-lg text-forest">Kshitija's Studio</p>
-<p class="text-on-surface-variant font-body-sm">Plot No. 42, Viman Nagar, Pune, Maharashtra 411014, India</p>
-</div>
-</div>
-<button class="text-gold font-bold font-label-caps hover:underline transition-all">CHANGE</button>
-</div>
-</section>
-<!-- Regional Shipping Profiles -->
-<section>
-<h3 class="font-headline-sm text-on-surface mb-8 flex items-center gap-3">
-<span class="text-sage text-base italic">02</span> Regional Shipping Profiles
-                        </h3>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-<!-- Domestic -->
-<div class="bg-white p-6 rounded-xl border border-forest/40 shadow-sm relative group ring-2 ring-forest/5">
-<div class="flex items-center gap-3 mb-4">
-<span class="material-symbols-outlined text-forest" style="font-variation-settings: 'FILL' 1;">flag</span>
-<h4 class="font-headline-sm text-lg">Domestic (India)</h4>
-</div>
-<div class="space-y-4">
-<label class="block">
-<span class="font-label-caps text-[10px] text-on-surface-variant mb-1 block">SELECT PROFILE</span>
-<select id="domestic-profile-select" class="w-full bg-parchment/30 border border-sage/40 rounded-lg px-4 py-3 font-ui-serif focus:ring-0 appearance-none cursor-pointer">
-<option value="courier">Standard Botanical (Courier)</option>
-<option value="courier_express">Express Sage (Courier)</option>
-<option value="local">Custom Hand-Delivery (Local)</option>
-</select>
-</label>
-<div class="flex items-center gap-2 text-on-surface-variant text-sm italic">
-<span class="material-symbols-outlined text-base">info</span>
-<span class="">Includes artisanal protective wrap.</span>
-</div>
-</div>
-</div>
-<!-- International -->
-<div class="bg-surface-container-low/50 p-6 rounded-xl border border-sage/20 shadow-sm transition-all hover:bg-white/80">
-<div class="flex justify-between items-center mb-4">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-sage">public</span>
-<h4 class="font-headline-sm text-lg">International</h4>
-</div>
-<label class="relative inline-flex items-center cursor-pointer">
-<input checked="" class="sr-only peer" type="checkbox"/>
-<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
-</label>
-</div>
-<div class="space-y-4">
-<label class="block">
-<span class="font-label-caps text-[10px] text-on-surface-variant mb-1 block">GLOBAL PROFILE</span>
-<select class="w-full bg-white border border-sage/20 rounded-lg px-4 py-3 font-ui-serif focus:ring-0">
-<option>Global Artisan Pack</option>
-<option>Express Global Pollen</option>
-</select>
-</label>
-<p class="text-xs text-on-surface-variant leading-relaxed italic">Required customs documentation auto-generated.</p>
-</div>
-</div>
-</div>
-</section>
-
-<!-- Packaging, Return Policy & SLA -->
+<div class="flex-1 p-12 pb-24 max-w-4xl space-y-12">
+<!-- Pickup Address Section -->
 <section>
   <h3 class="font-headline-sm text-on-surface mb-6 flex items-center gap-3">
-    <span class="text-sage text-base italic">03</span> Shipping Preferences
+    <span class="text-sage text-base italic">01</span> Pickup Address
   </h3>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white/60 p-6 rounded-xl border border-sage/20 shadow-sm">
-    <div>
-      <label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">PACKAGING TYPE</label>
-      <select id="packaging-type" class="w-full bg-white border border-sage/30 rounded-lg px-3 py-2 text-sm focus:border-forest outline-none">
+  <div class="space-y-4">
+    <!-- Pre-saved Address Cards (Radio Select List) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <label class="bg-white border-2 border-primary p-6 rounded-2xl cursor-pointer shadow-sm relative flex items-start gap-4 hover:shadow-md transition-all">
+        <input type="radio" name="pickup-address" value="studio" checked class="mt-1.5 w-5 h-5 text-primary focus:ring-primary border-secondary/30"/>
+        <div>
+          <p class="font-ui-serif font-semibold text-lg text-primary">Kshitija's Studio</p>
+          <p class="text-on-surface-variant text-sm mt-1 leading-relaxed">Plot No. 42, Viman Nagar, Pune, Maharashtra 411014, India</p>
+        </div>
+      </label>
+      
+      <label class="bg-white/60 border border-secondary/20 p-6 rounded-2xl cursor-pointer hover:bg-white/80 transition-all opacity-85 hover:opacity-100 flex items-start gap-4">
+        <input type="radio" name="pickup-address" value="warehouse" class="mt-1.5 w-5 h-5 text-primary focus:ring-primary border-secondary/30"/>
+        <div>
+          <p class="font-ui-serif font-semibold text-lg text-primary">Tohfa Main Warehouse</p>
+          <p class="text-on-surface-variant text-sm mt-1 leading-relaxed">Building B, Sector 4, Indiranagar, Bengaluru, Karnataka 560038, India</p>
+        </div>
+      </label>
+    </div>
+    
+    <button type="button" class="mt-2 text-sm text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer">
+      <span class="material-symbols-outlined text-sm">add_circle</span> Add New Address
+    </button>
+  </div>
+</section>
+
+<!-- Shipping Preferences Section -->
+<section>
+  <h3 class="font-headline-sm text-on-surface mb-6 flex items-center gap-3">
+    <span class="text-sage text-base italic">02</span> Shipping Preferences
+  </h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white border border-secondary/25 p-6 rounded-2xl shadow-sm">
+    <div class="space-y-2">
+      <label class="text-xs text-secondary font-bold uppercase tracking-wider block">Estimated Dispatch Time</label>
+      <select id="dispatch-sla" class="w-full bg-white border border-secondary/20 rounded-xl px-4 py-4 text-sm focus:ring-primary focus:border-primary outline-none shadow-sm cursor-pointer">
+        <option value="2">1–2 days</option>
+        <option value="5" selected>3–5 days</option>
+        <option value="10">7–10 days</option>
+        <option value="21">Made-to-order (14–21 days)</option>
+      </select>
+    </div>
+    <div class="space-y-2">
+      <label class="text-xs text-secondary font-bold uppercase tracking-wider block">Shipping Carrier Preference (Optional)</label>
+      <select id="carrier-preference" class="w-full bg-white border border-secondary/20 rounded-xl px-4 py-4 text-sm focus:ring-primary focus:border-primary outline-none shadow-sm cursor-pointer">
+        <option value="none" selected>No preference</option>
+        <option value="delhivery">Delhivery</option>
+        <option value="bluedart">BlueDart</option>
+        <option value="indiapost">India Post</option>
+        <option value="ekart">Ekart</option>
+      </select>
+    </div>
+    <div class="space-y-2">
+      <label class="text-xs text-secondary font-bold uppercase tracking-wider block">Packaging Type</label>
+      <select id="packaging-type" class="w-full bg-white border border-secondary/20 rounded-xl px-4 py-4 text-sm focus:ring-primary focus:border-primary outline-none shadow-sm cursor-pointer">
         <option value="standard">Standard</option>
         <option value="branded">Branded</option>
         <option value="eco">Eco-Friendly</option>
         <option value="fragile">Fragile Care</option>
       </select>
     </div>
-    <div>
-      <label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">RETURN POLICY</label>
-      <select id="return-policy" class="w-full bg-white border border-sage/30 rounded-lg px-3 py-2 text-sm focus:border-forest outline-none">
+    <div class="space-y-2">
+      <label class="text-xs text-secondary font-bold uppercase tracking-wider block">Return Policy</label>
+      <select id="return-policy" class="w-full bg-white border border-secondary/20 rounded-xl px-4 py-4 text-sm focus:ring-primary focus:border-primary outline-none shadow-sm cursor-pointer">
         <option value="no-returns">No Returns</option>
         <option value="7-day">7-Day Return</option>
         <option value="15-day">15-Day Return</option>
       </select>
     </div>
-    <div>
-      <label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">DISPATCH SLA (DAYS)</label>
-      <input id="dispatch-sla" class="w-full bg-white border border-sage/30 rounded-lg px-3 py-2 text-sm focus:border-forest outline-none font-data-mono" type="number" value="1"/>
-    </div>
   </div>
 </section>
 
-<!-- Dimensions & Weight -->
-<section>
-<div class="flex justify-between items-center mb-6">
-<h3 class="font-headline-sm text-on-surface flex items-center gap-3">
-<span class="text-sage text-base italic">04</span> Dimensions &amp; Weight
-                            </h3>
-<span class="font-label-caps text-[10px] text-gold bg-gold/10 px-3 py-1 rounded">OPTIONAL</span>
-</div>
-<div class="bg-white/40 border border-dashed border-sage/60 rounded-xl p-8">
-<div class="grid grid-cols-4 gap-6">
-<div>
-<label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">LENGTH (CM)</label>
-<input id="length-input" class="w-full bg-white border border-sage/30 rounded-lg px-4 py-3 font-data-mono text-center text-lg animate-none outline-none" placeholder="0.0" type="text"/>
-</div>
-<div>
-<label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">WIDTH (CM)</label>
-<input id="width-input" class="w-full bg-white border border-sage/30 rounded-lg px-4 py-3 font-data-mono text-center text-lg animate-none outline-none" placeholder="0.0" type="text"/>
-</div>
-<div>
-<label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">HEIGHT (CM)</label>
-<input id="height-input" class="w-full bg-white border border-sage/30 rounded-lg px-4 py-3 font-data-mono text-center text-lg animate-none outline-none" placeholder="0.0" type="text"/>
-</div>
-<div>
-<label class="font-label-caps text-[10px] text-on-surface-variant mb-2 block">WEIGHT (G)</label>
-<input id="weight-input" class="w-full bg-white border border-sage/30 rounded-lg px-4 py-3 font-data-mono text-center text-lg animate-none outline-none" placeholder="000" type="text"/>
-</div>
-</div>
-</div>
-</section>
+<!-- Dimensions & Weight Section Removed -->
 </div>
 <!-- Right Sidebar / Shipping Summary & Tips -->
 <aside class="w-80 border-l border-sage/20 bg-white/30 p-8 flex flex-col gap-8 sticky top-0 h-full">
@@ -346,21 +298,21 @@
 <span class="material-symbols-outlined">schedule</span>
 </div>
 <div>
-<p class="text-[10px] text-on-surface-variant font-label-caps">EST. DELIVERY</p>
-<p id="est-delivery-p" class="font-headline-sm text-lg text-on-surface">3–5 days</p>
+<p class="text-[10px] text-on-surface-variant font-label-caps">EST. DISPATCH</p>
+<p id="est-dispatch-p" class="font-headline-sm text-lg text-on-surface">3–5 days</p>
 </div>
 </div>
 <div class="flex items-center gap-4">
 <div class="w-10 h-10 rounded-full bg-parchment flex items-center justify-center text-forest">
-<span class="material-symbols-outlined">payments</span>
+<span class="material-symbols-outlined">local_shipping</span>
 </div>
 <div>
-<p class="text-[10px] text-on-surface-variant font-label-caps">DOMESTIC RATE</p>
-<p id="domestic-rate-p" class="font-headline-sm text-lg text-on-surface">₹80 fixed</p>
+<p class="text-[10px] text-on-surface-variant font-label-caps">CARRIER PREFERENCE</p>
+<p id="carrier-pref-p" class="font-headline-sm text-lg text-on-surface">No preference</p>
 </div>
 </div>
 <div class="pt-4 border-t border-sage/10">
-<p class="text-xs text-on-surface-variant leading-relaxed">Rates based on <span id="summary-profile-name" class="font-semibold text-forest">Standard Botanical</span> profile for India.</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">Pickup Address: <span id="summary-pickup-address" class="font-semibold text-forest">Kshitija's Studio</span></p>
 </div>
 </div>
 </div>
@@ -383,22 +335,7 @@
 </div>
 </aside>
 </div>
-<!-- Footer Actions -->
-<footer class="border-t border-sage/20 px-12 py-6 bg-white flex justify-between items-center shrink-0 z-20">
-<button id="back-step-btn" class="flex items-center gap-2 text-forest font-bold font-label-caps hover:gap-3 transition-all">
-<span class="material-symbols-outlined">arrow_back</span>
-                    Back to Pricing
-                </button>
-<div class="flex gap-4">
-<button id="save-draft-btn" class="px-8 py-3 rounded-full border border-sage text-forest font-label-caps hover:bg-parchment transition-colors">
-                        Save as Draft
-                    </button>
-<button id="next-step-btn" class="px-10 py-3 rounded-full bg-forest text-white font-label-caps shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all flex items-center gap-2">
-                        Continue to Preview
-                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                    </button>
-                </div>
-            </footer>
+<!-- Actions Footer Bar Removed -->
         </div>
 <!-- Character Accent -->
 <div class="fixed bottom-0 right-10 z-[70] pointer-events-none transform translate-y-2">
@@ -427,39 +364,41 @@
         setTimeout(() => toast.style.display = 'none', 3500);
     }
 
-    const domesticProfileSelect = document.getElementById('domestic-profile-select');
     const packagingSelect = document.getElementById('packaging-type');
     const returnPolicySelect = document.getElementById('return-policy');
-    const dispatchSlaInput = document.getElementById('dispatch-sla');
+    const dispatchSlaSelect = document.getElementById('dispatch-sla');
+    const carrierPreferenceSelect = document.getElementById('carrier-preference');
 
-    const lengthInput = document.getElementById('length-input');
-    const widthInput = document.getElementById('width-input');
-    const heightInput = document.getElementById('height-input');
-    const weightInput = document.getElementById('weight-input');
 
-    const estDeliveryP = document.getElementById('est-delivery-p');
-    const domesticRateP = document.getElementById('domestic-rate-p');
-    const summaryProfileName = document.getElementById('summary-profile-name');
+    const estDispatchP = document.getElementById('est-dispatch-p');
+    const carrierPrefP = document.getElementById('carrier-pref-p');
+    const summaryPickupAddress = document.getElementById('summary-pickup-address');
 
     // Update Shipping Summary Card
     function updateShippingSummary() {
-        const profile = domesticProfileSelect.value;
-        if (profile === 'local') {
-            estDeliveryP.textContent = '1-2 days';
-            domesticRateP.textContent = '₹50 fixed';
-            summaryProfileName.textContent = 'Custom Hand-Delivery';
-        } else if (profile === 'courier_express') {
-            estDeliveryP.textContent = '2-3 days';
-            domesticRateP.textContent = '₹150 fixed';
-            summaryProfileName.textContent = 'Express Sage';
-        } else {
-            estDeliveryP.textContent = '3-5 days';
-            domesticRateP.textContent = '₹80 fixed';
-            summaryProfileName.textContent = 'Standard Botanical';
+        if (dispatchSlaSelect) {
+            estDispatchP.textContent = dispatchSlaSelect.options[dispatchSlaSelect.selectedIndex].text;
+        }
+        if (carrierPreferenceSelect) {
+            carrierPrefP.textContent = carrierPreferenceSelect.options[carrierPreferenceSelect.selectedIndex].text;
+        }
+        const selectedRadio = document.querySelector('input[name="pickup-address"]:checked');
+        if (selectedRadio) {
+            const labelEl = selectedRadio.closest('label');
+            if (labelEl) {
+                const nameEl = labelEl.querySelector('p');
+                if (nameEl) {
+                    summaryPickupAddress.textContent = nameEl.textContent.trim();
+                }
+            }
         }
     }
 
-    domesticProfileSelect.addEventListener('change', updateShippingSummary);
+    if (dispatchSlaSelect) dispatchSlaSelect.addEventListener('change', updateShippingSummary);
+    if (carrierPreferenceSelect) carrierPreferenceSelect.addEventListener('change', updateShippingSummary);
+    document.querySelectorAll('input[name="pickup-address"]').forEach(radio => {
+        radio.addEventListener('change', updateShippingSummary);
+    });
 
     // Load Shipping Draft
     async function loadShippingDraft() {
@@ -476,16 +415,17 @@
                 const listing = resp.data || resp;
                 
                 // Pre-fill fields
-                if (listing.shipping_method) {
-                    if (listing.shipping_method === 'local') {
-                        domesticProfileSelect.value = 'local';
-                    } else if (listing.shipping_method === 'courier' && listing.ships_in_days <= 3) {
-                        // Compatibility check for express
-                        domesticProfileSelect.value = 'courier_express';
-                    } else {
-                        domesticProfileSelect.value = 'courier';
+                if (listing.dispatch_sla_days) {
+                    dispatchSlaSelect.value = listing.dispatch_sla_days;
+                }
+                if (listing.carrier_preference) {
+                    carrierPreferenceSelect.value = listing.carrier_preference;
+                }
+                if (listing.pickup_address_type) {
+                    const targetRadio = document.querySelector(`input[name="pickup-address"][value="${listing.pickup_address_type}"]`);
+                    if (targetRadio) {
+                        targetRadio.checked = true;
                     }
-                    updateShippingSummary();
                 }
 
                 if (listing.packaging_type) {
@@ -494,14 +434,8 @@
                 if (listing.return_policy) {
                     returnPolicySelect.value = listing.return_policy;
                 }
-                if (listing.dispatch_sla_days) {
-                    dispatchSlaInput.value = listing.dispatch_sla_days;
-                }
 
-                lengthInput.value = listing.length_cm || '';
-                widthInput.value = listing.width_cm || '';
-                heightInput.value = listing.height_cm || '';
-                weightInput.value = listing.weight_g || listing.weight_grams || '';
+                updateShippingSummary();
             }
         } catch (err) {
             console.error('Error loading shipping draft:', err);
@@ -510,35 +444,25 @@
 
     // Save Shipping Draft
     async function saveShipping(shouldRedirect) {
-        const domesticProfile = domesticProfileSelect.value;
+        const dispatch_sla_days = parseInt(dispatchSlaSelect.value) || 5;
+        const carrier_preference = carrierPreferenceSelect.value;
         
-        let shipping_method = 'courier';
-        let ships_in_days = 5; // standard
-        if (domesticProfile === 'local') {
-            shipping_method = 'local';
-            ships_in_days = 2;
-        } else if (domesticProfile === 'courier_express') {
-            shipping_method = 'courier';
-            ships_in_days = 3;
-        } else {
-            shipping_method = 'courier';
-            ships_in_days = 5;
-        }
+        const selectedRadio = document.querySelector('input[name="pickup-address"]:checked');
+        const pickup_address_type = selectedRadio ? selectedRadio.value : 'studio';
 
         const packaging_type = packagingSelect.value;
         const return_policy = returnPolicySelect.value;
-        const dispatch_sla_days = parseInt(dispatchSlaInput.value) || 1;
-
-        const length_cm = parseFloat(lengthInput.value) || null;
-        const width_cm = parseFloat(widthInput.value) || null;
-        const height_cm = parseFloat(heightInput.value) || null;
-        const weight_g = parseInt(weightInput.value) || null;
 
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         const draftId = sessionStorage.getItem('draft_id');
 
         if (!draftId) {
-            showToast('No listing draft ID found. Please go back to photos step.', 'error');
+            showToast('No listing draft ID found. (Redirecting to preview...)', 'error');
+            if (shouldRedirect) {
+                setTimeout(() => {
+                    window.location.href = 'listing-preview.html';
+                }, 1000);
+            }
             return;
         }
 
@@ -550,16 +474,13 @@
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    shipping_method,
-                    ships_in_days,
+                    shipping_method: 'courier',
+                    ships_in_days: dispatch_sla_days,
+                    dispatch_sla_days,
+                    carrier_preference,
+                    pickup_address_type,
                     packaging_type,
                     return_policy,
-                    dispatch_sla_days,
-                    length_cm,
-                    width_cm,
-                    height_cm,
-                    weight_g,
-                    weight_grams: weight_g,
                     status: 'draft'
                 })
             });
@@ -569,21 +490,78 @@
 
             showToast('Shipping details saved successfully!', 'success');
             if (shouldRedirect) {
-                window.location.href = '/seller/listing-preview.html';
+                window.location.href = 'listing-preview.html';
             }
         } catch (err) {
-            showToast(err.message, 'error');
+            showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
+            if (shouldRedirect) {
+                setTimeout(() => {
+                    window.location.href = 'listing-preview.html';
+                }, 1000);
+            }
         }
     }
 
-    document.getElementById('save-draft-btn').addEventListener('click', () => saveShipping(false));
-    document.getElementById('next-step-btn').addEventListener('click', () => saveShipping(true));
+    // Header Save Draft
+    const headerSaveBtn = document.getElementById('header-save-draft-btn');
+    if (headerSaveBtn) {
+        headerSaveBtn.addEventListener('click', () => {
+            const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                showToast('Draft shipping saved successfully (offline mode)!', 'success');
+                return;
+            }
+            saveShipping(false);
+        });
+    }
 
-    document.getElementById('back-step-btn').addEventListener('click', () => {
-        window.location.href = '/seller/listing-pricing-a.html';
+    // Header Next Step
+    const headerNextBtn = document.getElementById('header-next-step-btn');
+    if (headerNextBtn) {
+        headerNextBtn.addEventListener('click', () => {
+            const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                window.location.href = 'listing-preview.html';
+                return;
+            }
+            saveShipping(true);
+        });
+    }
+
+    // Header Back Step
+    const headerBackBtn = document.getElementById('header-back-btn');
+    if (headerBackBtn) {
+        headerBackBtn.addEventListener('click', () => {
+            window.location.href = 'listing-pricing-a.html';
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadShippingDraft();
+
+        const sidebar = document.querySelector('seller-sidebar');
+        if (sidebar) {
+          sidebar.addEventListener('click', async (e) => {
+            const link = e.target.closest('a');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (!href) return;
+            if (hasUnsavedWork()) {
+              e.preventDefault();
+              await autoSaveDraft();
+              showToast('Progress auto-saved as draft ✦', 'success');
+              setTimeout(() => { window.location.href = href; }, 700);
+            }
+          });
+        }
     });
 
-    window.addEventListener('DOMContentLoaded', loadShippingDraft);
+    function hasUnsavedWork() {
+      return !!sessionStorage.getItem('draft_id');
+    }
+    async function autoSaveDraft() {
+      try { await saveShipping(false); } catch(e) { console.warn('Auto-save failed:', e); }
+    }
 </script>
 
 <!-- Micro-interactions for buttons -->
@@ -701,8 +679,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(res => res.json())
         .then(data => {
-          if (data && data.success && data.data && data.data.store_slug) {
-            window.location.href = '/' + data.data.store_slug;
+          const profileData = data.data || data;
+          if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+            window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
           } else {
             window.location.href = '/';
           }

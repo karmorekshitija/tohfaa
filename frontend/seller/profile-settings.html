@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Settings | Seller Studio | Tohfa</title>
@@ -15,7 +17,7 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#255338",
+          "primary": "#3D6B4F",
           "on-primary": "#ffffff",
           "primary-container": "#3d6b4f",
           "on-primary-container": "#b7e9c6",
@@ -24,27 +26,27 @@
           "on-primary-fixed": "#002110",
           "on-primary-fixed-variant": "#214f36",
           "secondary": "#49663f",
-          "secondary-container": "#c8e9b8",
-          "tertiary": "#573b81",
-          "tertiary-container": "#70539b",
+          "secondary-container": "#8FAF82",
+          "tertiary": "#7B5EA7",
+          "tertiary-container": "#7B5EA7",
           "on-tertiary-container": "#e8d6ff",
-          "surface": "#fff8f3",
-          "surface-variant": "#ede1d1",
+          "surface": "#FFFFFF",
+          "surface-variant": "#F7F3EC",
           "surface-container": "#f9ecdc",
           "surface-container-low": "#fff2e1",
           "surface-container-high": "#f3e6d6",
-          "surface-container-highest": "#ede1d1",
+          "surface-container-highest": "#F7F3EC",
           "surface-container-lowest": "#ffffff",
-          "surface-bright": "#fff8f3",
-          "background": "#fff8f3",
+          "surface-bright": "#FFFFFF",
+          "background": "#FFFFFF",
           "on-background": "#211b11",
           "on-surface": "#211b11",
           "on-surface-variant": "#414942",
           "outline": "#717972",
-          "outline-variant": "#c1c9c0",
-          "error": "#ba1a1a",
-          "error-container": "#ffdad6",
-          "on-error-container": "#93000a",
+          "outline-variant": "#F7F3EC",
+          "error": "#3D6B4F",
+          "error-container": "#F7F3EC",
+          "on-error-container": "#3D6B4F",
           "forest": "#3D6B4F",
           "sage": "#8FAF82",
           "gold": "#C8973A",
@@ -72,7 +74,7 @@
   }
 </script>
 <style>
-  body { font-family: 'DM Sans', sans-serif; background-color: #fff8f3; color: #211b11; }
+  body { font-family: 'DM Sans', sans-serif; background-color: #FFFFFF; color: #211b11; }
   h1, h2, h3, .font-headline { font-family: 'Playfair Display', serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
@@ -108,7 +110,7 @@
 
   /* Skeleton */
   @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
-  .skeleton { background:linear-gradient(90deg,#ede1d1 25%,#f3e6d6 50%,#ede1d1 75%); background-size:400px 100%; animation:shimmer 1.4s infinite; border-radius:8px; }
+  .skeleton { background:linear-gradient(90deg,#F7F3EC 25%,#f3e6d6 50%,#F7F3EC 75%); background-size:400px 100%; animation:shimmer 1.4s infinite; border-radius:8px; }
 
   /* Toast */
   #toast { transition:all .3s ease; }
@@ -128,7 +130,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    background: #fff8f3;
+    background: #FFFFFF;
     border-radius: 10px;
     border: 1px solid rgba(193,201,192,.3);
     transition: background .15s;
@@ -136,15 +138,15 @@
   .setting-row:hover { background: #fff2e1; }
 
   /* Input */
-  .field-input { width:100%; background:#fff8f3; border:1px solid #c1c9c0; border-radius:8px; padding:10px 14px; font-size:14px; color:#211b11; transition:border-color .15s, box-shadow .15s; outline:none; font-family:'DM Sans',sans-serif; }
-  .field-input:focus { border-color:#255338; box-shadow:0 0 0 3px rgba(37,83,56,.10); }
-  .field-input:disabled { background:#ede1d1; color:#717972; cursor:not-allowed; }
+  .field-input { width:100%; background:#FFFFFF; border:1px solid #F7F3EC; border-radius:8px; padding:10px 14px; font-size:14px; color:#211b11; transition:border-color .15s, box-shadow .15s; outline:none; font-family:'DM Sans',sans-serif; }
+  .field-input:focus { border-color:#3D6B4F; box-shadow:0 0 0 3px rgba(37,83,56,.10); }
+  .field-input:disabled { background:#F7F3EC; color:#717972; cursor:not-allowed; }
   .field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#414942; margin-bottom:5px; display:block; font-family:'DM Sans',sans-serif; }
-  .field-error { font-size:11px; color:#C0392B; margin-top:3px; min-height:16px; }
+  .field-error { font-size:11px; color:#3D6B4F; margin-top:3px; min-height:16px; }
 
   /* Progress bar */
-  .progress-bar-track { height:4px; background:#ede1d1; border-radius:4px; overflow:hidden; margin-top:6px; }
-  .progress-bar-fill { height:100%; background:#255338; border-radius:4px; transition:width .5s ease; }
+  .progress-bar-track { height:4px; background:#F7F3EC; border-radius:4px; overflow:hidden; margin-top:6px; }
+  .progress-bar-fill { height:100%; background:#3D6B4F; border-radius:4px; transition:width .5s ease; }
 
   /* Modal */
   .modal-overlay { position:fixed; inset:0; background:rgba(33,27,17,.45); backdrop-filter:blur(4px); z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; }
@@ -158,15 +160,15 @@
   .verified-dot { width:8px; height:8px; background:#22c55e; border-radius:50%; display:inline-block; flex-shrink:0; }
 
   /* Reset success inline */
-  #reset-success { display:none; font-size:12px; color:#255338; margin-top:4px; font-weight:600; }
+  #reset-success { display:none; font-size:12px; color:#3D6B4F; margin-top:4px; font-weight:600; }
   #reset-success.show { display:block; }
 
   /* Toggle switch */
   .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
   .switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #c1c9c0; transition: .3s; border-radius: 34px; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #F7F3EC; transition: .3s; border-radius: 34px; }
   .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-  input:checked + .slider { background-color: #255338; }
+  input:checked + .slider { background-color: #3D6B4F; }
   input:checked + .slider:before { transform: translateX(20px); }
 
   @media(max-width:768px) {
@@ -175,7 +177,7 @@
   }
 </style>
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen opacity-0 transition-opacity duration-300" id="body-content">
+<body class="bg-white text-on-surface font-body-md min-h-screen opacity-0 transition-opacity duration-300" id="body-content">
 
 <seller-layout active-tab="profile">
 
@@ -206,6 +208,19 @@
       <button id="confirm-close-account" class="px-8 py-2.5 rounded-full bg-error text-white text-sm font-semibold opacity-40 cursor-not-allowed transition-all flex items-center gap-2" disabled>
         <span class="material-symbols-outlined text-base">delete_forever</span>Close My Account
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Unsaved Changes Modal -->
+<div id="unsaved-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div class="bg-surface-bright rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center relative">
+    <span class="material-symbols-outlined text-4xl text-primary mb-3 block" style="font-variation-settings:'FILL' 1">warning</span>
+    <h3 class="font-headline text-xl mb-2">Unsaved Changes</h3>
+    <p class="text-sm text-on-surface-variant mb-6 font-body-md">You have unsaved changes. If you leave now, they will be lost.</p>
+    <div class="flex gap-3 justify-center">
+      <button id="unsaved-stay-btn" class="px-6 py-2.5 rounded-full border border-outline-variant text-sm font-semibold hover:bg-surface-container transition-all">Stay</button>
+      <button id="unsaved-leave-btn" class="px-8 py-2.5 rounded-full bg-primary text-on-primary text-sm font-semibold hover:opacity-90 transition-all">Leave Anyway</button>
     </div>
   </div>
 </div>
@@ -409,6 +424,86 @@
 
 <script>
 const API = window.location.origin;
+
+let isDirty = false;
+let pendingHref = null;
+
+const unsavedModal = document.getElementById('unsaved-modal');
+const unsavedStayBtn = document.getElementById('unsaved-stay-btn');
+const unsavedLeaveBtn = document.getElementById('unsaved-leave-btn');
+
+function openUnsavedModal() {
+  if (unsavedModal) {
+    unsavedModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeUnsavedModal() {
+  if (unsavedModal) {
+    unsavedModal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+}
+
+if (unsavedStayBtn) {
+  unsavedStayBtn.addEventListener('click', () => {
+    closeUnsavedModal();
+    pendingHref = null;
+  });
+}
+
+if (unsavedLeaveBtn) {
+  unsavedLeaveBtn.addEventListener('click', () => {
+    isDirty = false;
+    closeUnsavedModal();
+    if (pendingHref) {
+      window.location.href = pendingHref;
+    }
+  });
+}
+
+// Track input changes
+const trackedInputs = [
+  'daily-limit',
+  'weekly-limit',
+  'bank-account-holder',
+  'bank-name',
+  'bank-account-number',
+  'bank-ifsc-code'
+];
+
+trackedInputs.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', () => { isDirty = true; });
+    el.addEventListener('change', () => { isDirty = true; });
+  }
+});
+
+// Intercept sidebar / layout clicks
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a');
+  if (link && isDirty) {
+    const layout = document.querySelector('seller-layout');
+    if (layout && layout.contains(link)) {
+      const href = link.getAttribute('href');
+      if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+        e.preventDefault();
+        pendingHref = href;
+        openUnsavedModal();
+      }
+    }
+  }
+});
+
+// beforeunload listener
+window.addEventListener('beforeunload', (e) => {
+  if (isDirty) {
+    e.preventDefault();
+    e.returnValue = 'You have unsaved changes. Leave anyway?';
+  }
+});
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 function showToast(message, type = 'success') {
@@ -664,6 +759,7 @@ async function loadSettings() {
     loadingEl.classList.add('hidden');
     contentEl.classList.remove('hidden');
     document.getElementById('body-content').classList.remove('opacity-0');
+    isDirty = false;
   } catch (err) {
     loadingEl.classList.add('hidden');
     document.getElementById('error-message').textContent = err.message || 'Failed to load settings.';
@@ -673,6 +769,7 @@ async function loadSettings() {
     populateSettings({});
     loadingEl.classList.add('hidden');
     contentEl.classList.remove('hidden');
+    isDirty = false;
   }
 }
 
@@ -733,6 +830,7 @@ document.getElementById('save-bank-btn').addEventListener('click', async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Save failed');
     showToast('Bank details updated successfully!', 'success');
+    isDirty = false;
   } catch (err) {
     showToast(err.message || 'Failed to save bank details.', 'error');
   } finally {

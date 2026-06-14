@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Seller Studio - Preview Listing</title>
@@ -15,10 +17,10 @@
             extend: {
               "colors": {
                       "primary-container": "#3d6b4f",
-                      "background": "#f9faf5",
-                      "surface": "#f9faf5",
-                      "primary": "#255338",
-                      "outline-variant": "#c1c9c0",
+                      "background": "#FFFFFF",
+                      "surface": "#FFFFFF",
+                      "primary": "#3D6B4F",
+                      "outline-variant": "#F7F3EC",
                       "on-surface": "#1a1c1a",
                       "primary-fixed-dim": "#a0d2b0",
                       "inverse-on-surface": "#f0f1ed",
@@ -28,13 +30,13 @@
                       "on-secondary-container": "#4d6a43",
                       "surface-container-lowest": "#ffffff",
                       "secondary-fixed": "#caecbb",
-                      "secondary-container": "#c8e9b8",
+                      "secondary-container": "#8FAF82",
                       "on-primary": "#ffffff",
                       "inverse-primary": "#a0d2b0",
-                      "error-container": "#ffdad6",
-                      "on-error-container": "#93000a",
+                      "error-container": "#F7F3EC",
+                      "on-error-container": "#3D6B4F",
                       "on-background": "#1a1c1a",
-                      "tertiary": "#573b81",
+                      "tertiary": "#7B5EA7",
                       "on-secondary": "#ffffff",
                       "inverse-surface": "#2e312e",
                       "surface-container-high": "#e7e9e4",
@@ -46,22 +48,25 @@
                       "on-secondary-fixed-variant": "#324e29",
                       "surface-container-highest": "#e2e3df",
                       "on-tertiary-fixed-variant": "#54387e",
-                      "surface-bright": "#f9faf5",
+                      "surface-bright": "#FFFFFF",
                       "outline": "#717972",
                       "on-surface-variant": "#414942",
-                      "tertiary-container": "#70539b",
+                      "tertiary-container": "#7B5EA7",
                       "surface-variant": "#e2e3df",
                       "surface-container-low": "#f3f4f0",
                       "on-primary-container": "#b7e9c6",
                       "primary-fixed": "#bceecb",
-                      "error": "#ba1a1a",
+                      "error": "#3D6B4F",
                       "secondary-fixed-dim": "#afd0a0",
                       "on-primary-fixed-variant": "#214f36",
                       "surface-tint": "#3a684c",
                       "on-secondary-fixed": "#062103",
                       "tertiary-fixed-dim": "#d6baff",
                       "on-primary-fixed": "#002110",
-                      "parchment": "#F7F3EC"
+                      "parchment": "#F7F3EC",
+                      "sage": "#8FAF82",
+                      "forest": "#3D6B4F",
+                      "gold": "#C8973A"
               },
               "borderRadius": {
                       "DEFAULT": "0.25rem",
@@ -117,18 +122,26 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-surface font-body-md text-on-surface h-screen flex overflow-hidden">
+<body class="bg-white font-body-md text-on-surface h-screen flex overflow-hidden">
 <seller-layout active-tab="catalog">
 <div class="flex-1 flex flex-col h-full overflow-hidden bg-surface-container-lowest relative z-10">
 <!-- (A) Header Actions -->
 <!-- Standardised Wizard Header (Task 41) -->
 <header class="h-[80px] bg-white border-b border-sage/20 px-12 flex justify-between items-center shrink-0 z-10">
-  <div class="flex items-center gap-2">
-    <span class="material-symbols-outlined text-primary">psychiatry</span>
-    <span class="material-symbols-outlined text-sage">eco</span>
-    <h2 class="font-display-lg text-primary text-3xl font-serif">Craft New Listing</h2>
+  <div class="flex items-center gap-4">
+    <button id="header-back-btn" class="flex items-center justify-center w-10 h-10 rounded-full border border-sage hover:bg-parchment text-forest transition-colors shadow-sm cursor-pointer" title="Go back to Shipping">
+      <span class="material-symbols-outlined text-xl">arrow_back</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary">psychiatry</span>
+      <span class="material-symbols-outlined text-sage">eco</span>
+      <h2 class="font-display-lg text-primary text-3xl font-serif">Craft New Listing</h2>
+    </div>
   </div>
   <div class="flex gap-4">
+    <button id="header-save-draft-btn" class="px-6 py-2 border border-sage text-forest rounded-full text-sm font-bold hover:bg-parchment transition-colors flex items-center gap-2">
+      <span class="material-symbols-outlined text-sm">bookmark</span> Save as Draft
+    </button>
     <button id="header-discard-btn" class="px-6 py-2 border border-error rounded-full text-sm font-bold text-error hover:bg-error/10 transition-colors">Discard Draft</button>
     <button id="header-publish-btn" class="px-8 py-2 bg-forest text-white rounded-full font-bold shadow-lg hover:opacity-90 transition-opacity">Publish Entry</button>
   </div>
@@ -141,33 +154,33 @@
     <div class="absolute top-1/2 left-8 right-8 h-[2px] bg-sage/20 -translate-y-1/2 z-0"></div>
     <div class="absolute top-1/2 left-8 w-[80%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
     <!-- Step 1: Photos (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Photos</span>
-    </div>
+    </a>
     <!-- Step 2: Details (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-details.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Details</span>
-    </div>
+    </a>
     <!-- Step 3: Pricing (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Pricing</span>
-    </div>
+    </a>
     <!-- Step 4: Shipping (Completed) -->
-    <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
+    <a href="listing-shipping.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Shipping</span>
-    </div>
+    </a>
     <!-- Step 5: Preview (Current) -->
     <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center ring-2 ring-primary">
@@ -187,7 +200,7 @@
 <!-- Scrollable Content Area -->
 <div class="flex-1 overflow-y-auto flex custom-scrollbar parchment-texture bg-parchment">
 <!-- (C) Customer Perspective Main Area -->
-<div class="flex-1 p-8 border-r border-secondary/10">
+<div class="flex-1 p-8 pb-24 border-r border-secondary/10">
 <div class="mb-6 flex items-center justify-between">
 <h3 class="font-headline-sm text-primary">Customer Perspective</h3>
 <div class="flex items-center gap-2 bg-white/60 px-3 py-1.5 rounded-full border border-secondary/20 shadow-sm">
@@ -196,64 +209,87 @@
 </div>
 </div>
 <div class="flex flex-col lg:flex-row gap-10">
-<!-- Gallery Side -->
-<div class="lg:w-1/2 space-y-4">
-<div class="aspect-[4/5] rounded-xl overflow-hidden border border-secondary/20 shadow-sm relative group bg-white">
-<img alt="Preview" id="preview-main-img" class="w-full h-full object-cover" src=""/>
-<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-data-mono uppercase tracking-widest text-primary border border-primary/10">Master View</div>
-</div>
-<div class="grid grid-cols-3 gap-4" id="preview-thumb-grid">
-<!-- Thumbnails go here -->
-</div>
-</div>
-<!-- Product Info Side -->
-<div class="lg:w-1/2 space-y-8">
-<div class="space-y-4">
-<div class="flex justify-between items-start">
-<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-tighter uppercase border border-primary/20">New Artisan Release</span>
-<span id="preview-sku" class="font-data-mono text-primary text-xs">SKU: </span>
-</div>
-<h2 id="preview-title" class="font-headline-md text-headline-md text-on-surface leading-tight"></h2>
-<p id="preview-price" class="font-data-mono text-[28px] text-primary">₹ 0</p>
-</div>
-<div class="p-6 bg-white/40 border border-secondary/10 rounded-xl relative overflow-hidden backdrop-blur-sm">
-<div class="absolute -top-10 -right-10 opacity-5">
-<span class="material-symbols-outlined text-[120px]">ink_pen</span>
-</div>
-<h4 class="font-label-caps text-label-caps mb-3 text-secondary">The Story</h4>
-<p id="preview-story" class="font-ui-serif italic text-body-md text-on-surface-variant leading-relaxed">
-</p>
-</div>
-<div class="space-y-6">
-<!-- Customisation Options Preview -->
-<div id="preview-customisation-box" class="hidden p-6 bg-[#3D6B4F]/5 border border-[#3D6B4F]/20 rounded-xl space-y-4">
-  <div class="flex items-center gap-2 text-primary font-bold text-sm">
-    <span class="material-symbols-outlined text-lg">auto_awesome</span>
-    <span>Customisation Settings</span>
+<!-- Gallery & Preview Column -->
+<div class="w-full lg:w-[45%] space-y-6">
+  <div class="aspect-[4/5] rounded-xl overflow-hidden border border-secondary/20 shadow-sm relative group bg-white">
+    <img alt="Preview" id="preview-main-img" class="w-full h-full object-cover" src=""/>
+    <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-data-mono uppercase tracking-widest text-primary border border-primary/10">Master View</div>
   </div>
-  <div id="preview-customisation-details" class="space-y-3 text-sm text-on-surface-variant">
+  <div class="grid grid-cols-3 gap-4" id="preview-thumb-grid">
+    <!-- Thumbnails go here -->
+  </div>
+  
+  <div class="p-6 bg-white/40 border border-secondary/10 rounded-xl relative overflow-hidden backdrop-blur-sm">
+    <h4 class="font-label-caps text-label-caps mb-3 text-secondary">Description</h4>
+    <p id="preview-story" class="font-ui-serif italic text-body-md text-on-surface-variant leading-relaxed"></p>
   </div>
 </div>
 
-<div id="preview-tags-container" class="flex flex-wrap gap-2">
-</div>
-<div class="grid grid-cols-2 gap-4">
-<div class="flex items-center gap-3 p-3 bg-white/60 border border-secondary/10 rounded-lg">
-<span class="material-symbols-outlined text-primary">local_shipping</span>
-<div>
-<p class="text-[10px] text-secondary font-bold uppercase">Shipping</p>
-<p id="preview-shipping-days" class="text-xs font-body-md"></p>
-</div>
-</div>
-<div class="flex items-center gap-3 p-3 bg-white/60 border border-secondary/10 rounded-lg">
-<span class="material-symbols-outlined text-primary">featured_seasonal_and_gifts</span>
-<div>
-<p class="text-[10px] text-secondary font-bold uppercase">Add-ons</p>
-<p id="preview-addons" class="text-xs font-body-md"></p>
-</div>
-</div>
-</div>
-</div>
+<!-- Listing Summary / Review Panel Column -->
+<div class="w-full lg:w-[55%] bg-white/60 p-6 rounded-2xl border border-secondary/20 shadow-sm backdrop-blur-sm space-y-6">
+  <h3 class="font-headline-sm text-primary text-xl border-b border-sage/20 pb-2 flex items-center gap-2">
+    <span class="material-symbols-outlined">fact_check</span> Listing Summary & Review
+  </h3>
+
+  <div class="space-y-4">
+    <!-- 01. Photos -->
+    <div class="p-4 bg-white/80 rounded-xl border border-sage/15 space-y-2 shadow-sm">
+      <div class="flex justify-between items-center text-xs font-bold text-secondary uppercase tracking-wider">
+        <span>01. Photos</span>
+        <span id="summary-photo-count" class="text-forest">0 Photos</span>
+      </div>
+      <div id="summary-photos-strip" class="flex gap-2 overflow-x-auto py-1"></div>
+    </div>
+
+    <!-- 02. Core Details -->
+    <div class="p-4 bg-white/80 rounded-xl border border-sage/15 space-y-3 shadow-sm">
+      <div class="text-xs font-bold text-secondary uppercase tracking-wider border-b border-sage/10 pb-1">02. Core Details</div>
+      <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
+        <div><span class="text-on-surface-variant">Name:</span> <span id="summary-title" class="font-bold text-primary"></span></div>
+        <div><span class="text-on-surface-variant">Type:</span> <span id="summary-type" class="font-bold"></span></div>
+        <div><span class="text-on-surface-variant">Category:</span> <span id="summary-category" class="font-bold"></span></div>
+        <div><span class="text-on-surface-variant">Tags:</span> <span id="summary-tags" class="font-bold"></span></div>
+      </div>
+      <div id="summary-story-box" class="hidden text-xs">
+        <span class="text-on-surface-variant block font-semibold">Description:</span>
+        <p id="summary-story" class="italic text-on-surface-variant bg-parchment/50 p-2 rounded mt-1"></p>
+      </div>
+    </div>
+
+    <!-- 03. Pricing & Inventory -->
+    <div class="p-4 bg-white/80 rounded-xl border border-sage/15 space-y-3 shadow-sm">
+      <div class="text-xs font-bold text-secondary uppercase tracking-wider border-b border-sage/10 pb-1">03. Pricing & Inventory</div>
+      <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
+        <div><span class="text-on-surface-variant">Price:</span> <span id="summary-price" class="font-bold text-primary"></span></div>
+        <div><span class="text-on-surface-variant">Stock:</span> <span id="summary-stock" class="font-bold"></span></div>
+        <div><span class="text-on-surface-variant">Pre-booking Limit:</span> <span id="summary-prebooking" class="font-bold">Disabled</span></div>
+      </div>
+    </div>
+
+    <!-- 04. Pickup Address -->
+    <div class="p-4 bg-white/80 rounded-xl border border-sage/15 space-y-3 shadow-sm">
+      <div class="text-xs font-bold text-secondary uppercase tracking-wider border-b border-sage/10 pb-1">04. Pickup Address</div>
+      <div class="text-xs">
+        <span class="text-on-surface-variant">Pickup Address Name:</span> <span id="summary-pickup-address" class="font-bold text-primary">N/A</span>
+      </div>
+    </div>
+
+    <!-- 05. Dimensions & Weight -->
+    <div id="summary-dimensions-box" class="p-4 bg-white/80 rounded-xl border border-sage/15 space-y-3 shadow-sm">
+      <div class="text-xs font-bold text-secondary uppercase tracking-wider border-b border-sage/10 pb-1">05. Dimensions & Weight</div>
+      <div id="summary-dims-row" class="grid grid-cols-4 gap-2 text-xs">
+        <div><span class="text-on-surface-variant block">L:</span> <span id="summary-len" class="font-bold">N/A</span></div>
+        <div><span class="text-on-surface-variant block">W:</span> <span id="summary-wid" class="font-bold">N/A</span></div>
+        <div><span class="text-on-surface-variant block">H:</span> <span id="summary-hei" class="font-bold">N/A</span></div>
+        <div><span class="text-on-surface-variant block">Weight:</span> <span id="summary-weight" class="font-bold">N/A</span></div>
+      </div>
+    </div>
+
+    <!-- Publish listing Action Button -->
+    <button id="summary-publish-btn" class="w-full py-4 bg-forest text-white rounded-xl font-bold shadow-md hover:bg-opacity-95 hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer mt-4">
+      <span class="material-symbols-outlined">check_circle</span> Publish Listing
+    </button>
+  </div>
 </div>
 </div>
 </div>
@@ -309,22 +345,7 @@
 </div>
 </aside>
 </div>
-<!-- (E) Actions Footer Bar -->
-<footer class="px-8 py-6 border-t border-secondary/10 flex justify-between items-center bg-surface-container-lowest shrink-0">
-<button id="back-btn" class="flex items-center gap-2 text-primary font-bold hover:-translate-x-1 transition-transform">
-<span class="material-symbols-outlined">arrow_back</span>
-<span class="font-body-md">Back to Shipping</span>
-</button>
-<div class="flex gap-4">
-<button id="save-draft-btn" class="px-8 py-3 rounded-full border border-secondary text-secondary font-bold hover:bg-secondary/5 transition-colors">
-                    Save as Draft
-                </button>
-<button id="footer-publish-btn" class="px-10 py-3 rounded-full bg-primary text-on-primary font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
-<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-<span class="">Publish Listing</span>
-</button>
-</div>
-</footer>
+<!-- Actions Footer Bar Removed -->
 <!-- Character Accent -->
 <div class="absolute bottom-[80px] right-[40px] pointer-events-none z-50">
 <div class="relative">
@@ -452,8 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(res => res.json())
         .then(data => {
-          if (data && data.success && data.data && data.data.store_slug) {
-            window.location.href = '/' + data.data.store_slug;
+          const profileData = data.data || data;
+          if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
+            window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
           } else {
             window.location.href = '/';
           }
@@ -518,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Populate elements
       document.getElementById('preview-title').textContent = listing.title || 'Untitled Listing';
       document.getElementById('preview-price').textContent = listing.price_paise ? `₹ ${(listing.price_paise / 100).toLocaleString()}` : '₹ 0';
-      document.getElementById('preview-story').textContent = listing.description || listing.story || 'No story provided.';
+      document.getElementById('preview-story').textContent = listing.description || 'No description provided.';
       document.getElementById('preview-sku').textContent = `SKU: ${listing.sku || 'N/A'}`;
 
       // Tags
@@ -574,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const chkDesc = document.getElementById('chk-desc');
-      if (listing.description || listing.story) {
+      if (listing.description) {
         score += 25;
         chkDesc.previousElementSibling.textContent = 'check_circle';
         chkDesc.previousElementSibling.classList.add('text-primary');
@@ -684,6 +706,57 @@ document.addEventListener('DOMContentLoaded', () => {
         custBox.classList.add('hidden');
       }
 
+      // Populate Summary Review Panel
+      const photoCount = listing.photos ? listing.photos.length : 0;
+      document.getElementById('summary-photo-count').textContent = `${photoCount} Photos`;
+      
+      const strip = document.getElementById('summary-photos-strip');
+      strip.innerHTML = '';
+      if (listing.photos && listing.photos.length > 0) {
+        listing.photos.forEach(photo => {
+          strip.innerHTML += `<img class="w-12 h-12 object-cover rounded-lg border border-secondary/20" src="${photo.url}" />`;
+        });
+      } else {
+        strip.innerHTML = '<span class="text-xs text-on-surface-variant italic">No photos uploaded</span>';
+      }
+
+      document.getElementById('summary-title').textContent = listing.title || 'N/A';
+      document.getElementById('summary-type').textContent = listing.listing_type === 'custom' ? 'Customisable' : 'Pre-made';
+      document.getElementById('summary-category').textContent = listing.category || 'N/A';
+      document.getElementById('summary-tags').textContent = (listing.tags && listing.tags.length) ? listing.tags.map(t => '#' + t).join(', ') : 'None';
+
+      const summaryStoryBox = document.getElementById('summary-story-box');
+      if (listing.description) {
+        summaryStoryBox.classList.remove('hidden');
+        document.getElementById('summary-story').textContent = listing.description;
+      } else {
+        summaryStoryBox.classList.add('hidden');
+      }
+
+      document.getElementById('summary-price').textContent = listing.price_paise ? `₹ ${(listing.price_paise / 100).toLocaleString()}` : 'N/A';
+      
+
+      
+      document.getElementById('summary-stock').textContent = listing.stock_count || 0;
+      
+      const pbLimit = listing.allow_prebooking ? (listing.prebooking_window === '1_week' ? '1 Week' : (listing.prebooking_window === '2_weeks' ? '2 Weeks' : (listing.prebooking_window === '1_month' ? '1 Month' : listing.prebooking_window))) : 'Disabled';
+      document.getElementById('summary-prebooking').textContent = pbLimit;
+
+      const addressNames = {
+        'studio': "Kshitija's Studio",
+        'warehouse': "Central Warehouse"
+      };
+      document.getElementById('summary-pickup-address').textContent = addressNames[listing.pickup_address_type] || 'Studio Address';
+
+      document.getElementById('summary-len').textContent = listing.length_cm ? `${listing.length_cm} cm` : 'N/A';
+      document.getElementById('summary-wid').textContent = listing.width_cm ? `${listing.width_cm} cm` : 'N/A';
+      document.getElementById('summary-hei').textContent = listing.height_cm ? `${listing.height_cm} cm` : 'N/A';
+
+      const wt = listing.weight_g !== null && listing.weight_g !== undefined ? listing.weight_g : (listing.weight_grams !== null && listing.weight_grams !== undefined ? listing.weight_grams : null);
+      document.getElementById('summary-weight').textContent = wt ? `${wt} g` : 'N/A';
+
+      // summary-bio-box removed
+
       // Save title in sessionStorage for success screen
       sessionStorage.setItem('published_title', listing.title || 'Untitled Study');
     } catch (err) {
@@ -712,7 +785,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       showToast('Listing published successfully!', 'success');
       setTimeout(() => {
-        window.location.href = '/seller/listing-publish.html';
+        window.location.href = 'listing-publish.html';
       }, 1000);
     } catch (err) {
       showToast(err.message, 'error');
@@ -723,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function discardDraft() {
     if (!confirm('Are you sure you want to discard this draft? This action cannot be undone.')) return;
     if (!draftId) {
-      window.location.href = '/seller/catalog.html';
+      window.location.href = 'catalog.html';
       return;
     }
     try {
@@ -735,7 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('draft_id');
         showToast('Draft discarded successfully.', 'success');
         setTimeout(() => {
-          window.location.href = '/seller/catalog.html';
+          window.location.href = 'catalog.html';
         }, 1000);
       } else {
         throw new Error('Failed to delete draft');
@@ -747,17 +820,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Event Listeners
   document.getElementById('header-publish-btn').addEventListener('click', publishListing);
-  document.getElementById('footer-publish-btn').addEventListener('click', publishListing);
+  document.getElementById('summary-publish-btn').addEventListener('click', publishListing);
   document.getElementById('header-discard-btn').addEventListener('click', discardDraft);
-  document.getElementById('save-draft-btn').addEventListener('click', () => {
-    showToast('Draft saved successfully.', 'success');
-    setTimeout(() => {
-      window.location.href = '/seller/catalog.html';
-    }, 1000);
-  });
-  document.getElementById('back-btn').addEventListener('click', () => {
-    window.location.href = '/seller/listing-shipping.html';
-  });
+
+  const headerSaveBtn = document.getElementById('header-save-draft-btn');
+  if (headerSaveBtn) {
+    headerSaveBtn.addEventListener('click', () => {
+      showToast('Draft saved successfully.', 'success');
+      setTimeout(() => {
+        window.location.href = 'catalog.html';
+      }, 1000);
+    });
+  }
+
+  const headerBackBtn = document.getElementById('header-back-btn');
+  if (headerBackBtn) {
+    headerBackBtn.addEventListener('click', () => {
+      window.location.href = 'listing-shipping.html';
+    });
+  }
 
   loadDraftDetails();
 });
