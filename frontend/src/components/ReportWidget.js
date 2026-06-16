@@ -7,7 +7,7 @@
     // 1. Create floating button
     const btn = document.createElement('button');
     btn.id = 'tohfa-report-widget-btn';
-    btn.className = 'fixed bottom-5 right-5 z-[9999] flex items-center gap-2 px-5 py-3 rounded-full bg-[#3D6B4F] hover:bg-[#2a4d38] text-white shadow-lg active:scale-95 duration-200 transition-all cursor-pointer border-none font-sans';
+    btn.className = 'fixed bottom-24 md:bottom-5 right-5 z-[9999] flex items-center gap-2 px-5 py-3 rounded-full bg-[#3D6B4F] hover:bg-[#2a4d38] text-white shadow-lg active:scale-95 duration-200 transition-all cursor-pointer border-none font-sans';
     btn.style.fontFamily = "'DM Sans', sans-serif";
     btn.innerHTML = `
       <span class="material-symbols-outlined text-[20px] fill-current">flag</span>

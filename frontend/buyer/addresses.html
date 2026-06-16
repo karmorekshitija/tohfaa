@@ -216,9 +216,14 @@
     <!-- State 1: Has Addresses -->
     <div id="state-has-addresses" class="relative z-10 w-full md:max-w-xl md:mx-auto">
         <!-- Header Section -->
-        <header class="mb-lg">
-            <p class="font-label-caps text-label-caps text-gold-brand mb-xs tracking-widest uppercase">My Account</p>
-            <h1 class="font-headline-lg text-headline-lg-mobile italic text-primary">Saved Addresses <span class="text-gold-brand font-normal opacity-70">✦</span></h1>
+        <header class="mb-lg flex items-center gap-md">
+            <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1">
+                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+            </a>
+            <div>
+                <p class="font-label-caps text-label-caps text-gold-brand mb-xs tracking-widest uppercase">My Account</p>
+                <h1 class="font-headline-lg text-headline-lg-mobile italic text-primary">Saved Addresses <span class="text-gold-brand font-normal opacity-70">✦</span></h1>
+            </div>
         </header>
 
         <!-- Add Address Button -->
@@ -334,6 +339,11 @@
         </div>
         <input type="hidden" id="address-type-input" value="home" />
       </div>
+      
+      <!-- Custom Tag Input Field -->
+      <div id="custom-tag-container" class="hidden space-y-xs mt-sm">
+        <input id="custom-tag-input" class="w-full bg-[#F7F3EC] border border-sage px-md py-sm rounded-lg text-body-md focus:outline-none focus:border-gold-brand" type="text" placeholder="Enter custom tag (e.g. Mom's House, Office 2...)" />
+      </div>
 
       <div class="flex items-center justify-between py-sm border-t border-outline-variant/30 mt-md">
         <div class="space-y-xs">
@@ -403,6 +413,8 @@
         const workBtn = document.getElementById('type-work');
         const otherBtn = document.getElementById('type-other');
         const typeInput = document.getElementById('address-type-input');
+        const customTagContainer = document.getElementById('custom-tag-container');
+        const customTagInput = document.getElementById('custom-tag-input');
         
         [homeBtn, workBtn, otherBtn].forEach(btn => {
             btn.classList.remove('bg-primary', 'text-white', 'border-transparent');
@@ -416,6 +428,16 @@
         }
         
         typeInput.value = type;
+
+        if (type === 'other') {
+            if (customTagContainer) customTagContainer.classList.remove('hidden');
+            if (customTagInput) {
+                customTagInput.focus();
+            }
+        } else {
+            if (customTagContainer) customTagContainer.classList.add('hidden');
+            if (customTagInput) customTagInput.value = "";
+        }
     }
 
     // Toggle default switch state
@@ -457,6 +479,9 @@
         document.getElementById('city-input').value = "";
         document.getElementById('state-input').value = "";
         document.getElementById('pincode-input').value = "";
+        if (document.getElementById('custom-tag-input')) {
+            document.getElementById('custom-tag-input').value = "";
+        }
         
         selectAddressType('home');
         setDefaultCheckboxState(false);
@@ -483,9 +508,23 @@
         document.getElementById('state-input').value = addr.state || "";
         document.getElementById('pincode-input').value = addr.pincode || "";
         
-        // Guess tag from full_name to set type selector
-        const guessedType = getAddressType(addr.full_name).toLowerCase();
-        selectAddressType(guessedType);
+        // Check if tag is custom or matches standard
+        const rawTag = addr.tag || "";
+        const normalizedTag = rawTag.trim().toLowerCase();
+        
+        if (normalizedTag === 'home' || normalizedTag === 'work') {
+            selectAddressType(normalizedTag);
+        } else if (rawTag !== "") {
+            selectAddressType('other');
+            if (document.getElementById('custom-tag-input')) {
+                document.getElementById('custom-tag-input').value = rawTag;
+            }
+        } else {
+            // Guess tag from full_name to set type selector (legacy support)
+            const guessedType = getAddressType(addr.full_name).toLowerCase();
+            selectAddressType(guessedType);
+        }
+        
         setDefaultCheckboxState(addr.is_default === 1);
         
         const modal = document.getElementById('addressModal');
@@ -547,10 +586,15 @@
                 
                 listContainer.innerHTML = loadedAddresses.map(addr => {
                     const isDefault = addr.is_default === 1;
-                    const type = getAddressType(addr.full_name);
+                    let type = (addr.tag || '').trim();
+                    if (!type) {
+                        type = getAddressType(addr.full_name);
+                    }
+                    type = type.toUpperCase();
+                    
                     const tagStyle = type === 'WORK' ? 'bg-[#7B5EA7]/10 border-[#7B5EA7]/30 text-[#7B5EA7]' : 
-                                     type === 'OTHER' ? 'bg-[#7B5EA7]/10 border-[#7B5EA7]/30 text-[#7B5EA7]' : 
-                                     'bg-gold-brand/10 border-gold-brand/30 text-gold-brand';
+                                     type === 'HOME' ? 'bg-gold-brand/10 border-gold-brand/30 text-gold-brand' :
+                                     'bg-[#7B5EA7]/10 border-[#7B5EA7]/30 text-[#7B5EA7]';
                     
                     return `
                         <div class="bg-ivory border border-sage rounded-xl p-lg card-shadow transition-all duration-300 hover:-translate-y-1 relative" data-id="${addr.id}">
@@ -610,6 +654,16 @@
         const pincode = document.getElementById('pincode-input').value.trim();
         const isDefault = document.getElementById('default-toggle').checked;
         
+        const selectedType = document.getElementById('address-type-input').value;
+        let finalTag = selectedType;
+        if (selectedType === 'other') {
+            finalTag = document.getElementById('custom-tag-input').value.trim();
+            if (!finalTag) {
+                Toast.show('Please enter a custom tag name!', 'error');
+                return;
+            }
+        }
+        
         // Simple validations
         if (!fullName || !phone || !street || !city || !state || !pincode) {
             Toast.show('All fields are required!', 'error');
@@ -623,7 +677,8 @@
             city: city,
             state: state,
             pincode: pincode,
-            is_default: isDefault ? 1 : 0
+            is_default: isDefault ? 1 : 0,
+            tag: finalTag
         };
 
         try {
@@ -677,7 +732,8 @@
             city: addr.city,
             state: addr.state,
             pincode: addr.pincode,
-            is_default: 1
+            is_default: 1,
+            tag: addr.tag
         };
 
         try {

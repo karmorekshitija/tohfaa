@@ -242,17 +242,19 @@
 <!-- 3. SORT + CATEGORY FILTER ROW -->
 <section class="bg-[#FFFFFF] py-md sticky top-20 z-40 border-b border-outline-variant/30">
 <div class="flex items-center gap-sm px-margin-desktop">
-<div class="flex-shrink-0 bg-[#FFFFFF] pr-md border-r border-outline-variant/50 mr-md">
+<div class="flex-shrink-0 bg-[#FFFFFF] pr-md border-r border-outline-variant/50 mr-md mobile-filter-border">
 <button id="filter-btn" class="p-sm bg-[#F7F3EC] border border-outline-variant rounded-lg text-primary flex items-center gap-sm hover:bg-surface-container transition-colors">
 <span class="material-symbols-outlined">tune</span>
 <span id="filter-btn-text" class="text-sm font-body-md pr-1">Filter</span>
+<span id="filter-badge" class="hidden"></span>
 </button>
 </div>
 <div id="subcategory-filters-container" class="flex items-center gap-sm overflow-x-auto no-scrollbar flex-grow">
   <!-- Dynamic subcategory buttons will be injected here -->
 </div>
-<div class="flex items-center gap-sm ml-lg border-l border-outline-variant/50 pl-lg">
-<span class="text-xs text-outline font-label-caps whitespace-nowrap">Sort:</span>
+<div class="flex items-center gap-sm ml-lg border-l border-outline-variant/50 pl-lg mobile-sort-container">
+<span class="text-xs text-outline font-label-caps whitespace-nowrap mobile-sort-label">Sort:</span>
+<div class="relative mobile-sort-wrapper">
 <select id="sort-select" class="flex-shrink-0 px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm hover:text-primary transition-all border border-outline-variant/20 focus:ring-0 focus:outline-none cursor-pointer">
     <option value="newest">Newest</option>
     <option value="price_asc">Price: Low to High</option>
@@ -260,6 +262,10 @@
     <option value="most_popular">Most Popular</option>
     <option value="top_rated">Best Rated</option>
 </select>
+<div class="mobile-sort-icon absolute inset-0 md:hidden flex items-center justify-center bg-[#F7F3EC] border border-outline-variant rounded-full text-primary pointer-events-none">
+  <span class="material-symbols-outlined text-lg">swap_vert</span>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -738,11 +744,22 @@
       }
       
       const filterBtnText = document.getElementById('filter-btn-text');
+      const filterBadge = document.getElementById('filter-badge');
+      
       if (filterBtnText) {
         if (count > 0) {
           filterBtnText.innerText = `Filter • ${count}`;
         } else {
           filterBtnText.innerText = 'Filter';
+        }
+      }
+      
+      if (filterBadge) {
+        if (count > 0) {
+          filterBadge.innerText = count;
+          filterBadge.classList.remove('hidden');
+        } else {
+          filterBadge.classList.add('hidden');
         }
       }
     }

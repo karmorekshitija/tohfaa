@@ -73,6 +73,8 @@ html, body {
   #related-treasures-grid,
   #catalog-grid,
   #custom-grid,
+  #product-feed-grid,
+  #sponsored-product-grid,
   .product-grid,
   .search-results-grid,
   .category-product-grid {
@@ -393,3 +395,330 @@ a.btn,
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   Compact Mobile Product Cards (Amazon-style)
+   ========================================================================== */
+@media (max-width: 767px) {
+  /* Card padding and styling */
+  #product-feed-grid > div,
+  #sponsored-product-grid > div,
+  #product-grid > div,
+  #results-grid > div,
+  #related-treasures-grid > div,
+  #catalog-grid > div,
+  #custom-grid > div,
+  .product-grid > div,
+  .search-results-grid > div,
+  .category-product-grid > div {
+    padding: 8px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Reduce margin-bottom inside card elements to tighten vertical spacing */
+  #product-feed-grid > div .mb-4,
+  #sponsored-product-grid > div .mb-4,
+  #product-grid > div .mb-4,
+  #results-grid > div .mb-4,
+  #catalog-grid > div .mb-4,
+  #custom-grid > div .mb-4,
+  .product-grid > div .mb-4,
+  .category-product-grid > div .mb-4 {
+    margin-bottom: 8px !important;
+  }
+
+  /* Image container adjustments */
+  #product-feed-grid > div img,
+  #sponsored-product-grid > div img,
+  #product-grid > div img,
+  #results-grid > div img,
+  #catalog-grid > div img,
+  #custom-grid > div img,
+  .product-grid > div img,
+  .category-product-grid > div img {
+    border-radius: 6px !important;
+  }
+
+  /* Typography: Title (13px) */
+  #product-feed-grid h4,
+  #sponsored-product-grid h4,
+  #product-grid h4,
+  #results-grid h4,
+  #catalog-grid h4,
+  #custom-grid h4,
+  .product-grid h4,
+  .category-product-grid h4 {
+    font-size: 13px !important;
+    line-height: 16px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Typography: Price (15px) */
+  #product-feed-grid .text-lg,
+  #sponsored-product-grid .text-lg,
+  #product-grid .text-lg,
+  #results-grid .text-lg,
+  #catalog-grid .text-lg,
+  #custom-grid .text-lg,
+  .product-grid .text-lg,
+  .category-product-grid .text-lg {
+    font-size: 15px !important;
+    line-height: 18px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Typography: Rating, reviews, seller (11px) */
+  #product-feed-grid .text-xs,
+  #sponsored-product-grid .text-xs,
+  #product-grid .text-xs,
+  #results-grid .text-xs,
+  #catalog-grid .text-xs,
+  #custom-grid .text-xs,
+  .product-grid .text-xs,
+  .category-product-grid .text-xs {
+    font-size: 11px !important;
+    line-height: 14px !important;
+  }
+
+  /* Add to Cart button compact layout */
+  #product-feed-grid .add-to-cart-btn,
+  #sponsored-product-grid .add-to-cart-btn,
+  #product-grid .add-to-cart-btn,
+  #results-grid .add-to-cart-btn,
+  #catalog-grid .add-to-cart-btn,
+  #custom-grid .add-to-cart-btn,
+  .product-grid .add-to-cart-btn,
+  .category-product-grid .add-to-cart-btn {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    font-size: 11px !important;
+    line-height: 14px !important;
+    border-radius: 6px !important;
+    min-height: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Slide indicator dots scaling and layout for mobile */
+  #hero-slide-dots {
+    bottom: -20px !important;
+  }
+  #hero-slide-dots button {
+    min-height: unset !important;
+    min-width: unset !important;
+    width: 6px !important;
+    height: 6px !important;
+    background-color: rgba(61, 107, 79, 0.3) !important;
+  }
+  #hero-slide-dots button.bg-white {
+    background-color: rgba(61, 107, 79, 1) !important;
+    transform: scale(1.25) !important;
+  }
+
+  /* Compact Filter & Sort Bar (Category Page Mobile Only) */
+  .mobile-sort-label {
+    display: none !important;
+  }
+  
+  #filter-btn-text {
+    display: none !important;
+  }
+  
+  #filter-btn {
+    padding: 0 !important;
+    border-radius: 9999px !important;
+    width: 38px !important;
+    height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+  }
+  
+  #filter-btn .material-symbols-outlined {
+    font-size: 20px !important;
+    margin-right: 0 !important;
+  }
+  
+  #filter-badge {
+    position: absolute !important;
+    top: -2px !important;
+    right: -2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #3D6B4F !important;
+    color: #FFFFFF !important;
+    font-size: 9px !important;
+    font-weight: bold !important;
+    width: 15px !important;
+    height: 15px !important;
+    border-radius: 9999px !important;
+    border: 1.5px solid #FFFFFF !important;
+  }
+  
+  .mobile-filter-border {
+    margin-right: 4px !important;
+    padding-right: 8px !important;
+  }
+
+  .mobile-sort-container {
+    margin-left: 4px !important;
+    padding-left: 8px !important;
+  }
+  
+  .mobile-sort-wrapper {
+    width: 38px !important;
+    height: 38px !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+  }
+  
+  #sort-select {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    z-index: 10 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .mobile-sort-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    pointer-events: none !important;
+  }
+  
+  .mobile-sort-icon .material-symbols-outlined {
+    font-size: 20px !important;
+  }
+  
+  #subcategory-filters-container {
+    padding-bottom: 2px !important;
+    padding-top: 2px !important;
+    scrollbar-width: none !important;
+  }
+  #subcategory-filters-container::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Compact Reels Action Buttons (Mobile Only) */
+  #like-btn,
+  #comment-btn,
+  #save-btn,
+  #share-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  
+  #like-btn .material-symbols-outlined,
+  #comment-btn .material-symbols-outlined,
+  #save-btn .material-symbols-outlined,
+  #share-btn .material-symbols-outlined {
+    font-size: 20px !important;
+  }
+  
+  #like-count,
+  #comment-count,
+  #save-count {
+    font-size: 10px !important;
+    margin-top: 1px !important;
+  }
+}
+
+/* Mobile Saved Reels 3-Column Instagram-Style Grid (Mobile Only) */
+@media (max-width: 767px) {
+  #reels-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 2px !important;
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    width: calc(100% + 32px) !important;
+  }
+  
+  #reels-grid .group,
+  #reels-grid .animate-pulse {
+    aspect-ratio: 1/1 !important;
+    border-radius: 0px !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  
+  /* Hide all info overlay & controls on mobile grid items */
+  #reels-grid .group .absolute {
+    display: none !important;
+  }
+  
+  /* Scale down empty state image & content */
+  #empty-state .relative {
+    width: 120px !important;
+    height: 120px !important;
+  }
+  #empty-state h3 {
+    font-size: 1.25rem !important;
+    margin-top: 0.5rem !important;
+  }
+  #empty-state p {
+    font-size: 0.875rem !important;
+    padding: 0 16px !important;
+  }
+}
+
+/* Mobile Product Card Info Layout (Mobile Only) */
+@media (max-width: 767px) {
+  .group > div > .flex.flex-col {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    gap: 2px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Price: Left-aligned on the first row */
+  .group > div > .flex.flex-col > span.text-lg {
+    grid-row: 1 !important;
+    grid-column: 1 !important;
+    margin-bottom: 0 !important;
+    align-self: center !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Rating: Right-aligned on the first row */
+  .group > div > .flex.flex-col > div.flex {
+    grid-row: 1 !important;
+    grid-column: 2 !important;
+    margin-bottom: 0 !important;
+    align-self: center !important;
+    justify-self: end !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Product Name: Stacked below the price/rating row */
+  .group > div > .flex.flex-col > h4 {
+    grid-row: 2 !important;
+    grid-column: 1 / span 2 !important;
+    margin-top: 4px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Seller Name: Stacked below the product name */
+  .group > div > .flex.flex-col > span.text-xs:not(.text-lg) {
+    grid-row: 3 !important;
+    grid-column: 1 / span 2 !important;
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+    opacity: 0.8 !important;
+  }
+}
+
+
+
+

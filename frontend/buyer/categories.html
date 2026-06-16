@@ -112,6 +112,69 @@
             background-color: #FFFFFF;
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8);
         }
+
+        /* Scoped mobile bento grid overrides */
+        @media (max-width: 767px) {
+            #categories-grid-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                grid-auto-rows: 180px !important;
+                gap: 16px !important;
+            }
+            
+            /* Featured card mobile layout adjustments (spans 2x2, height ~376px) */
+            #categories-grid-container .col-span-2.row-span-2 h3 {
+                font-size: 24px !important;
+                line-height: 30px !important;
+                margin-bottom: 8px !important;
+            }
+            #categories-grid-container .col-span-2.row-span-2 .p-lg {
+                padding: 16px !important;
+            }
+            #categories-grid-container .col-span-2.row-span-2 button {
+                padding: 6px 16px !important;
+                font-size: 12px !important;
+            }
+
+            /* Wide/split card mobile adjustments (spans 2x1, height 180px) */
+            #categories-grid-container .col-span-2:not(.row-span-2) p.font-body-md {
+                display: none !important;
+            }
+            #categories-grid-container .col-span-2:not(.row-span-2) h3 {
+                font-size: 20px !important;
+                line-height: 26px !important;
+                margin-bottom: 4px !important;
+            }
+            #categories-grid-container .col-span-2:not(.row-span-2) .p-lg,
+            #categories-grid-container .col-span-2:not(.row-span-2) .p-xl {
+                padding: 16px !important;
+            }
+            #categories-grid-container .col-span-2:not(.row-span-2) .flex.h-full {
+                padding: 16px !important;
+                gap: 16px !important;
+            }
+            #categories-grid-container .col-span-2:not(.row-span-2) button {
+                padding: 4px 12px !important;
+                font-size: 11px !important;
+            }
+            #categories-grid-container .col-span-2:not(.row-span-2) .w-1\/2 {
+                width: 50% !important;
+            }
+
+            /* Standard 1x1 card text and overlay adjustments (height 180px) */
+            #categories-grid-container h3:not(.text-\[32px\]) {
+                font-size: 15px !important;
+                line-height: 20px !important;
+            }
+            #categories-grid-container p.font-data-price {
+                font-size: 10px !important;
+            }
+            #categories-grid-container .p-md {
+                padding: 12px !important;
+            }
+            #categories-grid-container .p-lg {
+                padding: 12px !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-white text-on-surface min-h-screen font-body-md overflow-x-hidden">
@@ -185,7 +248,7 @@
 
         <!-- Category Grid Section -->
         <section class="px-margin-desktop pb-xl">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg auto-rows-[320px]" id="categories-grid-container">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-lg auto-rows-[180px] md:auto-rows-[320px]" id="categories-grid-container">
                 <!-- Loading State -->
                 <div class="col-span-full flex flex-col items-center justify-center py-20">
                     <div class="relative w-10 h-10">
@@ -399,7 +462,7 @@
                 if (slot.type === 'featured') {
                   const countText = count !== null ? `${count} items` : '128 items';
                   html += `
-                    <div ${clickAction} class="lg:col-span-2 lg:row-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
+                    <div ${clickAction} class="col-span-2 row-span-2 lg:col-span-2 lg:row-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
                       <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${slot.image}" alt="${slot.displayName}">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       <div class="absolute bottom-0 left-0 p-lg text-white">
@@ -415,7 +478,7 @@
                 } else if (slot.type === 'wide') {
                   const countText = count !== null ? `${count} available` : '32 available';
                   html += `
-                    <div ${clickAction} class="lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
+                    <div ${clickAction} class="col-span-2 lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
                       <div class="absolute inset-0 paper-texture opacity-30"></div>
                       <div class="grid grid-cols-2 h-full">
                         <div class="p-lg flex flex-col justify-center">
@@ -432,7 +495,7 @@
                   `;
                 } else if (slot.type === 'wide-split') {
                   html += `
-                    <div ${clickAction} class="lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-tertiary/5 cursor-pointer font-['DM_Sans']">
+                    <div ${clickAction} class="col-span-2 lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-tertiary/5 cursor-pointer font-['DM_Sans']">
                       <div class="absolute inset-0 paper-texture opacity-30"></div>
                       <div class="flex h-full items-center p-xl gap-xl">
                         <div class="w-1/2">

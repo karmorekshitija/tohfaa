@@ -194,7 +194,12 @@
 <main class="relative min-h-screen pt-xl pb-xl max-w-[1440px] mx-auto px-margin-desktop bg-white">
 
 <section class="relative z-10 max-w-4xl mx-auto">
-<h1 class="font-headline-lg text-display-hero text-primary mb-lg">Your orders</h1>
+<div class="flex items-center gap-md mb-lg">
+  <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1">
+      <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+  </a>
+  <h1 class="font-headline-lg text-display-hero text-primary !mb-0">Your orders</h1>
+</div>
 <!-- Filter Pills -->
 <div class="flex items-center gap-md mb-xl">
 <button id="pill-all" onclick="filterStatus('all')" class="bg-primary text-white px-lg py-sm rounded-full font-body-md transition-transform active:scale-95">All</button>

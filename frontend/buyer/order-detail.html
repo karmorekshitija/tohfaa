@@ -279,9 +279,12 @@
         
         main.innerHTML = `
             <!-- Header Section -->
-            <section class="text-center mb-xl">
-                <div class="flex items-center justify-center mb-2">
-                    <button onclick="window.location.href='orders.html'" class="material-symbols-outlined text-primary mr-4 hover:bg-surface-variant rounded-full p-1 transition-all">chevron_left</button>
+            <section class="text-center md:text-center mb-xl">
+                <div class="flex items-center md:justify-center gap-md mb-2">
+                    <button onclick="window.location.href='orders.html'" class="hidden md:block material-symbols-outlined text-primary hover:bg-surface-variant rounded-full p-1 transition-all">chevron_left</button>
+                    <a href="/buyer/orders.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary flex-shrink-0">
+                        <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                    </a>
                     <h1 class="font-headline-lg text-headline-lg text-primary">Order Details</h1>
                 </div>
                 <p class="font-data-price text-[14px] text-on-surface-variant font-bold">#${o.order_ref}</p>

@@ -93,6 +93,7 @@ CREATE TABLE addresses (
       state         TEXT NOT NULL,
       pincode       TEXT NOT NULL,
       phone         TEXT,
+      tag           TEXT,
       is_default    INTEGER DEFAULT 0,
       created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );

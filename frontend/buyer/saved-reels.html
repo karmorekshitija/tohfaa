@@ -197,15 +197,20 @@
     
     <div class="max-w-[1200px] mx-auto px-margin-desktop py-xl relative z-10">
         <!-- Header Section -->
-        <div class="mb-xl relative inline-block">
-            <div class="absolute -inset-x-4 -inset-y-2 bg-tertiary-container/10 blur-xl rounded-full opacity-30"></div>
-            <div class="relative flex items-baseline gap-md select-none">
-                <h1 class="font-display-hero text-display-hero text-primary">
-                    Saved makes <span class="text-tertiary font-normal">✦</span>
-                </h1>
-                <span id="saved-makes-count" class="font-data-price text-data-price text-secondary bg-secondary-container px-3 py-1 rounded-full border border-outline-variant">
-                    0
-                </span>
+        <div class="mb-xl relative flex items-center gap-md">
+            <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1 flex-shrink-0">
+                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+            </a>
+            <div class="relative inline-block">
+                <div class="absolute -inset-x-4 -inset-y-2 bg-tertiary-container/10 blur-xl rounded-full opacity-30"></div>
+                <div class="relative flex items-baseline gap-md select-none">
+                    <h1 class="font-display-hero text-display-hero text-primary">
+                        Saved makes <span class="text-tertiary font-normal">✦</span>
+                    </h1>
+                    <span id="saved-makes-count" class="font-data-price text-data-price text-secondary bg-secondary-container px-3 py-1 rounded-full border border-outline-variant">
+                        0
+                    </span>
+                </div>
             </div>
             
             <!-- Ink Sketch Watermark -->

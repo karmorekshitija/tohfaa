@@ -34,6 +34,7 @@ try { db.exec("ALTER TABLE conversation_messages ADD COLUMN type TEXT DEFAULT 't
 try { db.exec("ALTER TABLE conversation_messages ADD COLUMN offer_id INTEGER;"); } catch(e) {}
 
 try { db.exec("ALTER TABLE store_config ADD COLUMN away_dates TEXT DEFAULT NULL;"); } catch(e) {}
+try { db.exec("ALTER TABLE addresses ADD COLUMN tag TEXT;"); } catch (e) {}
 
 // Seller Profile missing columns migration
 ['story_headline TEXT', 'story_description TEXT', 'working_on TEXT', 'video_url TEXT', 'banner_url TEXT', 'badges TEXT', 'about_image_url TEXT'].forEach(col => {
@@ -2086,7 +2087,7 @@ app.get('/api/addresses', rateLimit(60), authenticateToken, async (req, res) => 
   const userId = req.user.user_id;
   
   try {
-    const addresses = await db.prepare('SELECT id, full_name, line1, line2, city, state, pincode, phone, is_default FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC').all(userId);
+    const addresses = await db.prepare('SELECT id, full_name, line1, line2, city, state, pincode, phone, is_default, tag FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC').all(userId);
     
     return res.status(200).json({
       success: true,
@@ -2107,7 +2108,7 @@ app.get('/api/addresses', rateLimit(60), authenticateToken, async (req, res) => 
 // TASK 25: POST /api/addresses
 app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
-  const { full_name, line1, line2, city, state, pincode, phone, is_default } = req.body;
+  const { full_name, line1, line2, city, state, pincode, phone, is_default, tag } = req.body;
   
   if (!full_name || typeof full_name !== 'string' || full_name.trim() === '' ||
       !line1 || typeof line1 !== 'string' || line1.trim() === '' ||
@@ -2124,6 +2125,7 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
   const finalLine2 = (line2 && typeof line2 === 'string') ? line2 : null;
   const finalPhone = (phone && typeof phone === 'string') ? phone : null;
   const isDefaultVal = is_default ? 1 : 0;
+  const finalTag = (tag && typeof tag === 'string') ? tag : null;
   
   try {
     const insertTransaction = db.transaction(async () => {
@@ -2132,9 +2134,9 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
       }
       
       const info = await db.prepare(`
-        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(userId, full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal);
+        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default, tag)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(userId, full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal, finalTag);
       
       return info.lastInsertRowid;
     });
@@ -2152,7 +2154,8 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
         state,
         pincode,
         phone: finalPhone,
-        is_default: isDefaultVal
+        is_default: isDefaultVal,
+        tag: finalTag
       }
     });
   } catch (err) {
@@ -2169,7 +2172,7 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
 app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
   const { id } = req.params;
-  const { full_name, line1, line2, city, state, pincode, phone, is_default } = req.body;
+  const { full_name, line1, line2, city, state, pincode, phone, is_default, tag } = req.body;
   
   if (!full_name || typeof full_name !== 'string' || full_name.trim() === '' ||
       !line1 || typeof line1 !== 'string' || line1.trim() === '' ||
@@ -2186,6 +2189,7 @@ app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res)
   const finalLine2 = (line2 && typeof line2 === 'string') ? line2 : null;
   const finalPhone = (phone && typeof phone === 'string') ? phone : null;
   const isDefaultVal = is_default ? 1 : 0;
+  const finalTag = (tag && typeof tag === 'string') ? tag : null;
   
   try {
     const address = await db.prepare('SELECT user_id FROM addresses WHERE id = ?').get(id);
@@ -2212,9 +2216,9 @@ app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res)
       
       await db.prepare(`
         UPDATE addresses 
-        SET full_name = ?, line1 = ?, line2 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?
+        SET full_name = ?, line1 = ?, line2 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?, tag = ?
         WHERE id = ?
-      `).run(full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal, id);
+      `).run(full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal, finalTag, id);
     });
     
     await updateTransaction();
@@ -2230,7 +2234,8 @@ app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res)
         state,
         pincode,
         phone: finalPhone,
-        is_default: isDefaultVal
+        is_default: isDefaultVal,
+        tag: finalTag
       }
     });
   } catch (err) {

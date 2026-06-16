@@ -187,12 +187,17 @@
 <main class="flex-grow pt-12 pb-xl max-w-2xl mx-auto w-full px-margin-mobile md:px-0 relative">
   <!-- Back navigation and Header -->
   <header class="mb-lg select-none">
-    <a href="/buyer/profile.html" class="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
+    <a href="/buyer/profile.html" class="hidden md:inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
       <span class="material-symbols-outlined text-base">arrow_back</span>
       <span>Back to Profile</span>
     </a>
-    <h1 id="page-title" class="font-serif text-[#3D6B4F] text-[40px] font-['Playfair_Display'] font-normal leading-tight">Followers & Following</h1>
-    <p id="page-subtitle" class="text-outline text-sm font-sans mt-1">Connect and follow your favorite handcrafted makers and artisans.</p>
+    <div class="flex items-center gap-md">
+      <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1 flex-shrink-0">
+          <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+      </a>
+      <h1 id="page-title" class="font-serif text-[#3D6B4F] text-[40px] font-['Playfair_Display'] font-normal leading-tight !mb-0">Followers & Following</h1>
+    </div>
+    <p id="page-subtitle" class="text-outline text-sm font-sans mt-2">Connect and follow your favorite handcrafted makers and artisans.</p>
   </header>
 
   <!-- Tabs -->
