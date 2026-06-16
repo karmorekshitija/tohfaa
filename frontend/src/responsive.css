@@ -541,5 +541,32 @@ table button {
   }
 }
 
+/* Constrain all horizontal scroll containers globally to prevent layout overflow */
+.overflow-x-auto {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  display: block !important;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 767px) {
+  /* Enforce horizontal scrolling tables on mobile */
+  .overflow-x-auto table {
+    min-width: 750px !important;
+  }
+  /* Override desktop-level paddings on mobile viewports */
+  .px-12 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  /* Wrap stats card elements to prevent horizontal page stretching */
+  .flex:has(> .bg-primary\/10),
+  .flex:has(> .bg-gold\/10),
+  .flex:has(> .bg-violet\/10) {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+}
+
 
 
