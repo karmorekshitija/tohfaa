@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Buyer Profile</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -61,7 +61,12 @@
                         "surface": "#FFFFFF",
                         "surface-container-highest": "#F7F3EC",
                         "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#2a122f"
+                        "on-tertiary-fixed": "#2a122f",
+                        "gold-custom": "#C8973A",
+                        "ivory-card": "#FCFAF5",
+                        "sage": "#8FAF82",
+                        "sage-soft": "#C5D6BC",
+                        "terracotta": "#B14B3E"
                     },
                     "borderRadius": {
                         "DEFAULT": "0.25rem",
@@ -89,9 +94,9 @@
                         "title-md": ["DM Sans"],
                         "label-caps": ["DM Sans"],
                         "display-lg": ["Playfair Display"],
-                        "title-serif": ["Playfair Display"],
                         "body-md": ["DM Sans"],
-                        "data-price": ["DM Sans"]
+                        "data-price": ["Space Mono"],
+                        "title-serif": ["Lora"]
                     },
                     "fontSize": {
                         "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
@@ -220,7 +225,7 @@
 <body class="bg-white text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
 <!-- Top Navigation -->
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -298,14 +303,14 @@
     <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
   </a>
 </div>
-<a href="/buyer/edit-profile.html" class="absolute bottom-2 right-2 bg-primary text-white p-xs rounded-full border-2 border-surface artisan-card-hover">
+<a href="/buyer/edit-profile.html" class="absolute bottom-2 right-2 bg-primary text-white w-11 h-11 flex items-center justify-center rounded-full border-2 border-surface shadow-md active:scale-95 duration-200" aria-label="Edit Profile">
   <span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
 </a>
 </div>
 <div class="mt-md text-center">
 <h2 class="font-display-hero text-headline-lg text-on-surface">Elias Thorne</h2>
 <a href="/buyer/edit-profile.html"
-   class="mt-lg inline-block px-xl py-sm border-2 border-outline-variant font-label-caps text-on-surface rounded-full hover:bg-surface-container transition-all active:scale-95 artisan-card-hover cursor-pointer">
+   class="mt-lg inline-flex items-center justify-center h-11 px-xl border-2 border-outline-variant font-label-caps text-on-surface rounded-full hover:bg-surface-container transition-all active:scale-95 duration-200 cursor-pointer">
   Edit Profile
 </a>
 </div>
@@ -319,39 +324,39 @@
   <h3 class="font-title-serif text-title-serif mb-lg px-xs">Activity Hub</h3>
   <div class="grid grid-cols-2 md:grid-cols-3 gap-gutter">
     <!-- Quick Link Cards -->
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/orders.html">
+    <a class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group transition-all duration-200" href="/buyer/orders.html">
       <span class="material-symbols-outlined text-primary mb-md" data-icon="package_2">package_2</span>
       <p class="font-title-serif text-on-surface">Orders</p>
       <p id="hub-orders-count" class="text-xs text-outline mt-xs">0 active shipments</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/saved-reels.html">
+    <a class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group transition-all duration-200" href="/buyer/saved-reels.html">
       <span class="material-symbols-outlined text-secondary mb-md" data-icon="video_library">video_library</span>
       <p class="font-title-serif text-on-surface">Saved Reels</p>
       <p id="hub-reels-count" class="text-xs text-outline mt-xs">0 saved reels</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/addresses.html">
+    <a class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group transition-all duration-200" href="/buyer/addresses.html">
       <span class="material-symbols-outlined text-tertiary mb-md" data-icon="location_on">location_on</span>
       <p class="font-title-serif text-on-surface">Addresses</p>
       <p id="hub-addresses-count" class="text-xs text-outline mt-xs">0 saved locations</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/occasions.html">
+    <a class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group transition-all duration-200" href="/buyer/occasions.html">
       <span class="material-symbols-outlined text-[#7B5EA7] mb-md" data-icon="celebration">celebration</span>
       <p class="font-title-serif text-on-surface">Occasions</p>
       <p id="hub-occasions-count" class="text-xs text-outline mt-xs">0 occasions saved</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/followers.html">
+    <a class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group transition-all duration-200" href="/buyer/followers.html">
       <span id="hub-followers-icon" class="material-symbols-outlined text-[#C87A53] mb-md" data-icon="group">group</span>
       <p id="hub-followers-title" class="font-title-serif text-on-surface">Followers & Following</p>
       <p id="hub-followers-count" class="text-xs text-outline mt-xs">0 followers • 0 following</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/notifications.html">
+    <a class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group transition-all duration-200" href="/buyer/notifications.html">
       <span class="material-symbols-outlined text-secondary mb-md" data-icon="notifications">notifications</span>
       <p class="font-title-serif text-on-surface">Notifications</p>
       <p class="text-xs text-outline mt-xs">Recent alerts</p>
     </a>
     <!-- T-12: Custom Orders Chat — for personalised/customised gift orders -->
     <a id="custom-chat-card" href="/buyer/chat.html"
-            class="p-lg bg-gradient-to-br from-[#7B5EA7]/60 to-[#8FAF82]/40 rounded-xl artisan-card-hover group border border-transparent hover:border-[#b492b7] text-left transition-all col-span-2 md:col-span-3">
+            class="p-lg bg-gradient-to-br from-[#7B5EA7]/20 to-[#8FAF82]/20 border border-[#8FAF82] rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] artisan-card-hover group text-left transition-all col-span-2 md:col-span-3">
       <span class="material-symbols-outlined text-[#7B5EA7] mb-md">chat</span>
       <p class="font-title-serif text-on-surface">Custom Orders Chat</p>
       <p id="chat-card-subtitle" class="text-xs text-outline mt-xs">3 conversations about personalised gifts</p>
@@ -359,10 +364,10 @@
   </div>
   <!-- Shipping & Payment Details -->
   <div class="mt-xl grid grid-cols-1 md:grid-cols-2 gap-gutter">
-    <div class="p-lg border border-outline-variant rounded-xl bg-surface-container-lowest relative overflow-hidden">
+    <div class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] relative overflow-hidden">
       <div class="flex justify-between items-start mb-md">
         <span class="font-label-caps text-outline">Default Shipping</span>
-        <a href="/buyer/addresses.html" class="text-primary hover:underline text-sm font-bold">Edit</a>
+        <a href="/buyer/addresses.html" class="text-primary hover:underline text-sm font-bold px-3 py-2 -my-2 -mr-3 flex items-center justify-center min-w-[44px] min-h-[44px]">Edit</a>
       </div>
       <p id="shipping-line1" class="font-title-serif text-on-surface">No shipping address</p>
       <p id="shipping-line2" class="text-on-surface-variant mt-xs">Please add an address in settings.</p>
@@ -370,7 +375,7 @@
       <!-- Decorative ink wash dot -->
       <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-primary-fixed/20 blur-2xl rounded-full"></div>
     </div>
-    <div class="p-lg border border-outline-variant rounded-xl bg-surface-container-lowest flex flex-col justify-between">
+    <div class="p-lg bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl shadow-[0_2px_8px_rgba(58,51,40,0.07)] flex flex-col justify-between">
       <div>
         <span class="font-label-caps text-outline mb-md block">Default Payment</span>
         <div class="flex items-center gap-md text-on-surface-variant">
@@ -380,7 +385,7 @@
       </div>
       <div class="mt-lg flex items-center justify-between">
         <span class="text-xs text-outline">Expires 09/27</span>
-        <button class="text-on-surface-variant/40">
+        <button class="w-11 h-11 flex items-center justify-center text-on-surface-variant/60 hover:bg-[#8FAF82]/20 rounded-full transition-all duration-200" aria-label="Payment Settings">
           <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
         </button>
       </div>
@@ -389,7 +394,7 @@
 </section>
 <!-- Right Column: Settings & Preferences -->
 <aside class="col-span-12 lg:col-span-4 flex flex-col gap-lg">
-<div class="bg-surface-container-highest/30 p-lg rounded-xl border border-surface-variant">
+<div class="bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-xl p-lg shadow-[0_2px_8px_rgba(58,51,40,0.07)]">
 <h3 class="font-title-serif text-title-serif mb-lg">Preferences</h3>
 <ul class="flex flex-col gap-xs" id="preferences-menu">
 <li>
@@ -429,7 +434,7 @@
 </a>
 </li>
 <li class="mt-md pt-md border-t border-outline-variant">
-<button class="w-full flex items-center gap-md p-md text-error hover:bg-error-container/20 rounded-lg transition-colors group" id="profile-logout-btn">
+<button class="w-full flex items-center gap-md p-md text-error hover:bg-[#B14B3E]/10 rounded-lg transition-colors group" id="profile-logout-btn">
 <span class="material-symbols-outlined" data-icon="logout">logout</span>
 <span class="font-body-md font-bold">Log out</span>
 </button>

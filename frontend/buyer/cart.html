@@ -7,8 +7,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Your basket | Tohfa</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -25,8 +25,8 @@
                         "on-tertiary-fixed-variant": "#593d5d",
                         "on-secondary-fixed-variant": "#484740",
                         "on-tertiary": "#ffffff",
-                        "primary": "#516447",
-                        "surface-tint": "#516447",
+                        "primary": "#3D6B4F",
+                        "surface-tint": "#3D6B4F",
                         "tertiary-fixed": "#7B5EA7",
                         "tertiary-container": "#b492b7",
                         "on-primary-fixed-variant": "#3D6B4F",
@@ -64,10 +64,10 @@
                         "error-container": "#F7F3EC",
                         "on-tertiary-fixed": "#2a122f",
                         "gold-custom": "#C8973A",
-                        "ivory-card": "#FFFDFB",
+                        "ivory-card": "#FCFAF5",
                         "sage": "#8FAF82",
-                        "sage-soft": "#F0F5EE",
-                        "terracotta": "#C87A53"
+                        "sage-soft": "#C5D6BC",
+                        "terracotta": "#B14B3E"
                     },
                     "borderRadius": {
                         "DEFAULT": "0.25rem",
@@ -88,16 +88,16 @@
                         "gutter": "24px"
                     },
                     "fontFamily": {
-                        "headline-lg-mobile": ["EB Garamond"],
-                        "body-lg": ["Work Sans"],
-                        "body-sm": ["Work Sans"],
-                        "headline-lg": ["EB Garamond"],
-                        "title-md": ["Work Sans"],
-                        "label-caps": ["Work Sans"],
-                        "display-lg": ["EB Garamond"],
-                        "body-md": ["Work Sans"],
-                        "data-price": ["Work Sans"],
-                        "title-serif": ["EB Garamond"]
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "body-sm": ["DM Sans"],
+                        "headline-lg": ["Playfair Display"],
+                        "title-md": ["DM Sans"],
+                        "label-caps": ["DM Sans"],
+                        "display-lg": ["Playfair Display"],
+                        "body-md": ["DM Sans"],
+                        "data-price": ["Space Mono"],
+                        "title-serif": ["Lora"]
                     },
                     "fontSize": {
                         "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
@@ -174,7 +174,7 @@
 <body class="bg-white font-body-md text-on-surface antialiased">
 <!-- Top Navigation Bar -->
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -232,7 +232,7 @@
 <!-- Page Header -->
 <header class="flex items-center justify-between mb-lg">
 <div class="flex items-center gap-sm">
-<button onclick="window.history.back()" class="material-symbols-outlined text-on-surface hover:bg-surface-container-low p-1 rounded-full transition-colors">chevron_left</button>
+<button onclick="window.history.back()" class="w-11 h-11 flex items-center justify-center material-symbols-outlined text-on-surface hover:bg-surface-container-low rounded-full transition-colors active:scale-95 duration-200">chevron_left</button>
 <h1 class="font-headline-lg text-headline-lg text-primary">Your basket</h1>
 </div>
 <div class="bg-[#C8973A]/10 px-3 py-1 rounded-full">
@@ -246,11 +246,11 @@
 
 <!-- Shipping Block -->
 <section class="mb-lg" id="shipping-block">
-<div class="bg-ivory-card border border-sage/30 rounded-2xl p-lg relative overflow-hidden">
+<div class="bg-ivory-card border border-sage/30 rounded-2xl p-lg relative overflow-hidden shadow-[0_2px_8px_rgba(58,51,40,0.07)]">
 <div class="absolute top-0 right-0 w-24 h-6 wax-tape-texture -mr-4 mt-2 opacity-10"></div>
 <div class="flex justify-between items-start mb-sm">
 <h4 class="font-label-caps text-label-caps text-sage tracking-widest uppercase">SHIP TO</h4>
-<button onclick="openAddressModal()" class="text-[13px] font-medium text-tertiary hover:underline">Edit</button>
+<button onclick="openAddressModal()" class="text-[13px] font-medium text-tertiary hover:underline px-3 py-2 -my-2 -mr-3 flex items-center justify-center min-w-[44px] min-h-[44px]">Edit</button>
 </div>
 <div class="flex gap-md items-start">
 <span class="material-symbols-outlined text-sage">location_on</span>
@@ -263,16 +263,16 @@
 
 <!-- Order Summary -->
 <section class="mb-xl">
-<div class="bg-sage-soft rounded-2xl p-lg relative">
+<div class="bg-[#FCFAF5] border border-[#8FAF82] rounded-2xl p-lg relative shadow-[0_2px_8px_rgba(58,51,40,0.07)]">
 <h4 class="font-label-caps text-label-caps text-primary tracking-widest mb-lg uppercase">ORDER SUMMARY</h4>
 <div class="space-y-md">
 <div class="flex justify-between items-center">
 <span class="font-body-md text-on-surface-variant">Subtotal</span>
-<span id="summary-subtotal" class="font-data-price text-on-surface">₹0.00</span>
+<span id="summary-subtotal" class="font-data-price text-[#C8973A]">₹0.00</span>
 </div>
 <div class="flex justify-between items-center">
 <span class="font-body-md text-on-surface-variant">Shipping</span>
-<span id="summary-shipping" class="font-data-price text-on-surface">₹0.00</span>
+<span id="summary-shipping" class="font-data-price text-[#C8973A]">₹0.00</span>
 </div>
 <div class="h-[1px] bg-outline-variant/30 my-md"></div>
 <div class="flex justify-between items-center">
@@ -292,9 +292,9 @@
 </main>
 
 <!-- Sticky Bottom Bar -->
-<div class="fixed bottom-0 left-0 w-full bg-white border-t border-sage/20 z-40 px-margin-mobile py-md">
+<div id="cart-sticky-checkout" class="fixed bottom-0 max-md:bottom-[60px] left-0 w-full bg-white border-t border-[#C5D6BC] z-40 px-margin-mobile py-md transition-all duration-200">
 <div class="max-w-2xl mx-auto">
-<button id="btn-place-order" onclick="placeOrder()" class="w-full h-[52px] bg-primary text-white font-body-md font-bold rounded-lg hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-md shadow-lg shadow-primary/10">
+<button id="btn-place-order" onclick="placeOrder()" class="w-full h-[52px] bg-primary text-white font-body-md font-bold rounded-lg hover:bg-[#2E5340] active:scale-[0.98] transition-all flex items-center justify-center gap-md shadow-lg shadow-primary/10">
 <span>Place Order & Pay</span>
 <span id="btn-total" class="font-data-price text-sm border-l border-solid border-white/40 pl-3 ml-3">₹0.00</span>
 </button>
@@ -304,7 +304,7 @@
 <!-- Address Modal -->
 <div id="address-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
   <div class="bg-white rounded-2xl p-lg w-full max-w-md mx-margin-mobile flex flex-col max-h-[85vh] relative animate-in fade-in zoom-in-95 duration-200">
-    <button onclick="closeAddressModal()" class="absolute top-4 right-4 text-secondary hover:text-on-surface">
+    <button onclick="closeAddressModal()" class="absolute top-4 right-4 text-secondary hover:text-on-surface w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all duration-200" aria-label="Close modal">
       <span class="material-symbols-outlined">close</span>
     </button>
     <h3 class="font-headline-lg text-[22px] text-primary mb-md">Shipping Addresses</h3>
@@ -490,34 +490,36 @@
                 : '';
 
             const innerContent = `
-                <img class="w-[60px] h-[60px] rounded-[10px] object-cover flex-shrink-0 cursor-pointer" 
+                <img class="w-16 h-16 rounded-xl border border-[#C5D6BC]/40 object-cover flex-shrink-0 cursor-pointer" 
                      onclick="window.location.href='product.html?id=${ci.product_id}'" 
                      src="${imgUrl}" 
                      alt="${ci.name}">
-                <div class="flex-grow">
-                    <h3 class="font-title-serif text-[14px] leading-tight text-on-surface hover:text-primary cursor-pointer font-semibold"
+                <div class="flex-grow min-w-0">
+                    <h3 class="font-title-serif text-[15px] leading-tight text-[#3A3328] hover:text-primary cursor-pointer font-semibold truncate"
                         onclick="window.location.href='product.html?id=${ci.product_id}'">
                         ${ci.name}
                     </h3>
-                    <p class="text-xs text-on-surface-variant mt-xs hover:underline cursor-pointer" onclick="window.location.href='/buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
+                    <p class="text-xs text-on-surface-variant mt-xs hover:underline cursor-pointer truncate" onclick="window.location.href='/buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
                     <p class="font-data-price text-[13px] text-[#C8973A] mt-xs font-semibold">${formatPaise(ci.price_paise)}</p>
                 </div>
-                <div class="flex flex-col items-end gap-sm">
-                    <div class="flex items-center bg-ivory-card border border-sage/40 rounded-full px-2 py-0.5">
-                        <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="w-6 h-6 flex items-center justify-center text-sage hover:text-primary font-bold transition-colors">-</button>
-                        <span class="px-2 font-data-price text-xs font-semibold">${ci.quantity}</span>
-                        <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="w-6 h-6 flex items-center justify-center text-sage hover:text-primary font-bold transition-colors">+</button>
+                <div class="flex flex-col items-end gap-sm flex-shrink-0">
+                    <div class="flex items-center bg-[#FCFAF5] border border-[#8FAF82] rounded-full overflow-hidden h-11">
+                        <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="w-11 h-11 flex items-center justify-center text-[#8FAF82] hover:text-[#3D6B4F] hover:bg-[#8FAF82]/10 font-bold transition-all text-lg">-</button>
+                        <span class="px-3 font-data-price text-sm font-semibold text-[#3A3328]">${ci.quantity}</span>
+                        <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="w-11 h-11 flex items-center justify-center text-[#8FAF82] hover:text-[#3D6B4F] hover:bg-[#8FAF82]/10 font-bold transition-all text-lg">+</button>
                     </div>
-                    <div class="flex items-center gap-sm">
-                        <span class="font-data-price text-on-surface font-semibold">${formatPaise(ci.price_paise * ci.quantity)}</span>
-                        <button onclick="removeItem('${ci.id}')" class="material-symbols-outlined text-sm text-outline hover:text-error transition-colors">close</button>
+                    <div class="flex items-center gap-xs">
+                        <span class="font-data-price text-[#C8973A] font-semibold">${formatPaise(ci.price_paise * ci.quantity)}</span>
+                        <button onclick="removeItem('${ci.id}')" class="w-11 h-11 flex items-center justify-center text-outline hover:text-danger hover:bg-danger/10 rounded-full transition-all duration-200" aria-label="Remove item">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
                     </div>
                 </div>
             `;
 
             if (ci.quantity_warning) {
                 return `
-                    <div class="bg-ivory-card border border-sage/30 rounded-2xl p-md flex flex-col gap-sm relative group" data-cart-item-id="${ci.id}">
+                    <div class="bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-2xl p-md flex flex-col gap-sm relative group shadow-[0_2px_8px_rgba(58,51,40,0.07)]" data-cart-item-id="${ci.id}">
                         <div class="flex items-center gap-md">
                             ${innerContent}
                         </div>
@@ -526,7 +528,7 @@
                 `;
             } else {
                 return `
-                    <div class="bg-ivory-card border border-sage/30 rounded-2xl p-md flex items-center gap-md relative overflow-hidden group" data-cart-item-id="${ci.id}">
+                    <div class="bg-[#FCFAF5] border border-[#8FAF82]/40 rounded-2xl p-md flex items-center gap-md relative overflow-hidden group shadow-[0_2px_8px_rgba(58,51,40,0.07)]" data-cart-item-id="${ci.id}">
                         ${innerContent}
                     </div>
                 `;
@@ -644,12 +646,12 @@
                                 ${addr.phone ? `Phone: ${addr.phone}` : ''}
                             </p>
                         </div>
-                        <div class="flex gap-xs flex-shrink-0 ml-sm">
-                            <button onclick="editAddress(${addr.id})" class="text-tertiary hover:underline text-xs flex items-center justify-center p-1 rounded hover:bg-surface-container-low">
-                                <span class="material-symbols-outlined text-sm">edit</span>
+                        <div class="flex gap-xs flex-shrink-0 ml-sm items-center">
+                            <button onclick="editAddress(${addr.id})" class="w-11 h-11 flex items-center justify-center text-tertiary hover:bg-[#8FAF82]/20 rounded-full transition-all duration-200" aria-label="Edit address">
+                                <span class="material-symbols-outlined text-lg">edit</span>
                             </button>
-                            <button onclick="deleteAddress(${addr.id})" class="text-error hover:underline text-xs flex items-center justify-center p-1 rounded hover:bg-surface-container-low">
-                                <span class="material-symbols-outlined text-sm">delete</span>
+                            <button onclick="deleteAddress(${addr.id})" class="w-11 h-11 flex items-center justify-center text-error hover:bg-danger/10 rounded-full transition-all duration-200" aria-label="Delete address">
+                                <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
                         </div>
                     </div>
@@ -938,7 +940,7 @@
     // Toggle sticky bar based on scroll position vs footer
     window.onscroll = function() {
         const footer = document.querySelector('footer');
-        const sticky = document.querySelector('.fixed.bottom-0');
+        const sticky = document.getElementById('cart-sticky-checkout');
         if (!footer || !sticky) return;
         const footerPos = footer.getBoundingClientRect().top;
         const windowHeight = window.innerHeight;

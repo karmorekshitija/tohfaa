@@ -109,127 +109,72 @@
             background-size: 10px 10px;
         }
 
-        /* Modern Sleek Badges for Product Ribbons */
+        /* Diagonal Corner Ribbon Styles */
         .ribbon-wrapper {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            z-index: 20;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
             pointer-events: none;
-            width: auto;
-            height: auto;
-            overflow: visible;
+            z-index: 20;
         }
         .ribbon-tag {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 12px;
-            padding: 0 6px;
-            font-size: 8px;
-            font-weight: 700;
+            position: absolute;
+            top: 22px;
+            left: -32px;
+            width: 160px;
+            transform: rotate(-45deg);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #ffffff;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-            white-space: nowrap;
-            width: fit-content;
-            position: static;
-            transform: none;
+            line-height: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
         }
         .ribbon-tag::before, .ribbon-tag::after {
-            display: none !important;
-        }
-        .ribbon-sponsored {
-            background: #C8973A; /* Gold */
-        }
-        .ribbon-bestseller {
-            background: #3D6B4F; /* Forest */
-        }
-        .ribbon-custom {
-            background: #7B5EA7; /* Violet */
-        }
-        .ribbon-bestseller-double,
-        .ribbon-custom-double {
-            position: static !important;
-            top: auto !important;
-            left: auto !important;
-            transform: none !important;
-        }
-
-        /* Premium Accordions for Filter Drawer */
-        .accordion-content.collapsed {
-            display: none !important;
-        }
-        .accordion-header span.material-symbols-outlined {
-            transition: transform 0.2s ease;
-        }
-        .accordion-header.collapsed span.material-symbols-outlined {
-            transform: rotate(-90deg);
-        }
-
-        /* Custom Toggle Switch for Radio/Checkboxes */
-        .custom-switch {
-            width: 36px;
-            height: 20px;
-            background-color: #F7F3EC;
-            border: 2px solid #8FAF82;
-            border-radius: 9999px;
-            position: relative;
-            transition: all 0.2s ease;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-        .custom-switch::after {
             content: '';
             position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 12px;
-            height: 12px;
-            background-color: #8FAF82;
-            border-radius: 50%;
-            transition: all 0.2s ease;
+            bottom: -3px;
+            border-top: 3px solid rgba(0,0,0,0.4);
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
         }
-        input:checked + .custom-switch {
-            background-color: #3D6B4F;
-            border-color: #3D6B4F;
+        .ribbon-tag::before { left: 0; }
+        .ribbon-tag::after { right: 0; }
+
+        .ribbon-sponsored {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
         }
-        input:checked + .custom-switch::after {
-            left: 18px;
-            background-color: #ffffff;
+        .ribbon-bestseller {
+            background: #C85A32;
+        }
+        .ribbon-custom {
+            background: #B492B7;
+        }
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
+        .ribbon-custom-double {
+            top: 30px !important;
+            left: -24px !important;
         }
 
-        /* Active Filter Chips styles */
-        .filter-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            background: #F7F3EC;
+        /* Tohfa Branding Custom Card Styles */
+        .tofa-card {
+            background-color: #FCFAF5;
             border: 1px solid #8FAF82;
-            color: #3D6B4F;
-            border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 500;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(58,51,40,0.07);
             transition: all 0.2s ease;
         }
-        .filter-chip:hover {
-            background: rgba(143, 175, 130, 0.1);
-        }
-        .filter-chip button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3D6B4F;
-            transition: color 0.2s ease;
-        }
-        .filter-chip button:hover {
-            color: #ef4444;
+        .tofa-card:hover {
+            box-shadow: 0 4px 12px rgba(58,51,40,0.12);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -237,7 +182,7 @@
 <!-- 1. TOP BAR (DESKTOP TASKBAR) -->
 <!-- Standardised Top Navigation Bar (Task 57) -->
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -310,19 +255,17 @@
 <!-- 3. SORT + CATEGORY FILTER ROW -->
 <section class="bg-[#FFFFFF] py-md sticky top-20 z-40 border-b border-outline-variant/30">
 <div class="flex items-center gap-sm px-margin-desktop">
-<div class="flex-shrink-0 bg-[#FFFFFF] pr-md border-r border-outline-variant/50 mr-md mobile-filter-border">
+<div class="flex-shrink-0 bg-[#FFFFFF] pr-md border-r border-outline-variant/50 mr-md">
 <button id="filter-btn" class="p-sm bg-[#F7F3EC] border border-outline-variant rounded-lg text-primary flex items-center gap-sm hover:bg-surface-container transition-colors">
 <span class="material-symbols-outlined">tune</span>
 <span id="filter-btn-text" class="text-sm font-body-md pr-1">Filter</span>
-<span id="filter-badge" class="hidden"></span>
 </button>
 </div>
 <div id="subcategory-filters-container" class="flex items-center gap-sm overflow-x-auto no-scrollbar flex-grow">
   <!-- Dynamic subcategory buttons will be injected here -->
 </div>
-<div class="flex items-center gap-sm ml-lg border-l border-outline-variant/50 pl-lg mobile-sort-container">
-<span class="text-xs text-outline font-label-caps whitespace-nowrap mobile-sort-label">Sort:</span>
-<div class="relative mobile-sort-wrapper">
+<div class="flex items-center gap-sm ml-lg border-l border-outline-variant/50 pl-lg">
+<span class="text-xs text-outline font-label-caps whitespace-nowrap">Sort:</span>
 <select id="sort-select" class="flex-shrink-0 px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm hover:text-primary transition-all border border-outline-variant/20 focus:ring-0 focus:outline-none cursor-pointer">
     <option value="newest">Newest</option>
     <option value="price_asc">Price: Low to High</option>
@@ -330,10 +273,6 @@
     <option value="most_popular">Most Popular</option>
     <option value="top_rated">Best Rated</option>
 </select>
-<div class="mobile-sort-icon absolute inset-0 md:hidden flex items-center justify-center bg-[#F7F3EC] border border-outline-variant rounded-full text-primary pointer-events-none">
-  <span class="material-symbols-outlined text-lg">swap_vert</span>
-</div>
-</div>
 </div>
 </div>
 </section>
@@ -346,160 +285,84 @@
 <div class="absolute bottom-60 right-20 opacity-[0.05] pointer-events-none">
 <span class="material-symbols-outlined text-[150px]">texture</span>
 </div>
-<div id="active-filters-chips-container" class="flex flex-wrap items-center gap-sm mb-lg hidden"></div>
 <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
 <!-- Card 1 -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A close-up photograph of a hand-thrown ceramic vase with a speckled oatmeal glaze, sitting on a rustic wooden studio table." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALC6UYYOUWjs3W4VkD8uWjcppHVpQhleCxmEGF6UAFY8zCGq3M9x6zGcZb7ATlZPZWyZLbSbkv6C58GzEpFbGJJF7JEwus4RG0AzgYM1uMpb92qU1vu8i14hzLiI8fu0O8r26llYaiEO1t5Q9kPxeoUw1n4rvUdAC5wtPtJiaCY0kStW5phf-aTpMsoEorrV1be7nbHSSBZTPskASzrBSMxaqLYGItxSzojxseeJL8bn5hlwwz74rh9mHDKiSU_JfgVPudS3_BDcE">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Speckled Moon Bowl</h3>
+<div class="p-2 flex flex-col mt-4">
+<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Speckled Moon Bowl</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$48.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹4,800</p>
+<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
 <!-- Card 2 -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A minimalist overhead shot of two hand-crafted ceramic espresso cups with a matte forest green dip glaze." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVOngRd-DVK72EyammumZPlK3sZdreV15xeleG5jZxygwSOJ09GzEOyVEuHGwUtHyHCjfb5iNmcXFEHLNU7dEdOrvZrIJ_SKc4RWteMPfH4UQt1iQ8fDsEpRhg7R0UA4jLfpudhLGVyoicGdIvGeezmZSBt5ehdb7pd2A6sr4tAHk8UyPCdXKv-zBNShdIwAEt7czXe-trxM6QSdALpWd-4QnZTcoprR1gR0j9mbqGZFAmnUcUnX5kvHlmhlV2oFJryqm0PKX-pbg">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Forest Dip Espresso Set</h3>
+<div class="p-2 flex flex-col mt-4">
+<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Forest Dip Espresso Set</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$32.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹3,200</p>
+<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
 <!-- Card 3 -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A tall, elegant ceramic carafe with an irregular, hand-pinched rim and a pale sage green wash glaze." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfTUELyuKQTKXZ8luOpxbP9ZxSrvRQDToCQ0N18Chw5sTUg82THIln8Ywpy6ROctrBVZxm4zFsYwHOuhtAI92ZCIAbpe4eqUYATYVv7s9zWjEG9SfkJyQSQdzQBsrnhvLPPvDNP_-gMX3s304PZA5qDh3Joi58lbJcAkG31FdyaiEJhovOjCwL0xUY1mFiuqNY1vjkip3sOainPZ_dkH3YAFlh143DRgVjCKL1NQONSkN_iExDgNpXIkfSJ-VXTND2mi3OdvzYZrs">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Sage Ribbed Carafe</h3>
+<div class="p-2 flex flex-col mt-4">
+<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Sage Ribbed Carafe</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$85.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹8,500</p>
+<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
 <!-- Card 4 -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A series of small, shallow ceramic ring dishes in varying earthy tones like terracotta, ivory, and soft violet." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnYwodC8O5OBIoHWDoOMQ_wndi6zN0wBAKqxarh1XKgMAwXhMz0eCaH5Wkv8xfSozcufOwFAreoGEys_Za0DK4CVqLAXxxQj2tFv-SxeEi3WaPLuHQNmvN_r_nTcljqc3Wdam1xn2LaMHwxF_rVy9UPcLza3R17VZXHodaznYkCDfp2J_pZ-GlA0qAOUsvFbwDA3jkJkx7vU1RFPUk_sgAmCNoVe9lWC9izWoIbkDhT3DxWPNVqGj9RPcExPbmQn9G0B9rZPcagxs">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Petal Ring Dish</h3>
+<div class="p-2 flex flex-col mt-4">
+<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Petal Ring Dish</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$24.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹2,400</p>
+<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
-<!-- Card 5 (Clone of 1) -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
-<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALC6UYYOUWjs3W4VkD8uWjcppHVpQhleCxmEGF6UAFY8zCGq3M9x6zGcZb7ATlZPZWyZLbSbkv6C58GzEpFbGJJF7JEwus4RG0AzgYM1uMpb92qU1vu8i14hzLiI8fu0O8r26llYaiEO1t5Q9kPxeoUw1n4rvUdAC5wtPtJiaCY0kStW5phf-aTpMsoEorrV1be7nbHSSBZTPskASzrBSMxaqLYGItxSzojxseeJL8bn5hlwwz74rh9mHDKiSU_JfgVPudS3_BDcE">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
-<span class="material-symbols-outlined text-primary">favorite</span>
-</div>
-</div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Speckled Moon Bowl</h3>
-<div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$48.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
-<span class="material-symbols-outlined text-md">add_shopping_cart</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Card 6 (Clone of 2) -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
-<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVOngRd-DVK72EyammumZPlK3sZdreV15xeleG5jZxygwSOJ09GzEOyVEuHGwUtHyHCjfb5iNmcXFEHLNU7dEdOrvZrIJ_SKc4RWteMPfH4UQt1iQ8fDsEpRhg7R0UA4jLfpudhLGVyoicGdIvGeezmZSBt5ehdb7pd2A6sr4tAHk8UyPCdXKv-zBNShdIwAEt7czXe-trxM6QSdALpWd-4QnZTcoprR1gR0j9mbqGZFAmnUcUnX5kvHlmhlV2oFJryqm0PKX-pbg">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
-<span class="material-symbols-outlined text-primary">favorite</span>
-</div>
-</div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Forest Dip Espresso Set</h3>
-<div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$32.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
-<span class="material-symbols-outlined text-md">add_shopping_cart</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Card 7 (Clone of 3) -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
-<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfTUELyuKQTKXZ8luOpxbP9ZxSrvRQDToCQ0N18Chw5sTUg82THIln8Ywpy6ROctrBVZxm4zFsYwHOuhtAI92ZCIAbpe4eqUYATYVv7s9zWjEG9SfkJyQSQdzQBsrnhvLPPvDNP_-gMX3s304PZA5qDh3Joi58lbJcAkG31FdyaiEJhovOjCwL0xUY1mFiuqNY1vjkip3sOainPZ_dkH3YAFlh143DRgVjCKL1NQONSkN_iExDgNpXIkfSJ-VXTND2mi3OdvzYZrs">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
-<span class="material-symbols-outlined text-primary">favorite</span>
-</div>
-</div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Sage Ribbed Carafe</h3>
-<div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$85.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
-<span class="material-symbols-outlined text-md">add_shopping_cart</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Card 8 (Clone of 4) -->
-<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
-<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
-<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
-<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnYwodC8O5OBIoHWDoOMQ_wndi6zN0wBAKqxarh1XKgMAwXhMz0eCaH5Wkv8xfSozcufOwFAreoGEys_Za0DK4CVqLAXxxQj2tFv-SxeEi3WaPLuHQNmvN_r_nTcljqc3Wdam1xn2LaMHwxF_rVy9UPcLza3R17VZXHodaznYkCDfp2J_pZ-GlA0qAOUsvFbwDA3jkJkx7vU1RFPUk_sgAmCNoVe9lWC9izWoIbkDhT3DxWPNVqGj9RPcExPbmQn9G0B9rZPcagxs">
-<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
-<span class="material-symbols-outlined text-primary">favorite</span>
-</div>
-</div>
-<div class="p-md">
-<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Petal Ring Dish</h3>
-<div class="flex items-center justify-between mt-md">
-<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$24.00</p>
-<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
-<span class="material-symbols-outlined text-md">add_shopping_cart</span>
-</button>
-</div>
-</div>
-</div>
+
 </div>
 </section>
 <!-- 5. INFINITE SCROLL VISUAL -->
@@ -555,104 +418,66 @@
         </button>
     </div>
     <!-- Body -->
-    <div class="flex-grow overflow-y-auto p-md space-y-md">
+    <div class="flex-grow overflow-y-auto p-md space-y-lg">
         <!-- Craft/Category Type -->
-        <div class="accordion-section border-b border-outline-variant/30 pb-sm">
-            <button class="accordion-header w-full flex items-center justify-between py-sm text-primary font-bold focus:outline-none">
-                <span class="font-label-caps text-xs tracking-widest uppercase">Craft/Category</span>
-                <span class="material-symbols-outlined text-[20px]">expand_less</span>
-            </button>
-            <div class="accordion-content space-y-sm mt-sm">
-                <select id="filter-category" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
-                    <option value="">All Crafts</option>
-                    <!-- Dynamic categories loaded here -->
-                </select>
-            </div>
+        <div class="space-y-sm">
+            <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Craft/Category</h4>
+            <select id="filter-category" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
+                <option value="">All Crafts</option>
+                <!-- Dynamic categories loaded here -->
+            </select>
         </div>
 
         <!-- Price Range -->
-        <div class="accordion-section border-b border-outline-variant/30 pb-sm">
-            <button class="accordion-header w-full flex items-center justify-between py-sm text-primary font-bold focus:outline-none">
-                <span class="font-label-caps text-xs tracking-widest uppercase">Price Range</span>
-                <span class="material-symbols-outlined text-[20px]">expand_less</span>
-            </button>
-            <div class="accordion-content space-y-sm mt-sm">
-                <div class="grid grid-cols-2 gap-sm">
-                    <div>
-                        <label class="text-[10px] text-outline font-label-caps block mb-1">Min Price (₹)</label>
-                        <input type="number" id="filter-price-min" min="0" placeholder="0" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-outline font-label-caps block mb-1">Max Price (₹)</label>
-                        <input type="number" id="filter-price-max" min="0" placeholder="10000" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
-                    </div>
+        <div class="space-y-sm">
+            <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Price Range</h4>
+            <div class="grid grid-cols-2 gap-sm">
+                <div>
+                    <label class="text-[10px] text-outline font-label-caps block mb-1">Min Price (₹)</label>
+                    <input type="number" id="filter-price-min" min="0" placeholder="0" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] text-outline font-label-caps block mb-1">Max Price (₹)</label>
+                    <input type="number" id="filter-price-max" min="0" placeholder="10000" class="w-full px-md py-sm rounded-lg bg-surface text-on-surface-variant font-body-md text-sm border border-outline-variant/50 focus:ring-1 focus:ring-primary focus:outline-none">
                 </div>
             </div>
         </div>
 
         <!-- Rating -->
-        <div class="accordion-section border-b border-outline-variant/30 pb-sm">
-            <button class="accordion-header w-full flex items-center justify-between py-sm text-primary font-bold focus:outline-none">
-                <span class="font-label-caps text-xs tracking-widest uppercase">Minimum Rating</span>
-                <span class="material-symbols-outlined text-[20px]">expand_less</span>
-            </button>
-            <div class="accordion-content space-y-sm mt-sm">
-                <div class="flex flex-col gap-xs">
-                    <label class="flex items-center justify-between cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
-                        <span class="text-sm font-body-md text-on-surface font-semibold">Any Rating</span>
-                        <div class="relative flex items-center">
-                            <input type="radio" name="filter-rating" value="" checked class="sr-only">
-                            <span class="custom-switch"></span>
-                        </div>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
-                        <span class="text-sm font-body-md text-on-surface text-amber-500 font-semibold">⭐⭐⭐⭐☆ <span class="text-on-surface-variant text-xs font-normal">& Up</span></span>
-                        <div class="relative flex items-center">
-                            <input type="radio" name="filter-rating" value="4" class="sr-only">
-                            <span class="custom-switch"></span>
-                        </div>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
-                        <span class="text-sm font-body-md text-on-surface text-amber-500 font-semibold">⭐⭐⭐☆☆ <span class="text-on-surface-variant text-xs font-normal">& Up</span></span>
-                        <div class="relative flex items-center">
-                            <input type="radio" name="filter-rating" value="3" class="sr-only">
-                            <span class="custom-switch"></span>
-                        </div>
-                    </label>
-                </div>
+        <div class="space-y-sm">
+            <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Minimum Rating</h4>
+            <div class="flex flex-col gap-xs">
+                <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                    <input type="radio" name="filter-rating" value="" checked class="text-primary focus:ring-primary border-outline-variant/50">
+                    <span class="text-sm font-body-md text-on-surface">Any Rating</span>
+                </label>
+                <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                    <input type="radio" name="filter-rating" value="4" class="text-primary focus:ring-primary border-outline-variant/50">
+                    <span class="text-sm font-body-md text-on-surface">⭐ 4+ Stars</span>
+                </label>
+                <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                    <input type="radio" name="filter-rating" value="3" class="text-primary focus:ring-primary border-outline-variant/50">
+                    <span class="text-sm font-body-md text-on-surface">⭐ 3+ Stars</span>
+                </label>
             </div>
         </div>
 
         <!-- Availability -->
-        <div class="accordion-section border-b border-outline-variant/30 pb-sm">
-            <button class="accordion-header w-full flex items-center justify-between py-sm text-primary font-bold focus:outline-none">
-                <span class="font-label-caps text-xs tracking-widest uppercase">Availability</span>
-                <span class="material-symbols-outlined text-[20px]">expand_less</span>
-            </button>
-            <div class="accordion-content space-y-sm mt-sm">
-                <div class="flex flex-col gap-xs">
-                    <label class="flex items-center justify-between cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
-                        <span class="text-sm font-body-md text-on-surface font-semibold">All Items</span>
-                        <div class="relative flex items-center">
-                            <input type="radio" name="filter-availability" value="" checked class="sr-only">
-                            <span class="custom-switch"></span>
-                        </div>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
-                        <span class="text-sm font-body-md text-on-surface font-semibold">In Stock</span>
-                        <div class="relative flex items-center">
-                            <input type="radio" name="filter-availability" value="in_stock" class="sr-only">
-                            <span class="custom-switch"></span>
-                        </div>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
-                        <span class="text-sm font-body-md text-on-surface font-semibold">Made to Order</span>
-                        <div class="relative flex items-center">
-                            <input type="radio" name="filter-availability" value="made_to_order" class="sr-only">
-                            <span class="custom-switch"></span>
-                        </div>
-                    </label>
-                </div>
+        <div class="space-y-sm">
+            <h4 class="font-label-caps text-xs text-primary tracking-widest uppercase">Availability</h4>
+            <div class="flex flex-col gap-xs">
+                <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                    <input type="radio" name="filter-availability" value="" checked class="text-primary focus:ring-primary border-outline-variant/50">
+                    <span class="text-sm font-body-md text-on-surface">All Items</span>
+                </label>
+                <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                    <input type="radio" name="filter-availability" value="in_stock" class="text-primary focus:ring-primary border-outline-variant/50">
+                    <span class="text-sm font-body-md text-on-surface">In Stock</span>
+                </label>
+                <label class="flex items-center gap-sm cursor-pointer p-sm rounded-lg hover:bg-surface-container transition-colors">
+                    <input type="radio" name="filter-availability" value="made_to_order" class="text-primary focus:ring-primary border-outline-variant/50">
+                    <span class="text-sm font-body-md text-on-surface">Made to Order</span>
+                </label>
             </div>
         </div>
     </div>
@@ -702,107 +527,7 @@
     };
     let allCategoriesList = [];
 
-    function renderActiveFilterChips() {
-      const container = document.getElementById('active-filters-chips-container');
-      if (!container) return;
-      
-      const chips = [];
-      
-      if (activeFilters.min_price !== '') {
-        chips.push({
-          key: 'min_price',
-          label: `Min: ₹${activeFilters.min_price}`
-        });
-      }
-      if (activeFilters.max_price !== '') {
-        chips.push({
-          key: 'max_price',
-          label: `Max: ₹${activeFilters.max_price}`
-        });
-      }
-      if (activeFilters.rating !== '') {
-        chips.push({
-          key: 'rating',
-          label: `Rating: ${activeFilters.rating}★ & Up`
-        });
-      }
-      if (activeFilters.availability !== '') {
-        const availLabel = activeFilters.availability === 'in_stock' ? 'In Stock' : 'Made to Order';
-        chips.push({
-          key: 'availability',
-          label: availLabel
-        });
-      }
-      
-      const defaultCat = allCategoriesList.find(c => c.slug === slug);
-      if (activeFilters.category_id && defaultCat && Number(activeFilters.category_id) !== Number(defaultCat.id)) {
-        const selectedCat = allCategoriesList.find(c => Number(c.id) === Number(activeFilters.category_id));
-        if (selectedCat) {
-          chips.push({
-            key: 'category_id',
-            label: selectedCat.display_name || selectedCat.name
-          });
-        }
-      }
-      
-      if (chips.length === 0) {
-        container.innerHTML = '';
-        container.classList.add('hidden');
-        return;
-      }
-      
-      container.classList.remove('hidden');
-      container.innerHTML = `
-        <span class="text-xs text-outline font-label-caps pr-xs">Active Filters:</span>
-        ${chips.map(chip => `
-          <div class="filter-chip select-none">
-            <span>${chip.label}</span>
-            <button class="dismiss-chip-btn" data-key="${chip.key}">
-              <span class="material-symbols-outlined text-sm">close</span>
-            </button>
-          </div>
-        `).join('')}
-        <button id="clear-all-chips-btn" class="text-xs text-primary hover:underline font-bold font-['DM_Sans'] ml-md">Clear All</button>
-      `;
-      
-      // Wire dismiss events
-      container.querySelectorAll('.dismiss-chip-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const key = btn.getAttribute('data-key');
-          if (key === 'category_id') {
-            activeFilters.category_id = defaultCat ? defaultCat.id : '';
-          } else {
-            activeFilters[key] = '';
-          }
-          renderActiveFilterChips();
-          updateFilterBadge();
-          await fetchProducts();
-        });
-      });
-      
-      document.getElementById('clear-all-chips-btn')?.addEventListener('click', async () => {
-        activeFilters.min_price = '';
-        activeFilters.max_price = '';
-        activeFilters.rating = '';
-        activeFilters.availability = '';
-        activeFilters.category_id = defaultCat ? defaultCat.id : '';
-        renderActiveFilterChips();
-        updateFilterBadge();
-        await fetchProducts();
-      });
-    }
-
     async function initPage() {
-      // Accordion toggle click events
-      document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-          const content = header.nextElementSibling;
-          header.classList.toggle('collapsed');
-          content.classList.toggle('collapsed');
-        });
-      });
-
       // 1. Fetch categories to find display name & emoji
       try {
         const res = await apiClient.get('/categories');
@@ -849,9 +574,6 @@
 
       // 5. Wire Filter Drawer open/close/apply/clear listeners
       initFilterDrawer();
-
-      // Initial active chips rendering
-      renderActiveFilterChips();
     }
 
     function initFilterDrawer() {
@@ -915,7 +637,6 @@
           }
           
           updateFilterBadge();
-          renderActiveFilterChips();
           closeFilterDrawer();
           await fetchProducts();
         });
@@ -936,7 +657,6 @@
           }
           
           updateFilterBadge();
-          renderActiveFilterChips();
           closeFilterDrawer();
           await fetchProducts();
         });
@@ -956,22 +676,11 @@
       }
       
       const filterBtnText = document.getElementById('filter-btn-text');
-      const filterBadge = document.getElementById('filter-badge');
-      
       if (filterBtnText) {
         if (count > 0) {
           filterBtnText.innerText = `Filter • ${count}`;
         } else {
           filterBtnText.innerText = 'Filter';
-        }
-      }
-      
-      if (filterBadge) {
-        if (count > 0) {
-          filterBadge.innerText = count;
-          filterBadge.classList.remove('hidden');
-        } else {
-          filterBadge.classList.add('hidden');
         }
       }
     }
@@ -1080,18 +789,18 @@
             }
 
             return `
-              <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='product.html?id=${p.id}'">
+              <div class="group tofa-card p-4 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='product.html?id=${p.id}'">
                 <div>
                   <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imageUrl}" alt="${p.name}">
-                    <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
+                    <button class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
                       <span class="material-symbols-outlined text-[20px] transition-all ${p.is_wishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${p.is_wishlisted ? 1 : 0};">favorite</span>
                     </button>
                   </div>
                   <div class="flex flex-col mb-4">
-                    <span class="font-bold text-lg text-[#C8973A] mb-1">${price}</span>
-                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                    <span class="mb-1" style="font-family: 'Space Mono', monospace; font-size: 16px; color: #C8973A; font-weight: 700;">${price}</span>
+                    <h4 class="font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Lora', serif; font-size: 14px;">${p.name}</h4>
                     <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
                       <span class="text-[#C8973A] font-bold">★</span>
                       <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
@@ -1101,7 +810,7 @@
                   </div>
                 </div>
                 <div class="w-full font-['DM_Sans']">
-                  <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                  <button class="w-full bg-[#3D6B4F] text-white min-h-[44px] rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
                     Add to Cart
                   </button>
                 </div>

@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Handcrafted Treasures</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -125,53 +125,67 @@
             50% { transform: translateY(-8px); }
         }
 
-        /* Diagonal Corner Ribbon Styles (Refactored to modern sleek badges) */
+        /* Diagonal Corner Ribbon Styles */
         .ribbon-wrapper {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            z-index: 20;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
             pointer-events: none;
+            z-index: 20;
         }
         .ribbon-tag {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 12px;
-            padding: 0 6px;
-            font-size: 8px;
-            font-weight: 700;
+            position: absolute;
+            top: 22px;
+            left: -32px;
+            width: 160px;
+            transform: rotate(-45deg);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #ffffff;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-            white-space: nowrap;
-            width: fit-content;
-            position: static;
-            transform: none;
+            line-height: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
         }
         .ribbon-tag::before, .ribbon-tag::after {
-            display: none !important;
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            border-top: 3px solid rgba(0,0,0,0.4);
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
         }
+        .ribbon-tag::before { left: 0; }
+        .ribbon-tag::after { right: 0; }
+
         .ribbon-sponsored {
-            background: #C8973A; /* Gold */
+            background: linear-gradient(135deg, #f59e0b, #d97706);
         }
         .ribbon-bestseller {
-            background: #3D6B4F; /* Forest */
+            background: #C85A32;
         }
         .ribbon-custom {
-            background: #7B5EA7; /* Violet */
+            background: #B492B7;
         }
-        .ribbon-bestseller-double,
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
         .ribbon-custom-double {
-            position: static !important;
-            top: auto !important;
-            left: auto !important;
-            transform: none !important;
+            top: 30px !important;
+            left: -24px !important;
+        }
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
+        .ribbon-custom-double {
+            top: 30px !important;
+            left: -24px !important;
         }
         
         /* Shimmer Animation for Skeletons */
@@ -187,170 +201,18 @@
         .scrollbar-none::-webkit-scrollbar {
             display: none;
         }
-    </style>
-    <!-- Mobile-specific style overrides (Task 125) -->
-    <style>
-        @media (max-width: 768px) {
-            /* Full-bleed hero banner */
-            section.py-xl.px-margin-desktop.max-w-\[1440px\].mx-auto.mt-xl {
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                margin-top: 0 !important;
-                padding-top: 0 !important;
-                padding-bottom: 16px !important;
-            }
-            #hero-slideshow-container {
-                border-radius: 0 !important;
-                aspect-ratio: 16/9 !important;
-                width: 100vw !important;
-            }
-            /* Floating Quote Card hidden on mobile for cleaner layout */
-            .absolute.-bottom-10.-right-10.md\:right-12 {
-                display: none !important;
-            }
-            /* Hide the text column under hero on mobile, or keep it stacked? */
-            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 {
-                padding: 16px !important;
-                text-align: center !important;
-            }
-            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 h2 {
-                font-size: 24px !important;
-                line-height: 30px !important;
-            }
-            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 p {
-                font-size: 14px !important;
-                margin-bottom: 16px !important;
-            }
-            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 .flex {
-                justify-content: center !important;
-                gap: 8px !important;
-            }
-            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 button {
-                padding: 10px 16px !important;
-                font-size: 14px !important;
-                flex: 1 !important;
-                max-width: 160px !important;
-            }
 
-            /* Category Chips Row */
-            .mobile-category-chips-container {
-                display: flex !important;
-                gap: 8px;
-                overflow-x: auto;
-                padding: 12px 16px;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
-                margin-top: 8px;
-                background: #F7F3EC;
-                border-bottom: 1px solid rgba(61, 107, 79, 0.1);
-            }
-            .mobile-category-chips-container::-webkit-scrollbar {
-                display: none;
-            }
-            .mobile-category-chip {
-                display: inline-block;
-                padding: 8px 16px;
-                background: #FFFFFF;
-                border: 1px solid #8FAF82;
-                color: #3D6B4F;
-                border-radius: 999px;
-                font-family: 'DM Sans', sans-serif;
-                font-size: 13px;
-                font-weight: 500;
-                white-space: nowrap;
-                text-decoration: none;
-                transition: all 0.2s ease;
-            }
-            .mobile-category-chip:active,
-            .mobile-category-chip.active {
-                background: #3D6B4F;
-                color: #FFFFFF;
-            }
-
-            /* Dense scannable FNP-style cards on mobile */
-            #product-feed-grid,
-            #sponsored-product-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                padding: 0 8px !important;
-            }
-            
-            /* Override product card styling on mobile */
-            .group.bg-white.border.border-\[\#c3c8c1\] {
-                padding: 8px !important;
-                border-radius: 8px !important;
-                gap: 4px !important;
-                border-color: rgba(61, 107, 79, 0.15) !important;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
-            }
-            .group.bg-white.border.border-\[\#c3c8c1\] .aspect-square {
-                border-radius: 6px !important;
-                margin-bottom: 8px !important;
-            }
-            .group.bg-white.border.border-\[\#c3c8c1\] h4 {
-                font-family: 'DM Sans', sans-serif !important; /* DM Sans Title */
-                font-size: 13px !important;
-                line-height: 1.3 !important;
-                font-weight: 500 !important;
-                margin-bottom: 4px !important;
-            }
-            .group.bg-white.border.border-\[\#c3c8c1\] .text-lg.text-\[\#C8973A\] {
-                font-family: 'Space Mono', monospace !important; /* Space Mono Price */
-                font-size: 14px !important;
-                font-weight: 700 !important;
-                margin-bottom: 2px !important;
-            }
-            .group.bg-white.border.border-\[\#c3c8c1\] .flex.items-center.gap-1.text-xs {
-                font-size: 10px !important;
-                margin-bottom: 2px !important;
-            }
-            .group.bg-white.border.border-\[\#c3c8c1\] .text-xs.text-\[\#605e57\] {
-                font-size: 11px !important;
-            }
-            .group.bg-white.border.border-\[\#c3c8c1\] .add-to-cart-btn {
-                padding: 6px 8px !important;
-                font-size: 12px !important;
-                border-radius: 6px !important;
-            }
-            
-            /* Sponsored Section mobile spacing */
-            section.py-xl.px-margin-desktop.max-w-\[1440px\].mx-auto.mt-24 {
-                margin-top: 16px !important;
-                padding-top: 16px !important;
-                padding-bottom: 16px !important;
-            }
-            
-            /* Category scroll wrappers mobile layout */
-            #category-rows-container {
-                gap: 24px !important;
-                padding: 16px !important;
-            }
-            .category-row-wrapper {
-                margin-bottom: 0 !important;
-            }
-            .category-row-wrapper h3 {
-                font-size: 18px !important;
-            }
-            .category-row-wrapper .scrollbar-none {
-                gap: 12px !important;
-            }
-            .category-row-wrapper .scrollbar-none .w-\[280px\] {
-                width: 156px !important; /* Dense horizontal cards */
-                padding: 8px !important;
-            }
-            .category-row-wrapper .scrollbar-none .w-\[280px\] h4 {
-                font-family: 'DM Sans', sans-serif !important;
-                font-size: 13px !important;
-            }
-            .category-row-wrapper .scrollbar-none .w-\[280px\] .text-lg.text-\[\#C8973A\] {
-                font-family: 'Space Mono', monospace !important;
-                font-size: 14px !important;
-            }
-            
-            /* Hide arrow buttons for horizontal rows on mobile */
-            .category-row-wrapper button {
-                display: none !important;
-            }
+        /* Tohfa Branding Custom Card Styles */
+        .tofa-card {
+            background-color: #FCFAF5;
+            border: 1px solid #8FAF82;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(58,51,40,0.07);
+            transition: all 0.2s ease;
+        }
+        .tofa-card:hover {
+            box-shadow: 0 4px 12px rgba(58,51,40,0.12);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -358,7 +220,7 @@
 <!-- TopNavBar -->
 <!-- Standardised Top Navigation Bar (Task 57) -->
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -420,23 +282,36 @@
 <div class="watermark-lavender top-[800px] right-24 w-40 h-40 -rotate-12">
 <span class="material-symbols-outlined text-9xl opacity-20">eco</span>
 </div>
+<!-- Greeting Banner -->
+<section class="bg-[#F7F3EC] w-full py-xl px-margin-desktop relative overflow-hidden">
+<div class="max-w-[1440px] mx-auto flex flex-col items-center justify-center text-center py-xl relative z-10">
+<h1 class="font-headline-lg text-display-hero italic text-primary mb-sm">
+                    Good morning <span class="font-normal not-italic opacity-60">✦</span>
+</h1>
+<p class="font-title-serif text-title-serif font-light italic text-on-surface-variant">
+                    What will you discover today?
+                </p>
 
+</div>
+<!-- Texture Overlay (Simulated Wax Tape) -->
+<div class="absolute top-10 right-[10%] w-24 h-8 bg-surface-variant/30 rotate-12 border-l border-r border-outline-variant/20 shadow-sm opacity-60"></div>
+<div class="absolute bottom-10 left-[15%] w-32 h-10 bg-primary-fixed-dim/20 -rotate-6 border-l border-r border-outline-variant/10 shadow-sm opacity-40"></div>
+</section>
 <!-- Explore Collection Hero -->
-<div class="mobile-section-block">
-<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-xl">
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-6">
 <div class="grid grid-cols-12 gap-xl items-center">
 <div class="col-span-12 lg:col-span-7 relative">
-<div id="hero-slideshow-container" class="rounded-xl overflow-visible md:overflow-hidden aspect-[4/3] md:aspect-[16/10] shadow-xl relative group mb-8 md:mb-0">
+<div id="hero-slideshow-container" class="rounded-xl overflow-hidden aspect-[16/10] shadow-xl relative group">
 <!-- Slides will be injected here via JS -->
-<div id="hero-slides-wrapper" class="w-full h-full relative rounded-xl overflow-hidden">
+<div id="hero-slides-wrapper" class="w-full h-full relative">
     <div class="absolute inset-0 bg-surface-variant animate-pulse"></div> <!-- Skeleton -->
 </div>
 
 <!-- Navigation Arrows (Hidden by default, shown on hover) -->
-<button id="hero-slide-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md backdrop-blur-sm active:scale-95">
+<button id="hero-slide-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-primary w-11 h-11 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md backdrop-blur-sm active:scale-95 flex items-center justify-center">
     <span class="material-symbols-outlined">chevron_left</span>
 </button>
-<button id="hero-slide-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md backdrop-blur-sm active:scale-95">
+<button id="hero-slide-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-primary w-11 h-11 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md backdrop-blur-sm active:scale-95 flex items-center justify-center">
     <span class="material-symbols-outlined">chevron_right</span>
 </button>
 
@@ -454,7 +329,7 @@
 </div>
 </div>
 <div class="col-span-12 lg:col-span-5 lg:pl-xl pt-16 lg:pt-0">
-<span class="font-label-caps text-label-caps text-tertiary block mb-md">Est. 2024 • Handmade with Love</span>
+<span class="font-['Cinzel'] uppercase tracking-wider text-xs text-tertiary block mb-md">Est. 2024 • Handmade with Love</span>
 <h2 class="font-headline-lg text-headline-lg text-primary mb-lg leading-tight">
                         Artisan crafts for a <span class="italic">slower, intentional</span> life.
                     </h2>
@@ -472,24 +347,15 @@
 </div>
 </div>
 </section>
-</div>
-
-<!-- Mobile Category Chips (Task 125) -->
-<div id="mobile-category-chips-wrapper" class="md:hidden">
-  <div class="mobile-category-chips-container" id="mobile-category-chips">
-     <!-- Chips will be dynamically loaded here -->
-  </div>
-</div>
 
 <!-- Sponsored Section -->
-<div class="mobile-section-block">
-<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
-    <div class="bg-[#F7F3EC] rounded-xl border border-outline-variant p-6 md:p-8">
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-6">
+    <div class="bg-[#FCFAF5] rounded-xl border border-[#8FAF82] p-6 md:p-8 shadow-sm">
         <div class="flex justify-between items-end mb-lg">
             <div>
                 <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
                     <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span>Sponsored</span>
+                    <span class="font-['Cinzel'] uppercase tracking-wider text-lg">Sponsored</span>
                 </h3>
                 <p class="font-body-md text-on-surface-variant">Featured treasures from our creative community</p>
             </div>
@@ -501,11 +367,9 @@
         </div>
     </div>
 </section>
-</div>
 
 <!-- For You (Capped at 15 products) -->
-<div class="mobile-section-block">
-<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-6">
     <div class="flex justify-between items-end mb-xl">
         <div>
             <h3 class="font-headline-lg text-headline-lg text-primary">For You</h3>
@@ -521,12 +385,12 @@
     <!-- Skeleton Loaders -->
     <div id="feed-skeletons" class="grid grid-cols-2 lg:grid-cols-4 gap-lg mt-lg hidden">
         <!-- Skeleton Card 1 -->
-        <div class="bg-surface-bright rounded-xl border border-outline-variant p-md flex flex-col justify-between min-h-[350px]">
+        <div class="bg-[#FCFAF5] rounded-xl border border-[#8FAF82] p-md flex flex-col justify-between min-h-[350px]">
             <div class="aspect-square rounded-lg shimmer mb-md w-full"></div>
             <div class="h-4 w-1/3 shimmer mb-sm rounded"></div>
             <div class="h-6 w-3/4 shimmer mb-xs rounded"></div>
             <div class="h-4 w-1/2 shimmer mb-md rounded"></div>
-            <div class="h-10 w-full shimmer rounded-lg"></div>
+            <div class="h-[44px] w-full shimmer rounded-lg"></div>
         </div>
         <!-- Skeleton Card 2 -->
         <div class="bg-surface-bright rounded-xl border border-outline-variant p-md flex flex-col justify-between min-h-[350px]">
@@ -554,16 +418,13 @@
         </div>
     </div>
 </section>
-</div>
 
 <!-- Section 3 — Category Rows -->
-<div class="mobile-section-block">
-<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-6">
     <div id="category-rows-container" class="flex flex-col gap-16">
         <!-- Dynamic category rows will load here -->
     </div>
 </section>
-</div>
 </main>
 
 <!-- Footer -->
@@ -789,7 +650,7 @@
     // Helper to create product card template (reusable)
     function createProductCard(product, extraClasses = '') {
         const card = document.createElement('div');
-        card.className = `group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer opacity-0 translate-y-10 ${extraClasses}`;
+        card.className = `group tofa-card p-4 flex flex-col justify-between cursor-pointer opacity-0 translate-y-10 ${extraClasses}`;
         card.onclick = () => window.location.href = `/buyer/product.html?id=${product.id}`;
 
         const ribbonHtml = getRibbonHtml(product);
@@ -801,13 +662,13 @@
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url}" alt="${product.name}">
-                    <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                    <button class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                         <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                     </button>
                 </div>
                 <div class="flex flex-col mb-4">
-                    <span class="font-bold text-lg text-[#C8973A] mb-1">${formattedPrice}</span>
-                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${product.name}</h4>
+                    <span class="mb-1" style="font-family: 'Space Mono', monospace; font-size: 16px; color: #C8973A; font-weight: 700;">${formattedPrice}</span>
+                    <h4 class="font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Lora', serif; font-size: 14px;">${product.name}</h4>
                     <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
                         <span class="text-[#C8973A] font-bold">★</span>
                         <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating || 0).toFixed(1)}</span>
@@ -817,7 +678,7 @@
                 </div>
             </div>
             <div class="w-full">
-                <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                <button class="w-full bg-[#3D6B4F] text-white min-h-[44px] rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
                     Add to Cart
                 </button>
             </div>
@@ -886,7 +747,6 @@
 
                 const rowWrapper = document.createElement('div');
                 rowWrapper.className = 'category-row-wrapper relative';
-
                 rowWrapper.innerHTML = `
                     <div class="flex justify-between items-baseline mb-6">
                         <h3 class="font-headline-lg text-2xl text-primary font-semibold">${category.name}</h3>
@@ -897,7 +757,7 @@
                     </div>
                     <div class="relative group">
                         <!-- Scroll Left Button -->
-                        <button class="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-2 rounded-full border border-outline-variant shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 duration-200" onclick="this.nextElementSibling.scrollBy({left: -320, behavior: 'smooth'})">
+                        <button class="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary w-11 h-11 rounded-full border border-outline-variant shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 duration-200 flex items-center justify-center" onclick="this.nextElementSibling.scrollBy({left: -320, behavior: 'smooth'})">
                             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
                         </button>
                         
@@ -905,9 +765,9 @@
                         <div class="flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;">
                             <!-- Product Cards will load here -->
                         </div>
-
+                        
                         <!-- Scroll Right Button -->
-                        <button class="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-2 rounded-full border border-outline-variant shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 duration-200" onclick="this.previousElementSibling.scrollBy({left: 320, behavior: 'smooth'})">
+                        <button class="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary w-11 h-11 rounded-full border border-outline-variant shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 duration-200 flex items-center justify-center" onclick="this.previousElementSibling.scrollBy({left: 320, behavior: 'smooth'})">
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
@@ -975,7 +835,7 @@
 
             // Dot Indicator
             const dot = document.createElement('button');
-            dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'}`;
+            dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-[#3D6B4F] scale-125' : 'bg-[#8FAF82]/50 hover:bg-[#3D6B4F]/80'}`;
             dot.onclick = () => goToSlide(index);
             dotsContainer.appendChild(dot);
         });
@@ -986,7 +846,7 @@
 
         // Hide current
         document.getElementById(`hero-slide-${currentSlide}`).classList.replace('opacity-100', 'opacity-0');
-        dotsContainer.children[currentSlide].classList.replace('bg-white', 'bg-white/50');
+        dotsContainer.children[currentSlide].classList.replace('bg-[#3D6B4F]', 'bg-[#8FAF82]/50');
         dotsContainer.children[currentSlide].classList.remove('scale-125');
 
         // Update index
@@ -996,7 +856,7 @@
 
         // Show new
         document.getElementById(`hero-slide-${currentSlide}`).classList.replace('opacity-0', 'opacity-100');
-        dotsContainer.children[currentSlide].classList.replace('bg-white/50', 'bg-white');
+        dotsContainer.children[currentSlide].classList.replace('bg-[#8FAF82]/50', 'bg-[#3D6B4F]');
         dotsContainer.children[currentSlide].classList.add('scale-125');
 
         // Reset timer when manually interacted
@@ -1089,58 +949,6 @@
     loadSponsoredProducts();
     loadForYouProducts();
     loadCategoryRows();
-    loadMobileCategoryChips();
-    setupSlideshowSwipe();
-
-    async function loadMobileCategoryChips() {
-        const chipsContainer = document.getElementById('mobile-category-chips');
-        if (!chipsContainer) return;
-        
-        try {
-            const res = await apiClient.get('/categories');
-            if (res.data && res.data.success) {
-                const categories = res.data.data.categories || [];
-                chipsContainer.innerHTML = `
-                    <a href="/buyer/categories.html" class="mobile-category-chip active">All Products</a>
-                `;
-                categories.forEach(cat => {
-                    const chip = document.createElement('a');
-                    chip.href = `/buyer/category.html?slug=${cat.slug}`;
-                    chip.className = 'mobile-category-chip';
-                    chip.textContent = cat.name;
-                    chipsContainer.appendChild(chip);
-                });
-            }
-        } catch (e) {
-            console.error('Failed to load mobile category chips:', e);
-        }
-    }
-
-    function setupSlideshowSwipe() {
-        const slideshowContainer = document.getElementById('hero-slideshow-container');
-        if (slideshowContainer) {
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            slideshowContainer.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-            
-            slideshowContainer.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleGesture();
-            }, { passive: true });
-            
-            function handleGesture() {
-                if (touchStartX - touchEndX > 50) {
-                    nextSlide();
-                }
-                if (touchEndX - touchStartX > 50) {
-                    prevSlide();
-                }
-            }
-        }
-    }
 
     let isLoggedIn = false;
     async function checkAuthState() {
@@ -1200,7 +1008,7 @@
     checkAuthState();
 </script>
 
-<!-- Mobile Nav Injection (Task 125) -->
+<!-- Mobile Nav Injection -->
 <script type="module">
   import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
   import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';

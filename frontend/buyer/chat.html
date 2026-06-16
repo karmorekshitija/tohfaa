@@ -193,7 +193,7 @@
 <body class="bg-white text-on-surface font-body h-screen flex flex-col overflow-hidden">
 
 <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-[64px] h-20 shrink-0">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-[64px] h-20 shrink-0">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -247,7 +247,7 @@
 </header>
 
 <!-- Chat Hub Panel Container -->
-<div class="h-[calc(100vh-5rem)] flex relative w-full overflow-hidden bg-white z-10">
+<div class="h-[calc(100vh-5rem)] max-md:h-[calc(100vh-116px)] flex relative w-full overflow-hidden bg-white z-10">
   
   <!-- COLUMN A: SIDEBAR (320px) (Drawer on mobile) -->
   <div id="sidebar-backdrop" onclick="toggleSidebarDrawer()" class="fixed inset-0 bg-black/40 z-20 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
@@ -924,10 +924,10 @@
         const botDiv = document.createElement('div');
         botDiv.className = "flex justify-start w-full";
         botDiv.innerHTML = `
-          <div class="flex flex-col gap-1 max-w-[80%]">
-            <div class="bg-surface-variant p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+          <div class="flex flex-col gap-1 max-w-[72%]">
+            <div class="bg-[#FCFAF5] p-4 border border-[#C5D6BC] shadow-sm" style="border-radius: 18px 18px 18px 4px;">
               <p class="text-xs text-primary font-bold mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">smart_toy</span> BOT ASSISTANT</p>
-              <p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>
+              <p class="text-sm leading-relaxed text-on-surface font-body">${msg.content}</p>
             </div>
             <span class="text-[9px] text-gray-400 font-mono mt-1">${formatTime(msg.sent_at)}</span>
           </div>
@@ -941,13 +941,13 @@
       
       if (isOutgoing) {
         div.className = "flex justify-end w-full";
-        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${msg.content}</p>` : '';
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white font-body">${msg.content}</p>` : '';
         if (msg.image_url) {
           contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
         }
         div.innerHTML = `
-          <div class="flex flex-col items-end gap-1 max-w-[80%]">
-            <div class="bg-primary p-4 rounded-xl rounded-tr-none shadow-sm border border-primary/20">
+          <div class="flex flex-col items-end gap-1 max-w-[72%]">
+            <div class="bg-primary p-4 shadow-sm" style="border-radius: 18px 18px 4px 18px;">
               ${contentHtml}
             </div>
             <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
@@ -955,15 +955,15 @@
         `;
       } else {
         div.className = "flex justify-start w-full";
-        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>` : '';
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface font-body">${msg.content}</p>` : '';
         if (msg.image_url) {
           contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
         }
         div.innerHTML = `
-          <div class="flex items-start gap-3 max-w-[80%]">
+          <div class="flex items-start gap-3 max-w-[72%]">
             <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">SD</div>
             <div class="flex flex-col gap-1">
-              <div class="bg-[#FFFDFB] p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+              <div class="bg-[#FCFAF5] p-4 border border-[#C5D6BC] shadow-sm" style="border-radius: 18px 18px 18px 4px;">
                 ${contentHtml}
               </div>
               <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>

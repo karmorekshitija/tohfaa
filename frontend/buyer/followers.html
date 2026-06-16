@@ -125,59 +125,6 @@
             animation: pulse-light 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
-
-<!-- Mobile Style Overrides -->
-<style>
-  @media (max-width: 768px) {
-    /* Stack layout sections */
-    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
-      display: flex !important;
-      flex-direction: column !important;
-      width: 100% !important;
-    }
-    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
-    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
-    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
-    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
-    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
-      grid-column: span 12 / span 12 !important;
-      width: 100% !important;
-    }
-    /* Product grids must be 2 columns */
-    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
-    .product-grid, .search-results-grid, .category-product-grid {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 12px !important;
-    }
-    /* Convert tables to cards */
-    table {
-      display: block !important;
-      width: 100% !important;
-    }
-    thead {
-      display: none !important;
-    }
-    tbody, tr, td {
-      display: block !important;
-      width: 100% !important;
-    }
-    tr {
-      background: #FFFFFF !important;
-      border: 1px solid rgba(61,107,79,0.12) !important;
-      border-radius: 12px !important;
-      padding: 16px !important;
-      margin-bottom: 12px !important;
-      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
-    }
-    td {
-      border: none !important;
-      padding: 4px 0 !important;
-      text-align: left !important;
-    }
-  }
-</style>
-
 </head>
 <body class="bg-white min-h-screen flex flex-col font-body-md text-on-surface selection:bg-[#8FAF82]/35">
 
@@ -240,17 +187,12 @@
 <main class="flex-grow pt-12 pb-xl max-w-2xl mx-auto w-full px-margin-mobile md:px-0 relative">
   <!-- Back navigation and Header -->
   <header class="mb-lg select-none">
-    <a href="/buyer/profile.html" class="hidden md:inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
+    <a href="/buyer/profile.html" class="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
       <span class="material-symbols-outlined text-base">arrow_back</span>
       <span>Back to Profile</span>
     </a>
-    <div class="flex items-center gap-md">
-      <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1 flex-shrink-0">
-          <span class="material-symbols-outlined text-[24px]">arrow_back</span>
-      </a>
-      <h1 id="page-title" class="font-serif text-[#3D6B4F] text-[40px] font-['Playfair_Display'] font-normal leading-tight !mb-0">Followers & Following</h1>
-    </div>
-    <p id="page-subtitle" class="text-outline text-sm font-sans mt-2">Connect and follow your favorite handcrafted makers and artisans.</p>
+    <h1 id="page-title" class="font-serif text-[#3D6B4F] text-[40px] font-['Playfair_Display'] font-normal leading-tight">Followers & Following</h1>
+    <p id="page-subtitle" class="text-outline text-sm font-sans mt-1">Connect and follow your favorite handcrafted makers and artisans.</p>
   </header>
 
   <!-- Tabs -->
@@ -762,7 +704,7 @@
                 }
 
                 if (authContainer) {
-                    authContainer.innerHTML = '';
+                    authContainer.innerHTML = avatarHtml;
                 }
             } catch(e) {
                 console.error("Failed to parse auth state:", e);
@@ -786,14 +728,5 @@
         init();
     });
 </script>
-
-<!-- Mobile Nav Injection -->
-<script type="module">
-  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
-  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
-  initMobileBuyerTopBar();
-  initMobileBuyerNav('profile');
-</script>
-
 </body>
 </html>
