@@ -672,10 +672,10 @@
       const initials = c.other_party_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
       const lastMsgText = c.last_message_preview || "No messages yet";
       const timestamp = c.last_message_at ? formatRelativeTime(c.last_message_at) : '';
-      const unreadDot = c.unread_count > 0 ? `<span class="w-2.5 h-2.5 bg-primary rounded-full shrink-0"></span>` : '';
+      const unreadDot = c.unread_count > 0 ? '<span class="w-2.5 h-2.5 bg-primary rounded-full shrink-0"></span>' : '';
       const tagBadge = c.product_type_tag === 'overflow' 
-        ? `<span class="text-[9px] font-eyebrow font-bold bg-sage/20 text-primary px-2 py-0.5 rounded">OVERFLOW</span>`
-        : `<span class="text-[9px] font-eyebrow font-bold bg-gold/20 text-gold px-2 py-0.5 rounded">CUSTOM</span>`;
+        ? '<span class="text-[9px] font-eyebrow font-bold bg-sage/20 text-primary px-2 py-0.5 rounded">OVERFLOW</span>'
+        : '<span class="text-[9px] font-eyebrow font-bold bg-gold/20 text-gold px-2 py-0.5 rounded">CUSTOM</span>';
 
       return `
         <div onclick="selectConversation(${c.conversation_id})" class="p-4 cursor-pointer flex gap-3 ${activeClass} transition-colors">
