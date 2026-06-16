@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Handcrafted Treasures</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -125,67 +125,53 @@
             50% { transform: translateY(-8px); }
         }
 
-        /* Diagonal Corner Ribbon Styles */
+        /* Diagonal Corner Ribbon Styles (Refactored to modern sleek badges) */
         .ribbon-wrapper {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 120px;
-            height: 120px;
-            overflow: hidden;
-            pointer-events: none;
+            top: 8px;
+            left: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             z-index: 20;
+            pointer-events: none;
         }
         .ribbon-tag {
-            position: absolute;
-            top: 22px;
-            left: -32px;
-            width: 160px;
-            transform: rotate(-45deg);
-            text-align: center;
-            font-size: 11px;
-            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 12px;
+            padding: 0 6px;
+            font-size: 8px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #ffffff;
-            line-height: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+            width: fit-content;
+            position: static;
+            transform: none;
         }
         .ribbon-tag::before, .ribbon-tag::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            border-top: 3px solid rgba(0,0,0,0.4);
-            border-left: 3px solid transparent;
-            border-right: 3px solid transparent;
+            display: none !important;
         }
-        .ribbon-tag::before { left: 0; }
-        .ribbon-tag::after { right: 0; }
-
         .ribbon-sponsored {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+            background: #C8973A; /* Gold */
         }
         .ribbon-bestseller {
-            background: #C85A32;
+            background: #3D6B4F; /* Forest */
         }
         .ribbon-custom {
-            background: #B492B7;
+            background: #7B5EA7; /* Violet */
         }
-        .ribbon-bestseller-double {
-            top: 13px !important;
-            left: -41px !important;
-        }
+        .ribbon-bestseller-double,
         .ribbon-custom-double {
-            top: 30px !important;
-            left: -24px !important;
-        }
-        .ribbon-bestseller-double {
-            top: 13px !important;
-            left: -41px !important;
-        }
-        .ribbon-custom-double {
-            top: 30px !important;
-            left: -24px !important;
+            position: static !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
         }
         
         /* Shimmer Animation for Skeletons */
@@ -200,6 +186,171 @@
         }
         .scrollbar-none::-webkit-scrollbar {
             display: none;
+        }
+    </style>
+    <!-- Mobile-specific style overrides (Task 125) -->
+    <style>
+        @media (max-width: 768px) {
+            /* Full-bleed hero banner */
+            section.py-xl.px-margin-desktop.max-w-\[1440px\].mx-auto.mt-xl {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                padding-bottom: 16px !important;
+            }
+            #hero-slideshow-container {
+                border-radius: 0 !important;
+                aspect-ratio: 16/9 !important;
+                width: 100vw !important;
+            }
+            /* Floating Quote Card hidden on mobile for cleaner layout */
+            .absolute.-bottom-10.-right-10.md\:right-12 {
+                display: none !important;
+            }
+            /* Hide the text column under hero on mobile, or keep it stacked? */
+            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 {
+                padding: 16px !important;
+                text-align: center !important;
+            }
+            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 h2 {
+                font-size: 24px !important;
+                line-height: 30px !important;
+            }
+            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 p {
+                font-size: 14px !important;
+                margin-bottom: 16px !important;
+            }
+            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 .flex {
+                justify-content: center !important;
+                gap: 8px !important;
+            }
+            .col-span-12.lg\:col-span-5.lg\:pl-xl.pt-16.lg\:pt-0 button {
+                padding: 10px 16px !important;
+                font-size: 14px !important;
+                flex: 1 !important;
+                max-width: 160px !important;
+            }
+
+            /* Category Chips Row */
+            .mobile-category-chips-container {
+                display: flex !important;
+                gap: 8px;
+                overflow-x: auto;
+                padding: 12px 16px;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                margin-top: 8px;
+                background: #F7F3EC;
+                border-bottom: 1px solid rgba(61, 107, 79, 0.1);
+            }
+            .mobile-category-chips-container::-webkit-scrollbar {
+                display: none;
+            }
+            .mobile-category-chip {
+                display: inline-block;
+                padding: 8px 16px;
+                background: #FFFFFF;
+                border: 1px solid #8FAF82;
+                color: #3D6B4F;
+                border-radius: 999px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                white-space: nowrap;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+            .mobile-category-chip:active,
+            .mobile-category-chip.active {
+                background: #3D6B4F;
+                color: #FFFFFF;
+            }
+
+            /* Dense scannable FNP-style cards on mobile */
+            #product-feed-grid,
+            #sponsored-product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                padding: 0 8px !important;
+            }
+            
+            /* Override product card styling on mobile */
+            .group.bg-white.border.border-\[\#c3c8c1\] {
+                padding: 8px !important;
+                border-radius: 8px !important;
+                gap: 4px !important;
+                border-color: rgba(61, 107, 79, 0.15) !important;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+            }
+            .group.bg-white.border.border-\[\#c3c8c1\] .aspect-square {
+                border-radius: 6px !important;
+                margin-bottom: 8px !important;
+            }
+            .group.bg-white.border.border-\[\#c3c8c1\] h4 {
+                font-family: 'DM Sans', sans-serif !important; /* DM Sans Title */
+                font-size: 13px !important;
+                line-height: 1.3 !important;
+                font-weight: 500 !important;
+                margin-bottom: 4px !important;
+            }
+            .group.bg-white.border.border-\[\#c3c8c1\] .text-lg.text-\[\#C8973A\] {
+                font-family: 'Space Mono', monospace !important; /* Space Mono Price */
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                margin-bottom: 2px !important;
+            }
+            .group.bg-white.border.border-\[\#c3c8c1\] .flex.items-center.gap-1.text-xs {
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+            }
+            .group.bg-white.border.border-\[\#c3c8c1\] .text-xs.text-\[\#605e57\] {
+                font-size: 11px !important;
+            }
+            .group.bg-white.border.border-\[\#c3c8c1\] .add-to-cart-btn {
+                padding: 6px 8px !important;
+                font-size: 12px !important;
+                border-radius: 6px !important;
+            }
+            
+            /* Sponsored Section mobile spacing */
+            section.py-xl.px-margin-desktop.max-w-\[1440px\].mx-auto.mt-24 {
+                margin-top: 16px !important;
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+            }
+            
+            /* Category scroll wrappers mobile layout */
+            #category-rows-container {
+                gap: 24px !important;
+                padding: 16px !important;
+            }
+            .category-row-wrapper {
+                margin-bottom: 0 !important;
+            }
+            .category-row-wrapper h3 {
+                font-size: 18px !important;
+            }
+            .category-row-wrapper .scrollbar-none {
+                gap: 12px !important;
+            }
+            .category-row-wrapper .scrollbar-none .w-\[280px\] {
+                width: 156px !important; /* Dense horizontal cards */
+                padding: 8px !important;
+            }
+            .category-row-wrapper .scrollbar-none .w-\[280px\] h4 {
+                font-family: 'DM Sans', sans-serif !important;
+                font-size: 13px !important;
+            }
+            .category-row-wrapper .scrollbar-none .w-\[280px\] .text-lg.text-\[\#C8973A\] {
+                font-family: 'Space Mono', monospace !important;
+                font-size: 14px !important;
+            }
+            
+            /* Hide arrow buttons for horizontal rows on mobile */
+            .category-row-wrapper button {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -269,22 +420,9 @@
 <div class="watermark-lavender top-[800px] right-24 w-40 h-40 -rotate-12">
 <span class="material-symbols-outlined text-9xl opacity-20">eco</span>
 </div>
-<!-- Greeting Banner -->
-<section class="bg-[#F7F3EC] w-full py-xl px-margin-desktop relative overflow-hidden">
-<div class="max-w-[1440px] mx-auto flex flex-col items-center justify-center text-center py-xl relative z-10">
-<h1 class="font-headline-lg text-display-hero italic text-primary mb-sm">
-                    Good morning <span class="font-normal not-italic opacity-60">✦</span>
-</h1>
-<p class="font-title-serif text-title-serif font-light italic text-on-surface-variant">
-                    What will you discover today?
-                </p>
 
-</div>
-<!-- Texture Overlay (Simulated Wax Tape) -->
-<div class="absolute top-10 right-[10%] w-24 h-8 bg-surface-variant/30 rotate-12 border-l border-r border-outline-variant/20 shadow-sm opacity-60"></div>
-<div class="absolute bottom-10 left-[15%] w-32 h-10 bg-primary-fixed-dim/20 -rotate-6 border-l border-r border-outline-variant/10 shadow-sm opacity-40"></div>
-</section>
 <!-- Explore Collection Hero -->
+<div class="mobile-section-block">
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-xl">
 <div class="grid grid-cols-12 gap-xl items-center">
 <div class="col-span-12 lg:col-span-7 relative">
@@ -334,8 +472,17 @@
 </div>
 </div>
 </section>
+</div>
+
+<!-- Mobile Category Chips (Task 125) -->
+<div id="mobile-category-chips-wrapper" class="md:hidden">
+  <div class="mobile-category-chips-container" id="mobile-category-chips">
+     <!-- Chips will be dynamically loaded here -->
+  </div>
+</div>
 
 <!-- Sponsored Section -->
+<div class="mobile-section-block">
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
     <div class="bg-[#F7F3EC] rounded-xl border border-outline-variant p-6 md:p-8">
         <div class="flex justify-between items-end mb-lg">
@@ -354,8 +501,10 @@
         </div>
     </div>
 </section>
+</div>
 
 <!-- For You (Capped at 15 products) -->
+<div class="mobile-section-block">
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
     <div class="flex justify-between items-end mb-xl">
         <div>
@@ -405,13 +554,16 @@
         </div>
     </div>
 </section>
+</div>
 
 <!-- Section 3 — Category Rows -->
+<div class="mobile-section-block">
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
     <div id="category-rows-container" class="flex flex-col gap-16">
         <!-- Dynamic category rows will load here -->
     </div>
 </section>
+</div>
 </main>
 
 <!-- Footer -->
@@ -937,6 +1089,58 @@
     loadSponsoredProducts();
     loadForYouProducts();
     loadCategoryRows();
+    loadMobileCategoryChips();
+    setupSlideshowSwipe();
+
+    async function loadMobileCategoryChips() {
+        const chipsContainer = document.getElementById('mobile-category-chips');
+        if (!chipsContainer) return;
+        
+        try {
+            const res = await apiClient.get('/categories');
+            if (res.data && res.data.success) {
+                const categories = res.data.data.categories || [];
+                chipsContainer.innerHTML = `
+                    <a href="/buyer/categories.html" class="mobile-category-chip active">All Products</a>
+                `;
+                categories.forEach(cat => {
+                    const chip = document.createElement('a');
+                    chip.href = `/buyer/category.html?slug=${cat.slug}`;
+                    chip.className = 'mobile-category-chip';
+                    chip.textContent = cat.name;
+                    chipsContainer.appendChild(chip);
+                });
+            }
+        } catch (e) {
+            console.error('Failed to load mobile category chips:', e);
+        }
+    }
+
+    function setupSlideshowSwipe() {
+        const slideshowContainer = document.getElementById('hero-slideshow-container');
+        if (slideshowContainer) {
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            slideshowContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            slideshowContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleGesture();
+            }, { passive: true });
+            
+            function handleGesture() {
+                if (touchStartX - touchEndX > 50) {
+                    nextSlide();
+                }
+                if (touchEndX - touchStartX > 50) {
+                    prevSlide();
+                }
+            }
+        }
+    }
 
     let isLoggedIn = false;
     async function checkAuthState() {
@@ -994,6 +1198,14 @@
     }
 
     checkAuthState();
+</script>
+
+<!-- Mobile Nav Injection (Task 125) -->
+<script type="module">
+  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+  initMobileBuyerTopBar();
+  initMobileBuyerNav('home');
 </script>
 </body>
 </html>

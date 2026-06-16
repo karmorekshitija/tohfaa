@@ -113,66 +113,78 @@
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8);
         }
 
-        /* Scoped mobile bento grid overrides */
-        @media (max-width: 767px) {
+        /* Category Card Grid Styles */
+        .category-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+        .category-image-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px; /* Tap target compliance */
+        }
+        .category-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+        .category-card:hover .category-image-container img {
+            transform: scale(1.05);
+        }
+        .category-name {
+            font-family: 'DM Sans', sans-serif;
+            color: #3D6B4F;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 8px;
+            padding: 4px;
+            line-height: 1.2;
+        }
+        
+        #categories-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        @media (min-width: 640px) {
             #categories-grid-container {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                grid-auto-rows: 180px !important;
-                gap: 16px !important;
+                grid-template-columns: repeat(4, 1fr);
             }
-            
-            /* Featured card mobile layout adjustments (spans 2x2, height ~376px) */
-            #categories-grid-container .col-span-2.row-span-2 h3 {
-                font-size: 24px !important;
-                line-height: 30px !important;
-                margin-bottom: 8px !important;
+        }
+        @media (min-width: 769px) {
+            #categories-grid-container {
+                grid-template-columns: repeat(6, 1fr);
             }
-            #categories-grid-container .col-span-2.row-span-2 .p-lg {
-                padding: 16px !important;
+        }
+        @media (min-width: 1024px) {
+            #categories-grid-container {
+                grid-template-columns: repeat(8, 1fr);
             }
-            #categories-grid-container .col-span-2.row-span-2 button {
-                padding: 6px 16px !important;
-                font-size: 12px !important;
+        }
+        @media (max-width: 768px) {
+            #categories-grid-container {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 12px !important;
             }
-
-            /* Wide/split card mobile adjustments (spans 2x1, height 180px) */
-            #categories-grid-container .col-span-2:not(.row-span-2) p.font-body-md {
-                display: none !important;
-            }
-            #categories-grid-container .col-span-2:not(.row-span-2) h3 {
-                font-size: 20px !important;
-                line-height: 26px !important;
-                margin-bottom: 4px !important;
-            }
-            #categories-grid-container .col-span-2:not(.row-span-2) .p-lg,
-            #categories-grid-container .col-span-2:not(.row-span-2) .p-xl {
-                padding: 16px !important;
-            }
-            #categories-grid-container .col-span-2:not(.row-span-2) .flex.h-full {
-                padding: 16px !important;
-                gap: 16px !important;
-            }
-            #categories-grid-container .col-span-2:not(.row-span-2) button {
-                padding: 4px 12px !important;
-                font-size: 11px !important;
-            }
-            #categories-grid-container .col-span-2:not(.row-span-2) .w-1\/2 {
-                width: 50% !important;
-            }
-
-            /* Standard 1x1 card text and overlay adjustments (height 180px) */
-            #categories-grid-container h3:not(.text-\[32px\]) {
-                font-size: 15px !important;
-                line-height: 20px !important;
-            }
-            #categories-grid-container p.font-data-price {
-                font-size: 10px !important;
-            }
-            #categories-grid-container .p-md {
-                padding: 12px !important;
-            }
-            #categories-grid-container .p-lg {
-                padding: 12px !important;
+            #categories-grid-container .category-card {
+                width: auto !important;
+                grid-column: span 1 !important;
             }
         }
     </style>
@@ -248,7 +260,7 @@
 
         <!-- Category Grid Section -->
         <section class="px-margin-desktop pb-xl">
-            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-lg auto-rows-[180px] md:auto-rows-[320px]" id="categories-grid-container">
+            <div id="categories-grid-container">
                 <!-- Loading State -->
                 <div class="col-span-full flex flex-col items-center justify-center py-20">
                     <div class="relative w-10 h-10">
@@ -444,152 +456,27 @@
                 return;
               }
 
-              const displayedSlugs = new Set();
               let html = '';
-
-              GRID_SLOTS.forEach(slot => {
-                // Find matching category in the API list
-                const cat = categories.find(c => slot.slugs.includes(c.slug));
-                const slugToUse = cat ? cat.slug : slot.defaultSlug;
-                const count = cat ? (cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)) : null;
-
-                if (cat) {
-                  slot.slugs.forEach(s => displayedSlugs.add(s));
-                }
-
-                const clickAction = `onclick="window.location.href='category.html?slug=${slugToUse}'"`;
-
-                if (slot.type === 'featured') {
-                  const countText = count !== null ? `${count} items` : '128 items';
-                  html += `
-                    <div ${clickAction} class="col-span-2 row-span-2 lg:col-span-2 lg:row-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${slot.image}" alt="${slot.displayName}">
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                      <div class="absolute bottom-0 left-0 p-lg text-white">
-                        <span class="font-label-caps text-[10px] tracking-widest opacity-80 uppercase block mb-1">${slot.badge}</span>
-                        <h3 class="font-title-serif text-[32px] mb-md">${slot.displayName}</h3>
-                        <div class="flex items-center gap-md">
-                          <button class="bg-primary hover:bg-primary-container text-white px-lg py-sm rounded-full text-body-md transition-colors">Explore Collection</button>
-                          <span class="font-data-price text-white/80">${countText}</span>
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                } else if (slot.type === 'wide') {
-                  const countText = count !== null ? `${count} available` : '32 available';
-                  html += `
-                    <div ${clickAction} class="col-span-2 lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <div class="absolute inset-0 paper-texture opacity-30"></div>
-                      <div class="grid grid-cols-2 h-full">
-                        <div class="p-lg flex flex-col justify-center">
-                          <h3 class="font-title-serif text-headline-lg text-primary mb-sm">${slot.displayName}</h3>
-                          <p class="font-body-md text-on-surface-variant mb-md leading-relaxed">${slot.description}</p>
-                          <span class="font-data-price text-secondary">${countText}</span>
-                        </div>
-                        <div class="relative overflow-hidden">
-                          <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="${slot.image}" alt="${slot.displayName}">
-                        </div>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 left-4 text-tertiary/20 text-4xl">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                } else if (slot.type === 'wide-split') {
-                  html += `
-                    <div ${clickAction} class="col-span-2 lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-tertiary/5 cursor-pointer font-['DM_Sans']">
-                      <div class="absolute inset-0 paper-texture opacity-30"></div>
-                      <div class="flex h-full items-center p-xl gap-xl">
-                        <div class="w-1/2">
-                          <h3 class="font-headline-lg text-2xl text-primary italic mb-sm">${slot.displayName}</h3>
-                          <p class="font-body-md text-xs text-on-surface-variant mb-md leading-relaxed">${slot.description}</p>
-                          <button class="border border-primary text-primary hover:bg-primary hover:text-white px-lg py-xs rounded-full transition-all font-body-md text-xs">${slot.buttonText || 'Explore'}</button>
-                        </div>
-                        <div class="w-1/2 relative h-full">
-                          <img class="w-full h-full object-cover rounded-lg rotate-3 shadow-md group-hover:rotate-0 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}">
-                        </div>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 right-4 text-tertiary-container/30 text-6xl">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                } else if (slot.type === 'bottom-overlay') {
-                  const countText = count !== null ? `${count} makes` : '91 prints';
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}">
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                      <div class="absolute bottom-4 left-4 text-white">
-                        <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
-                        <p class="font-data-price text-[11px]">${countText}</p>
-                      </div>
-                    </div>
-                  `;
-                } else if (slot.type === 'gradient-overlay') {
-                  const countText = count !== null ? `${count} pieces` : '24 pieces';
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}">
-                      <div class="absolute inset-0 flex flex-col justify-end p-md bg-gradient-to-t from-primary/40 to-transparent">
-                        <h3 class="font-title-serif text-title-serif text-white">${slot.displayName}</h3>
-                        <p class="font-data-price text-[11px] text-white/80">${countText}</p>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute top-4 right-4 text-white/50 text-3xl">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                } else if (slot.type === 'skincare-badge') {
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}">
-                      <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                      <div class="absolute top-4 left-4">
-                        <div class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
-                          <h3 class="font-title-serif text-body-md text-primary">${slot.displayName}</h3>
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                } else if (slot.type === 'woodcraft-center') {
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}">
-                      <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <h3 class="font-title-serif text-title-serif text-white border-y border-white/30 py-2 px-4">${slot.displayName}</h3>
-                      </div>
-                    </div>
-                  `;
-                } else {
-                  // Standard card
-                  const countText = count !== null ? `${count} makes` : '84 makes';
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant ${slot.bg || 'bg-secondary-container/10'} cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}">
-                      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                      <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
-                        <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
-                        <p class="font-data-price text-[11px] opacity-90 mt-1">${countText}</p>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute top-4 right-4 text-white/40">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                }
-              });
-
-              // Now append any other categories from the API that were not mapped to the main 10 slots
               categories.forEach(cat => {
-                if (!displayedSlugs.has(cat.slug)) {
-                  const displayName = cat.display_name || cat.name;
-                  const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
-                  const clickAction = `onclick="window.location.href='category.html?slug=${cat.slug}'"`;
+                const displayName = cat.display_name || cat.name;
+                const slug = cat.slug;
+                
+                // Find image in GRID_SLOTS mapping if available
+                const matchedSlot = GRID_SLOTS.find(slot => slot.slugs.includes(slug));
+                const imageToUse = matchedSlot ? matchedSlot.image : 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
+                
+                const clickAction = `onclick="window.location.href='category.html?slug=${slug}'"`;
 
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-secondary-container/10 cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://placehold.co/400x400/f4ede3/516447?text=Handcrafted" alt="${displayName}">
-                      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                      <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
-                        <h3 class="font-title-serif text-title-serif">${displayName}</h3>
-                        <p class="font-data-price text-[11px] opacity-90 mt-1">${count} makes</p>
-                      </div>
+                html += `
+                  <div ${clickAction} class="category-card group cursor-pointer flex flex-col items-center">
+                    <div class="category-image-container relative overflow-hidden rounded-lg shadow-sm aspect-square w-full bg-[#FFFFFF]">
+                      <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imageToUse}" alt="${displayName}">
                     </div>
-                  `;
-                }
+                    <span class="category-name mt-2 text-center text-sm font-body text-primary font-['DM_Sans'] py-1 px-2 block leading-snug">
+                      ${displayName}
+                    </span>
+                  </div>
+                `;
               });
 
               container.innerHTML = html;
@@ -615,6 +502,14 @@
             await checkAuthState();
             await loadCategories();
         });
+    </script>
+
+    <!-- Mobile Nav Injection -->
+    <script type="module">
+      import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+      import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+      initMobileBuyerTopBar();
+      initMobileBuyerNav('category');
     </script>
 </body>
 </html>

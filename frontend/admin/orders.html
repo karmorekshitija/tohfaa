@@ -243,6 +243,7 @@
                         Refund Flagged
                         <span class="w-2 h-2 rounded-full bg-highlight-gold pulsing-dot"></span>
 </button>
+<button id="filter-settlements" class="px-5 py-2 rounded-full font-label-btn text-text-muted bg-[#F7F3EC] hover:bg-sage-soft/30 transition-colors">Settlements</button>
 </div>
 <div class="flex flex-wrap items-center gap-6 pt-4 border-t border-outline-variant/20">
 <div class="flex items-center gap-3">
@@ -264,7 +265,7 @@
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-surface border-b border-[#8FAF82]/30">
+<tr id="table-headers" class="bg-surface border-b border-[#8FAF82]/30">
 <th class="px-6 py-4 text-accent-caps text-text-faint">Order ID</th>
 <th class="px-6 py-4 text-accent-caps text-text-faint">Buyer</th>
 <th class="px-6 py-4 text-accent-caps text-text-faint">Seller</th>
@@ -308,6 +309,11 @@ let searchQuery = '';
 let currentPage = 1;
 
 async function fetchOrders() {
+  if (currentStatus === 'settlements') {
+    await fetchSettlements();
+    return;
+  }
+
   try {
     const res = await adminApiClient.get('/admin/orders', {
       params: {
@@ -338,6 +344,137 @@ async function fetchOrders() {
     }
   } catch (err) {
     console.error('Failed to fetch orders:', err);
+  }
+}
+
+async function fetchSettlements() {
+  try {
+    const res = await adminApiClient.get('/admin/settlements', {
+      params: {
+        page: currentPage,
+        per_page: 10
+      }
+    });
+
+    if (res.data?.success) {
+      const { settlements, total, page, per_page, total_pages } = res.data.data;
+      
+      // Hide flagged banner in settlements view
+      const banner = document.getElementById('flagged-banner');
+      if (banner) banner.classList.add('hidden');
+
+      renderSettlements(settlements);
+      renderPagination(total, page, per_page, total_pages);
+    }
+  } catch (err) {
+    console.error('Failed to fetch settlements:', err);
+  }
+}
+
+function renderSettlements(settlements) {
+  const container = document.getElementById('orders-list');
+  container.innerHTML = '';
+
+  if (settlements.length === 0) {
+    container.innerHTML = `
+      <tr>
+        <td colspan="7" class="px-6 py-10 text-center text-text-muted text-sm font-serif-ui-sm">
+          No settlements found.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  settlements.forEach(settlement => {
+    const tr = document.createElement('tr');
+    tr.className = 'bg-white hover:bg-surface-container-low/50 transition-colors';
+
+    let statusClass = '';
+    const st = (settlement.status || '').toLowerCase();
+    if (st === 'pending') {
+      statusClass = 'bg-gold-soft text-highlight-gold';
+    } else if (st === 'processing') {
+      statusClass = 'bg-violet-soft text-accent-violet';
+    } else if (st === 'completed') {
+      statusClass = 'bg-primary text-white';
+    } else if (st === 'failed') {
+      statusClass = 'bg-[#F7F3EC] text-text-muted border border-outline-variant';
+    } else {
+      statusClass = 'bg-surface-variant text-on-surface-variant';
+    }
+
+    const actionHtml = st === 'pending'
+      ? `<button onclick="markSettled(${settlement.id})" class="px-3 py-1.5 bg-primary text-white text-[11px] font-bold uppercase rounded-lg hover:opacity-90 transition-all">Mark Settled</button>`
+      : '—';
+
+    const dateStr = settlement.created_at ? new Date(settlement.created_at).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    }) : '—';
+
+    tr.innerHTML = `
+      <td class="px-6 py-4 font-data-meta text-accent-violet">SET-${settlement.id}</td>
+      <td class="px-6 py-4 font-body-sm font-bold text-text-default">${settlement.shop_name || settlement.seller_name}</td>
+      <td class="px-6 py-4 font-body-sm text-text-muted">${settlement.order_ref || `Sub-order #${settlement.sub_order_id}`}</td>
+      <td class="px-6 py-4 font-data-price text-primary">${formatPaise(settlement.amount_paise)}</td>
+      <td class="px-6 py-4">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${statusClass}">${settlement.status}</span>
+      </td>
+      <td class="px-6 py-4 font-data-meta text-text-faint">${dateStr}</td>
+      <td class="px-6 py-4 text-right">${actionHtml}</td>
+    `;
+    container.appendChild(tr);
+  });
+}
+
+async function markSettled(id) {
+  if (!confirm("Are you sure you want to mark this settlement as Completed?")) {
+    return;
+  }
+
+  try {
+    const res = await adminApiClient.patch(`/admin/settlements/${id}`, { status: 'completed' });
+    if (res.data?.success) {
+      alert("Settlement marked as completed.");
+      fetchOrders();
+    } else {
+      alert(res.data?.message || "Failed to update settlement status.");
+    }
+  } catch (err) {
+    console.error("Failed to update settlement status:", err);
+    alert(err.response?.data?.message || "Failed to update settlement status.");
+  }
+}
+window.markSettled = markSettled;
+
+function setSettlementHeaders() {
+  const headers = document.getElementById('table-headers');
+  if (headers) {
+    headers.innerHTML = `
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Settlement ID</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Seller Name</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Order Ref</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Amount</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Status</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Created</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint text-right">Actions</th>
+    `;
+  }
+}
+
+function setOrderHeaders() {
+  const headers = document.getElementById('table-headers');
+  if (headers) {
+    headers.innerHTML = `
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Order ID</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Buyer</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Seller</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Amount</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Status</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint text-center">Flag</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint">Date</th>
+      <th class="px-6 py-4 text-accent-caps text-text-faint text-right">Actions</th>
+    `;
   }
 }
 
@@ -483,7 +620,8 @@ const statusFilters = [
   { id: 'filter-shipped', status: 'shipped' },
   { id: 'filter-delivered', status: 'delivered' },
   { id: 'filter-cancelled', status: 'cancelled' },
-  { id: 'filter-refund-flagged', status: 'refund_flagged' }
+  { id: 'filter-refund-flagged', status: 'refund_flagged' },
+  { id: 'filter-settlements', status: 'settlements' }
 ];
 
 statusFilters.forEach(({ id, status }) => {
@@ -497,6 +635,12 @@ statusFilters.forEach(({ id, status }) => {
         }
       });
       btn.className = 'px-5 py-2 rounded-full font-label-btn text-white bg-primary transition-colors';
+      
+      if (status === 'settlements') {
+        setSettlementHeaders();
+      } else {
+        setOrderHeaders();
+      }
       
       currentStatus = status;
       currentPage = 1;

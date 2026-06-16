@@ -120,6 +120,155 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #F7F3EC; border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            /* Stack grid & flex items */
+            .grid:not(#kpi-grid):not(#quick-actions-grid), 
+            [class*="grid-cols-"]:not(#kpi-grid):not(#quick-actions-grid), 
+            .flex-row, .md\:flex-row {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+            }
+            /* Let card items span full width */
+            .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+            .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+            .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+            .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+            .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+                grid-column: span 12 / span 12 !important;
+                width: 100% !important;
+            }
+            /* Set min spacing */
+            .grid > div:not(#kpi-grid > div):not(#quick-actions-grid > a), 
+            .flex > div, .space-y-lg > div, .space-y-md > div {
+                margin-top: 12px;
+            }
+            /* Enforce playfair display for headings */
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Playfair Display', serif !important;
+            }
+            /* Convert tables to cards */
+            table {
+                display: block !important;
+                width: 100% !important;
+            }
+            thead {
+                display: none !important;
+            }
+            tbody, tr, td {
+                display: block !important;
+                width: 100% !important;
+            }
+            tr {
+                background: #FFFFFF !important;
+                border: 1px solid rgba(61,107,79,0.12) !important;
+                border-radius: 12px !important;
+                padding: 16px !important;
+                margin-bottom: 12px !important;
+                box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+            }
+            td {
+                border: none !important;
+                padding: 4px 0 !important;
+                text-align: left !important;
+                position: relative !important;
+            }
+
+            /* KPI grid layout on mobile */
+            #kpi-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+                margin-bottom: 24px !important;
+            }
+            #kpi-grid > div {
+                margin-top: 0 !important;
+                aspect-ratio: 1 / 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center !important;
+                padding: 12px !important;
+            }
+            #kpi-grid > div p {
+                font-size: 11px !important;
+                margin-bottom: 4px !important;
+            }
+            #kpi-grid > div div {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            #kpi-grid > div .font-data-price {
+                font-size: 24px !important;
+            }
+
+            /* Quick Actions grid layout on mobile */
+            #quick-actions-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            #quick-actions-grid > a {
+                margin-top: 0 !important;
+                aspect-ratio: 1 / 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center !important;
+                padding: 12px !important;
+            }
+            #quick-actions-grid > a .w-12 {
+                width: 40px !important;
+                height: 40px !important;
+                margin-bottom: 8px !important;
+            }
+            #quick-actions-grid > a .material-symbols-outlined {
+                font-size: 20px !important;
+            }
+            #quick-actions-grid > a span.font-label-caps {
+                font-size: 9px !important;
+            }
+
+            /* Low Stock Alerts & Announcements horizontal display */
+            #low-stock-list {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            #low-stock-list > li {
+                margin-top: 0 !important;
+                border: 1px solid rgba(61,107,79,0.12) !important;
+                border-radius: 8px !important;
+                padding: 8px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 4px !important;
+            }
+            
+            #announcements-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+                margin-top: 12px !important;
+            }
+            #announcements-container > div {
+                margin-top: 0 !important;
+                border: 1px solid rgba(61,107,79,0.12) !important;
+                border-radius: 8px !important;
+                padding: 8px 8px 8px 24px !important;
+            }
+            #announcements-container > div h4 {
+                font-size: 13px !important;
+            }
+            #announcements-container > div p {
+                font-size: 10px !important;
+                line-height: 1.3 !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-white text-on-background font-body-md overflow-x-hidden">
@@ -161,7 +310,7 @@
 
   <div id="dashboard-content" class="hidden flex flex-col gap-xl">
     <!-- KPI Row -->
-    <section class="grid grid-cols-4 gap-lg mb-xl">
+    <section id="kpi-grid" class="grid grid-cols-4 gap-lg mb-xl">
       <!-- KPI 1 -->
       <div class="bg-surface border border-outline-variant/30 rounded-xl p-md shadow-sm relative overflow-hidden group">
         <p class="font-label-caps text-label-caps text-on-surface-variant/70 mb-sm">Total Orders</p>
@@ -212,7 +361,7 @@
     <!-- 2. Announcements -->
     <section class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden">
       <h3 class="font-headline-lg italic text-on-surface text-2xl mb-6">Announcements</h3>
-      <div class="space-y-6">
+      <div id="announcements-container" class="space-y-6">
         <div class="relative pl-6">
           <span class="absolute left-0 top-1 text-primary text-lg material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_florist</span>
           <h4 class="font-title-serif font-bold text-primary text-base">New Packaging Guidelines</h4>
@@ -260,7 +409,7 @@
     <!-- 4. Quick Actions -->
     <section class="bg-surface border border-outline-variant/30 rounded-xl p-lg shadow-sm relative overflow-hidden">
       <h3 class="font-headline-lg italic text-on-surface text-2xl mb-6">Quick Actions</h3>
-      <div class="grid grid-cols-5 gap-lg">
+      <div id="quick-actions-grid" class="grid grid-cols-5 gap-lg">
         <a href="/seller/listing-photos.html" class="flex flex-col items-center justify-center p-lg bg-surface border border-outline-variant/30 rounded-xl hover:border-primary hover:bg-secondary-container/10 transition-all group shadow-sm">
           <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-primary">add_circle</span>

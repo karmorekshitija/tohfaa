@@ -118,6 +118,62 @@
             background-size: 24px 24px;
         }
     </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack grid & flex items */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    /* Let card items span full width */
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Set min spacing */
+    .grid > div, .flex > div, .space-y-lg > div, .space-y-md > div {
+      margin-top: 12px;
+    }
+    /* Enforce playfair display for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+      position: relative !important;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-white text-on-surface selection:bg-primary-fixed-dim/30">
 <!-- TopNavBar -->
@@ -388,6 +444,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+</script>
+
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileSellerNav } from '/components/MobileSellerNav.js';
+  initMobileSellerNav('home');
 </script>
 
 </body></html>

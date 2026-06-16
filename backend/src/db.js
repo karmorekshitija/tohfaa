@@ -324,6 +324,56 @@ async function initDb() {
 
     // Add bank_name to seller_payout_accounts if not exists
     await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
+
+    // Create sub_orders table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS sub_orders (
+        id SERIAL PRIMARY KEY,
+        parent_order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+        seller_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        subtotal_paise INTEGER NOT NULL,
+        platform_commission_paise INTEGER NOT NULL DEFAULT 0,
+        seller_payout_paise INTEGER NOT NULL,
+        delivery_status TEXT NOT NULL DEFAULT 'pending' CHECK(delivery_status IN ('pending', 'packed', 'shipped', 'delivered', 'cancelled')),
+        tracking_number TEXT DEFAULT NULL,
+        courier_name TEXT DEFAULT NULL,
+        estimated_delivery TEXT DEFAULT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Add sub_order_id to order_items if not exists
+    await pool.query('ALTER TABLE order_items ADD COLUMN IF NOT EXISTS sub_order_id INTEGER REFERENCES sub_orders(id) ON DELETE CASCADE');
+
+    // Create seller_settlements table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS seller_settlements (
+        id SERIAL PRIMARY KEY,
+        seller_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        sub_order_id INTEGER REFERENCES sub_orders(id) ON DELETE CASCADE,
+        amount_paise INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'processing', 'completed', 'failed')),
+        settled_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create product_bans table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_bans (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        banned_by INTEGER NOT NULL REFERENCES admin_users(id),
+        ban_reason TEXT NOT NULL,
+        banned_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        unbanned_at TIMESTAMP WITH TIME ZONE,
+        unbanned_by INTEGER REFERENCES admin_users(id)
+      )
+    `);
+
+    // Create product_bans index
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_product_bans_product_id ON product_bans(product_id)');
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);
   }

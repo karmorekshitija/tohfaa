@@ -6,9 +6,9 @@
   style.textContent = `
     /* Global layout design overrides */
     body, html {
-      background-color: #FFFFFF !important;
+      background-color: var(--bg-primary) !important;
       font-family: 'DM Sans', sans-serif !important;
-      color: #1A1A1A !important;
+      color: var(--text-default) !important;
       margin: 0 !important;
       padding: 0 !important;
     }
@@ -27,11 +27,11 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #F7F3EC;
+      background: var(--surface);
       border-radius: 10px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #8FAF82;
+      background: var(--secondary-sage);
     }
 
     /* Component specific classes */
@@ -41,21 +41,21 @@
       align-items: center;
       padding-top: 10px;
       padding-bottom: 10px;
-      color: #6B6B6B;
+      color: var(--text-muted);
       font-weight: 500;
-      transition: all 0.2s ease-in-out;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
     .sidebar-link:hover {
       background-color: rgba(143, 175, 130, 0.15) !important;
-      color: #1A1A1A !important;
+      color: var(--text-default) !important;
     }
     .sidebar-link-active {
-      background-color: #3D6B4F !important;
-      color: #FFFFFF !important;
+      background-color: var(--primary-forest) !important;
+      color: var(--bg-primary) !important;
       font-weight: 700 !important;
     }
     .sidebar-link-active span {
-      color: #FFFFFF !important;
+      color: var(--bg-primary) !important;
     }
 
     /* CSS layout overrides to prevent vertical white spaces and horizontal offsets */
@@ -63,14 +63,14 @@
       display: block !important;
       width: 100% !important;
       min-height: 100vh !important;
-      background-color: #FFFFFF !important;
+      background-color: var(--bg-primary) !important;
     }
 
     .seller-layout-container {
       display: flex !important;
       min-height: 100vh !important;
       width: 100% !important;
-      background-color: #FFFFFF !important;
+      background-color: var(--bg-primary) !important;
     }
 
     seller-sidebar {
@@ -88,7 +88,7 @@
       min-width: 0 !important;
       margin-left: 130px !important;
       position: relative !important;
-      background-color: #FFFFFF !important;
+      background-color: var(--bg-primary) !important;
       padding: 32px 64px 64px 64px !important;
       height: 100vh !important;
       max-height: 100vh !important;
@@ -109,8 +109,8 @@
       right: 0 !important;
       left: 130px !important;
       height: 64px !important;
-      background-color: #FFFFFF !important;
-      border-bottom: 1px solid #E8E2D9 !important;
+      background-color: var(--bg-primary) !important;
+      border-bottom: 1px solid var(--secondary-sage) !important;
       display: flex !important;
       justify-content: space-between !important;
       align-items: center !important;
@@ -145,6 +145,68 @@
         padding-left: 16px !important;
         padding-right: 16px !important;
       }
+    }
+
+    /* Uniform Form Styling for Seller Panel */
+    input[type="text"], input[type="number"], input[type="email"], input[type="password"], input[type="url"], input[type="tel"], input[type="date"], input[type="time"], input[type="datetime-local"], select, textarea {
+      height: 48px !important; /* Standardized min 48px tap target height */
+      padding: 10px 16px !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 14px !important;
+      border: 1px solid var(--secondary-sage) !important;
+      border-radius: 8px !important;
+      background-color: var(--bg-primary) !important;
+      color: var(--text-default) !important;
+      box-sizing: border-box !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+      width: 100% !important;
+    }
+    textarea {
+      height: auto !important;
+      min-height: 100px !important;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="url"]:focus, input[type="tel"]:focus, input[type="date"]:focus, input[type="time"]:focus, input[type="datetime-local"]:focus, select:focus, textarea:focus {
+      outline: none !important;
+      border-color: var(--primary-forest) !important;
+      box-shadow: 0 0 0 2px rgba(61,107,79,0.1) !important;
+    }
+    
+    /* Style form labels */
+    label, .form-label {
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: var(--primary-forest) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      margin-bottom: 6px !important;
+      display: inline-block !important;
+    }
+    
+    /* Standardize main CTA buttons inside forms */
+    .form-btn, button[type="submit"], .btn-primary {
+      min-height: 48px !important; /* Standardized min 48px tap target height */
+      padding: 10px 24px !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      background-color: var(--primary-forest) !important;
+      color: var(--bg-primary) !important;
+      border: none !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      transition: background-color 0.2s ease, transform 0.1s ease !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .form-btn:hover, button[type="submit"]:hover, .btn-primary:hover {
+      background-color: var(--primary-deep) !important;
+    }
+    .form-btn:active, button[type="submit"]:active, .btn-primary:active {
+      transform: scale(0.98) !important;
     }
   `;
   document.head.appendChild(style);
@@ -322,7 +384,7 @@ class SellerTopBar extends HTMLElement {
               <p class="text-xs font-bold text-[#1A1A1A] line-clamp-1" id="topbar-seller-name">Loading...</p>
               <p class="text-[9px] text-[#6B6B6B] uppercase tracking-wider">Artisan Partner</p>
             </div>
-            <div class="w-9 h-9 rounded-full overflow-hidden border border-[#E8E2D9] flex-shrink-0 bg-gray-50">
+            <div class="w-9 h-9 rounded-full overflow-hidden border border-[#E8E2D9] flex-shrink-0 bg-gray-50" style="display: none !important;">
               <img id="sidebar-avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Seller" alt="Avatar"/>
             </div>
           </div>

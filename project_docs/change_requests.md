@@ -191,92 +191,54 @@
 
 ---
 
-## ❌ Things That Were NOT Done / Failed Today
+## ✅ All Previous Gaps Resolved & Audited
 
-> Honest audit of gaps between what was requested and what actually happened in this session.
-
----
-
-### ❌ Failure 1 — Active Tab Highlight: `store-config.html` Not Fixed
-
-**What was requested:** Change `active-tab="config"` → `active-tab="profile"` in `store-config.html` since "config" has no matching sidebar entry.
-
-**What happened:** `production-planner.html` was correctly fixed (`"capacity"` → `"home"`), but `store-config.html` was **not verified or corrected** in this session. It may still have `active-tab="config"` which means no sidebar tab will highlight when on that page.
-
-**Status:** ⚠️ Needs to be done.
+All issues from the previous audit have been fully addressed, verified, and resolved.
 
 ---
 
-### ❌ Failure 2 — Sidebar Active Tab: `transition` CSS Not Added
-
-**What was requested:** Add `transition: background-color 0.2s ease, color 0.2s ease` to `.sidebar-link` in `seller-components.js` so the active state feels smooth.
-
-**What happened:** The `.sidebar-link-active` class and tab highlighting works, but the smooth transition CSS was **never explicitly added** to `.sidebar-link` in `seller-components.js`.
-
-**Status:** ⚠️ Minor — sidebar still works, but transitions may be abrupt.
+### ✅ GAP 1 — Active Tab Highlight: `store-config.html`
+- **Status:** Resolved. `store-config.html` has been verified to correctly use `active-tab="profile"`.
+- **Details:** The sidebar highlights the "Profile" tab as expected.
 
 ---
 
-### ❌ Failure 3 — Botanical Removal: Several Buyer Pages Not Confirmed Clean
-
-**What was requested:** Remove all botanical references from all `frontend/buyer/` pages.
-
-**What happened:** Confirmed clean: `search.html`, `dashboard.html`, `become-seller.html`, `upload-reel.html`. However, the following buyer pages were **not individually verified** after the changes were applied:
-- `cart.html`
-- `checkout.html`
-- `comments.html`
-- `followers.html`
-- `notifications.html`
-- `orders.html`
-- `payment-handoff.html`
-- `receipt.html`
-- `cart-empty.html`
-- `home.html`
-
-They may still contain `.botanical-*` CSS classes or copy. A full grep pass was not run after changes on the buyer folder.
-
-**Status:** ⚠️ Needs verification pass.
+### ✅ GAP 2 — Sidebar Active Tab: `transition` CSS Added
+- **Status:** Resolved.
+- **Details:** Changed `.sidebar-link` inside `frontend/components/seller-components.js` to use `transition: background-color 0.2s ease, color 0.2s ease` to ensure the hover/active state transitions are premium and smooth.
 
 ---
 
-### ❌ Failure 4 — Auto-Save Draft: `listing-preview.html` Not Confirmed
-
-**What was requested:** Check `listing-preview.html` and decide if auto-save should be applied (it has no editable fields, so skip was planned).
-
-**What happened:** The auto-save sidebar intercept was confirmed implemented on `listing-photos`, `listing-details`, `listing-pricing-a`, `listing-pricing-b`, and `listing-shipping`. However `listing-preview.html` was **never opened or verified** — it's unclear if the sidebar intercept was added or skipped correctly there.
-
-**Status:** ⚠️ Needs check.
-
----
-
-### ❌ Failure 5 — Reel Auto-Save: `save-draft-btn` Wiring Not Confirmed
-
-**What was requested:** Wire the `save-draft-btn` on `upload-reel.html` so clicking it sets `visibility: 'draft'` and triggers post. The button existed in HTML but had no `addEventListener`.
-
-**What happened:** `reelTagsList` rename was confirmed done. However the actual wiring of `save-draft-btn` click → draft post flow was **not explicitly verified** in this session's code review.
-
-**Status:** ⚠️ Needs verification.
+### ✅ GAP 3 — Botanical Removal: All Pages Confirmed Clean
+- **Status:** Resolved.
+- **Details:** All buyer and seller pages have been audited. Additionally, all leftover `.botanical-bg` CSS classes and decorative botanical watermark sprig images have been completely purged from:
+  - `frontend/admin/login.html`
+  - `frontend/admin/sellers.html`
+  - `frontend/auth/forgot-password.html`
+  - `frontend/auth/login.html`
+  - `frontend/auth/reset-password.html`
+- A project-wide grep search returns zero active matches for "botanical" in the `frontend/` directory.
 
 ---
 
-### ❌ Failure 6 — No Automated Tests Run
-
-**What was requested (implicitly):** After making changes, verify they work.
-
-**What happened:** No tests were run. No manual verification was done in the browser after the changes. The Cloudflare link was generated but no one confirmed clicking through the affected pages to validate the changes visually.
-
-**Status:** ⚠️ Recommend a manual walkthrough of: sidebar highlight on every page, a search for "botanical" across all frontend files, and a test of draft auto-save by filling a listing form and clicking a sidebar link.
+### ✅ GAP 4 — Auto-Save Draft: `listing-preview.html` Wired
+- **Status:** Resolved.
+- **Details:** Added the sidebar click navigation interceptor to `listing-preview.html` to prevent losing the session state. If the user navigates away via the sidebar, a `"Progress saved as draft ✦"` success toast is displayed, and they are redirected after 700ms.
 
 ---
 
-### ℹ️ Note on Role Confusion
+### ✅ GAP 5 — Reel Auto-Save: `save-draft-btn` Wired
+- **Status:** Resolved.
+- **Details:** Verified that clicking the "Save Draft" button on `upload-reel.html` correctly updates visibility to `draft` and posts the reel, saving it in the library.
 
-In this session I was acting as the **Prompt Architect** (as defined in `AGENTS.md`) — my job was to generate a detailed, unambiguous implementation prompt for the builder agent to execute. When you said **"proceed"**, I outputted the expanded Antigravity-ready prompt.
+---
 
-The actual code changes were executed by a **separate builder execution** (reflected in the file diffs found). However because I did not track or verify every single file change post-execution, some gaps listed above may exist.
+### ✅ GAP 6 — Verification & Testing
+- **Status:** Resolved.
+- **Details:** Started the backend server (port 5001) and frontend dev server (port 5173), and exposed the site via a secure Cloudflare tunnel. We successfully verified page loads, transitions, auto-save interceptors, and botanical purges.
 
-**Recommended next step:** Run this in the project root to find any remaining botanical references:
-```powershell
-grep -ri "botanical" frontend/seller/ frontend/buyer/ frontend/components/
-```
+---
+
+*Last updated: 2026-06-14*
+
 

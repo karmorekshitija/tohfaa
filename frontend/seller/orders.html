@@ -87,12 +87,12 @@
                         "xl": "40px"
                     },
                     "fontFamily": {
-                        "headline-lg": ["Playfair Display"],
-                        "display-hero": ["Playfair Display"],
-                        "title-serif": ["Merriweather"],
-                        "data-price": ["Space Mono"],
-                        "body-md": ["DM Sans"],
-                        "label-caps": ["Cinzel"]
+                        "headline-lg": ["Playfair Display", "serif"],
+                        "display-hero": ["Playfair Display", "serif"],
+                        "title-serif": ["Playfair Display", "serif"],
+                        "data-price": ["Space Mono", "monospace"],
+                        "body-md": ["DM Sans", "sans-serif"],
+                        "label-caps": ["DM Sans", "sans-serif"]
                     },
                     "fontSize": {
                         "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
@@ -130,6 +130,62 @@
         @keyframes shimmer { 0%{background-position:-200px 0} 100%{background-position:200px 0} }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.15)} }
     </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack grid & flex items */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    /* Let card items span full width */
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Set min spacing */
+    .grid > div, .flex > div, .space-y-lg > div, .space-y-md > div {
+      margin-top: 12px;
+    }
+    /* Enforce playfair display for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+      position: relative !important;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-white text-on-surface font-body-md min-h-screen overflow-x-hidden opacity-0 transition-opacity duration-300" id="body-content">
 
@@ -266,6 +322,53 @@
     </aside>
 </div>
 
+<!-- Tracking Modal -->
+<div id="tracking-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-black/50">
+    <div class="bg-white rounded-2xl border border-sage/30 p-lg w-full max-w-md mx-margin-mobile flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+        <button onclick="closeTrackingModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        
+        <h3 class="font-headline-lg text-[22px] italic text-primary mb-md">Ship Sub-order</h3>
+        
+        <form id="tracking-form" onsubmit="submitTracking(event)">
+            <input type="hidden" id="tracking-order-id" value=""/>
+            
+            <div class="space-y-md">
+                <!-- Courier Name (dropdown) -->
+                <div class="space-y-xs">
+                    <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Courier Name</label>
+                    <select id="tracking-courier" required class="w-full bg-white border border-sage rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                        <option value="" disabled selected>Select Courier</option>
+                        <option value="Delhivery">Delhivery</option>
+                        <option value="Shiprocket">Shiprocket</option>
+                        <option value="BlueDart">BlueDart</option>
+                        <option value="DTDC">DTDC</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <!-- Tracking Number -->
+                <div class="space-y-xs">
+                    <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Tracking Number</label>
+                    <input type="text" id="tracking-number-input" required placeholder="Enter tracking reference" class="w-full bg-white border border-sage rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"/>
+                </div>
+                
+                <!-- Expected Delivery Date -->
+                <div class="space-y-xs">
+                    <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Expected Delivery Date</label>
+                    <input type="date" id="tracking-est-delivery" required class="w-full bg-white border border-sage rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"/>
+                </div>
+            </div>
+            
+            <div class="flex gap-sm pt-lg">
+                <button type="button" onclick="closeTrackingModal()" class="flex-1 py-2 border border-outline text-secondary hover:bg-surface-variant rounded-lg font-bold text-sm transition-all">Cancel</button>
+                <button type="submit" id="btn-submit-tracking" class="flex-1 py-2 bg-primary text-white hover:opacity-90 rounded-lg font-bold text-sm transition-all">Confirm Shipment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Toast notifications -->
 <div id="toast" class="hidden">
     <span class="material-symbols-outlined" id="toast-icon">check_circle</span>
@@ -279,6 +382,71 @@
     let currentPeriod = '30d';
     let searchQuery   = '';
     let searchTimer   = null;
+
+    let currentTrackingOrderId = null;
+    let onTrackingSuccessCallback = null;
+
+    function openTrackingModal(orderId, onSuccess) {
+        currentTrackingOrderId = orderId;
+        onTrackingSuccessCallback = onSuccess;
+        
+        document.getElementById('tracking-order-id').value = orderId;
+        document.getElementById('tracking-courier').value = '';
+        document.getElementById('tracking-number-input').value = '';
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tracking-est-delivery').min = today;
+        document.getElementById('tracking-est-delivery').value = '';
+
+        document.getElementById('tracking-modal').classList.remove('hidden');
+    }
+
+    function closeTrackingModal() {
+        document.getElementById('tracking-modal').classList.add('hidden');
+    }
+
+    async function submitTracking(event) {
+        event.preventDefault();
+        const orderId = document.getElementById('tracking-order-id').value;
+        const courier = document.getElementById('tracking-courier').value;
+        const tracking_number = document.getElementById('tracking-number-input').value.trim();
+        const estimated_delivery = document.getElementById('tracking-est-delivery').value;
+        
+        const token = sessionStorage.getItem('tohfa_access_token');
+        const btn = document.getElementById('btn-submit-tracking');
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+        
+        try {
+            const r = await fetch(`${API_BASE_URL}/api/seller/orders/${orderId}/tracking`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ 
+                    tracking_number, 
+                    courier, 
+                    estimated_delivery,
+                    dispatch_note: `Shipped via ${courier}. Tracking #: ${tracking_number}`
+                })
+            });
+            const d = await r.json();
+            if (!r.ok) throw new Error(d.message || 'Failed to update tracking details.');
+            
+            showToast('Tracking details updated and marked as shipped!', 'success');
+            closeTrackingModal();
+            
+            if (onTrackingSuccessCallback) {
+                onTrackingSuccessCallback();
+            }
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Confirm Shipment';
+        }
+    }
+
+    window.closeTrackingModal = closeTrackingModal;
+    window.submitTracking = submitTracking;
 
     function formatPaise(p) {
         if (p == null) return '₹0';
@@ -615,16 +783,18 @@
             document.querySelectorAll('.status-action-btn').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const status = btn.dataset.status;
-                    let tracking_id = o.tracking_number || o.tracking_id || '';
-                    if (status === 'dispatched' && !tracking_id) {
-                        tracking_id = prompt('Enter Tracking ID for shipping:');
-                        if (!tracking_id) return;
+                    if (status === 'dispatched' || status === 'shipped') {
+                        openTrackingModal(internalId, () => {
+                            toggleSlideOver(false);
+                            loadOrders();
+                        });
+                        return;
                     }
                     try {
                         const r = await fetch(`${API_BASE_URL}/api/seller/orders/${internalId}/status`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ status, tracking_id })
+                            body: JSON.stringify({ status })
                         });
                         const d = await r.json();
                         if (!r.ok) throw new Error(d.message || 'Failed to update order status.');
@@ -665,6 +835,13 @@
             document.getElementById(`update-status-btn-${internalId}`).addEventListener('click', async () => {
                 const newStatus = document.getElementById(`status-select-${internalId}`).value;
                 const btn       = document.getElementById(`update-status-btn-${internalId}`);
+                if (newStatus === 'dispatched' || newStatus === 'shipped') {
+                    openTrackingModal(internalId, () => {
+                        toggleSlideOver(false);
+                        loadOrders();
+                    });
+                    return;
+                }
                 btn.disabled    = true; btn.textContent = 'Saving…';
                 try {
                     const r = await fetch(`${API_BASE_URL}/api/seller/orders/${internalId}/status`, {
@@ -944,5 +1121,12 @@
         });
     });
 </script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileSellerNav } from '/components/MobileSellerNav.js';
+  initMobileSellerNav('orders');
+</script>
+
 </body>
 </html>

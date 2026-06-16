@@ -103,6 +103,68 @@
         .scrim-warm {
             background: linear-gradient(to top, rgba(30, 20, 10, 0.85) 0%, rgba(30, 20, 10, 0.3) 40%, transparent 70%);
         }
+
+        /* Reels Vertical Scroll-Snap Feed Styles */
+        .reels-main-container {
+            width: 100%;
+            height: calc(100vh - 80px); /* Height for desktop header */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #121212; /* Warm dark scrim backdrop */
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        @media (max-width: 768px) {
+            .reels-main-container {
+                height: calc(100vh - 116px); /* 56px topbar + 60px bottombar on mobile */
+            }
+            .reels-feed-container {
+                max-width: 100% !important;
+            }
+            #mbt-topbar, #mbn-bottomnav {
+                z-index: 250 !important;
+            }
+        }
+        .reels-feed-container {
+            width: 100%;
+            max-width: 375px; /* Centered mobile-sized aspect ratio viewport */
+            height: 100%;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+            -ms-overflow-style: none;  /* Hide scrollbar IE/Edge */
+            position: relative;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            background: #000000;
+        }
+        .reels-feed-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar Chrome/Safari */
+        }
+        .reel-slide {
+            scroll-snap-align: start;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #000;
+        }
+        .reel-video-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: pointer;
+        }
+        .reel-video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
         }
@@ -202,204 +264,122 @@
   </div>
 </header>
 <!-- Main Reels Content Container -->
-<main class="min-h-screen flex flex-col items-center pt-8 pb-xl bg-[#FFFFFF]">
-<div class="relative w-full max-w-[500px] aspect-[9/16] bg-surface-container-low rounded-[20px] overflow-hidden shadow-[0_12px_40px_-12px_rgba(58,51,40,0.15)] group transition-transform duration-500 hover:scale-[1.01]">
-
-<!-- Main Video Player -->
-<div class="relative w-full h-full cursor-pointer" id="video-container">
-  <div id="no-reels-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#F7F3EC]/40 text-primary p-lg hidden">
+<main class="reels-main-container">
+  <div id="no-reels-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#F7F3EC]/40 text-primary p-lg hidden" style="z-index: 10;">
     <span class="material-symbols-outlined text-5xl mb-md">movie_filter</span>
     <p class="font-title-serif text-lg font-bold text-center">No artisan reels active</p>
     <p class="font-body-md text-sm text-outline text-center mt-xs">Check back later for beautiful handmade curations.</p>
   </div>
-  <video id="reel-video" class="w-full h-full object-cover" loop playsinline autoplay muted></video>
-  
-  <!-- Custom Play/Pause Overlay indicator -->
-  <div id="play-overlay" class="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 pointer-events-none transition-opacity duration-200">
-    <span class="material-symbols-outlined text-white text-6xl font-light" id="play-overlay-icon">play_arrow</span>
-  </div>
-  <!-- Speaker/Volume Mute Icon Overlay in top-right -->
-  <button id="volume-toggle-btn" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors">
-    <span class="material-symbols-outlined text-[20px]" id="volume-icon">volume_off</span>
-  </button>
-</div>
 
-<!-- Bottom Scrim Overlay -->
-<div class="absolute inset-0 scrim-warm flex flex-col justify-end p-lg pointer-events-none">
-<div class="pointer-events-auto flex flex-col w-full">
-<!-- Product CTA -->
-<div class="mb-lg translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300" id="product-cta-container">
-<a id="product-cta-link" href="#" class="bg-primary hover:bg-[#3D6B4F] text-white px-md py-sm rounded-full flex items-center gap-sm shadow-lg transition-transform active:scale-95 inline-flex">
-<div class="w-8 h-8 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
-<img id="product-img" alt="Product thumbnail" class="w-full h-full object-cover" src="">
-</div>
-<span class="font-body-md text-sm font-bold flex items-center gap-xs">
-<span class="material-symbols-outlined text-[18px]">shopping_bag</span>
-<span id="product-name">View Product</span>
-</span>
-<span class="mx-xs opacity-40">|</span>
-<span id="product-price" class="font-data-price text-sm">₹0</span>
-<span id="multiple-products-chevron" class="material-symbols-outlined text-[18px] ml-xs cursor-pointer select-none hover:scale-125 transition-transform hidden" title="Show all products">expand_less</span>
-</a>
-</div>
-<!-- Info Section -->
-<div class="flex flex-col gap-sm select-none">
-<div class="flex items-center gap-md">
-<div id="seller-avatar-wrapper" class="w-8 h-8 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold text-xs overflow-hidden flex-shrink-0 border border-white/20 cursor-pointer hover:scale-105 hover:border-white/50 transition-all">
-  <span id="seller-avatar-letter">S</span>
-</div>
-<h3 id="seller-name" class="font-title-serif text-white text-lg font-bold cursor-pointer hover:underline transition-all">Midnight Lily Ceramics</h3>
-<button id="follow-btn" class="bg-white/20 backdrop-blur-md text-white px-md py-1 rounded-full text-xs font-bold border border-white/30 hover:bg-white/30 transition-all active:scale-95">
-                            + Follow
-                        </button>
-</div>
-<p id="reel-caption" class="font-body-md text-white/90 text-sm max-w-[80%] leading-relaxed line-clamp-2 hover:line-clamp-none transition-all cursor-pointer">
-                        Creating tiny bees for tiny people 🐝... Every wing is stitched with intention in our studio.
-                    </p>
-</div>
-</div>
-</div>
-<!-- Right Action Rail -->
-<div class="absolute right-md bottom-1/4 flex flex-col gap-lg items-center z-10">
-<div class="flex flex-col items-center gap-xs">
-<button id="like-btn" class="w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform">
-<span class="material-symbols-outlined" id="like-icon">favorite</span>
-</button>
-<span id="like-count" class="font-data-price text-xs text-white drop-shadow-md">0</span>
-</div>
-<div class="flex flex-col items-center gap-xs">
-<button id="comment-btn" class="w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform">
-<span class="material-symbols-outlined">chat_bubble</span>
-</button>
-<span id="comment-count" class="font-data-price text-xs text-white drop-shadow-md">0</span>
-</div>
-<div class="flex flex-col items-center gap-xs">
-<button id="save-btn" class="w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform">
-<span class="material-symbols-outlined" id="save-icon">bookmark</span>
-</button>
-<span id="save-count" class="font-data-price text-xs text-white drop-shadow-md">0</span>
-</div>
-<button id="share-btn" class="w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform">
-<span class="material-symbols-outlined">share</span>
-</button>
-</div>
-<!-- Progress Bar -->
-<div class="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-10">
-<div class="h-full bg-primary transition-all duration-100 ease-linear" id="progress-bar" style="width: 0%;"></div>
-</div>
+  <div class="reels-feed-container" id="reels-feed-container">
+    <!-- Dynamic Slides will be injected here -->
+  </div>
 
-<!-- Comments Drawer Overlay -->
-<div id="comments-drawer" class="absolute bottom-0 left-0 w-full h-[75%] bg-white rounded-t-[24px] shadow-2xl flex flex-col z-30 transform translate-y-full transition-transform duration-300 ease-in-out font-['DM_Sans']">
-  <!-- Notch / Drag handle visual -->
-  <div class="w-12 h-1 bg-outline-variant/60 rounded-full mx-auto my-3 cursor-pointer" id="comments-notch"></div>
-  
-  <!-- Header -->
-  <div class="px-md pb-md border-b border-outline-variant flex justify-between items-center select-none">
-    <h3 class="font-title-serif text-primary text-xl font-bold font-['Playfair_Display']">
-      Comments <span id="comments-title-count" class="text-sm font-normal font-sans text-secondary pl-1">0</span>
-    </h3>
-    <button id="close-comments-btn" class="text-secondary hover:text-error transition-all p-1 hover:bg-[#8FAF82]/20 rounded-full flex items-center justify-center">
-      <span class="material-symbols-outlined text-[20px]">close</span>
-    </button>
-  </div>
-  
-  <!-- Comments List Container -->
-  <div id="comments-list" class="flex-grow overflow-y-auto px-md py-sm space-y-md custom-scrollbar">
-    <!-- Injected comments -->
-  </div>
-  
-  <!-- Footer / Input Form -->
-  <div class="border-t border-outline-variant bg-[#F7F3EC] rounded-b-[20px]">
-    <!-- Emoji Quick Reactions Row -->
-    <div class="px-md py-sm flex items-center gap-md overflow-x-auto select-none scrollbar-hide" id="emoji-reactions-row" style="scrollbar-width:none; -ms-overflow-style:none;">
-      <span class="text-xs text-outline mr-xs font-medium whitespace-nowrap">React:</span>
-      <!-- Hearts -->
-      <button onclick="appendEmoji('❤️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Red Heart">❤️</button>
-      <button onclick="appendEmoji('🧡')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Orange Heart">🧡</button>
-      <button onclick="appendEmoji('💛')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Yellow Heart">💛</button>
-      <button onclick="appendEmoji('💚')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Green Heart">💚</button>
-      <button onclick="appendEmoji('💙')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Blue Heart">💙</button>
-      <button onclick="appendEmoji('💜')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Purple Heart">💜</button>
-      <button onclick="appendEmoji('🖤')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Black Heart">🖤</button>
-      <button onclick="appendEmoji('🤍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="White Heart">🤍</button>
-      <button onclick="appendEmoji('💗')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Growing Heart">💗</button>
-      <button onclick="appendEmoji('💓')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Beating Heart">💓</button>
-      <button onclick="appendEmoji('💞')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Revolving Hearts">💞</button>
-      <button onclick="appendEmoji('💘')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart with Arrow">💘</button>
-      <!-- Appreciation -->
-      <button onclick="appendEmoji('🙌')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Hands Raised">🙌</button>
-      <button onclick="appendEmoji('👏')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clapping Hands">👏</button>
-      <button onclick="appendEmoji('🤩')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star-Struck">🤩</button>
-      <button onclick="appendEmoji('😍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart Eyes">😍</button>
-      <button onclick="appendEmoji('🥰')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Smiling Face with Hearts">🥰</button>
-      <!-- Excitement -->
-      <button onclick="appendEmoji('🔥')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Fire">🔥</button>
-      <button onclick="appendEmoji('✨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Sparkles">✨</button>
-      <button onclick="appendEmoji('🎉')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Party Popper">🎉</button>
-      <button onclick="appendEmoji('🎊')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Confetti Ball">🎊</button>
-      <button onclick="appendEmoji('💫')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Dizzy">💫</button>
-      <button onclick="appendEmoji('⭐')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star">⭐</button>
-      <!-- Expressions -->
-      <button onclick="appendEmoji('😄')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Grinning Face">😄</button>
-      <button onclick="appendEmoji('😂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Face with Tears of Joy">😂</button>
-      <button onclick="appendEmoji('🤣')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Rolling on the Floor Laughing">🤣</button>
-      <button onclick="appendEmoji('😮')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Face with Open Mouth">😮</button>
-      <button onclick="appendEmoji('😢')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Crying Face">😢</button>
-      <button onclick="appendEmoji('🥹')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Holding Back Tears">🥹</button>
-      <!-- Artisan/Product -->
-      <button onclick="appendEmoji('🏺')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Amphora/Pot">🏺</button>
-      <button onclick="appendEmoji('💍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Ring">💍</button>
-      <button onclick="appendEmoji('🧵')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Thread/Crochet">🧵</button>
-      <button onclick="appendEmoji('🪴')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Potted Plant">🪴</button>
-      <button onclick="appendEmoji('🕯️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Candle">🕯️</button>
-      <button onclick="appendEmoji('🎨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Artist Palette">🎨</button>
-      <!-- Cheers -->
-      <button onclick="appendEmoji('🥂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clinking Glasses">🥂</button>
-      <button onclick="appendEmoji('🍾')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Bottle with Popping Cork">🍾</button>
+  <!-- Comments Drawer Overlay -->
+  <div id="comments-drawer" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[375px] h-[75%] bg-white rounded-t-[24px] shadow-2xl flex flex-col z-30 transform translate-y-full transition-transform duration-300 ease-in-out font-['DM_Sans']">
+    <!-- Notch / Drag handle visual -->
+    <div class="w-12 h-1 bg-outline-variant/60 rounded-full mx-auto my-3 cursor-pointer" id="comments-notch"></div>
+    
+    <!-- Header -->
+    <div class="px-md pb-md border-b border-outline-variant flex justify-between items-center select-none">
+      <h3 class="font-title-serif text-primary text-xl font-bold font-['Playfair_Display']">
+        Comments <span id="comments-title-count" class="text-sm font-normal font-sans text-secondary pl-1">0</span>
+      </h3>
+      <button id="close-comments-btn" class="text-secondary hover:text-error transition-all p-1 hover:bg-[#8FAF82]/20 rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
     </div>
-    <div class="px-md pb-md flex items-start gap-sm">
-      <div id="user-avatar-circle" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden border border-outline-variant mt-1">
-        <span id="user-avatar-letter">U</span>
+    
+    <!-- Comments List Container -->
+    <div id="comments-list" class="flex-grow overflow-y-auto px-md py-sm space-y-md custom-scrollbar">
+      <!-- Injected comments -->
+    </div>
+    
+    <!-- Footer / Input Form -->
+    <div class="border-t border-outline-variant bg-[#F7F3EC] rounded-b-[20px]">
+      <!-- Emoji Quick Reactions Row -->
+      <div class="px-md py-sm flex items-center gap-md overflow-x-auto select-none scrollbar-hide" id="emoji-reactions-row" style="scrollbar-width:none; -ms-overflow-style:none;">
+        <span class="text-xs text-outline mr-xs font-medium whitespace-nowrap">React:</span>
+        <button onclick="appendEmoji('❤️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Red Heart">❤️</button>
+        <button onclick="appendEmoji('🧡')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Orange Heart">🧡</button>
+        <button onclick="appendEmoji('💛')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Yellow Heart">💛</button>
+        <button onclick="appendEmoji('💚')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Green Heart">💚</button>
+        <button onclick="appendEmoji('💙')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Blue Heart">💙</button>
+        <button onclick="appendEmoji('💜')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Purple Heart">💜</button>
+        <button onclick="appendEmoji('🖤')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Black Heart">🖤</button>
+        <button onclick="appendEmoji('🤍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="White Heart">🤍</button>
+        <button onclick="appendEmoji('💗')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Growing Heart">💗</button>
+        <button onclick="appendEmoji('💓')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Beating Heart">💓</button>
+        <button onclick="appendEmoji('💞')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Revolving Hearts">💞</button>
+        <button onclick="appendEmoji('💘')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart with Arrow">💘</button>
+        <button onclick="appendEmoji('🙌')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Hands Raised">🙌</button>
+        <button onclick="appendEmoji('👏')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clapping Hands">👏</button>
+        <button onclick="appendEmoji('🤩')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star-Struck">🤩</button>
+        <button onclick="appendEmoji('😍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart Eyes">😍</button>
+        <button onclick="appendEmoji('🥰')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Smiling Face with Hearts">🥰</button>
+        <button onclick="appendEmoji('🔥')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Fire">🔥</button>
+        <button onclick="appendEmoji('✨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Sparkles">✨</button>
+        <button onclick="appendEmoji('🎉')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Party Popper">🎉</button>
+        <button onclick="appendEmoji('🎊')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Confetti Ball">🎊</button>
+        <button onclick="appendEmoji('💫')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Dizzy">💫</button>
+        <button onclick="appendEmoji('⭐')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star">⭐</button>
+        <button onclick="appendEmoji('😄')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Grinning Face">😄</button>
+        <button onclick="appendEmoji('😂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Face with Tears of Joy">😂</button>
+        <button onclick="appendEmoji('🤣')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Rolling on the Floor Laughing">🤣</button>
+        <button onclick="appendEmoji('😮')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Face with Open Mouth">😮</button>
+        <button onclick="appendEmoji('😢')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Crying Face">😢</button>
+        <button onclick="appendEmoji('🥹')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Holding Back Tears">🥹</button>
+        <button onclick="appendEmoji('🏺')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Amphora/Pot">🏺</button>
+        <button onclick="appendEmoji('💍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Ring">💍</button>
+        <button onclick="appendEmoji('🧵')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Thread/Crochet">🧵</button>
+        <button onclick="appendEmoji('🪴')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Potted Plant">🪴</button>
+        <button onclick="appendEmoji('🕯️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Candle">🕯️</button>
+        <button onclick="appendEmoji('🎨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Artist Palette">🎨</button>
+        <button onclick="appendEmoji('🥂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clinking Glasses">🥂</button>
+        <button onclick="appendEmoji('🍾')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Bottle with Popping Cork">🍾</button>
       </div>
-      <div class="flex-grow flex flex-col gap-xs">
-        <textarea id="comment-input" rows="2" placeholder="Add a comment... or tap an emoji above 👆" class="w-full bg-[#F7F3EC] rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none placeholder:text-outline/70" maxlength="300"></textarea>
-        <div class="flex items-center justify-between mt-1">
-          <span id="char-counter" class="text-xs text-outline font-sans">0/300</span>
-          <button id="send-comment-btn" class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-1.5 rounded-full text-xs font-bold flex items-center gap-xs shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-            <span>Send</span>
-            <span class="material-symbols-outlined text-[14px]">send</span>
-          </button>
+      <div class="px-md pb-md flex items-start gap-sm">
+        <div id="user-avatar-circle" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden border border-outline-variant mt-1">
+          <span id="user-avatar-letter">U</span>
+        </div>
+        <div class="flex-grow flex flex-col gap-xs">
+          <textarea id="comment-input" rows="2" placeholder="Add a comment... or tap an emoji above 👆" class="w-full bg-[#F7F3EC] rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none placeholder:text-outline/70" maxlength="300"></textarea>
+          <div class="flex items-center justify-between mt-1">
+            <span id="char-counter" class="text-xs text-outline font-sans">0/300</span>
+            <button id="send-comment-btn" class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-1.5 rounded-full text-xs font-bold flex items-center gap-xs shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              <span>Send</span>
+              <span class="material-symbols-outlined text-[14px]">send</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Products Tray -->
-<div id="products-tray" class="absolute bottom-0 left-0 w-full bg-[#F7F3EC] border-t border-[#8FAF82] rounded-t-2xl shadow-2xl z-30 transform translate-y-full transition-transform duration-300 ease-in-out flex flex-col max-h-[50%] pointer-events-auto">
-  <!-- Header -->
-  <div class="px-md py-sm flex items-center justify-between border-b border-[#8FAF82]/50 bg-[#F7F3EC]/30">
-    <span class="text-xs font-label-caps text-[#3D6B4F] tracking-widest uppercase font-bold">Tagged Products</span>
-    <button id="close-tray-btn" class="p-xs hover:bg-[#F7F3EC] rounded-full transition-colors flex items-center justify-center">
-      <span class="material-symbols-outlined text-[18px]">close</span>
+  <!-- Products Tray -->
+  <div id="products-tray" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[375px] bg-[#F7F3EC] border-t border-[#8FAF82] rounded-t-2xl shadow-2xl z-30 transform translate-y-full transition-transform duration-300 ease-in-out flex flex-col max-h-[50%] pointer-events-auto">
+    <!-- Header -->
+    <div class="px-md py-sm flex items-center justify-between border-b border-[#8FAF82]/50 bg-[#F7F3EC]/30">
+      <span class="text-xs font-label-caps text-[#3D6B4F] tracking-widest uppercase font-bold">Tagged Products</span>
+      <button id="close-tray-btn" class="p-xs hover:bg-[#F7F3EC] rounded-full transition-colors flex items-center justify-center">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+    <!-- Scrollable List -->
+    <div id="products-tray-list" class="flex-grow overflow-y-auto p-md space-y-sm custom-scrollbar max-h-[240px]">
+      <!-- Dynamic products list injected here -->
+    </div>
+  </div>
+
+  <!-- Navigation Arrows for Feed -->
+  <div class="fixed right-margin-desktop top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-lg" style="z-index: 25;">
+    <button id="btn-prev" class="p-md rounded-full bg-surface-container-low border border-sage hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 duration-100">
+      <span class="material-symbols-outlined">arrow_upward</span>
+    </button>
+    <button id="btn-next" class="p-md rounded-full bg-surface-container-low border border-sage hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 duration-100">
+      <span class="material-symbols-outlined">arrow_downward</span>
     </button>
   </div>
-  <!-- Scrollable List -->
-  <div id="products-tray-list" class="flex-grow overflow-y-auto p-md space-y-sm custom-scrollbar max-h-[240px]">
-    <!-- Dynamic products list injected here -->
-  </div>
-</div>
-
-</div>
-<!-- Navigation Arrows for Feed -->
-<div class="fixed right-margin-desktop top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-lg">
-<button id="btn-prev" class="p-md rounded-full bg-surface-container-low border border-sage hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 duration-100">
-<span class="material-symbols-outlined">arrow_upward</span>
-</button>
-<button id="btn-next" class="p-md rounded-full bg-surface-container-low border border-sage hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 duration-100">
-<span class="material-symbols-outlined">arrow_downward</span>
-</button>
-</div>
 </main>
 <!-- Footer Shell -->
 
@@ -478,52 +458,14 @@
 
     let reelsList = [];
     let currentIndex = 0;
-    let commentsList = [];
-    let currentReelId = null;
     let isMuted = true;
     let isLoadingFeed = false;
-    let nextCursor = null;
-    let hasMore = false;
 
     // Elements
-    const videoEl = document.getElementById('reel-video');
-    const videoContainer = document.getElementById('video-container');
-    const playOverlay = document.getElementById('play-overlay');
-    const playOverlayIcon = document.getElementById('play-overlay-icon');
-    const volumeToggleBtn = document.getElementById('volume-toggle-btn');
-    const volumeIcon = document.getElementById('volume-icon');
-    const progressBar = document.getElementById('progress-bar');
     const noReelsPlaceholder = document.getElementById('no-reels-placeholder');
-
-    const sellerAvatarLetter = document.getElementById('seller-avatar-letter');
-    const sellerAvatarWrapper = document.getElementById('seller-avatar-wrapper');
-    const sellerNameEl = document.getElementById('seller-name');
-    const followBtn = document.getElementById('follow-btn');
-    const reelCaptionEl = document.getElementById('reel-caption');
-
-    const productCtaContainer = document.getElementById('product-cta-container');
-    const productCtaLink = document.getElementById('product-cta-link');
-    const productImg = document.getElementById('product-img');
-    const productNameEl = document.getElementById('product-name');
-    const productPriceEl = document.getElementById('product-price');
-    const multipleProductsChevron = document.getElementById('multiple-products-chevron');
     const productsTray = document.getElementById('products-tray');
     const closeTrayBtn = document.getElementById('close-tray-btn');
     const productsTrayList = document.getElementById('products-tray-list');
-
-    const likeBtn = document.getElementById('like-btn');
-    const likeIcon = document.getElementById('like-icon');
-    const likeCountEl = document.getElementById('like-count');
-
-    const commentBtn = document.getElementById('comment-btn');
-    const commentCountEl = document.getElementById('comment-count');
-
-    const saveBtn = document.getElementById('save-btn');
-    const saveIcon = document.getElementById('save-icon');
-    const saveCountEl = document.getElementById('save-count');
-
-    const shareBtn = document.getElementById('share-btn');
-
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
 
@@ -544,7 +486,6 @@
       '#8FAF82', '#605e57', '#452b4a', '#3D6B4F', '#74786f'
     ];
 
-    // Helper functions
     function getInitials(name) {
       if (!name) return 'U';
       const parts = name.trim().split(/\s+/);
@@ -571,6 +512,65 @@
       return num;
     }
 
+    // Video Tracking state
+    let currentTrackingVideo = null;
+    let currentTrackingListener = null;
+
+    function setupVideoTracking(slideEl, video) {
+      if (currentTrackingVideo && currentTrackingListener) {
+        currentTrackingVideo.removeEventListener('timeupdate', currentTrackingListener);
+      }
+      
+      const fillEl = slideEl.querySelector('.progress-bar-fill');
+      if (!fillEl || !video) return;
+      
+      currentTrackingVideo = video;
+      currentTrackingListener = () => {
+        if (video.duration) {
+          const pct = (video.currentTime / video.duration) * 100;
+          fillEl.style.width = `${pct}%`;
+        }
+      };
+      video.addEventListener('timeupdate', currentTrackingListener);
+    }
+
+    // Setup IntersectionObserver
+    const observerOptions = {
+      root: document.getElementById('reels-feed-container'),
+      threshold: 0.6
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target.querySelector('video');
+        if (entry.isIntersecting) {
+          const index = parseInt(entry.target.getAttribute('data-index'), 10);
+          currentIndex = index;
+          
+          if (video) {
+            video.muted = isMuted;
+            video.play().catch(err => {
+              console.log("Play interrupted or autoplay prevented:", err);
+            });
+          }
+          
+          setupVideoTracking(entry.target, video);
+
+          // Populate products tray for this reel
+          const reel = reelsList[currentIndex];
+          if (reel.linked_products && reel.linked_products.length > 1) {
+            renderProductsTray(reel.linked_products);
+          } else {
+            productsTrayList.innerHTML = `<p class="text-xs text-outline italic text-center py-4">No tagged products found.</p>`;
+          }
+        } else {
+          if (video) {
+            video.pause();
+          }
+        }
+      });
+    }, observerOptions);
+
     // Initialize Page
     async function initPage() {
       // Initialize Top Category Drawer (non-blocking)
@@ -578,10 +578,8 @@
       // Initialize search overlay
       initSearchOverlay();
 
-      // Update current user initials/avatar in comment section
       updateCurrentUserAvatar();
 
-      // Parse target reel ID from URL query parameters
       const urlParams = new URLSearchParams(window.location.search);
       let targetReelId = urlParams.get('id');
 
@@ -601,7 +599,6 @@
       if (isLoadingFeed) return;
       isLoadingFeed = true;
 
-      // Always start with mock reels, then try to prepend real ones
       reelsList = [...MOCK_REELS];
 
       try {
@@ -611,14 +608,10 @@
           if (apiReels.length > 0) {
             reelsList = [...apiReels, ...MOCK_REELS];
           }
-          nextCursor = res.data.data.next_cursor;
-          hasMore = res.data.data.has_more;
         }
       } catch (err) {
         console.warn("Reels API unavailable, using mock reels:", err.message);
       }
-
-      currentIndex = 0;
 
       if (targetReelId) {
         const targetIndex = reelsList.findIndex(r => r.id == targetReelId);
@@ -627,21 +620,135 @@
         }
       }
 
-      noReelsPlaceholder.classList.add('hidden');
-      videoEl.classList.remove('hidden');
-      renderActiveReel();
+      renderReelsFeed();
+
+      if (currentIndex > 0) {
+        const container = document.getElementById('reels-feed-container');
+        const slide = container.querySelector(`.reel-slide[data-index="${currentIndex}"]`);
+        if (slide) {
+          setTimeout(() => {
+            slide.scrollIntoView({ block: 'start' });
+          }, 100);
+        }
+      }
 
       isLoadingFeed = false;
     }
 
     function showEmptyPlaceholder() {
       noReelsPlaceholder.classList.remove('hidden');
-      videoEl.classList.add('hidden');
-      productCtaContainer.classList.add('opacity-0');
-      // Reset counters/details
-      sellerNameEl.textContent = 'Tohfa Studio';
-      reelCaptionEl.textContent = 'No reels active at the moment.';
-      followBtn.style.display = 'none';
+    }
+
+    function renderReelsFeed() {
+      const container = document.getElementById('reels-feed-container');
+      if (reelsList.length === 0) {
+        showEmptyPlaceholder();
+        return;
+      }
+      noReelsPlaceholder.classList.add('hidden');
+
+      container.innerHTML = reelsList.map((reel, i) => {
+        const sellerName = reel.seller.seller_name || 'Artisan Make';
+        const initials = getInitials(sellerName);
+        const bgCol = getAvatarColor(sellerName);
+        const avatarHtml = reel.seller.avatar_url 
+          ? `<img src="${reel.seller.avatar_url}" alt="${sellerName}" class="w-full h-full object-cover" />`
+          : `<span>${initials}</span>`;
+          
+        return `
+          <div class="reel-slide" data-index="${i}" data-id="${reel.id}">
+            <!-- Video Player -->
+            <div class="reel-video-wrapper w-full h-full relative cursor-pointer">
+              <video class="w-full h-full object-cover" loop playsinline preload="metadata" src="${reel.video_url}"></video>
+              
+              <!-- Custom Play/Pause Overlay indicator -->
+              <div class="play-overlay absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 pointer-events-none transition-opacity duration-200">
+                <span class="material-symbols-outlined text-white text-6xl font-light">play_arrow</span>
+              </div>
+              
+              <!-- Speaker/Volume Mute Icon Overlay in top-right -->
+              <button class="volume-toggle-btn absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors">
+                <span class="material-symbols-outlined text-[20px]">${isMuted ? 'volume_off' : 'volume_up'}</span>
+              </button>
+            </div>
+
+            <!-- Bottom Scrim Overlay -->
+            <div class="absolute inset-0 scrim-warm flex flex-col justify-end p-lg pointer-events-none">
+              <div class="pointer-events-auto flex flex-col w-full">
+                <!-- Product CTA -->
+                ${reel.linked_product ? `
+                <div class="mb-lg" id="product-cta-container-${reel.id}">
+                  <a href="/buyer/product.html?id=${reel.linked_product.id}" class="bg-primary hover:bg-[#3D6B4F] text-white px-md py-sm rounded-full flex items-center gap-sm shadow-lg transition-transform active:scale-95 inline-flex">
+                    <div class="w-8 h-8 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
+                      <img class="product-img w-full h-full object-cover" src="${reel.thumbnail_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAAZiDnM3KZeHPoNlisnrstR7ME6BmQFPXvK76PYKy1ujj2agVH3udiLlw98xG6eWUk198aT8h7Vw1voxQNgsbfvq_XIlClNc9JuK-1FeQ1a1RpIcJBUfmf2y0JlIfo7ZdBCZBtLKrnDq993tYtD9I8bnKBAIaLwYx9vH53IF9Ck4Mn7nj4pUrjZVHDdPQNZZTRUPzrcl7S9pKbFX2rSqgbrz4FmwxTrZHN-m8D66nSgQbUzz92WUQSKzCvd_K368R8nFscdjVvPoE'}" alt="Product thumbnail">
+                    </div>
+                    <span class="font-body-md text-sm font-bold flex items-center gap-xs">
+                      <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+                      <span class="product-name truncate max-w-[120px]">${reel.linked_product.name || 'View Product'}</span>
+                    </span>
+                    <span class="mx-xs opacity-40">|</span>
+                    <span class="product-price font-data-price text-sm">₹${(reel.linked_product.price_paise || 0) / 100}</span>
+                    ${reel.linked_products && reel.linked_products.length > 1 ? `
+                      <span class="multiple-products-chevron material-symbols-outlined text-[18px] ml-xs cursor-pointer select-none hover:scale-125 transition-transform" title="Show all products" data-reel-id="${reel.id}">expand_less</span>
+                    ` : ''}
+                  </a>
+                </div>
+                ` : ''}
+
+                <!-- Info Section -->
+                <div class="flex flex-col gap-sm select-none">
+                  <div class="flex items-center gap-md">
+                    <div class="seller-avatar-wrapper w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs overflow-hidden flex-shrink-0 border border-white/20 cursor-pointer hover:scale-105 hover:border-white/50 transition-all" style="background-color: ${bgCol}" data-seller-id="${reel.seller.id}">
+                      ${avatarHtml}
+                    </div>
+                    <h3 class="seller-name font-title-serif text-white text-lg font-bold cursor-pointer hover:underline transition-all" data-seller-id="${reel.seller.id}">${sellerName}</h3>
+                    <button class="follow-btn ${reel.seller.is_followed ? 'bg-primary/55 border-white/60' : 'bg-white/20 hover:bg-white/30 border-white/30'} backdrop-blur-md text-white px-md py-1 rounded-full text-xs font-bold border transition-all active:scale-95" data-seller-id="${reel.seller.id}">
+                      ${reel.seller.is_followed ? 'Following' : '+ Follow'}
+                    </button>
+                  </div>
+                  <p class="reel-caption font-body-md text-white/90 text-sm max-w-[80%] leading-relaxed line-clamp-2 hover:line-clamp-none transition-all cursor-pointer">
+                    ${reel.caption || ''}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Action Rail -->
+            <div class="absolute right-md bottom-1/4 flex flex-col gap-lg items-center z-10">
+              <div class="flex flex-col items-center gap-xs">
+                <button class="like-btn w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform animate-none" style="${reel.is_liked ? 'color: #ef4444;' : ''}">
+                  <span class="material-symbols-outlined" style="${reel.is_liked ? "font-variation-settings: 'FILL' 1;" : ''}">favorite</span>
+                </button>
+                <span class="like-count font-data-price text-xs text-white drop-shadow-md">${formatCount(reel.like_count || 0)}</span>
+              </div>
+              <div class="flex flex-col items-center gap-xs">
+                <button class="comment-btn w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform">
+                  <span class="material-symbols-outlined">chat_bubble</span>
+                </button>
+                <span class="comment-count font-data-price text-xs text-white drop-shadow-md">${formatCount(reel.comment_count || 0)}</span>
+              </div>
+              <div class="flex flex-col items-center gap-xs">
+                <button class="save-btn w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform ${reel.is_saved ? 'text-[#C8973A]' : ''}">
+                  <span class="material-symbols-outlined" style="${reel.is_saved ? "font-variation-settings: 'FILL' 1;" : ''}">bookmark</span>
+                </button>
+                <span class="save-count font-data-price text-xs text-white drop-shadow-md">${formatCount(reel.save_count || 0)}</span>
+              </div>
+              <button class="share-btn w-12 h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform">
+                <span class="material-symbols-outlined">share</span>
+              </button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-10">
+              <div class="progress-bar-fill h-full bg-primary transition-all duration-100 ease-linear" style="width: 0%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Setup IntersectionObserver on newly rendered slides
+      const slides = container.querySelectorAll('.reel-slide');
+      slides.forEach(slide => observer.observe(slide));
     }
 
     function updateCurrentUserAvatar() {
@@ -652,20 +759,11 @@
           const name = user.display_name || user.full_name || 'Artisan User';
           const initials = getInitials(name);
           const bgCol = getAvatarColor(name);
-          
           userAvatarLetter.textContent = initials;
           userAvatarCircle.style.backgroundColor = bgCol;
           
           if (user.avatar_url) {
             userAvatarCircle.innerHTML = `<img src="${user.avatar_url}" alt="${name}" class="w-full h-full object-cover" />`;
-          }
-
-          // Also update header profile avatar if present
-          const headerAvatar = document.querySelector('.header-profile-avatar');
-          if (headerAvatar && user.avatar_url) {
-            headerAvatar.innerHTML = `<img src="${user.avatar_url}" alt="Avatar" class="w-full h-full object-cover rounded-full" />`;
-          } else if (headerAvatar && name) {
-            headerAvatar.innerHTML = `<div class="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold" style="background-color: ${bgCol}">${initials}</div>`;
           }
         } catch (e) {
           console.error(e);
@@ -673,263 +771,162 @@
       }
     }
 
-    function renderActiveReel() {
-      if (reelsList.length === 0) return;
-      const reel = reelsList[currentIndex];
-      currentReelId = reel.id;
-
-      // Update Video Player
-      videoEl.src = reel.video_url;
-      videoEl.muted = isMuted;
-      videoEl.load();
-      videoEl.play().catch(err => {
-        console.log("Autoplay was prevented, waiting for user click.", err);
-      });
-
-      // Update Volume Icon State
-      volumeIcon.textContent = isMuted ? 'volume_off' : 'volume_up';
-
-      // Info Section
-      sellerNameEl.textContent = reel.seller.seller_name || 'Artisan Make';
-      reelCaptionEl.textContent = reel.caption || '';
-      
-      const sellerName = reel.seller.seller_name || 'Artisan Make';
-      const initials = getInitials(sellerName);
-      const bgCol = getAvatarColor(sellerName);
-      sellerAvatarLetter.textContent = initials;
-      sellerAvatarWrapper.style.backgroundColor = bgCol;
-      
-      if (reel.seller.avatar_url) {
-        sellerAvatarWrapper.innerHTML = `<img src="${reel.seller.avatar_url}" alt="${sellerName}" class="w-full h-full object-cover" />`;
-      } else {
-        sellerAvatarWrapper.innerHTML = `<span id="seller-avatar-letter">${initials}</span>`;
-      }
-
-      // Follow Button
-      followBtn.style.display = 'inline-block';
-      updateFollowUI(reel.seller.is_followed);
-
-      // Product CTA
-      closeProductsTray();
-      if (reel.linked_product) {
-        productCtaContainer.classList.remove('hidden');
-        productCtaLink.href = `/buyer/product.html?id=${reel.linked_product.id}`;
-        productNameEl.textContent = reel.linked_product.name || 'View Product';
-        const price = (reel.linked_product.price_paise || 0) / 100;
-        productPriceEl.textContent = `₹${price}`;
-        
-        // Use default placeholder or thumbnail
-        if (reel.thumbnail_url) {
-          productImg.src = reel.thumbnail_url;
-        } else {
-          productImg.src = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAAZiDnM3KZeHPoNlisnrstR7ME6BmQFPXvK76PYKy1ujj2agVH3udiLlw98xG6eWUk198aT8h7Vw1voxQNgsbfvq_XIlClNc9JuK-1FeQ1a1RpIcJBUfmf2y0JlIfo7ZdBCZBtLKrnDq993tYtD9I8bnKBAIaLwYx9vH53IF9Ck4Mn7nj4pUrjZVHDdPQNZZTRUPzrcl7S9pKbFX2rSqgbrz4FmwxTrZHN-m8D66nSgQbUzz92WUQSKzCvd_K368R8nFscdjVvPoE';
-        }
-
-        if (reel.linked_products && reel.linked_products.length > 1) {
-          multipleProductsChevron.classList.remove('hidden');
-          renderProductsTray(reel.linked_products);
-        } else {
-          multipleProductsChevron.classList.add('hidden');
-        }
-      } else {
-        productCtaContainer.classList.add('hidden');
-        multipleProductsChevron.classList.add('hidden');
-      }
-
-      // Actions Rail Updates
-      updateLikeUI(reel.is_liked, reel.like_count);
-      updateSaveUI(reel.is_saved, reel.save_count);
-      commentCountEl.textContent = formatCount(reel.comment_count || 0);
-
-      // Reset progress
-      progressBar.style.width = '0%';
-    }
-
-    // Interactivity state updates
-    function updateFollowUI(isFollowed) {
-      if (isFollowed) {
-        followBtn.textContent = 'Following';
-        followBtn.classList.remove('bg-white/20', 'hover:bg-white/30', 'border-white/30');
-        followBtn.classList.add('bg-primary/55', 'border-white/60');
-      } else {
-        followBtn.textContent = '+ Follow';
-        followBtn.classList.remove('bg-primary/55', 'border-white/60');
-        followBtn.classList.add('bg-white/20', 'hover:bg-white/30', 'border-white/30');
-      }
-    }
-
-    function updateLikeUI(isLiked, count) {
-      likeCountEl.textContent = formatCount(count || 0);
-      if (isLiked) {
-        // Use inline style so Tailwind purge doesn't remove the red color
-        likeIcon.style.color = '#ef4444';
-        likeBtn.style.color = '#ef4444';
-        likeIcon.style.fontVariationSettings = "'FILL' 1";
-        // Bounce animation
-        likeBtn.style.transform = 'scale(1.3)';
-        setTimeout(() => { likeBtn.style.transform = 'scale(1)'; }, 200);
-      } else {
-        likeIcon.style.color = '';
-        likeBtn.style.color = '#3D6B4F';
-        likeIcon.style.fontVariationSettings = "'FILL' 0";
-      }
-    }
-
-    function updateSaveUI(isSaved, count) {
-      saveCountEl.textContent = formatCount(count || 0);
-      if (isSaved) {
-        saveBtn.classList.remove('text-primary');
-        saveBtn.classList.add('text-[#C8973A]');
-        saveIcon.style.fontVariationSettings = "'FILL' 1";
-      } else {
-        saveBtn.classList.remove('text-[#C8973A]');
-        saveBtn.classList.add('text-primary');
-        saveIcon.style.fontVariationSettings = "'FILL' 0";
-      }
-    }
-
-    // Emoji helper — appends emoji to comment textarea and updates counter
-    window.appendEmoji = function(emoji) {
-      const input = document.getElementById('comment-input');
-      if (!input) return;
-      const start = input.selectionStart;
-      const end = input.selectionEnd;
-      const current = input.value;
-      input.value = current.substring(0, start) + emoji + current.substring(end);
-      // Move cursor after emoji
-      const newPos = start + emoji.length;
-      input.setSelectionRange(newPos, newPos);
-      input.focus();
-      // Trigger counter & send button
-      const len = input.value.length;
-      const counter = document.getElementById('char-counter');
-      const sendBtn = document.getElementById('send-comment-btn');
-      if (counter) counter.textContent = `${len}/300`;
-      if (sendBtn) sendBtn.disabled = (len === 0 || len > 300);
-    };
-
     // Event setup
     function setupEvents() {
-      // Play/Pause & Double-click/tap to Like
-      let clickTimeout = null;
-      let lastClickTime = 0;
-      videoEl.addEventListener('click', (e) => {
-        const currentTime = new Date().getTime();
-        const tapDelay = 300; // ms
+      // Event delegation for all slide actions
+      document.getElementById('reels-feed-container').addEventListener('click', async (e) => {
+        const target = e.target;
         
-        if (currentTime - lastClickTime < tapDelay) {
-          // Double click/tap
-          if (clickTimeout) {
-            clearTimeout(clickTimeout);
-            clickTimeout = null;
-          }
-          toggleLikeActiveReel();
-          showHeartAnimation(e);
-          lastClickTime = 0; // reset
-        } else {
-          // Single click/tap candidate
-          lastClickTime = currentTime;
-          clickTimeout = setTimeout(() => {
-            togglePlay();
-            clickTimeout = null;
-          }, tapDelay);
-        }
-      });
-      
-      // Mute/Unmute
-      volumeToggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isMuted = !isMuted;
-        videoEl.muted = isMuted;
-        volumeIcon.textContent = isMuted ? 'volume_off' : 'volume_up';
-      });
-
-      // Video progress update
-      videoEl.addEventListener('timeupdate', () => {
-        if (videoEl.duration) {
-          const pct = (videoEl.currentTime / videoEl.duration) * 100;
-          progressBar.style.width = `${pct}%`;
-        }
-      });
-
-      // Actions Rail Click Listeners
-      likeBtn.addEventListener('click', toggleLikeActiveReel);
-
-      saveBtn.addEventListener('click', async () => {
-        if (reelsList.length === 0) return;
-        const activeReel = reelsList[currentIndex];
-        const token = sessionStorage.getItem('tohfa_access_token');
-        if (!token) {
-          window.location.href = '/auth/login.html';
-          return;
-        }
-        try {
-          if (activeReel.is_saved) {
-            await apiClient.delete(`/reels/${activeReel.id}/save`);
-            activeReel.is_saved = false;
-            activeReel.save_count = Math.max(0, (activeReel.save_count || 1) - 1);
-          } else {
-            await apiClient.post(`/reels/${activeReel.id}/save`);
-            activeReel.is_saved = true;
-            activeReel.save_count = (activeReel.save_count || 0) + 1;
-          }
-          updateSaveUI(activeReel.is_saved, activeReel.save_count);
-        } catch (err) {
-          console.error("Save toggle failed:", err);
-        }
-      });
-
-      followBtn.addEventListener('click', async () => {
-        if (reelsList.length === 0) return;
-        const activeReel = reelsList[currentIndex];
-        const token = sessionStorage.getItem('tohfa_access_token');
-        if (!token) {
-          window.location.href = '/auth/login.html';
-          return;
-        }
-        const sellerId = activeReel.seller.id;
-        const isFollowed = activeReel.seller.is_followed;
-        try {
-          if (isFollowed) {
-            await apiClient.delete(`/follows/${sellerId}`);
-            activeReel.seller.is_followed = false;
-          } else {
-            await apiClient.post(`/follows/${sellerId}`);
-            activeReel.seller.is_followed = true;
-          }
-          updateFollowUI(activeReel.seller.is_followed);
-        } catch (err) {
-          console.error("Follow toggle failed:", err);
-        }
-      });
-
-      function navigateToSellerProfile() {
-        if (reelsList.length === 0) return;
-        const activeReel = reelsList[currentIndex];
-        if (activeReel && activeReel.seller && activeReel.seller.id) {
-          sessionStorage.setItem('last_reel_id', activeReel.id);
-          window.location.href = `/buyer/seller-profile.html?id=${activeReel.seller.id}`;
-        }
-      }
-
-      sellerAvatarWrapper.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigateToSellerProfile();
-      });
-
-      sellerNameEl.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigateToSellerProfile();
-      });
-
-      shareBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(window.location.href)
-          .then(() => {
-            Toast.show("Reel link copied to clipboard!", "success");
-          })
-          .catch(err => {
-            console.error("Clipboard copy failed:", err);
+        // Find closest button or interactive element
+        const btn = target.closest('button, a, .seller-avatar-wrapper, .seller-name, .reel-video-wrapper, .multiple-products-chevron');
+        if (!btn) return;
+        
+        const slide = btn.closest('.reel-slide');
+        if (!slide) return;
+        
+        const index = parseInt(slide.getAttribute('data-index'), 10);
+        const activeReel = reelsList[index];
+        
+        if (btn.classList.contains('volume-toggle-btn')) {
+          e.stopPropagation();
+          isMuted = !isMuted;
+          // Update mute state on all videos
+          const videos = document.querySelectorAll('#reels-feed-container video');
+          videos.forEach(v => { v.muted = isMuted; });
+          // Update icons on all volume buttons
+          const volumeIcons = document.querySelectorAll('#reels-feed-container .volume-toggle-btn span');
+          volumeIcons.forEach(icon => {
+            icon.textContent = isMuted ? 'volume_off' : 'volume_up';
           });
+        }
+        else if (btn.classList.contains('reel-video-wrapper')) {
+          // Play/Pause toggle
+          const video = slide.querySelector('video');
+          const playOverlay = slide.querySelector('.play-overlay');
+          if (video.paused) {
+            video.play();
+            playOverlay.style.opacity = '0';
+          } else {
+            video.pause();
+            playOverlay.style.opacity = '1';
+          }
+        }
+        else if (btn.classList.contains('like-btn')) {
+          e.stopPropagation();
+          activeReel.is_liked = !activeReel.is_liked;
+          if (activeReel.is_liked) {
+            activeReel.like_count = (activeReel.like_count || 0) + 1;
+          } else {
+            activeReel.like_count = Math.max(0, (activeReel.like_count || 0) - 1);
+          }
+          
+          // Update like UI for this slide
+          const likeIcon = btn.querySelector('span');
+          const likeCountEl = btn.nextElementSibling;
+          if (activeReel.is_liked) {
+            btn.style.color = '#ef4444';
+            likeIcon.style.fontVariationSettings = "'FILL' 1";
+            btn.style.transform = 'scale(1.3)';
+            setTimeout(() => { btn.style.transform = 'scale(1)'; }, 200);
+          } else {
+            btn.style.color = '';
+            likeIcon.style.fontVariationSettings = "'FILL' 0";
+          }
+          likeCountEl.textContent = formatCount(activeReel.like_count);
+          
+          // API call
+          if (activeReel.id && !String(activeReel.id).startsWith('mock-')) {
+            try {
+              const res = await apiClient.post(`/reels/${activeReel.id}/like`);
+              if (res.data && res.data.success) {
+                activeReel.is_liked = res.data.data.liked;
+                activeReel.like_count = res.data.data.like_count;
+                likeCountEl.textContent = formatCount(activeReel.like_count);
+              }
+            } catch (err) {
+              console.error("Like toggle backend API call failed:", err);
+            }
+          }
+        }
+        else if (btn.classList.contains('comment-btn')) {
+          e.stopPropagation();
+          openCommentsDrawer();
+        }
+        else if (btn.classList.contains('save-btn')) {
+          e.stopPropagation();
+          const token = sessionStorage.getItem('tohfa_access_token');
+          if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+          }
+          try {
+            const saveIcon = btn.querySelector('span');
+            const saveCountEl = btn.nextElementSibling;
+            if (activeReel.is_saved) {
+              await apiClient.delete(`/reels/${activeReel.id}/save`);
+              activeReel.is_saved = false;
+              activeReel.save_count = Math.max(0, (activeReel.save_count || 1) - 1);
+              btn.classList.remove('text-[#C8973A]');
+              saveIcon.style.fontVariationSettings = "'FILL' 0";
+            } else {
+              await apiClient.post(`/reels/${activeReel.id}/save`);
+              activeReel.is_saved = true;
+              activeReel.save_count = (activeReel.save_count || 0) + 1;
+              btn.classList.add('text-[#C8973A]');
+              saveIcon.style.fontVariationSettings = "'FILL' 1";
+            }
+            saveCountEl.textContent = formatCount(activeReel.save_count);
+          } catch (err) {
+            console.error("Save toggle failed:", err);
+          }
+        }
+        else if (btn.classList.contains('follow-btn')) {
+          e.stopPropagation();
+          const token = sessionStorage.getItem('tohfa_access_token');
+          if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+          }
+          const sellerId = btn.getAttribute('data-seller-id');
+          const isFollowed = activeReel.seller.is_followed;
+          try {
+            if (isFollowed) {
+              await apiClient.delete(`/follows/${sellerId}`);
+              activeReel.seller.is_followed = false;
+            } else {
+              await apiClient.post(`/follows/${sellerId}`);
+              activeReel.seller.is_followed = true;
+            }
+            // Update follow button text on all slides for the same seller
+            const followButtons = document.querySelectorAll(`#reels-feed-container button[data-seller-id="${sellerId}"]`);
+            followButtons.forEach(fBtn => {
+              if (activeReel.seller.is_followed) {
+                fBtn.textContent = 'Following';
+                fBtn.classList.remove('bg-white/20', 'hover:bg-white/30', 'border-white/30');
+                fBtn.classList.add('bg-primary/55', 'border-white/60');
+              } else {
+                fBtn.textContent = '+ Follow';
+                fBtn.classList.remove('bg-primary/55', 'border-white/60');
+                fBtn.classList.add('bg-white/20', 'hover:bg-white/30', 'border-white/30');
+              }
+            });
+          } catch (err) {
+            console.error("Follow toggle failed:", err);
+          }
+        }
+        else if (btn.classList.contains('seller-avatar-wrapper') || btn.classList.contains('seller-name')) {
+          e.stopPropagation();
+          const sellerId = btn.getAttribute('data-seller-id');
+          if (sellerId) {
+            sessionStorage.setItem('last_reel_id', activeReel.id);
+            window.location.href = `/buyer/seller-profile.html?id=${sellerId}`;
+          }
+        }
+        else if (btn.classList.contains('multiple-products-chevron')) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleProductsTray();
+        }
       });
 
       // Up/Down Arrows navigation
@@ -944,37 +941,17 @@
         } else if (e.key === 'ArrowDown' || e.key === 'PageDown') {
           e.preventDefault();
           navigateFeed(1);
-        } else if (e.key === ' ') {
-          e.preventDefault();
-          togglePlay();
         }
       });
 
       // Comments Drawer Controls
-      commentBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openCommentsDrawer();
-      });
       closeCommentsBtn.addEventListener('click', closeCommentsDrawer);
       commentsNotch.addEventListener('click', closeCommentsDrawer);
 
       // Products Tray Controls
-      multipleProductsChevron.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleProductsTray();
-      });
       closeTrayBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         closeProductsTray();
-      });
-
-      // Close tray/drawer on backdrop click (clicking video container)
-      videoContainer.addEventListener('click', (e) => {
-        if (productsTray && !productsTray.classList.contains('translate-y-full')) {
-          e.stopPropagation();
-          closeProductsTray();
-        }
       });
 
       // Escape key to close tray and drawer
@@ -1005,16 +982,21 @@
 
         try {
           sendCommentBtn.disabled = true;
-          const res = await apiClient.post(`/reels/${currentReelId}/comments`, { body: text });
+          const res = await apiClient.post(`/reels/${reelsList[currentIndex].id}/comments`, { body: text });
           if (res.data && res.data.success) {
             const addedComment = res.data.data;
-            commentsList.unshift(addedComment); // Prepend to comments list
+            // Update local state if needed (not fully managing full list in this simplified version)
             renderCommentsSection();
 
             // Update local reel state & UI counts
             const currentReel = reelsList[currentIndex];
             currentReel.comment_count = (currentReel.comment_count || 0) + 1;
-            commentCountEl.textContent = formatCount(currentReel.comment_count);
+            
+            const activeSlide = document.querySelector(`.reel-slide[data-index="${currentIndex}"]`);
+            if (activeSlide) {
+              const countEl = activeSlide.querySelector('.comment-count');
+              if (countEl) countEl.textContent = formatCount(currentReel.comment_count);
+            }
             commentsTitleCount.textContent = currentReel.comment_count;
 
             // Clear textbox
@@ -1033,82 +1015,6 @@
       });
     }
 
-    async function toggleLikeActiveReel() {
-      if (reelsList.length === 0) return;
-      const activeReel = reelsList[currentIndex];
-      
-      // Instantly toggle the active reel's is_liked state locally
-      activeReel.is_liked = !activeReel.is_liked;
-      
-      // Increment or decrement the like_count locally based on the toggle
-      if (activeReel.is_liked) {
-        activeReel.like_count = (activeReel.like_count || 0) + 1;
-      } else {
-        activeReel.like_count = Math.max(0, (activeReel.like_count || 0) - 1);
-      }
-      
-      // Call updateLikeUI to update the display
-      updateLikeUI(activeReel.is_liked, activeReel.like_count);
-      
-      // If the active reel ID does not start with 'mock-', try calling the backend API
-      if (activeReel.id && !String(activeReel.id).startsWith('mock-')) {
-        try {
-          const res = await apiClient.post(`/reels/${activeReel.id}/like`);
-          if (res.data && res.data.success) {
-            activeReel.is_liked = res.data.data.liked;
-            activeReel.like_count = res.data.data.like_count;
-            updateLikeUI(activeReel.is_liked, activeReel.like_count);
-          }
-        } catch (err) {
-          console.error("Like toggle backend API call failed:", err);
-        }
-      }
-    }
-
-    function showHeartAnimation(e) {
-      if (!videoContainer) return;
-      let clientX = 0;
-      let clientY = 0;
-      if (e.touches && e.touches.length > 0) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      } else if (e.changedTouches && e.changedTouches.length > 0) {
-        clientX = e.changedTouches[0].clientX;
-        clientY = e.changedTouches[0].clientY;
-      } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      }
-      
-      const rect = videoContainer.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      
-      const heart = document.createElement('span');
-      heart.className = 'material-symbols-outlined absolute pointer-events-none text-red-500 text-6xl select-none z-20 heart-pop-anim';
-      heart.style.fontVariationSettings = "'FILL' 1";
-      heart.textContent = 'favorite';
-      heart.style.left = `${x}px`;
-      heart.style.top = `${y}px`;
-      
-      videoContainer.appendChild(heart);
-      
-      setTimeout(() => {
-        heart.remove();
-      }, 800);
-    }
-
-    function togglePlay() {
-      if (videoEl.paused) {
-        videoEl.play();
-        playOverlayIcon.textContent = 'play_arrow';
-        playOverlay.style.opacity = '0';
-      } else {
-        videoEl.pause();
-        playOverlayIcon.textContent = 'play_arrow';
-        playOverlay.style.opacity = '1';
-      }
-    }
 
     function navigateFeed(dir) {
       if (reelsList.length === 0) return;
@@ -1125,7 +1031,11 @@
         currentIndex = reelsList.length - 1;
         Toast.show("You've reached the end of the feed", "info");
       } else {
-        renderActiveReel();
+        const container = document.getElementById('reels-feed-container');
+        const slide = container.querySelector(`.reel-slide[data-index="${currentIndex}"]`);
+        if (slide) {
+          slide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     }
 
@@ -1165,11 +1075,6 @@
 
     function renderProductsTray(products) {
       if (!productsTrayList) return;
-      if (!products || products.length === 0) {
-        productsTrayList.innerHTML = `<p class="text-xs text-outline italic text-center py-4">No tagged products found.</p>`;
-        return;
-      }
-
       productsTrayList.innerHTML = products.map(p => {
         const imageUrl = p.image_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAAZiDnM3KZeHPoNlisnrstR7ME6BmQFPXvK76PYKy1ujj2agVH3udiLlw98xG6eWUk198aT8h7Vw1voxQNgsbfvq_XIlClNc9JuK-1FeQ1a1RpIcJBUfmf2y0JlIfo7ZdBCZBtLKrnDq993tYtD9I8bnKBAIaLwYx9vH53IF9Ck4Mn7nj4pUrjZVHDdPQNZZTRUPzrcl7S9pKbFX2rSqgbrz4FmwxTrZHN-m8D66nSgQbUzz92WUQSKzCvd_K368R8nFscdjVvPoE';
         const price = (p.price_paise || 0) / 100;
@@ -1187,7 +1092,6 @@
         `;
       }).join('');
 
-      // Add click listeners to tray items
       productsTrayList.querySelectorAll('.product-tray-item').forEach(item => {
         item.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1199,70 +1103,49 @@
     }
 
     async function loadComments() {
-      commentsListEl.innerHTML = `
-        <div class="flex items-center justify-center py-20 select-none">
-          <div class="relative w-8 h-8">
-            <div class="absolute inset-0 border-2 border-primary/10 rounded-full"></div>
-            <div class="absolute inset-0 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        </div>
-      `;
+      commentsListEl.innerHTML = `<div class="p-4 text-center">Loading...</div>`;
       try {
-        const res = await apiClient.get(`/reels/${currentReelId}/comments`);
+        const res = await apiClient.get(`/reels/${reelsList[currentIndex].id}/comments`);
         if (res.data && res.data.success) {
-          commentsList = res.data.data.comments || [];
+          const comments = res.data.data.comments || [];
           commentsTitleCount.textContent = res.data.data.comment_count || 0;
-          renderCommentsSection();
+          
+          if (comments.length === 0) {
+            commentsListEl.innerHTML = `<p class="p-4 text-center text-sm">No comments yet.</p>`;
+          } else {
+            commentsListEl.innerHTML = comments.map(comment => {
+              const name = comment.user_name || 'Artisan Admirer';
+              const initials = getInitials(name);
+              const bgCol = getAvatarColor(name);
+              return `
+                <div class="flex items-start gap-sm">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border border-outline-variant" style="background-color: ${bgCol}">
+                    <span class="text-white font-bold text-xs">${initials}</span>
+                  </div>
+                  <div class="flex-grow min-w-0">
+                    <div class="flex items-baseline">
+                      <span class="font-bold text-sm">${name}</span>
+                      <span class="text-xs text-outline/80 ml-2">${comment.time_ago || 'Just now'}</span>
+                    </div>
+                    <p class="text-sm text-on-surface-variant mt-[2px] leading-relaxed break-words pr-2">${comment.body}</p>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
         }
       } catch (err) {
         console.error("Failed to load comments:", err);
-        commentsListEl.innerHTML = `
-          <p class="text-error text-sm text-center py-10 font-semibold select-none">Failed to load comments</p>
-        `;
       }
     }
 
     function renderCommentsSection() {
-      if (commentsList.length === 0) {
-        commentsListEl.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-10 text-outline select-none">
-            <span class="material-symbols-outlined text-4xl mb-sm text-outline/60">chat_bubble_outline</span>
-            <p class="text-sm">No comments yet.</p>
-            <p class="text-xs text-outline/80 mt-1">Be the first to share your thoughts!</p>
-          </div>
-        `;
-        return;
-      }
-
-      commentsListEl.innerHTML = commentsList.map(comment => {
-        const name = comment.user_name || 'Artisan Admirer';
-        const initials = getInitials(name);
-        const bgCol = getAvatarColor(name);
-        const avatarHtml = comment.avatar_url
-          ? `<img src="${comment.avatar_url}" alt="${name}" class="w-full h-full object-cover" />`
-          : `<span class="text-white font-bold text-xs select-none">${initials}</span>`;
-
-        return `
-          <div class="flex items-start gap-sm">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-outline-variant select-none" style="background-color: ${comment.avatar_url ? 'transparent' : bgCol}">
-              ${avatarHtml}
-            </div>
-            <div class="flex-grow min-w-0">
-              <div class="flex items-baseline select-none">
-                <span class="font-bold text-sm text-on-background truncate max-w-[70%]">${name}</span>
-                <span class="text-xs text-outline/80 ml-2 font-normal font-sans">${comment.time_ago || 'Just now'}</span>
-              </div>
-              <p class="text-sm text-on-surface-variant mt-[2px] leading-relaxed break-words pr-2">${comment.body}</p>
-            </div>
-          </div>
-        `;
-      }).join('');
+      loadComments();
     }
 
     // Run on DOMContentLoaded
     window.addEventListener('DOMContentLoaded', initPage);
 
-    let isLoggedIn = false;
     async function checkAuthState() {
         const token = sessionStorage.getItem('tohfa_access_token');
         const authContainer = document.getElementById('auth-buttons-container');
@@ -1318,5 +1201,12 @@
     checkAuthState();
 </script>
 
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+  initMobileBuyerTopBar();
+  initMobileBuyerNav('reels');
+</script>
 </body>
 </html>
