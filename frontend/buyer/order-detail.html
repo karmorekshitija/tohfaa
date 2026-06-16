@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Order Detail | Tohfa</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=DM+Sans:ital,wght@0,400..700;1,400..700&family=Space+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -82,16 +82,16 @@
                         "gutter": "24px"
                     },
                     "fontFamily": {
-                        "headline-lg-mobile": ["Playfair Display", "serif"],
-                        "body-lg": ["DM Sans", "sans-serif"],
-                        "body-sm": ["DM Sans", "sans-serif"],
-                        "headline-lg": ["Playfair Display", "serif"],
-                        "title-md": ["DM Sans", "sans-serif"],
-                        "label-caps": ["DM Sans", "sans-serif"],
-                        "display-lg": ["Playfair Display", "serif"],
-                        "body-md": ["DM Sans", "sans-serif"],
-                        "data-price": ["Space Mono", "monospace"],
-                        "title-serif": ["Playfair Display", "serif"]
+                        "headline-lg-mobile": ["EB Garamond"],
+                        "body-lg": ["Work Sans"],
+                        "body-sm": ["Work Sans"],
+                        "headline-lg": ["EB Garamond"],
+                        "title-md": ["Work Sans"],
+                        "label-caps": ["Work Sans"],
+                        "display-lg": ["EB Garamond"],
+                        "body-md": ["Work Sans"],
+                        "data-price": ["Work Sans"],
+                        "title-serif": ["EB Garamond"]
                     },
                     "fontSize": {
                         "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
@@ -112,59 +112,6 @@
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8)
         }
     </style>
-
-<!-- Mobile Style Overrides -->
-<style>
-  @media (max-width: 768px) {
-    /* Stack layout sections */
-    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
-      display: flex !important;
-      flex-direction: column !important;
-      width: 100% !important;
-    }
-    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
-    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
-    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
-    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
-    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
-      grid-column: span 12 / span 12 !important;
-      width: 100% !important;
-    }
-    /* Product grids must be 2 columns */
-    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
-    .product-grid, .search-results-grid, .category-product-grid {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 12px !important;
-    }
-    /* Convert tables to cards */
-    table {
-      display: block !important;
-      width: 100% !important;
-    }
-    thead {
-      display: none !important;
-    }
-    tbody, tr, td {
-      display: block !important;
-      width: 100% !important;
-    }
-    tr {
-      background: #FFFFFF !important;
-      border: 1px solid rgba(61,107,79,0.12) !important;
-      border-radius: 12px !important;
-      padding: 16px !important;
-      margin-bottom: 12px !important;
-      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
-    }
-    td {
-      border: none !important;
-      padding: 4px 0 !important;
-      text-align: left !important;
-    }
-  }
-</style>
-
 </head>
 <body class="bg-white text-on-background font-body-md text-body-md overflow-x-hidden min-h-screen flex flex-col">
 <!-- Top Bar Component -->
@@ -330,182 +277,11 @@
         const main = document.getElementById('order-detail-main');
         const showCancelBtn = (o.status === 'Awaiting Payment' || o.status === 'Processing');
         
-        // Render sub-orders
-        const subOrdersHtml = (o.sub_orders || []).map(sub => {
-            const s = (sub.delivery_status || 'pending').toLowerCase();
-            const subStatusBadge = getStatusBadgeClass(sub.delivery_status);
-            
-            let timelineHtml = '';
-            if (s === 'cancelled') {
-                timelineHtml = `
-                    <div class="mb-md p-sm bg-[#3D6B4F]/10 rounded-xl border border-[#3D6B4F]/20 text-center">
-                        <span class="text-xs font-bold text-[#3D6B4F] uppercase tracking-wider">Sub-order Cancelled</span>
-                    </div>
-                `;
-            } else {
-                let progressPct = 0;
-                let step1Class = 'bg-sage-soft text-[#8FAF82]';
-                let step2Class = 'bg-sage-soft text-[#8FAF82]';
-                let step3Class = 'bg-sage-soft text-[#8FAF82]';
-                let step4Class = 'bg-sage-soft text-[#8FAF82]';
-
-                let step1Content = '';
-                let step2Content = '';
-                let step3Content = '';
-                let step4Content = '';
-
-                if (s === 'pending') {
-                    step1Class = 'bg-white border-2 border-gold-custom text-[#C8973A]';
-                    step1Content = '<div class="w-1.5 h-1.5 rounded-full bg-[#C8973A]"></div>';
-                    progressPct = 0;
-                } else if (s === 'packed') {
-                    step1Class = 'bg-primary text-white';
-                    step1Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    step2Class = 'bg-white border-2 border-gold-custom text-[#C8973A]';
-                    step2Content = '<div class="w-1.5 h-1.5 rounded-full bg-[#C8973A]"></div>';
-                    progressPct = 33.3;
-                } else if (s === 'shipped') {
-                    step1Class = 'bg-primary text-white';
-                    step1Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    step2Class = 'bg-primary text-white';
-                    step2Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    step3Class = 'bg-white border-2 border-gold-custom text-[#C8973A]';
-                    step3Content = '<div class="w-1.5 h-1.5 rounded-full bg-[#C8973A]"></div>';
-                    progressPct = 66.6;
-                } else if (s === 'delivered') {
-                    step1Class = 'bg-primary text-white';
-                    step1Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    step2Class = 'bg-primary text-white';
-                    step2Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    step3Class = 'bg-primary text-white';
-                    step3Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    step4Class = 'bg-primary text-white';
-                    step4Content = '<span class="material-symbols-outlined text-[12px]">check</span>';
-                    progressPct = 100;
-                }
-
-                timelineHtml = `
-                    <div class="mb-md p-md bg-[#F7F3EC] rounded-xl border border-sage/20 relative z-10">
-                        <div class="relative flex justify-between items-center max-w-md mx-auto py-sm">
-                            <div class="absolute top-1/2 left-0 w-full h-[2px] -translate-y-1/2 bg-sage/20 -z-10">
-                                <div class="h-full bg-primary transition-all duration-500" style="width: ${progressPct}%"></div>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 bg-[#F7F3EC] px-1">
-                                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step1Class}">
-                                    ${step1Content}
-                                </div>
-                                <span class="text-[9px] font-semibold tracking-wider text-primary uppercase">Pending</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 bg-[#F7F3EC] px-1">
-                                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step2Class}">
-                                    ${step2Content}
-                                </div>
-                                <span class="text-[9px] font-semibold tracking-wider text-primary uppercase">Packed</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 bg-[#F7F3EC] px-1">
-                                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step3Class}">
-                                    ${step3Content}
-                                </div>
-                                <span class="text-[9px] font-semibold tracking-wider text-primary uppercase">Shipped</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1 bg-[#F7F3EC] px-1">
-                                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step4Class}">
-                                    ${step4Content}
-                                </div>
-                                <span class="text-[9px] font-semibold tracking-wider text-primary uppercase">Delivered</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            const subItemsHtml = (sub.items || []).map(item => {
-                const imgUrl = item.image_url ? item.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
-                return `
-                    <div class="py-md border-b border-sage/10 last:border-b-0">
-                        <div class="flex gap-md">
-                            <div class="w-16 h-16 bg-surface-dim rounded-lg overflow-hidden flex-shrink-0 border border-sage/20">
-                                <img class="w-full h-full object-cover" src="${imgUrl}" alt="${item.product_name}">
-                            </div>
-                            <div class="flex flex-col justify-between flex-grow">
-                                <div>
-                                    <h3 onclick="window.location.href='product.html?id=${item.product_id}'" class="font-title-serif text-[14px] text-primary hover:underline cursor-pointer font-semibold leading-tight">${item.product_name}</h3>
-                                    <p class="font-data-price text-on-surface-variant text-[11px] mt-1">Qty ${item.quantity} × ${formatPaise(item.unit_price_paise)}</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="font-data-price text-[#C8973A] text-[14px] font-bold">${formatPaise(item.unit_price_paise * item.quantity)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        ${s === 'delivered' ? `
-                            <div class="border-t border-outline-variant/20 pt-2 mt-2 flex justify-between items-center">
-                                <span class="text-xs text-on-surface-variant">Share your feedback:</span>
-                                <button onclick="openReviewModal(${item.product_id}, '${item.product_name.replace(/'/g, "\\'")}')" class="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all">
-                                    Write a Review
-                                </button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }).join('');
-
-            const trackingHtml = sub.tracking_number 
-                ? `
-                    <div class="mt-md p-md bg-white border border-sage/20 rounded-xl shadow-sm">
-                        <div class="flex items-center gap-xs mb-sm">
-                            <span class="material-symbols-outlined text-primary text-sm">local_shipping</span>
-                            <span class="font-label-caps text-xs text-primary uppercase tracking-wider">Courier Tracking</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-sm text-xs text-on-surface-variant">
-                            <div><strong>Courier:</strong> ${sub.courier_name || 'N/A'}</div>
-                            <div><strong>Tracking #:</strong> ${sub.tracking_number}</div>
-                            ${sub.estimated_delivery ? `<div class="col-span-2 mt-0.5"><strong>Estimated Delivery:</strong> ${sub.estimated_delivery}</div>` : ''}
-                        </div>
-                    </div>
-                ` 
-                : `
-                    <div class="mt-md text-xs italic text-on-surface-variant text-center opacity-70">
-                        Tracking information will be available once the order is shipped.
-                    </div>
-                `;
-
-            return `
-                <div class="bg-white border border-sage/30 rounded-xl p-lg flex flex-col gap-sm shadow-sm relative overflow-hidden">
-                    <div class="flex justify-between items-center border-b border-sage/20 pb-sm flex-wrap gap-sm">
-                        <div>
-                            <span class="font-body-md text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Seller:</span>
-                            <span class="font-title-serif text-[15px] font-bold text-primary ml-1">${sub.shop_name || sub.seller_name}</span>
-                        </div>
-                        <span class="font-['Cinzel'] text-[10px] font-bold tracking-[0.1em] rounded-full px-2.5 py-0.5 border ${subStatusBadge} uppercase">${sub.delivery_status}</span>
-                    </div>
-
-                    <!-- Timeline per sub-order -->
-                    ${timelineHtml}
-
-                    <!-- Items inside this sub-order -->
-                    <div class="divide-y divide-sage/10 mt-sm">
-                        ${subItemsHtml}
-                    </div>
-
-                    <!-- Tracking Info per sub-order -->
-                    ${trackingHtml}
-
-                    <div class="flex justify-between items-center mt-sm pt-sm border-t border-dashed border-sage/20 text-xs">
-                        <span class="text-on-surface-variant">Seller Subtotal</span>
-                        <span class="font-data-price text-primary font-bold">${formatPaise(sub.subtotal_paise)}</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
         main.innerHTML = `
             <!-- Header Section -->
-            <section class="text-center md:text-center mb-xl">
-                <div class="flex items-center md:justify-center gap-md mb-2">
-                    <button onclick="window.location.href='orders.html'" class="hidden md:block material-symbols-outlined text-primary hover:bg-surface-variant rounded-full p-1 transition-all">chevron_left</button>
-                    <a href="/buyer/orders.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary flex-shrink-0">
-                        <span class="material-symbols-outlined text-[24px]">arrow_back</span>
-                    </a>
+            <section class="text-center mb-xl">
+                <div class="flex items-center justify-center mb-2">
+                    <button onclick="window.location.href='orders.html'" class="material-symbols-outlined text-primary mr-4 hover:bg-surface-variant rounded-full p-1 transition-all">chevron_left</button>
                     <h1 class="font-headline-lg text-headline-lg text-primary">Order Details</h1>
                 </div>
                 <p class="font-data-price text-[14px] text-on-surface-variant font-bold">#${o.order_ref}</p>
@@ -514,14 +290,77 @@
                 </div>
             </section>
 
+            <!-- Status Timeline -->
+            <section class="mb-xl px-10">
+                <div class="relative flex justify-between items-center">
+                    <!-- Track Line -->
+                    <div class="absolute top-1/2 left-0 w-full h-[2px] -translate-y-1/2 bg-sage-soft -z-10 overflow-hidden">
+                        <div id="timeline-progress-line" class="h-full bg-primary transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <!-- Placed -->
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="dot-placed" class="w-6 h-6 rounded-full bg-sage-soft flex items-center justify-center text-white text-[14px]"></div>
+                        <span class="font-label-caps text-[10px] text-primary">PLACED</span>
+                    </div>
+                    <!-- Paid -->
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="dot-paid" class="w-6 h-6 rounded-full bg-sage-soft flex items-center justify-center text-white text-[14px]"></div>
+                        <span class="font-label-caps text-[10px] text-primary">PAID</span>
+                    </div>
+                    <!-- Processing -->
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="dot-processing" class="w-6 h-6 rounded-full bg-sage-soft flex items-center justify-center text-white text-[14px]"></div>
+                        <span class="font-label-caps text-[10px] text-primary">PROCESSING</span>
+                    </div>
+                    <!-- Shipped -->
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="dot-shipped" class="w-6 h-6 rounded-full bg-sage-soft flex items-center justify-center text-white text-[14px]"></div>
+                        <span class="font-label-caps text-[10px] text-primary">SHIPPED</span>
+                    </div>
+                    <!-- Delivered -->
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="dot-delivered" class="w-6 h-6 rounded-full bg-sage-soft flex items-center justify-center text-white text-[14px]"></div>
+                        <span class="font-label-caps text-[10px] text-primary">DELIVERED</span>
+                    </div>
+                </div>
+            </section>
+
             <!-- Main Content Grid -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-lg items-start">
                 <!-- Left Side: Items & Shipping -->
                 <div class="md:col-span-7 flex flex-col gap-lg">
-                    <!-- Sub Orders Cards -->
-                    <div class="space-y-lg">
-                        <h4 class="font-label-caps text-label-caps text-primary tracking-widest uppercase mb-xs">ITEMS BY SELLER</h4>
-                        ${subOrdersHtml}
+                    <!-- Items Card -->
+                    <div class="space-y-sm">
+                        <h4 class="font-label-caps text-label-caps text-primary tracking-widest uppercase mb-xs">ITEMS IN ORDER</h4>
+                        ${o.items.map(item => {
+                            const imgUrl = item.image_url ? item.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
+                            return `
+                                <div class="bg-white border border-sage/30 rounded-xl p-md flex flex-col gap-sm shadow-sm">
+                                    <div class="flex gap-md">
+                                        <div class="w-20 h-20 bg-surface-dim rounded-lg overflow-hidden flex-shrink-0 border border-sage/20">
+                                            <img class="w-full h-full object-cover" src="${imgUrl}" alt="${item.product_name}">
+                                        </div>
+                                        <div class="flex flex-col justify-between flex-grow">
+                                            <div>
+                                                <h3 onclick="window.location.href='product.html?id=${item.product_id}'" class="font-title-serif text-[15px] text-primary hover:underline cursor-pointer font-semibold">${item.product_name}</h3>
+                                                <p class="font-data-price text-on-surface-variant text-[12px] mt-1">Qty ${item.quantity} × ${formatPaise(item.unit_price_paise)}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="font-data-price text-[#C8973A] text-[15px] font-bold">${formatPaise(item.unit_price_paise * item.quantity)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ${o.status === 'Delivered' ? `
+                                        <div class="border-t border-outline-variant/20 pt-2 mt-2 flex justify-between items-center">
+                                            <span class="text-xs text-on-surface-variant">Share your feedback:</span>
+                                            <button onclick="openReviewModal(${item.product_id}, '${item.product_name.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-primary text-white text-xs font-bold uppercase rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all">
+                                                Write a Review
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
 
                     <!-- Shipping Address Card -->
@@ -532,6 +371,12 @@
                             <span class="font-bold">${o.ship_to ? o.ship_to.full_name : 'N/A'}</span><br>
                             ${o.ship_to ? `${o.ship_to.line1},<br>${o.ship_to.line2 ? `${o.ship_to.line2},<br>` : ''}${o.ship_to.city}, ${o.ship_to.state} - ${o.ship_to.pincode}` : 'No shipping details available'}
                         </p>
+                        ${o.tracking_number ? `
+                            <div class="mt-md pt-md border-t border-outline-variant/30 flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-sage text-sm">local_shipping</span>
+                                <span class="font-body-md text-xs text-on-surface-variant font-semibold">Tracking No: ${o.tracking_number}</span>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
 
@@ -857,14 +702,5 @@
         </div>
     </div>
 </div>
-
-<!-- Mobile Nav Injection -->
-<script type="module">
-  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
-  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
-  initMobileBuyerTopBar();
-  initMobileBuyerNav('profile');
-</script>
-
 </body>
 </html>

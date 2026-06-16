@@ -1,108 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400;700&display=swap');
-
-:root {
-  /* Colors */
-  --bg-primary:     #FFFFFF;
-  --surface:        #FCFAF5;   /* cards */
-  --accent-warm:    #F1EADD;   /* sparing: 1–2 small instances/screen, never large regions */
-  --primary-forest: #3D6B4F;   /* primary actions */
-  --primary-deep:   #2E5340;   /* pressed */
-  --secondary-sage: #8FAF82;   /* 1px borders, secondary */
-  --accent-violet:  #7B5EA7;   /* links, focus, highlights */
-  --highlight-gold: #C8973A;   /* prices, badges */
-  --text-default:   #3A3328;
-  --text-muted:     #6E6453;
-  --text-faint:     #9A8F7A;
-  --danger:         #B14B3E;   /* errors only */
-
-  /* Spacing Scale */
-  --space-4: 0.25rem;   /* 4px */
-  --space-8: 0.5rem;    /* 8px */
-  --space-12: 0.75rem;  /* 12px */
-  --space-16: 1rem;     /* 16px */
-  --space-20: 1.25rem;  /* 20px */
-  --space-24: 1.5rem;   /* 24px */
-  --space-32: 2rem;     /* 32px */
-  --space-40: 2.5rem;   /* 40px */
-
-  /* Fluid Type Scale */
-  --font-display: clamp(24px, 6vw, 30px);
-  --font-h1: clamp(20px, 5vw, 24px);
-  --font-h2: clamp(17px, 4.2vw, 20px);
-  --font-card-title: clamp(14px, 3.6vw, 16px);
-  --font-body: clamp(13px, 3.4vw, 15px);
-  --font-label: 13px;
-  --font-caption: 12px;
-  --font-eyebrow: 11px;
-  --font-price: clamp(14px, 3.6vw, 16px);
-}
-
-/* Typography Utility Classes */
-.font-role-display {
-  font-family: 'Playfair Display', serif;
-  font-size: var(--font-display);
-  line-height: 1.2;
-}
-.font-role-h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: var(--font-h1);
-  line-height: 1.25;
-}
-.font-role-h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: var(--font-h2);
-  line-height: 1.3;
-}
-.font-role-card-title {
-  font-family: 'Lora', serif;
-  font-size: var(--font-card-title);
-  line-height: 1.35;
-}
-.font-role-body {
-  font-family: 'DM Sans', sans-serif;
-  font-size: var(--font-body);
-  line-height: 1.5;
-}
-.font-role-label {
-  font-family: 'DM Sans', sans-serif;
-  font-size: var(--font-label);
-  line-height: 1.4;
-}
-.font-role-caption {
-  font-family: 'DM Sans', sans-serif;
-  font-size: var(--font-caption);
-  line-height: 1.4;
-  color: var(--text-muted);
-}
-.font-role-eyebrow {
-  font-family: 'Cinzel', serif;
-  font-size: var(--font-eyebrow);
-  line-height: 1.3;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.font-role-price {
-  font-family: 'Space Mono', monospace;
-  font-size: var(--font-price);
-  line-height: 1.3;
-  color: var(--highlight-gold);
-}
-
-/* Interactive Elements Style Hooks */
-button, a, input[type="submit"], .interactive-element {
-  transition: all 0.2s ease;
-}
-button:hover, a:hover, input[type="submit"]:hover {
-  opacity: 0.85;
-}
-button:active, a:active, input[type="submit"]:active {
-  transform: scale(0.98);
-}
-button:focus-visible, a:focus-visible, input:focus-visible {
-  outline: 2px solid var(--accent-violet) !important;
-  outline-offset: 2px !important;
-}
-
 /* Tohfa Marketplace - Mobile Responsiveness Global Styles */
 
 /* Ensure the body hides horizontal overflow and wraps content cleanly */
@@ -167,13 +62,15 @@ html, body {
     padding-right: 16px !important;
   }
   
-  /* Reset grid columns */
-  [class*="grid-cols-"] {
+  /* Reset grid columns except for product grids */
+  [class*="grid-cols-"]:not(#product-feed-grid):not(#sponsored-product-grid) {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
 
-  /* Specific exceptions: Product listings grid usually switches to 2 columns for a better catalog experience */
+  /* Specific exceptions: Product listings grid switches to 2 columns for a better catalog experience */
   #product-grid,
+  #product-feed-grid,
+  #sponsored-product-grid,
   #results-grid,
   #related-treasures-grid,
   #catalog-grid,
@@ -182,21 +79,140 @@ html, body {
   .search-results-grid,
   .category-product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
+    gap: 8px !important;
   }
-  
-  /* On very small devices, even product grid is 1 column */
-  @media (max-width: 374px) {
-    #product-grid,
-    #results-grid,
-    #related-treasures-grid,
-    #catalog-grid,
-    #custom-grid,
-    .product-grid,
-    .search-results-grid,
-    .category-product-grid {
-      grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-    }
+
+  /* Amazon-style compact product cards on mobile */
+  #product-grid > div,
+  #product-feed-grid > div,
+  #sponsored-product-grid > div,
+  #results-grid > div,
+  #related-treasures-grid > div,
+  #catalog-grid > div,
+  #custom-grid > div,
+  .product-grid > div,
+  .search-results-grid > div,
+  .category-product-grid > div {
+    padding: 8px !important;
+    border-radius: 8px !important;
+    gap: 4px !important;
+  }
+
+  /* Image container scaling */
+  #product-grid > div .relative.aspect-square,
+  #product-feed-grid > div .relative.aspect-square,
+  #sponsored-product-grid > div .relative.aspect-square,
+  #results-grid > div .relative.aspect-square,
+  #related-treasures-grid > div .relative.aspect-square,
+  #catalog-grid > div .relative.aspect-square,
+  #custom-grid > div .relative.aspect-square,
+  .product-grid > div .relative.aspect-square,
+  .search-results-grid > div .relative.aspect-square,
+  .category-product-grid > div .relative.aspect-square {
+    margin-bottom: 4px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Favorite / Wishlist button scaling on card */
+  #product-grid > div .toggle-wishlist-btn,
+  #product-feed-grid > div .toggle-wishlist-btn,
+  #sponsored-product-grid > div .toggle-wishlist-btn,
+  #results-grid > div .toggle-wishlist-btn,
+  #related-treasures-grid > div .toggle-wishlist-btn,
+  #catalog-grid > div .toggle-wishlist-btn,
+  #custom-grid > div .toggle-wishlist-btn {
+    top: 6px !important;
+    right: 6px !important;
+    padding: 4px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+  }
+  #product-grid > div .toggle-wishlist-btn span,
+  #product-feed-grid > div .toggle-wishlist-btn span,
+  #sponsored-product-grid > div .toggle-wishlist-btn span,
+  #results-grid > div .toggle-wishlist-btn span,
+  #related-treasures-grid > div .toggle-wishlist-btn span,
+  #catalog-grid > div .toggle-wishlist-btn span,
+  #custom-grid > div .toggle-wishlist-btn span {
+    font-size: 16px !important;
+  }
+
+  /* Typography overrides */
+  #product-grid > div h4,
+  #product-feed-grid > div h4,
+  #sponsored-product-grid > div h4,
+  #results-grid > div h4,
+  #related-treasures-grid > div h4,
+  #catalog-grid > div h4,
+  #custom-grid > div h4,
+  .product-grid > div h4,
+  .search-results-grid > div h4,
+  .category-product-grid > div h4 {
+    font-size: 13px !important;
+    line-height: 18px !important;
+    margin-bottom: 2px !important;
+  }
+
+  #product-grid > div span.text-lg,
+  #product-feed-grid > div span.text-lg,
+  #sponsored-product-grid > div span.text-lg,
+  #results-grid > div span.text-lg,
+  #related-treasures-grid > div span.text-lg,
+  #catalog-grid > div span.text-lg,
+  #custom-grid > div span.text-lg,
+  .product-grid > div span.text-lg,
+  .search-results-grid > div span.text-lg,
+  .category-product-grid > div span.text-lg {
+    font-size: 14px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Rating and Seller text overrides */
+  #product-grid > div .text-xs,
+  #product-feed-grid > div .text-xs,
+  #sponsored-product-grid > div .text-xs,
+  #results-grid > div .text-xs,
+  #related-treasures-grid > div .text-xs,
+  #catalog-grid > div .text-xs,
+  #custom-grid > div .text-xs,
+  .product-grid > div .text-xs,
+  .search-results-grid > div .text-xs,
+  .category-product-grid > div .text-xs {
+    font-size: 11px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Add to Cart button override - make it compact and minimal */
+  #product-grid > div .add-to-cart-btn,
+  #product-feed-grid > div .add-to-cart-btn,
+  #sponsored-product-grid > div .add-to-cart-btn,
+  #results-grid > div .add-to-cart-btn,
+  #related-treasures-grid > div .add-to-cart-btn,
+  #catalog-grid > div .add-to-cart-btn,
+  #custom-grid > div .add-to-cart-btn,
+  .product-grid > div .add-to-cart-btn,
+  .search-results-grid > div .add-to-cart-btn,
+  .category-product-grid > div .add-to-cart-btn {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+    min-height: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Tighter spacing in card body */
+  #product-grid > div .flex-col,
+  #product-feed-grid > div .flex-col,
+  #sponsored-product-grid > div .flex-col,
+  #results-grid > div .flex-col,
+  #related-treasures-grid > div .flex-col,
+  #catalog-grid > div .flex-col,
+  #custom-grid > div .flex-col,
+  .product-grid > div .flex-col,
+  .search-results-grid > div .flex-col,
+  .category-product-grid > div .flex-col {
+    margin-bottom: 2px !important;
   }
 
   /* Flex row stacks */
@@ -498,378 +514,3 @@ a.btn,
     scroll-behavior: auto !important;
   }
 }
-
-/* Hide desktop buyer header on mobile — MobileBuyerTopBar replaces it */
-@media (max-width: 768px) {
-  #tohfa-navbar > header,
-  body > header:not(#mbt-topbar):not(#msn-topbar) {
-    display: none !important;
-  }
-}
-
-/* Mobile section block utility */
-.mobile-section-block {
-  display: block;
-  width: 100%;
-}
-@media (max-width: 768px) {
-  .mobile-section-block {
-    margin-top: 20px;
-  }
-  .mobile-section-block + .mobile-section-block {
-    border-top: 1px solid #F7F3EC;
-    padding-top: 20px;
-  }
-}
-
-/* Responsive charts */
-@media (max-width: 768px) {
-  canvas {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 220px !important;
-  }
-  .chart-wrapper,
-  [id*="chart-container"],
-  [class*="chart-container"] {
-    width: 100% !important;
-    height: 220px !important;
-    overflow: hidden !important;
-  }
-}
-
-/* Mobile card-row: replaces table rows on mobile */
-@media (max-width: 768px) {
-  .mobile-card-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 16px;
-    background: #FFFFFF;
-    border: 1px solid rgba(61,107,79,0.12);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 8px rgba(61,107,79,0.06);
-  }
-  .mobile-card-row-label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #8FAF82;
-  }
-  .mobile-card-row-value {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: #1A1A1A;
-  }
-  /* Hide <thead> when table is converted to card-list */
-  .mobile-card-table thead { display: none !important; }
-  .mobile-card-table tbody tr {
-    display: block !important;
-  }
-}
-
-/* Fix for checkboxes, radios, and table controls to prevent stretching on mobile */
-@media (max-width: 767px) {
-  input[type="checkbox"],
-  input[type="radio"] {
-    width: auto !important;
-    min-height: 0 !important;
-    height: auto !important;
-    box-sizing: content-box !important;
-  }
-
-  table input,
-  table select,
-  table button,
-  .overflow-x-auto input,
-  .overflow-x-auto select,
-  .overflow-x-auto button {
-    width: auto !important;
-    min-height: 0 !important;
-    min-width: 0 !important;
-    height: auto !important;
-  }
-}
-
-/* Global button override for small inline elements like switches and table buttons */
-button.relative.inline-flex.h-5.w-8,
-table button {
-  min-height: 0 !important;
-  min-width: 0 !important;
-}
-
-/* ==========================================================================
-   Seller Studio Responsive Sidebar and Drawer Overrides
-   ========================================================================== */
-@media (max-width: 1023px) {
-  /* 1. Stack flex layout containers holding aside panels vertically */
-  .seller-main-panel .flex:has(> aside):not(.chat-container),
-  .seller-layout-container .flex:has(> aside):not(.chat-container),
-  .flex-1.flex:has(> aside),
-  div.flex:has(> aside) {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  /* 2. Force sidebars to expand to full width on mobile/tablet viewports */
-  aside.w-80,
-  aside.w-\[360px\],
-  aside.w-96,
-  aside:not(.absolute) {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-top: 1px solid rgba(61, 107, 79, 0.12) !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 3. Constrain absolute drawers/slide-overs to viewport width */
-  aside.absolute {
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-
-  /* 4. Remove dividing vertical borders from stacked columns */
-  .border-r,
-  .border-r-secondary,
-  .border-l,
-  .border-l-secondary {
-    border-right: none !important;
-    border-left: none !important;
-  }
-}
-
-/* Constrain all horizontal scroll containers globally to prevent layout overflow */
-.overflow-x-auto {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: auto !important;
-  display: block !important;
-  -webkit-overflow-scrolling: touch;
-}
-@media (max-width: 767px) {
-  /* Enforce horizontal scrolling tables on mobile */
-  .overflow-x-auto table {
-    min-width: 750px !important;
-  }
-  /* Override desktop-level paddings on mobile viewports */
-  .px-12 {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-  }
-  /* Wrap stats card elements to prevent horizontal page stretching */
-  .flex:has(> .bg-primary\/10),
-  .flex:has(> .bg-gold\/10),
-  .flex:has(> .bg-violet\/10) {
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-  }
-}
-
-/* ==========================================================================
-   Tohfa Unified Design System Global Overrides (Task 3 & 4)
-   ========================================================================== */
-
-/* 1. Global Typography and Font Roles */
-h1, h2, h3, h4, h5, h6, 
-.font-role-display, .font-role-h1, .font-role-h2,
-[class*="font-headline"], [class*="text-headline-"] {
-  font-family: 'Playfair Display', serif !important;
-}
-
-.card-title, .artisan-name, .font-role-card-title,
-[class*="card-title"], [class*="artisan-name"], .artisan-serif {
-  font-family: 'Lora', serif !important;
-}
-
-body, p, span:not(.material-symbols-outlined):not(.font-role-price):not(.font-role-eyebrow), 
-label, input, button, select, textarea, 
-a:not(.font-role-price):not(.font-role-eyebrow),
-.font-role-body, .font-role-label, .font-role-caption {
-  font-family: 'DM Sans', sans-serif !important;
-}
-
-.price, .amount, .price-tag, .kpi-number, .timestamp, .order-code,
-.font-role-price, [class*="price"], [class*="amount"] {
-  font-family: 'Space Mono', monospace !important;
-}
-
-.eyebrow, .badge, .nav-header, .font-role-eyebrow,
-[class*="eyebrow"], [class*="badge"] {
-  font-family: 'Cinzel', serif !important;
-  letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
-}
-
-/* 2. Fluid Typography Scales */
-@media (max-width: 768px) {
-  h1, .text-3xl, .text-4xl, .font-headline-xl, [class*="text-headline-"] {
-    font-size: var(--font-h1) !important;
-    line-height: 1.25 !important;
-  }
-  h2, .text-2xl, .font-headline-lg {
-    font-size: var(--font-h2) !important;
-    line-height: 1.3 !important;
-  }
-  h3, h4, .text-xl, .text-lg, .font-headline-md, .card-title, [class*="card-title"] {
-    font-size: var(--font-card-title) !important;
-    line-height: 1.35 !important;
-  }
-  body, p, .text-base, .text-md, .font-body-md {
-    font-size: var(--font-body) !important;
-    line-height: 1.5 !important;
-  }
-  label, .text-sm, .font-body-sm {
-    font-size: var(--font-label) !important;
-    line-height: 1.4 !important;
-  }
-  caption, .text-xs, .font-body-xs, .text-muted {
-    font-size: var(--font-caption) !important;
-    line-height: 1.4 !important;
-  }
-  .eyebrow, .font-eyebrow, [class*="eyebrow"] {
-    font-size: var(--font-eyebrow) !important;
-  }
-  .price, .amount, .price-tag, [class*="price"], [class*="amount"] {
-    font-size: var(--font-price) !important;
-  }
-}
-
-/* 3. Spacing, Margins, Paddings, Gaps (Mobile & Tablet) */
-@media (max-width: 1024px) {
-  body {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-  main, 
-  .main-content, 
-  .content-wrapper,
-  .px-margin-desktop,
-  .px-64,
-  .px-32 {
-    padding-left: var(--space-16) !important;
-    padding-right: var(--space-16) !important;
-  }
-  .grid, [class*="grid-cols-"] {
-    gap: var(--space-12) !important;
-  }
-  section, .section-block, .mobile-section-block {
-    margin-bottom: var(--space-24) !important;
-    margin-top: 0 !important;
-  }
-}
-
-/* 4. Color Palette Overrides */
-body {
-  background-color: var(--bg-primary) !important;
-  color: var(--text-default) !important;
-}
-
-.text-primary, .text-\[\#3D6B4F\], .text-primary-forest {
-  color: var(--primary-forest) !important;
-}
-.bg-primary, .bg-\[\#3D6B4F\], .bg-primary-forest, .bg-primary-container {
-  background-color: var(--primary-forest) !important;
-  color: var(--bg-primary) !important;
-}
-.bg-primary:hover, .bg-primary-forest:hover {
-  background-color: var(--primary-deep) !important;
-}
-.border-primary, .border-\[\#3D6B4F\], .border-primary-forest {
-  border-color: var(--primary-forest) !important;
-}
-
-.text-secondary, .text-\[\#8FAF82\], .text-secondary-sage {
-  color: var(--secondary-sage) !important;
-}
-.bg-secondary, .bg-\[\#8FAF82\], .bg-secondary-sage {
-  background-color: var(--secondary-sage) !important;
-}
-.border-secondary, .border-\[\#8FAF82\], .border-secondary-sage, .border-outline-variant {
-  border-color: var(--secondary-sage) !important;
-}
-
-.text-gold, .text-\[\#C8973A\], .text-highlight-gold, .text-gold-500 {
-  color: var(--highlight-gold) !important;
-}
-.bg-gold, .bg-\[\#C8973A\], .bg-highlight-gold {
-  background-color: var(--highlight-gold) !important;
-  color: var(--bg-primary) !important;
-}
-
-.text-violet, .text-\[\#7B5EA7\], .text-accent-violet {
-  color: var(--accent-violet) !important;
-}
-.bg-violet, .bg-\[\#7B5EA7\], .bg-accent-violet {
-  background-color: var(--accent-violet) !important;
-  color: var(--bg-primary) !important;
-}
-
-.text-error, .text-\[\#B14B3E\], .text-danger {
-  color: var(--danger) !important;
-}
-.bg-error, .bg-\[\#B14B3E\], .bg-danger {
-  background-color: var(--danger) !important;
-  color: var(--bg-primary) !important;
-}
-
-.text-on-surface, .text-on-background, .text-\[\#3A3328\], .text-dark {
-  color: var(--text-default) !important;
-}
-.text-on-surface-variant, .text-muted, .text-\[\#6E6453\], .text-\[\#6B6B6B\] {
-  color: var(--text-muted) !important;
-}
-.text-faint, .text-\[\#9A8F7A\] {
-  color: var(--text-faint) !important;
-}
-
-.bg-white, .bg-background {
-  background-color: var(--bg-primary) !important;
-}
-.bg-surface, .bg-surface-bright, .bg-card, .bg-\[\#FCFAF5\], .bg-[#FCFAF5], .bg-surface-container-lowest {
-  background-color: var(--surface) !important;
-}
-
-/* Card Styling overrides */
-.card, .product-card, .bg-card, [class*="card"] {
-  background-color: var(--surface) !important;
-  border: 1px solid var(--secondary-sage) !important;
-  border-radius: 8px !important;
-}
-
-/* Aspect Ratio rules */
-.aspect-square img, [class*="product-"] img, .product-image {
-  aspect-ratio: 1 / 1 !important;
-  object-fit: cover !important;
-}
-.reel-video, .reel-thumbnail {
-  aspect-ratio: 3 / 4 !important;
-  object-fit: cover !important;
-}
-
-/* Tap Target Constraint on Mobile */
-@media (max-width: 768px) {
-  button, 
-  a.btn, 
-  input[type="submit"], 
-  input[type="button"], 
-  select, 
-  .mbn-tab, 
-  .msn-nav-item {
-    min-height: 48px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-}
-
-
-
-

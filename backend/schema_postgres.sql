@@ -93,7 +93,6 @@ CREATE TABLE addresses (
       state         TEXT NOT NULL,
       pincode       TEXT NOT NULL,
       phone         TEXT,
-      tag           TEXT,
       is_default    INTEGER DEFAULT 0,
       created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
@@ -972,30 +971,3 @@ CREATE TABLE IF NOT EXISTS reports (
 );
 CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
 CREATE INDEX IF NOT EXISTS idx_reports_created ON reports(created_at DESC);
-
-CREATE TABLE sub_orders (
-  id SERIAL PRIMARY KEY,
-  parent_order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
-  seller_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  subtotal_paise INTEGER NOT NULL,
-  platform_commission_paise INTEGER NOT NULL DEFAULT 0,
-  seller_payout_paise INTEGER NOT NULL,
-  delivery_status TEXT NOT NULL DEFAULT 'pending' CHECK(delivery_status IN ('pending', 'packed', 'shipped', 'delivered', 'cancelled')),
-  tracking_number TEXT DEFAULT NULL,
-  courier_name TEXT DEFAULT NULL,
-  estimated_delivery TEXT DEFAULT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-ALTER TABLE order_items ADD COLUMN sub_order_id INTEGER REFERENCES sub_orders(id) ON DELETE CASCADE;
-
-CREATE TABLE seller_settlements (
-  id SERIAL PRIMARY KEY,
-  seller_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  sub_order_id INTEGER REFERENCES sub_orders(id) ON DELETE CASCADE,
-  amount_paise INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'processing', 'completed', 'failed')),
-  settled_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);

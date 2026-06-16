@@ -137,59 +137,6 @@
             pointer-events: none;
         }
     </style>
-
-<!-- Mobile Style Overrides -->
-<style>
-  @media (max-width: 768px) {
-    /* Stack layout sections */
-    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
-      display: flex !important;
-      flex-direction: column !important;
-      width: 100% !important;
-    }
-    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
-    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
-    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
-    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
-    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
-      grid-column: span 12 / span 12 !important;
-      width: 100% !important;
-    }
-    /* Product grids must be 2 columns */
-    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
-    .product-grid, .search-results-grid, .category-product-grid {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 12px !important;
-    }
-    /* Convert tables to cards */
-    table {
-      display: block !important;
-      width: 100% !important;
-    }
-    thead {
-      display: none !important;
-    }
-    tbody, tr, td {
-      display: block !important;
-      width: 100% !important;
-    }
-    tr {
-      background: #FFFFFF !important;
-      border: 1px solid rgba(61,107,79,0.12) !important;
-      border-radius: 12px !important;
-      padding: 16px !important;
-      margin-bottom: 12px !important;
-      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
-    }
-    td {
-      border: none !important;
-      padding: 4px 0 !important;
-      text-align: left !important;
-    }
-  }
-</style>
-
 </head>
 <body class="bg-white text-on-surface font-body-md selection:bg-secondary-container min-h-screen flex flex-col">
 
@@ -269,14 +216,9 @@
     <!-- State 1: Has Addresses -->
     <div id="state-has-addresses" class="relative z-10 w-full md:max-w-xl md:mx-auto">
         <!-- Header Section -->
-        <header class="mb-lg flex items-center gap-md">
-            <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1">
-                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
-            </a>
-            <div>
-                <p class="font-label-caps text-label-caps text-gold-brand mb-xs tracking-widest uppercase">My Account</p>
-                <h1 class="font-headline-lg text-headline-lg-mobile italic text-primary">Saved Addresses <span class="text-gold-brand font-normal opacity-70">✦</span></h1>
-            </div>
+        <header class="mb-lg">
+            <p class="font-label-caps text-label-caps text-gold-brand mb-xs tracking-widest uppercase">My Account</p>
+            <h1 class="font-headline-lg text-headline-lg-mobile italic text-primary">Saved Addresses <span class="text-gold-brand font-normal opacity-70">✦</span></h1>
         </header>
 
         <!-- Add Address Button -->
@@ -392,11 +334,6 @@
         </div>
         <input type="hidden" id="address-type-input" value="home" />
       </div>
-      
-      <!-- Custom Tag Input Field -->
-      <div id="custom-tag-container" class="hidden space-y-xs mt-sm">
-        <input id="custom-tag-input" class="w-full bg-[#F7F3EC] border border-sage px-md py-sm rounded-lg text-body-md focus:outline-none focus:border-gold-brand" type="text" placeholder="Enter custom tag (e.g. Mom's House, Office 2...)" />
-      </div>
 
       <div class="flex items-center justify-between py-sm border-t border-outline-variant/30 mt-md">
         <div class="space-y-xs">
@@ -466,8 +403,6 @@
         const workBtn = document.getElementById('type-work');
         const otherBtn = document.getElementById('type-other');
         const typeInput = document.getElementById('address-type-input');
-        const customTagContainer = document.getElementById('custom-tag-container');
-        const customTagInput = document.getElementById('custom-tag-input');
         
         [homeBtn, workBtn, otherBtn].forEach(btn => {
             btn.classList.remove('bg-primary', 'text-white', 'border-transparent');
@@ -481,16 +416,6 @@
         }
         
         typeInput.value = type;
-
-        if (type === 'other') {
-            if (customTagContainer) customTagContainer.classList.remove('hidden');
-            if (customTagInput) {
-                customTagInput.focus();
-            }
-        } else {
-            if (customTagContainer) customTagContainer.classList.add('hidden');
-            if (customTagInput) customTagInput.value = "";
-        }
     }
 
     // Toggle default switch state
@@ -532,9 +457,6 @@
         document.getElementById('city-input').value = "";
         document.getElementById('state-input').value = "";
         document.getElementById('pincode-input').value = "";
-        if (document.getElementById('custom-tag-input')) {
-            document.getElementById('custom-tag-input').value = "";
-        }
         
         selectAddressType('home');
         setDefaultCheckboxState(false);
@@ -561,23 +483,9 @@
         document.getElementById('state-input').value = addr.state || "";
         document.getElementById('pincode-input').value = addr.pincode || "";
         
-        // Check if tag is custom or matches standard
-        const rawTag = addr.tag || "";
-        const normalizedTag = rawTag.trim().toLowerCase();
-        
-        if (normalizedTag === 'home' || normalizedTag === 'work') {
-            selectAddressType(normalizedTag);
-        } else if (rawTag !== "") {
-            selectAddressType('other');
-            if (document.getElementById('custom-tag-input')) {
-                document.getElementById('custom-tag-input').value = rawTag;
-            }
-        } else {
-            // Guess tag from full_name to set type selector (legacy support)
-            const guessedType = getAddressType(addr.full_name).toLowerCase();
-            selectAddressType(guessedType);
-        }
-        
+        // Guess tag from full_name to set type selector
+        const guessedType = getAddressType(addr.full_name).toLowerCase();
+        selectAddressType(guessedType);
         setDefaultCheckboxState(addr.is_default === 1);
         
         const modal = document.getElementById('addressModal');
@@ -639,15 +547,10 @@
                 
                 listContainer.innerHTML = loadedAddresses.map(addr => {
                     const isDefault = addr.is_default === 1;
-                    let type = (addr.tag || '').trim();
-                    if (!type) {
-                        type = getAddressType(addr.full_name);
-                    }
-                    type = type.toUpperCase();
-                    
+                    const type = getAddressType(addr.full_name);
                     const tagStyle = type === 'WORK' ? 'bg-[#7B5EA7]/10 border-[#7B5EA7]/30 text-[#7B5EA7]' : 
-                                     type === 'HOME' ? 'bg-gold-brand/10 border-gold-brand/30 text-gold-brand' :
-                                     'bg-[#7B5EA7]/10 border-[#7B5EA7]/30 text-[#7B5EA7]';
+                                     type === 'OTHER' ? 'bg-[#7B5EA7]/10 border-[#7B5EA7]/30 text-[#7B5EA7]' : 
+                                     'bg-gold-brand/10 border-gold-brand/30 text-gold-brand';
                     
                     return `
                         <div class="bg-ivory border border-sage rounded-xl p-lg card-shadow transition-all duration-300 hover:-translate-y-1 relative" data-id="${addr.id}">
@@ -707,16 +610,6 @@
         const pincode = document.getElementById('pincode-input').value.trim();
         const isDefault = document.getElementById('default-toggle').checked;
         
-        const selectedType = document.getElementById('address-type-input').value;
-        let finalTag = selectedType;
-        if (selectedType === 'other') {
-            finalTag = document.getElementById('custom-tag-input').value.trim();
-            if (!finalTag) {
-                Toast.show('Please enter a custom tag name!', 'error');
-                return;
-            }
-        }
-        
         // Simple validations
         if (!fullName || !phone || !street || !city || !state || !pincode) {
             Toast.show('All fields are required!', 'error');
@@ -730,8 +623,7 @@
             city: city,
             state: state,
             pincode: pincode,
-            is_default: isDefault ? 1 : 0,
-            tag: finalTag
+            is_default: isDefault ? 1 : 0
         };
 
         try {
@@ -785,8 +677,7 @@
             city: addr.city,
             state: addr.state,
             pincode: addr.pincode,
-            is_default: 1,
-            tag: addr.tag
+            is_default: 1
         };
 
         try {
@@ -1020,14 +911,5 @@
 
     checkAuthState();
 </script>
-
-<!-- Mobile Nav Injection -->
-<script type="module">
-  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
-  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
-  initMobileBuyerTopBar();
-  initMobileBuyerNav('profile');
-</script>
-
 </body>
 </html>

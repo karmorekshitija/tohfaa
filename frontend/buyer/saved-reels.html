@@ -124,59 +124,6 @@
             pointer-events: none;
         }
     </style>
-
-<!-- Mobile Style Overrides -->
-<style>
-  @media (max-width: 768px) {
-    /* Stack layout sections */
-    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
-      display: flex !important;
-      flex-direction: column !important;
-      width: 100% !important;
-    }
-    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
-    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
-    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
-    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
-    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
-      grid-column: span 12 / span 12 !important;
-      width: 100% !important;
-    }
-    /* Product grids must be 2 columns */
-    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
-    .product-grid, .search-results-grid, .category-product-grid {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 12px !important;
-    }
-    /* Convert tables to cards */
-    table {
-      display: block !important;
-      width: 100% !important;
-    }
-    thead {
-      display: none !important;
-    }
-    tbody, tr, td {
-      display: block !important;
-      width: 100% !important;
-    }
-    tr {
-      background: #FFFFFF !important;
-      border: 1px solid rgba(61,107,79,0.12) !important;
-      border-radius: 12px !important;
-      padding: 16px !important;
-      margin-bottom: 12px !important;
-      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
-    }
-    td {
-      border: none !important;
-      padding: 4px 0 !important;
-      text-align: left !important;
-    }
-  }
-</style>
-
 </head>
 <body class="text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col bg-white">
 
@@ -250,20 +197,15 @@
     
     <div class="max-w-[1200px] mx-auto px-margin-desktop py-xl relative z-10">
         <!-- Header Section -->
-        <div class="mb-xl relative flex items-center gap-md">
-            <a href="/buyer/profile.html" onclick="if(document.referrer) { window.history.back(); return false; }" class="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors text-primary mr-1 flex-shrink-0">
-                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
-            </a>
-            <div class="relative inline-block">
-                <div class="absolute -inset-x-4 -inset-y-2 bg-tertiary-container/10 blur-xl rounded-full opacity-30"></div>
-                <div class="relative flex items-baseline gap-md select-none">
-                    <h1 class="font-display-hero text-display-hero text-primary">
-                        Saved makes <span class="text-tertiary font-normal">✦</span>
-                    </h1>
-                    <span id="saved-makes-count" class="font-data-price text-data-price text-secondary bg-secondary-container px-3 py-1 rounded-full border border-outline-variant">
-                        0
-                    </span>
-                </div>
+        <div class="mb-xl relative inline-block">
+            <div class="absolute -inset-x-4 -inset-y-2 bg-tertiary-container/10 blur-xl rounded-full opacity-30"></div>
+            <div class="relative flex items-baseline gap-md select-none">
+                <h1 class="font-display-hero text-display-hero text-primary">
+                    Saved makes <span class="text-tertiary font-normal">✦</span>
+                </h1>
+                <span id="saved-makes-count" class="font-data-price text-data-price text-secondary bg-secondary-container px-3 py-1 rounded-full border border-outline-variant">
+                    0
+                </span>
             </div>
             
             <!-- Ink Sketch Watermark -->
@@ -461,14 +403,5 @@
         await loadSavedReels();
     });
 </script>
-
-<!-- Mobile Nav Injection -->
-<script type="module">
-  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
-  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
-  initMobileBuyerTopBar();
-  initMobileBuyerNav('reels');
-</script>
-
 </body>
 </html>

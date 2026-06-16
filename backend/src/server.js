@@ -11,31 +11,6 @@ const { router: sellerProfileRouter } = require('./sellerProfileRoutes');
 const paymentRouter = require('./paymentRoutes');
 const cron = require('node-cron');
 
-// Admin Panel Multer Storages
-const uiSettingsStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '..', 'uploads', 'ui');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, 'ui-' + Date.now() + path.extname(file.originalname));
-  }
-});
-const uploadUiSettings = multer({ storage: uiSettingsStorage });
-
-const categoriesStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '..', 'uploads', 'categories');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, 'category-' + Date.now() + path.extname(file.originalname));
-  }
-});
-const uploadCategories = multer({ storage: categoriesStorage });
-
 try { db.exec("ALTER TABLE notifications ADD COLUMN conversation_id INTEGER;"); } catch (e) {}
 try { db.exec("ALTER TABLE notifications ADD COLUMN offer_id INTEGER;"); } catch (e) {}
 try { db.exec("ALTER TABLE notifications ADD COLUMN order_code TEXT;"); } catch (e) {}
@@ -59,7 +34,6 @@ try { db.exec("ALTER TABLE conversation_messages ADD COLUMN type TEXT DEFAULT 't
 try { db.exec("ALTER TABLE conversation_messages ADD COLUMN offer_id INTEGER;"); } catch(e) {}
 
 try { db.exec("ALTER TABLE store_config ADD COLUMN away_dates TEXT DEFAULT NULL;"); } catch(e) {}
-try { db.exec("ALTER TABLE addresses ADD COLUMN tag TEXT;"); } catch (e) {}
 
 // Seller Profile missing columns migration
 ['story_headline TEXT', 'story_description TEXT', 'working_on TEXT', 'video_url TEXT', 'banner_url TEXT', 'badges TEXT', 'about_image_url TEXT'].forEach(col => {
@@ -1797,8 +1771,7 @@ app.get('/api/cart', rateLimit(60), authenticateToken, async (req, res) => {
           (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url,
-        COALESCE(sp.shop_name, u.full_name) AS seller_name,
-        COALESCE(sp.city, u.location, 'India') AS seller_city
+        COALESCE(sp.shop_name, u.full_name) AS seller_name
       FROM cart_items ci
       JOIN products p ON ci.product_id = p.id
       JOIN users u ON p.seller_id = u.id
@@ -2113,7 +2086,7 @@ app.get('/api/addresses', rateLimit(60), authenticateToken, async (req, res) => 
   const userId = req.user.user_id;
   
   try {
-    const addresses = await db.prepare('SELECT id, full_name, line1, line2, city, state, pincode, phone, is_default, tag FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC').all(userId);
+    const addresses = await db.prepare('SELECT id, full_name, line1, line2, city, state, pincode, phone, is_default FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC').all(userId);
     
     return res.status(200).json({
       success: true,
@@ -2134,7 +2107,7 @@ app.get('/api/addresses', rateLimit(60), authenticateToken, async (req, res) => 
 // TASK 25: POST /api/addresses
 app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
-  const { full_name, line1, line2, city, state, pincode, phone, is_default, tag } = req.body;
+  const { full_name, line1, line2, city, state, pincode, phone, is_default } = req.body;
   
   if (!full_name || typeof full_name !== 'string' || full_name.trim() === '' ||
       !line1 || typeof line1 !== 'string' || line1.trim() === '' ||
@@ -2151,7 +2124,6 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
   const finalLine2 = (line2 && typeof line2 === 'string') ? line2 : null;
   const finalPhone = (phone && typeof phone === 'string') ? phone : null;
   const isDefaultVal = is_default ? 1 : 0;
-  const finalTag = (tag && typeof tag === 'string') ? tag : null;
   
   try {
     const insertTransaction = db.transaction(async () => {
@@ -2160,9 +2132,9 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
       }
       
       const info = await db.prepare(`
-        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default, tag)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(userId, full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal, finalTag);
+        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(userId, full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal);
       
       return info.lastInsertRowid;
     });
@@ -2180,8 +2152,7 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
         state,
         pincode,
         phone: finalPhone,
-        is_default: isDefaultVal,
-        tag: finalTag
+        is_default: isDefaultVal
       }
     });
   } catch (err) {
@@ -2198,7 +2169,7 @@ app.post('/api/addresses', rateLimit(60), authenticateToken, async (req, res) =>
 app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
   const { id } = req.params;
-  const { full_name, line1, line2, city, state, pincode, phone, is_default, tag } = req.body;
+  const { full_name, line1, line2, city, state, pincode, phone, is_default } = req.body;
   
   if (!full_name || typeof full_name !== 'string' || full_name.trim() === '' ||
       !line1 || typeof line1 !== 'string' || line1.trim() === '' ||
@@ -2215,7 +2186,6 @@ app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res)
   const finalLine2 = (line2 && typeof line2 === 'string') ? line2 : null;
   const finalPhone = (phone && typeof phone === 'string') ? phone : null;
   const isDefaultVal = is_default ? 1 : 0;
-  const finalTag = (tag && typeof tag === 'string') ? tag : null;
   
   try {
     const address = await db.prepare('SELECT user_id FROM addresses WHERE id = ?').get(id);
@@ -2242,9 +2212,9 @@ app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res)
       
       await db.prepare(`
         UPDATE addresses 
-        SET full_name = ?, line1 = ?, line2 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?, tag = ?
+        SET full_name = ?, line1 = ?, line2 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?
         WHERE id = ?
-      `).run(full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal, finalTag, id);
+      `).run(full_name, line1, finalLine2, city, state, pincode, finalPhone, isDefaultVal, id);
     });
     
     await updateTransaction();
@@ -2260,8 +2230,7 @@ app.put('/api/addresses/:id', rateLimit(60), authenticateToken, async (req, res)
         state,
         pincode,
         phone: finalPhone,
-        is_default: isDefaultVal,
-        tag: finalTag
+        is_default: isDefaultVal
       }
     });
   } catch (err) {
@@ -2706,7 +2675,7 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
     // ------------------------------------------------------------------
 
     // 4. Calculate subtotal, shipping (outside txn — read-only maths)
-    const subtotal_paise = cartItems.reduce((sum, item) => sum + item.price_paise * item.quantity, 0);
+    const subtotal_paise = cartItems.reduce(async (sum, item) => sum + item.price_paise * item.quantity, 0);
     const shipping_paise = subtotal_paise >= 50000 ? 0 : 12000;
     const total_paise = subtotal_paise + shipping_paise;
 
@@ -2822,26 +2791,12 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
         const oId = orderInfo.lastInsertRowid;
 
         const insertOrderItem = db.prepare(`
-          INSERT INTO order_items (order_id, product_id, product_name, unit_price_paise, quantity, image_url, sub_order_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO order_items (order_id, product_id, product_name, unit_price_paise, quantity, image_url)
+          VALUES (?, ?, ?, ?, ?, ?)
         `);
 
-        for (const [sid, sellerCart] of Object.entries(sellerQuantityMap)) {
-          const sellerId = parseInt(sid);
-          const subtotalSellerPaise = sellerCart.items.reduce((sum, item) => sum + item.price_paise * item.quantity, 0);
-          const platformCommissionPaise = Math.round(subtotalSellerPaise * 0.10);
-          const sellerPayoutPaise = subtotalSellerPaise - platformCommissionPaise;
-
-          const subOrderInfo = await db.prepare(`
-            INSERT INTO sub_orders (parent_order_id, seller_id, subtotal_paise, platform_commission_paise, seller_payout_paise, delivery_status, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-          `).run(oId, sellerId, subtotalSellerPaise, platformCommissionPaise, sellerPayoutPaise);
-
-          const subOrderId = subOrderInfo.lastInsertRowid;
-
-          for (const item of sellerCart.items) {
-            await insertOrderItem.run(oId, item.product_id, item.name, item.price_paise, item.quantity, item.image_url, subOrderId);
-          }
+        for (const item of cartItems) {
+          await insertOrderItem.run(oId, item.product_id, item.name, item.price_paise, item.quantity, item.image_url);
         }
 
         const cartItemIds = cartItems.map(item => item.id);
@@ -2942,7 +2897,7 @@ app.get('/api/orders', rateLimit(60), authenticateToken, async (req, res) => {
     
     for (const o of orders) {
       const items = await db.prepare('SELECT product_name, quantity, image_url FROM order_items WHERE order_id = ?').all(o.id);
-      o.item_count = items.reduce((sum, item) => sum + item.quantity, 0);
+      o.item_count = items.reduce(async (sum, item) => sum + item.quantity, 0);
       o.primary_image_url = items.length > 0 ? items[0].image_url : null;
       o.image_urls = items.map(item => item.image_url).filter(url => url !== null);
       if (items.length > 0) {
@@ -2953,21 +2908,6 @@ app.get('/api/orders', rateLimit(60), authenticateToken, async (req, res) => {
       } else {
         o.item_preview = '';
       }
-      const subOrders = await db.prepare(`
-        SELECT s.*, u.full_name as seller_name, sp.shop_name 
-        FROM sub_orders s 
-        JOIN users u ON s.seller_id = u.id 
-        LEFT JOIN seller_profiles sp ON s.seller_id = sp.user_id 
-        WHERE s.parent_order_id = ?
-      `).all(o.id);
-      for (const sub of subOrders) {
-        sub.items = await db.prepare(`
-          SELECT product_id, product_name, unit_price_paise, quantity, image_url 
-          FROM order_items 
-          WHERE sub_order_id = ?
-        `).all(sub.id);
-      }
-      o.sub_orders = subOrders || [];
     }
     
     const nextCursor = hasMore && orders.length > 0 ? String(orders[orders.length - 1].id) : null;
@@ -3175,22 +3115,6 @@ app.get('/api/orders/:id', rateLimit(120), authenticateToken, async (req, res) =
     
     // Fetch address
     const address = await db.prepare('SELECT full_name, line1, line2, city, state, pincode FROM addresses WHERE id = ?').get(order.address_id);
-
-    const subOrders = await db.prepare(`
-      SELECT s.*, u.full_name as seller_name, sp.shop_name 
-      FROM sub_orders s 
-      JOIN users u ON s.seller_id = u.id 
-      LEFT JOIN seller_profiles sp ON s.seller_id = sp.user_id 
-      WHERE s.parent_order_id = ?
-    `).all(id);
-
-    for (const sub of subOrders) {
-      sub.items = await db.prepare(`
-        SELECT product_id, product_name, unit_price_paise, quantity, image_url 
-        FROM order_items 
-        WHERE sub_order_id = ?
-      `).all(sub.id);
-    }
     
     return res.status(200).json({
       success: true,
@@ -3206,8 +3130,7 @@ app.get('/api/orders/:id', rateLimit(120), authenticateToken, async (req, res) =
         ship_to: address || null,
         subtotal_paise: order.subtotal_paise,
         shipping_paise: order.shipping_paise,
-        total_paise: order.total_paise,
-        sub_orders: subOrders
+        total_paise: order.total_paise
       }
     });
   } catch (err) {
@@ -3526,82 +3449,46 @@ async function recordOrderSale(orderId) {
   try {
     const order = await db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
     if (!order) return;
-
+    
+    // Calculate gross amount
+    const gross = order.total_paise || (order.amount_paid ? order.amount_paid * 100 : 0);
+    if (gross <= 0) return;
+    
+    // Deduct 8% platform fee
+    const platformFee = Math.round(gross * 0.08);
+    
+    // Check if TDS is applicable (1% deduction)
+    const taxInfo = await db.prepare('SELECT tds_applicable FROM seller_tax_info WHERE seller_id = ?').get(order.seller_id);
+    const tdsApplicable = taxInfo ? taxInfo.tds_applicable : 0;
+    const taxAmount = tdsApplicable === 1 ? Math.round(gross * 0.01) : 0;
+    
+    const netAmount = gross - platformFee - taxAmount;
+    
     const buyer = await db.prepare('SELECT full_name FROM users WHERE id = ?').get(order.buyer_id);
     const buyerName = buyer ? buyer.full_name : 'Valued Buyer';
-
-    const subOrders = await db.prepare('SELECT * FROM sub_orders WHERE parent_order_id = ?').all(orderId);
-    if (subOrders && subOrders.length > 0) {
-      for (const sub of subOrders) {
-        const itemRow = await db.prepare('SELECT product_name FROM order_items WHERE sub_order_id = ? LIMIT 1').get(sub.id);
-        const productName = itemRow ? itemRow.product_name : 'Handcrafted Goods';
-
-        const gross = sub.subtotal_paise;
-        const platformFee = sub.platform_commission_paise;
-
-        const taxInfo = await db.prepare('SELECT tds_applicable FROM seller_tax_info WHERE seller_id = ?').get(sub.seller_id);
-        const tdsApplicable = taxInfo ? taxInfo.tds_applicable : 0;
-        const taxAmount = tdsApplicable === 1 ? Math.round(gross * 0.01) : 0;
-
-        const netAmount = gross - platformFee - taxAmount;
-
-        // 1. Create a completed transaction record
-        await db.prepare(`
-          INSERT INTO transactions (seller_id, order_id, product_name, buyer_name, type, gross_amount, platform_fee, tax_amount, net_amount, status, created_at)
-          VALUES (?, ?, ?, ?, 'SALE', ?, ?, ?, ?, 'COMPLETED', CURRENT_TIMESTAMP)
-        `).run(sub.seller_id, order.id, productName, buyerName, gross, platformFee, taxAmount, netAmount);
-
-        // 2. Update seller_earnings
-        let earnings = await db.prepare('SELECT id FROM seller_earnings WHERE seller_id = ?').get(sub.seller_id);
-        if (!earnings) {
-          await db.prepare('INSERT INTO seller_earnings (seller_id, total_earned, pending_amount, on_hold_amount, this_month_earned, this_week_earned) VALUES (?, 0, 0, 0, 0, 0)')
-            .run(sub.seller_id);
-        }
-
-        await db.prepare(`
-          UPDATE seller_earnings
-          SET total_earned = total_earned + ?,
-              pending_amount = pending_amount + ?,
-              this_month_earned = this_month_earned + ?,
-              this_week_earned = this_week_earned + ?,
-              last_updated = CURRENT_TIMESTAMP
-          WHERE seller_id = ?
-        `).run(netAmount, netAmount, netAmount, netAmount, sub.seller_id);
-      }
-    } else {
-      // Legacy single-seller logic
-      const gross = order.total_paise || (order.amount_paid ? order.amount_paid * 100 : 0);
-      if (gross <= 0) return;
-
-      const platformFee = Math.round(gross * 0.08);
-
-      const taxInfo = await db.prepare('SELECT tds_applicable FROM seller_tax_info WHERE seller_id = ?').get(order.seller_id);
-      const tdsApplicable = taxInfo ? taxInfo.tds_applicable : 0;
-      const taxAmount = tdsApplicable === 1 ? Math.round(gross * 0.01) : 0;
-
-      const netAmount = gross - platformFee - taxAmount;
-
-      await db.prepare(`
-        INSERT INTO transactions (seller_id, order_id, product_name, buyer_name, type, gross_amount, platform_fee, tax_amount, net_amount, status, created_at)
-        VALUES (?, ?, ?, ?, 'SALE', ?, ?, ?, ?, 'COMPLETED', CURRENT_TIMESTAMP)
-      `).run(order.seller_id, order.id, order.product_name || 'Handcrafted Goods', buyerName, gross, platformFee, taxAmount, netAmount);
-
-      let earnings = await db.prepare('SELECT id FROM seller_earnings WHERE seller_id = ?').get(order.seller_id);
-      if (!earnings) {
-        await db.prepare('INSERT INTO seller_earnings (seller_id, total_earned, pending_amount, on_hold_amount, this_month_earned, this_week_earned) VALUES (?, 0, 0, 0, 0, 0)')
-          .run(order.seller_id);
-      }
-
-      await db.prepare(`
-        UPDATE seller_earnings
-        SET total_earned = total_earned + ?,
-            pending_amount = pending_amount + ?,
-            this_month_earned = this_month_earned + ?,
-            this_week_earned = this_week_earned + ?,
-            last_updated = CURRENT_TIMESTAMP
-        WHERE seller_id = ?
-      `).run(netAmount, netAmount, netAmount, netAmount, order.seller_id);
+    
+    // 1. Create a completed transaction record
+    await db.prepare(`
+      INSERT INTO transactions (seller_id, order_id, product_name, buyer_name, type, gross_amount, platform_fee, tax_amount, net_amount, status, created_at)
+      VALUES (?, ?, ?, ?, 'SALE', ?, ?, ?, ?, 'COMPLETED', datetime('now'))
+    `).run(order.seller_id, order.id, order.product_name || 'Handcrafted Goods', buyerName, gross, platformFee, taxAmount, netAmount);
+    
+    // 2. Update seller_earnings
+    let earnings = await db.prepare('SELECT id FROM seller_earnings WHERE seller_id = ?').get(order.seller_id);
+    if (!earnings) {
+      db.prepare('INSERT INTO seller_earnings (seller_id, total_earned, pending_amount, on_hold_amount, this_month_earned, this_week_earned) VALUES (?, 0, 0, 0, 0, 0)')
+        .run(order.seller_id);
     }
+    
+    await db.prepare(`
+      UPDATE seller_earnings
+      SET total_earned = total_earned + ?,
+          pending_amount = pending_amount + ?,
+          this_month_earned = this_month_earned + ?,
+          this_week_earned = this_week_earned + ?,
+          last_updated = datetime('now')
+      WHERE seller_id = ?
+    `).run(netAmount, netAmount, netAmount, netAmount, order.seller_id);
   } catch (err) {
     console.error('Error in recordOrderSale:', err);
   }
@@ -3810,23 +3697,9 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
     const verifyTx = db.transaction(async () => {
       await db.prepare(`
         UPDATE orders 
-        SET status = 'Processing', payment_status = 'paid', razorpay_payment_id = ?, updated_at = CURRENT_TIMESTAMP
+        SET status = 'Processing', razorpay_payment_id = ?, updated_at = datetime('now')
         WHERE id = ?
       `).run(razorpay_payment_id, order_id);
-
-      await db.prepare(`
-        UPDATE sub_orders
-        SET delivery_status = 'pending', updated_at = CURRENT_TIMESTAMP
-        WHERE parent_order_id = ?
-      `).run(order_id);
-
-      const subOrders = await db.prepare('SELECT id, seller_id, seller_payout_paise FROM sub_orders WHERE parent_order_id = ?').all(order_id);
-      for (const sub of subOrders) {
-        await db.prepare(`
-          INSERT INTO seller_settlements (seller_id, sub_order_id, amount_paise, status, settled_at, created_at)
-          VALUES (?, ?, ?, 'pending', NULL, CURRENT_TIMESTAMP)
-        `).run(sub.seller_id, sub.id, sub.seller_payout_paise);
-      }
       
       const items = await db.prepare('SELECT product_id, quantity FROM order_items WHERE order_id = ?').all(order_id);
       const decrementStock = db.prepare('UPDATE products SET stock_qty = MAX(0, stock_qty - ?) WHERE id = ?');
@@ -3840,30 +3713,15 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
       `).run(userId, order_id);
 
       // Increment daily_order_tracking on successful orders
+      const totalUnits = items.reduce(async (sum, i) => sum + i.quantity, 0);
       const todayStr = getLocalDateString();
-      if (subOrders && subOrders.length > 0) {
-        for (const sub of subOrders) {
-          const subItems = await db.prepare('SELECT quantity FROM order_items WHERE sub_order_id = ?').all(sub.id);
-          const totalUnits = subItems.reduce((sum, i) => sum + i.quantity, 0);
-          const existing = await db.prepare("SELECT total_units_ordered FROM daily_order_tracking WHERE seller_id = ? AND date = ?").get(sub.seller_id, todayStr);
-          if (existing) {
-            await db.prepare("UPDATE daily_order_tracking SET total_units_ordered = total_units_ordered + ? WHERE seller_id = ? AND date = ?")
-              .run(totalUnits, sub.seller_id, todayStr);
-          } else {
-            await db.prepare("INSERT INTO daily_order_tracking (seller_id, date, total_units_ordered) VALUES (?, ?, ?)")
-              .run(sub.seller_id, todayStr, totalUnits);
-          }
-        }
+      const existing = await db.prepare("SELECT total_units_ordered FROM daily_order_tracking WHERE seller_id = ? AND date = ?").get(order.seller_id, todayStr);
+      if (existing) {
+        db.prepare("UPDATE daily_order_tracking SET total_units_ordered = total_units_ordered + ? WHERE seller_id = ? AND date = ?")
+          .run(totalUnits, order.seller_id, todayStr);
       } else {
-        const totalUnits = items.reduce((sum, i) => sum + i.quantity, 0);
-        const existing = await db.prepare("SELECT total_units_ordered FROM daily_order_tracking WHERE seller_id = ? AND date = ?").get(order.seller_id, todayStr);
-        if (existing) {
-          await db.prepare("UPDATE daily_order_tracking SET total_units_ordered = total_units_ordered + ? WHERE seller_id = ? AND date = ?")
-            .run(totalUnits, order.seller_id, todayStr);
-        } else {
-          await db.prepare("INSERT INTO daily_order_tracking (seller_id, date, total_units_ordered) VALUES (?, ?, ?)")
-            .run(order.seller_id, todayStr, totalUnits);
-        }
+        db.prepare("INSERT INTO daily_order_tracking (seller_id, date, total_units_ordered) VALUES (?, ?, ?)")
+          .run(order.seller_id, todayStr, totalUnits);
       }
     });
     
@@ -7132,15 +6990,15 @@ app.get('/api/seller/orders', requireSeller, async (req, res) => {
     const limit = Math.min(Math.max(parseInt(per_page) || 20, 1), 100);
     const offset = (Math.max(parseInt(page) || 1, 1) - 1) * limit;
 
-    let whereClauses = ["s.seller_id = ?"];
+    let whereClauses = ["o.seller_id = ?"];
     let params = [sellerId];
 
     // Status filter
     if (status) {
       if (status === 'overdue') {
-        whereClauses.push("CAST(o.deadline_at AS date) < CURRENT_DATE AND s.delivery_status NOT IN ('delivered','cancelled')");
+        whereClauses.push("date(o.deadline_at) < date('now') AND o.status NOT IN ('dispatched','delivered','cancelled','rto')");
       } else {
-        whereClauses.push("s.delivery_status = ?");
+        whereClauses.push("o.status = ?");
         params.push(status);
       }
     }
@@ -7148,11 +7006,11 @@ app.get('/api/seller/orders', requireSeller, async (req, res) => {
     // Tab filter
     if (tab && tab !== 'all') {
       if (tab === 'due_today') {
-        whereClauses.push("CAST(o.deadline_at AS date) = CURRENT_DATE AND s.delivery_status NOT IN ('cancelled', 'delivered')");
+        whereClauses.push("date(o.deadline_at) = date('now') AND o.status NOT IN ('cancelled', 'rto', 'delivered')");
       } else if (tab === 'overdue') {
-        whereClauses.push("CAST(o.deadline_at AS date) < CURRENT_DATE AND s.delivery_status NOT IN ('delivered','cancelled')");
+        whereClauses.push("date(o.deadline_at) < date('now') AND o.status NOT IN ('dispatched','delivered','cancelled','rto')");
       } else {
-        whereClauses.push("s.delivery_status = ?");
+        whereClauses.push("o.status = ?");
         params.push(tab);
       }
     }
@@ -7168,24 +7026,26 @@ app.get('/api/seller/orders', requireSeller, async (req, res) => {
     // Count query
     const countQuery = `
       SELECT COUNT(*) as c 
-      FROM sub_orders s
-      JOIN orders o ON o.id = s.parent_order_id
+      FROM orders o
       WHERE ${whereStr}
     `;
     const totalCount = await db.prepare(countQuery).get(...params).c;
 
     // Fetch orders query
     let fetchQuery = `
-      SELECT s.id, o.order_ref, o.buyer_id, o.created_at as order_date, s.subtotal_paise as total_paise, 
-             s.delivery_status as status, s.tracking_number as tracking_id, u.full_name as buyer_name, 
+      SELECT o.id, o.order_ref, o.buyer_id, o.listing_id, o.variant_id,
+             o.order_type, o.customization, o.payment_status, o.status,
+             o.deadline_at, o.tracking_id, o.studio_notes, o.created_at, o.total_paise,
+             o.product_name as order_product_name,
+             u.full_name as buyer_name,
              COALESCE((SELECT city FROM addresses WHERE user_id = o.buyer_id LIMIT 1), u.location, 'India') as buyer_city,
-             o.order_type, o.payment_status, o.created_at, o.deadline_at, o.studio_notes,
-             (SELECT product_name FROM order_items WHERE sub_order_id = s.id LIMIT 1) as product_title,
-             (SELECT product_id FROM order_items WHERE sub_order_id = s.id LIMIT 1) as listing_id,
-             NULL as variant_name
-      FROM sub_orders s
-      JOIN orders o ON o.id = s.parent_order_id
+             l.id as listing_id,
+             COALESCE(l.title, o.product_name) as product_title,
+             v.variant_name
+      FROM orders o
       JOIN users u ON u.id = o.buyer_id
+      LEFT JOIN listings l ON l.id = o.listing_id
+      LEFT JOIN listing_variants v ON v.id = o.variant_id
       WHERE ${whereStr}
       ORDER BY ${orderBy}
     `;
@@ -7292,16 +7152,13 @@ app.get('/api/seller/orders/:id', requireSeller, async (req, res) => {
   try {
     const orderId = parseInt(req.params.id);
     const row = await db.prepare(`
-      SELECT s.id as internal_id, o.id as parent_order_id, o.order_ref as order_id,
-             s.delivery_status as status,
+      SELECT o.id as internal_id, o.order_ref as order_id,
+             o.listing_id,
              o.deadline_at,
-             o.order_type,
-             o.payment_status,
-             o.created_at as order_date,
-             s.subtotal_paise as total_paise,
-             s.tracking_number as tracking_id,
-             s.courier_name,
-             s.estimated_delivery,
+             COALESCE(oi.quantity, o.quantity, 1) as quantity,
+             COALESCE(oi.unit_price_paise, o.unit_price, o.total_paise) as unit_price,
+             COALESCE(oi.product_name, o.product_name, l.title, 'Unknown Product') as item_title,
+             COALESCE(pi2.url, l.cover_photo_url, oi.image_url) as item_photo_url,
              u.full_name as buyer_name,
              u.display_name as buyer_handle,
              u.id as buyer_id,
@@ -7312,33 +7169,29 @@ app.get('/api/seller/orders/:id', requireSeller, async (req, res) => {
                ELSE NULL
              END as buyer_address,
              COALESCE(a.phone, u.phone) as buyer_phone,
-             s.delivery_status as fulfillment_status,
-             s.tracking_number
-      FROM sub_orders s
-      JOIN orders o ON o.id = s.parent_order_id
+             o.created_at as order_date, o.total_paise,
+             COALESCE(som.fulfillment_status, o.status, 'pending') as fulfillment_status,
+             COALESCE(som.tracking_number, o.tracking_id) as tracking_number,
+             som.dispatch_note, som.gift_wrap_requested
+      FROM orders o
+      LEFT JOIN order_items oi ON oi.order_id = o.id
+      LEFT JOIN products p ON p.id = oi.product_id
       JOIN users u ON u.id = o.buyer_id
+      LEFT JOIN listings l ON l.id = o.listing_id
       LEFT JOIN addresses a ON a.id = o.address_id
-      WHERE s.id = ? AND s.seller_id = ?
+      LEFT JOIN seller_order_meta som ON som.order_id = o.id
+      LEFT JOIN product_images pi2 ON pi2.product_id = p.id AND pi2.is_primary = 1
+      WHERE o.id = ? AND o.seller_id = ?
       LIMIT 1
     `).get(orderId, req.user.user_id);
 
     if (!row) return res.status(404).json({ error: true, message: 'Order not found', code: 'NOT_FOUND' });
 
-    // Fetch items from order_items where sub_order_id = ?
-    const items = await db.prepare(`
-      SELECT product_id, product_name, unit_price_paise, quantity, image_url 
-      FROM order_items 
-      WHERE sub_order_id = ?
-    `).all(orderId);
-
-    const firstItem = items[0] || {};
-    const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
-
     const mapFulfillmentStatus = (status) => {
       const s = (status || '').toLowerCase();
-      if (s === 'pending') return 'pending';
-      if (s === 'packed') return 'crafting';
-      if (s === 'shipped') return 'shipped';
+      if (s === 'awaiting_payment') return 'pending';
+      if (['processing', 'in_production', 'packed'].includes(s)) return 'crafting';
+      if (['dispatched', 'in_transit'].includes(s)) return 'shipped';
       if (s === 'delivered') return 'delivered';
       if (s === 'cancelled') return 'cancelled';
       return s;
@@ -7346,7 +7199,7 @@ app.get('/api/seller/orders/:id', requireSeller, async (req, res) => {
 
     let events = [];
     try {
-      events = await db.prepare('SELECT status, occurred_at, note FROM order_tracking_events WHERE order_id = ? ORDER BY occurred_at ASC').all(row.parent_order_id);
+      events = await db.prepare('SELECT status, occurred_at, note FROM order_tracking_events WHERE order_id = ? ORDER BY occurred_at ASC').all(orderId);
     } catch (_) {}
 
     const estimatedDelivery = row.deadline_at
@@ -7357,19 +7210,16 @@ app.get('/api/seller/orders/:id', requireSeller, async (req, res) => {
       success: true,
       data: { 
         ...row,
-        listing_id: firstItem.product_id || null,
-        product_id_display: `PROD-${firstItem.product_id || orderId}`,
-        quantity: totalQty || 1,
-        unit_price: firstItem.unit_price_paise || row.total_paise,
-        item_title: firstItem.product_name || 'Unknown Product',
-        item_photo_url: firstItem.image_url || null,
+        listing_id: row.listing_id,
+        product_id_display: `PROD-${row.listing_id || orderId}`,
+        quantity: row.quantity || 1,
+        unit_price: row.unit_price || row.total_paise,
         deadline_at: row.deadline_at,
         estimated_delivery: estimatedDelivery,
         buyer_phone: row.buyer_phone || row.buyer_user_phone || null,
         fulfillment_status: mapFulfillmentStatus(row.fulfillment_status),
-        gift_wrap_requested: false, 
-        tracking_events: events,
-        items
+        gift_wrap_requested: row.gift_wrap_requested === 1, 
+        tracking_events: events 
       }
     });
   } catch (err) {
@@ -7385,6 +7235,7 @@ const handleOrderStatusUpdate = async (req, res) => {
   try {
     const orderId = parseInt(req.params.id);
     const sellerId = req.user.user_id;
+    // Map tracking_number -> tracking_id for backward compatibility with older PUT body
     const statusVal = req.body.status;
     const trackingIdVal = req.body.tracking_id || req.body.tracking_number;
     const courierVal = req.body.courier;
@@ -7394,46 +7245,41 @@ const handleOrderStatusUpdate = async (req, res) => {
       return res.status(400).json({ error: true, message: 'Status is required', code: 'VALIDATION_ERROR' });
     }
 
-    const subOrder = await db.prepare('SELECT * FROM sub_orders WHERE id = ? AND seller_id = ?').get(orderId, sellerId);
-    if (!subOrder) {
+    const order = await db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+    if (!order) {
       return res.status(404).json({ error: true, message: 'Order not found', code: 'NOT_FOUND' });
     }
 
-    const parentOrder = await db.prepare('SELECT * FROM orders WHERE id = ?').get(subOrder.parent_order_id);
+    if (order.seller_id !== sellerId) {
+      return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
+    }
 
     // Convert old status values to new statuses for backward compatibility if any
     let targetStatus = statusVal;
     if (targetStatus === 'crafting') targetStatus = 'in_production';
     if (targetStatus === 'shipped') targetStatus = 'dispatched';
 
-    // Map targetStatus to checked sub_order delivery_status value
-    let subStatus = targetStatus;
-    if (['processing', 'in_production', 'pending'].includes(subStatus)) {
-      subStatus = 'pending';
-    } else if (subStatus === 'packed') {
-      subStatus = 'packed';
-    } else if (['dispatched', 'shipped', 'in_transit'].includes(subStatus)) {
-      subStatus = 'shipped';
-    } else if (subStatus === 'delivered') {
-      subStatus = 'delivered';
-    } else if (subStatus === 'cancelled') {
-      subStatus = 'cancelled';
-    }
-
-    // Enforce transition matrix on sub_orders status
-    const current = subOrder.delivery_status;
-    const target = subStatus;
+    // Enforce transition matrix
+    const current = order.status;
+    const target = targetStatus;
+    const nonTerminal = ['awaiting_payment', 'processing', 'in_production', 'packed', 'dispatched'];
 
     let isValid = false;
     if (current === target) {
       isValid = true;
-    } else if (target === 'cancelled' && ['pending', 'packed', 'shipped'].includes(current)) {
+    } else if (target === 'cancelled' && nonTerminal.includes(current)) {
       isValid = true;
-    } else if (current === 'pending' && target === 'packed') {
+    } else if (current === 'awaiting_payment' && target === 'processing') {
       isValid = true;
-    } else if (current === 'packed' && target === 'shipped') {
+    } else if (current === 'processing' && target === 'in_production') {
       isValid = true;
-    } else if (current === 'shipped' && target === 'delivered') {
+    } else if (current === 'in_production' && target === 'packed') {
+      isValid = true;
+    } else if (current === 'packed' && target === 'dispatched') {
+      isValid = true;
+    } else if (current === 'dispatched' && target === 'delivered') {
+      isValid = true;
+    } else if (current === 'dispatched' && target === 'rto') {
       isValid = true;
     }
 
@@ -7441,15 +7287,15 @@ const handleOrderStatusUpdate = async (req, res) => {
       return res.status(400).json({ error: true, message: `Invalid status transition from ${current} to ${target}`, code: 'INVALID_TRANSITION' });
     }
 
-    // If target is shipped and tracking_id not provided
-    if (target === 'shipped' && !trackingIdVal && !subOrder.tracking_number) {
-      return res.status(400).json({ error: true, message: 'Tracking ID is required when status is shipped', code: 'VALIDATION_ERROR' });
+    // If target is dispatched and tracking_id not provided
+    if (target === 'dispatched' && !trackingIdVal && !order.tracking_id) {
+      return res.status(400).json({ error: true, message: 'Tracking ID is required when status is dispatched', code: 'VALIDATION_ERROR' });
     }
 
     // Studio notes logic
     let studioNotes = [];
     try {
-      if (parentOrder.studio_notes) studioNotes = JSON.parse(parentOrder.studio_notes);
+      if (order.studio_notes) studioNotes = JSON.parse(order.studio_notes);
     } catch (e) {}
     if (!Array.isArray(studioNotes)) studioNotes = [];
 
@@ -7460,36 +7306,42 @@ const handleOrderStatusUpdate = async (req, res) => {
       });
     }
 
-    await db.prepare(`
-      UPDATE sub_orders
-      SET delivery_status = ?,
-          tracking_number = COALESCE(?, tracking_number),
-          courier_name = COALESCE(?, courier_name),
-          updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `).run(target, trackingIdVal || null, courierVal || null, orderId);
-
-    if (studioNoteVal) {
-      await db.prepare(`
-        UPDATE orders
-        SET studio_notes = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `).run(JSON.stringify(studioNotes), subOrder.parent_order_id);
+    // Set timestamps based on transitions
+    let dispatchedAt = order.dispatched_at;
+    if (target === 'dispatched' && !order.dispatched_at) {
+      dispatchedAt = new Date().toISOString();
     }
 
-    const updatedSubOrder = await db.prepare('SELECT * FROM sub_orders WHERE id = ?').get(orderId);
+    let deliveredAt = order.delivered_at;
+    if (target === 'delivered' && !order.delivered_at) {
+      deliveredAt = new Date().toISOString();
+    }
+
+    await db.prepare(`
+      UPDATE orders
+      SET status = ?,
+          tracking_id = COALESCE(?, tracking_id),
+          courier = COALESCE(?, courier),
+          dispatched_at = ?,
+          delivered_at = ?,
+          studio_notes = ?,
+          updated_at = datetime('now')
+      WHERE id = ?
+    `).run(target, trackingIdVal || null, courierVal || null, dispatchedAt, deliveredAt, JSON.stringify(studioNotes), orderId);
+
+    const updatedOrder = await db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
 
     return res.json({
       success: true,
       data: {
-        id: updatedSubOrder.id,
-        order_id: parentOrder.order_ref,
-        order_ref: parentOrder.order_ref,
-        status: updatedSubOrder.delivery_status,
-        fulfillment_status: updatedSubOrder.delivery_status,
-        tracking_number: updatedSubOrder.tracking_number,
-        tracking_id: updatedSubOrder.tracking_number,
-        updated_at: updatedSubOrder.updated_at
+        id: updatedOrder.id,
+        order_id: updatedOrder.order_ref, // compatibility
+        order_ref: updatedOrder.order_ref,
+        status: updatedOrder.status,
+        fulfillment_status: updatedOrder.status, // compatibility
+        tracking_number: updatedOrder.tracking_id, // compatibility
+        tracking_id: updatedOrder.tracking_id,
+        updated_at: updatedOrder.updated_at
       }
     });
   } catch (err) {
@@ -7506,37 +7358,46 @@ app.post('/api/seller/orders/:id/tracking', requireSeller, async (req, res) => {
   try {
     const orderId = parseInt(req.params.id);
     const sellerId = req.user.user_id;
-    const { tracking_number, courier, estimated_delivery, dispatch_note } = req.body;
+    const { tracking_number, courier, dispatch_note } = req.body;
 
-    const subOrder = await db.prepare('SELECT * FROM sub_orders WHERE id = ? AND seller_id = ?').get(orderId, sellerId);
-    if (!subOrder) {
+    const order = await db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+    if (!order) {
       return res.status(404).json({ error: true, message: 'Order not found', code: 'NOT_FOUND' });
     }
 
+    if (order.seller_id !== sellerId) {
+      return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
+    }
+
+    let studioNotes = [];
+    try {
+      if (order.studio_notes) studioNotes = JSON.parse(order.studio_notes);
+    } catch (e) {}
+    if (!Array.isArray(studioNotes)) studioNotes = [];
+
+    if (dispatch_note) {
+      studioNotes.push({
+        ts: new Date().toISOString(),
+        text: dispatch_note
+      });
+    }
+
     await db.prepare(`
-      UPDATE sub_orders
-      SET tracking_number = COALESCE(?, tracking_number),
-          courier_name = COALESCE(?, courier),
-          estimated_delivery = COALESCE(?, estimated_delivery),
-          delivery_status = 'shipped',
-          updated_at = CURRENT_TIMESTAMP
+      UPDATE orders
+      SET tracking_id = COALESCE(?, tracking_id),
+          courier = COALESCE(?, courier),
+          studio_notes = ?,
+          updated_at = datetime('now')
       WHERE id = ?
-    `).run(tracking_number || null, courier || null, estimated_delivery || null, orderId);
+    `).run(tracking_number || null, courier || null, JSON.stringify(studioNotes), orderId);
 
-    // Insert tracking event in order_tracking_events
-    await db.prepare(`
-      INSERT INTO order_tracking_events (order_id, status, note, occurred_at)
-      VALUES (?, 'shipped', ?, CURRENT_TIMESTAMP)
-    `).run(subOrder.parent_order_id, dispatch_note || `Shipped via ${courier || 'courier'}`);
-
-    const updated = await db.prepare('SELECT * FROM sub_orders WHERE id = ?').get(orderId);
-    const parentOrder = await db.prepare('SELECT order_ref FROM orders WHERE id = ?').get(subOrder.parent_order_id);
+    const updated = await db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
 
     return res.json({
       success: true,
       data: {
-        order_id: parentOrder ? parentOrder.order_ref : null,
-        tracking_number: updated.tracking_number
+        order_id: updated.order_ref,
+        tracking_number: updated.tracking_id
       }
     });
   } catch (err) {
@@ -9165,15 +9026,6 @@ app.get('/api/admin/orders', authenticateAdminToken, async (req, res) => {
       created_ago: formatJoinedAgo(r.created_at)
     }));
 
-    const revenueRow = await db.prepare("SELECT SUM(total_paise) as total FROM orders WHERE payment_status = 'paid'").get();
-    const totalRevenue = revenueRow && revenueRow.total ? parseInt(revenueRow.total) : 0;
-
-    const ordersCountRow = await db.prepare("SELECT COUNT(*) as total FROM orders").get();
-    const totalOrdersCount = ordersCountRow ? parseInt(ordersCountRow.total) : 0;
-
-    const pendingSettlementsRow = await db.prepare("SELECT COUNT(*) as total FROM seller_settlements WHERE status = 'pending'").get();
-    const pendingSettlementsCount = pendingSettlementsRow ? parseInt(pendingSettlementsRow.total) : 0;
-
     return res.status(200).json({
       success: true,
       data: {
@@ -9182,104 +9034,11 @@ app.get('/api/admin/orders', authenticateAdminToken, async (req, res) => {
         page: parseInt(page),
         per_page: limit,
         total_pages: Math.ceil(total / limit) || 1,
-        refund_flagged_count: refundFlaggedCount,
-        summary: {
-          total_revenue: totalRevenue,
-          total_orders: totalOrdersCount,
-          pending_settlements: pendingSettlementsCount
-        }
+        refund_flagged_count: refundFlaggedCount
       }
     });
   } catch (err) {
     console.error('GET /api/admin/orders error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-// Added Settlements endpoints for Phase 3
-app.get('/api/admin/settlements', authenticateAdminToken, async (req, res) => {
-  try {
-    const { status, page = 1, per_page = 20 } = req.query;
-    const limit = parseInt(per_page) || 20;
-    const offset = (parseInt(page) - 1) * limit;
-
-    let conditions = [];
-    const params = [];
-
-    if (status) {
-      conditions.push("s.status = ?");
-      params.push(status);
-    }
-
-    const whereClause = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
-
-    const countRow = await db.prepare(`SELECT COUNT(*) AS c FROM seller_settlements s ${whereClause}`).get(...params);
-    const total = countRow.c;
-
-    const rows = await db.prepare(`
-      SELECT s.id, s.seller_id, s.sub_order_id, s.amount_paise, s.status, s.settled_at, s.created_at,
-             u.full_name as seller_name,
-             sp.shop_name,
-             o.order_ref
-      FROM seller_settlements s
-      JOIN users u ON s.seller_id = u.id
-      LEFT JOIN seller_profiles sp ON s.seller_id = sp.user_id
-      LEFT JOIN sub_orders sub ON s.sub_order_id = sub.id
-      LEFT JOIN orders o ON sub.parent_order_id = o.id
-      ${whereClause}
-      ORDER BY s.created_at DESC
-      LIMIT ? OFFSET ?
-    `).all(...params, limit, offset);
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        settlements: rows,
-        total,
-        page: parseInt(page),
-        per_page: limit,
-        total_pages: Math.ceil(total / limit) || 1
-      }
-    });
-  } catch (err) {
-    console.error('GET /api/admin/settlements error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-app.patch('/api/admin/settlements/:id', authenticateAdminToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    if (!status || !['pending', 'processing', 'completed', 'failed'].includes(status)) {
-      return res.status(400).json({ error: true, message: 'Invalid status', code: 'VALIDATION_ERROR' });
-    }
-
-    const settlement = await db.prepare('SELECT * FROM seller_settlements WHERE id = ?').get(id);
-    if (!settlement) {
-      return res.status(404).json({ error: true, message: 'Settlement not found', code: 'NOT_FOUND' });
-    }
-
-    let settledAt = settlement.settled_at;
-    if (status === 'completed' && !settlement.settled_at) {
-      settledAt = new Date().toISOString();
-    }
-
-    await db.prepare(`
-      UPDATE seller_settlements
-      SET status = ?, settled_at = ?, created_at = created_at
-      WHERE id = ?
-    `).run(status, settledAt, id);
-
-    const updated = await db.prepare('SELECT * FROM seller_settlements WHERE id = ?').get(id);
-
-    return res.status(200).json({
-      success: true,
-      data: updated
-    });
-  } catch (err) {
-    console.error('PATCH /api/admin/settlements/:id error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -9512,15 +9271,13 @@ app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
 });
 
 // TASK 19: PATCH /api/admin/categories/:category_id
-app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCategories.single('banner'), async (req, res) => {
+app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (req, res) => {
   try {
     const catId = parseInt(req.params.category_id);
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
     const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
-    let banner_image_url = req.file ? '/uploads/categories/' + req.file.filename : undefined;
-
     if (slug !== undefined) {
       if (!/^[a-z0-9-]+$/.test(slug)) {
         return res.status(400).json({ error: true, message: 'Invalid slug format', code: 'INVALID_SLUG' });
@@ -9529,7 +9286,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
       if (conflict) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
     }
 
-    const beforeJson = { display_name: cat.display_name, slug: cat.slug, is_active: cat.is_active, banner_image_url: cat.banner_image_url };
+    const beforeJson = { display_name: cat.display_name, slug: cat.slug, is_active: cat.is_active };
 
     const updates = [];
     const params = [];
@@ -9539,24 +9296,6 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
     if (description !== undefined) { updates.push('description = ?'); params.push(description); }
     if (sort_order !== undefined) { updates.push('sort_order = ?'); params.push(sort_order); }
     if (is_active !== undefined) { updates.push('is_active = ?'); params.push(is_active ? 1 : 0); }
-    if (banner_image_url !== undefined) { updates.push('banner_image_url = ?'); params.push(banner_image_url); }
-
-    if (updates.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: {
-          id: cat.id,
-          display_name: cat.display_name || cat.name,
-          slug: cat.slug,
-          emoji_icon: cat.emoji_icon || cat.icon_emoji,
-          sort_order: cat.sort_order,
-          is_active: !!cat.is_active,
-          status_label: cat.is_active ? 'Active' : 'Hidden',
-          product_count: cat.product_count || cat.item_count || 0,
-          banner_image_url: cat.banner_image_url
-        }
-      });
-    }
 
     updates.push("updated_at = datetime('now')");
     params.push(catId);
@@ -9564,7 +9303,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
     await db.prepare(`UPDATE categories SET ${updates.join(', ')} WHERE id = ?`).run(...params);
 
     const updated = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
-    await writeAuditLog('admin.category.updated', req.admin.id, req.admin.display_name, 'category', catId, `Category: ${updated.display_name}`, beforeJson, { display_name: updated.display_name, slug: updated.slug, is_active: updated.is_active, banner_image_url: updated.banner_image_url });
+    await writeAuditLog('admin.category.updated', req.admin.id, req.admin.display_name, 'category', catId, `Category: ${updated.display_name}`, beforeJson, { display_name: updated.display_name, slug: updated.slug, is_active: updated.is_active });
 
     return res.status(200).json({
       success: true,
@@ -9576,8 +9315,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
         sort_order: updated.sort_order,
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
-        product_count: updated.product_count || updated.item_count || 0,
-        banner_image_url: updated.banner_image_url
+        product_count: updated.product_count || updated.item_count || 0
       }
     });
   } catch (err) {
@@ -9648,11 +9386,10 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
     const sponsoredCount = await db.prepare("SELECT COUNT(*) AS c FROM sponsored_products WHERE is_sponsored = 1").get().c;
 
     const rows = await db.prepare(`
-      SELECT p.id, p.name, p.price_paise, p.seller_id, p.status,
+      SELECT p.id, p.name, p.price_paise, p.seller_id,
         COALESCE(u.full_name, '') AS seller_name,
         COALESCE(cat.name, 'Uncategorised') AS category_name,
-        COALESCE(sp_prod.is_sponsored, 0) AS is_sponsored,
-        (SELECT url FROM product_images WHERE product_id = p.id ORDER BY is_primary DESC, id ASC LIMIT 1) AS primary_image_url
+        COALESCE(sp_prod.is_sponsored, 0) AS is_sponsored
       FROM products p
       LEFT JOIN users u ON u.id = p.seller_id
       LEFT JOIN categories cat ON cat.id = p.category_id
@@ -9672,9 +9409,7 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
       price_paise: r.price_paise,
       price_display: formatMoney(r.price_paise),
       is_sponsored: !!r.is_sponsored,
-      sponsored_status_label: r.is_sponsored ? 'Sponsored' : '—',
-      status: r.status || 'active',
-      image_url: r.primary_image_url || ''
+      sponsored_status_label: r.is_sponsored ? 'Sponsored' : '—'
     }));
 
     return res.status(200).json({
@@ -9683,54 +9418,6 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
     });
   } catch (err) {
     console.error('GET /api/admin/products error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-// GET /api/admin/products/:product_id
-app.get('/api/admin/products/:product_id', authenticateAdminToken, async (req, res) => {
-  try {
-    const productId = parseInt(req.params.product_id);
-    const product = await db.prepare(`
-      SELECT p.*, cat.name AS category_name, u.full_name AS seller_name
-      FROM products p
-      LEFT JOIN categories cat ON cat.id = p.category_id
-      LEFT JOIN users u ON u.id = p.seller_id
-      WHERE p.id = ?
-    `).get(productId);
-    
-    if (!product) {
-      return res.status(404).json({ error: true, message: 'Product not found', code: 'NOT_FOUND' });
-    }
-    
-    // Fetch product images
-    const images = await db.prepare('SELECT url, is_primary FROM product_images WHERE product_id = ? ORDER BY sort_order ASC').all(productId);
-    
-    // Fetch any active ban reason
-    const activeBan = await db.prepare('SELECT ban_reason FROM product_bans WHERE product_id = ? AND unbanned_at IS NULL ORDER BY banned_at DESC LIMIT 1').get(productId);
-    
-    return res.status(200).json({
-      success: true,
-      data: {
-        id: product.id,
-        sku: `PROD-${product.id}`,
-        name: product.name,
-        description: product.description,
-        price_paise: product.price_paise,
-        price_display: formatMoney(product.price_paise),
-        stock_qty: product.stock_qty,
-        ships_in_days: product.ships_in_days,
-        category_id: product.category_id,
-        category_name: product.category_name || 'Uncategorised',
-        seller_id: product.seller_id,
-        seller_name: product.seller_name,
-        status: product.status || 'active',
-        ban_reason: activeBan ? activeBan.ban_reason : '',
-        images: images || []
-      }
-    });
-  } catch (err) {
-    console.error('GET /api/admin/products/:product_id error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -9782,105 +9469,6 @@ app.patch('/api/admin/products/:product_id/sponsored', authenticateAdminToken, a
     });
   } catch (err) {
     console.error('PATCH /api/admin/products/:product_id/sponsored error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-// PATCH /api/admin/products/:product_id/moderation
-app.patch('/api/admin/products/:product_id/moderation', authenticateAdminToken, async (req, res) => {
-  try {
-    const productId = parseInt(req.params.product_id);
-    const { name, description, price_paise, stock_qty, category_id, ships_in_days, status, ban_reason } = req.body;
-
-    const product = await db.prepare('SELECT * FROM products WHERE id = ?').get(productId);
-    if (!product) {
-      return res.status(404).json({ error: true, message: 'Product not found', code: 'NOT_FOUND' });
-    }
-
-    if (status === 'banned' && (!ban_reason || !ban_reason.trim())) {
-      return res.status(400).json({ error: true, message: 'Ban reason is required when banning a product', code: 'VALIDATION_ERROR' });
-    }
-
-    const beforeJson = {
-      name: product.name,
-      description: product.description,
-      price_paise: product.price_paise,
-      stock_qty: product.stock_qty,
-      category_id: product.category_id,
-      ships_in_days: product.ships_in_days,
-      status: product.status || 'active'
-    };
-
-    const moderationTransaction = db.transaction(async () => {
-      // Update product details
-      await db.prepare(`
-        UPDATE products
-        SET name = ?,
-            description = ?,
-            price_paise = ?,
-            stock_qty = ?,
-            category_id = ?,
-            ships_in_days = ?,
-            status = ?,
-            updated_at = datetime('now')
-        WHERE id = ?
-      `).run(
-        name !== undefined ? name : product.name,
-        description !== undefined ? description : product.description,
-        price_paise !== undefined ? parseInt(price_paise) : product.price_paise,
-        stock_qty !== undefined ? parseInt(stock_qty) : product.stock_qty,
-        category_id !== undefined ? (category_id ? parseInt(category_id) : null) : product.category_id,
-        ships_in_days !== undefined ? parseInt(ships_in_days) : product.ships_in_days,
-        status !== undefined ? status : (product.status || 'active'),
-        productId
-      );
-
-      // Handle ban/unban records
-      if (status === 'banned' && product.status !== 'banned') {
-        await db.prepare(`
-          INSERT INTO product_bans (product_id, banned_by, ban_reason)
-          VALUES (?, ?, ?)
-        `).run(productId, req.admin.id, ban_reason.trim());
-      } else if (status !== 'banned' && product.status === 'banned') {
-        await db.prepare(`
-          UPDATE product_bans
-          SET unbanned_at = datetime('now'),
-              unbanned_by = ?
-          WHERE product_id = ? AND unbanned_at IS NULL
-        `).run(req.admin.id, productId);
-      }
-
-      const updated = await db.prepare('SELECT * FROM products WHERE id = ?').get(productId);
-      const afterJson = {
-        name: updated.name,
-        description: updated.description,
-        price_paise: updated.price_paise,
-        stock_qty: updated.stock_qty,
-        category_id: updated.category_id,
-        ships_in_days: updated.ships_in_days,
-        status: updated.status || 'active'
-      };
-
-      await writeAuditLog(
-        'admin.product.moderated',
-        req.admin.id,
-        req.admin.display_name,
-        'product',
-        productId,
-        `Product: ${updated.name}`,
-        beforeJson,
-        afterJson
-      );
-    });
-
-    await moderationTransaction();
-
-    return res.status(200).json({
-      success: true,
-      message: 'Product moderated successfully'
-    });
-  } catch (err) {
-    console.error('PATCH /api/admin/products/:product_id/moderation error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -10338,6 +9926,18 @@ app.get('/api/admin/dashboard/seller-activity', authenticateAdminToken, async (r
 // ==========================================
 // UI SETTINGS
 // ==========================================
+
+const uiSettingsStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '..', 'uploads', 'ui');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'ui-' + Date.now() + path.extname(file.originalname));
+  }
+});
+const uploadUiSettings = multer({ storage: uiSettingsStorage });
 
 // GET /api/admin/ui-settings
 app.get('/api/admin/ui-settings', authenticateAdminToken, async (req, res) => {
