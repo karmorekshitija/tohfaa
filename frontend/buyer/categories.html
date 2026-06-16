@@ -129,9 +129,10 @@
             width: 100%;
             aspect-ratio: 1 / 1;
             overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #8FAF82;
+            box-shadow: 0 2px 8px rgba(58,51,40,0.07);
+            background: #FCFAF5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -147,7 +148,7 @@
             transform: scale(1.05);
         }
         .category-name {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Lora', serif;
             color: #3D6B4F;
             font-size: 14px;
             font-weight: 500;
@@ -192,7 +193,7 @@
 <body class="bg-white text-on-surface min-h-screen font-body-md overflow-x-hidden">
     <!-- TopNavBar -->
     <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -252,7 +253,7 @@
         <section class="px-margin-desktop pt-xl pb-lg text-center relative overflow-hidden">
 
             <div class="relative z-10">
-                <p class="font-label-caps text-label-caps text-[#C8973A] mb-sm">BROWSE BY CRAFT</p>
+                <p class="mb-sm text-[#C8973A]" style="font-family: 'Cinzel', serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">BROWSE BY CRAFT</p>
                 <h1 class="font-display-hero text-display-hero text-primary mb-md">Find your gift <span class="font-normal italic">✦</span></h1>
                 <p class="font-body-md text-body-md text-on-surface-variant max-w-lg mx-auto">Handmade with care, found with love.</p>
             </div>
@@ -469,10 +470,10 @@
 
                 html += `
                   <div ${clickAction} class="category-card group cursor-pointer flex flex-col items-center">
-                    <div class="category-image-container relative overflow-hidden rounded-lg shadow-sm aspect-square w-full bg-[#FFFFFF]">
+                    <div class="category-image-container relative overflow-hidden rounded-2xl border border-[#8FAF82] aspect-square w-full bg-[#FCFAF5] shadow-sm">
                       <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imageToUse}" alt="${displayName}">
                     </div>
-                    <span class="category-name mt-2 text-center text-sm font-body text-primary font-['DM_Sans'] py-1 px-2 block leading-snug">
+                    <span class="category-name mt-2 text-center text-sm font-body text-primary font-['Lora'] py-1 px-2 block leading-snug">
                       ${displayName}
                     </span>
                   </div>
