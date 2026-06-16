@@ -206,7 +206,7 @@
 <body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">
     <!-- TopNavBar -->
     <!-- TopNavBar -->
-<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -281,10 +281,10 @@
             <!-- Left: Product Image Gallery / Carousel -->
             <div class="lg:col-span-7 flex flex-col gap-md">
                 <!-- Main Image -->
-                <div class="bg-[#F7F3EC] border border-outline-variant/60 rounded-2xl overflow-hidden shadow-sm aspect-square relative flex items-center justify-center p-6">
+                <div class="bg-[#FCFAF5] border border-[#8FAF82] rounded-2xl overflow-hidden shadow-sm aspect-square relative flex items-center justify-center p-6">
                     <img id="main-product-image" class="max-w-full max-h-full object-contain animate-fade-in" src="https://placehold.co/600x600/f4ede3/516447?text=Loading..." alt="Product Image">
                     <!-- Wishlist toggle -->
-                    <button id="wishlist-toggle-btn" class="absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none">
+                    <button id="wishlist-toggle-btn" class="absolute top-6 right-6 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none flex items-center justify-center">
                         <span id="wishlist-icon" class="material-symbols-outlined text-2xl">favorite</span>
                     </button>
                 </div>
@@ -295,12 +295,12 @@
             </div>
 
             <!-- Right: Product Information -->
-            <div class="lg:col-span-5 space-y-lg bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl">
+            <div class="lg:col-span-5 space-y-lg bg-[#FCFAF5] p-lg border border-[#8FAF82] rounded-2xl shadow-sm">
                 <div class="space-y-sm">
                     <div id="product-tags-container" class="flex flex-wrap gap-2 mb-2"></div>
                     <h1 id="product-name" class="font-headline-lg text-primary text-3xl leading-tight">Product Name</h1>
                     <div class="flex items-center gap-md pt-sm">
-                        <span class="text-2xl font-data-price text-secondary-fixed-variant font-bold" id="product-price">₹0.00</span>
+                        <span class="font-bold" id="product-price" style="font-family: 'Space Mono', monospace; font-size: 24px; color: #C8973A;">₹0.00</span>
                         <span class="text-xs bg-success-container/20 text-success border border-success/20 px-sm py-[2px] rounded font-semibold" id="product-stock-badge">In Stock</span>
                     </div>
                 </div>
@@ -322,10 +322,10 @@
                 <div class="space-y-md pt-md border-t border-outline-variant/20">
                     <div id="qty-selector-container" class="flex items-center justify-between">
                         <span class="font-label-caps text-outline text-xs tracking-wider uppercase">Quantity</span>
-                        <div class="flex items-center border border-outline-variant rounded-lg bg-white overflow-hidden shadow-sm">
-                            <button id="qty-decrease" class="px-md py-sm hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none">-</button>
+                        <div class="flex items-center border border-[#8FAF82] rounded-lg bg-white overflow-hidden shadow-sm">
+                            <button id="qty-decrease" class="w-11 h-11 hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none flex items-center justify-center">-</button>
                             <input type="number" id="qty-input" value="1" min="1" max="99" class="w-12 text-center border-none focus:ring-0 text-sm font-semibold text-primary p-0">
-                            <button id="qty-increase" class="px-md py-sm hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none">+</button>
+                            <button id="qty-increase" class="w-11 h-11 hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none flex items-center justify-center">+</button>
                         </div>
                     </div>
                     <button id="add-to-cart-btn" class="w-full bg-primary hover:bg-[#3D6B4F] text-white py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm">
@@ -362,25 +362,25 @@
             </div>
 
             <!-- Write a Review Form -->
-            <div id="write-review-container" class="mt-12 bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl hidden">
+            <div id="write-review-container" class="mt-12 bg-[#FCFAF5] p-lg border border-[#8FAF82] rounded-2xl hidden">
                 <h3 class="font-title-serif text-primary text-xl mb-md">Write a Review</h3>
                 <form id="review-form" class="space-y-md">
                     <div>
                         <label class="block text-xs font-label-caps text-outline uppercase tracking-wider mb-sm">Rating</label>
                         <div class="flex items-center gap-sm text-amber-500" id="star-input-container">
-                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="1">
+                            <button type="button" class="star-btn focus:outline-none w-11 h-11 flex items-center justify-center transition-transform hover:scale-110 active:scale-95" data-rating="1">
                                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
                             </button>
-                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="2">
+                            <button type="button" class="star-btn focus:outline-none w-11 h-11 flex items-center justify-center transition-transform hover:scale-110 active:scale-95" data-rating="2">
                                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
                             </button>
-                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="3">
+                            <button type="button" class="star-btn focus:outline-none w-11 h-11 flex items-center justify-center transition-transform hover:scale-110 active:scale-95" data-rating="3">
                                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
                             </button>
-                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="4">
+                            <button type="button" class="star-btn focus:outline-none w-11 h-11 flex items-center justify-center transition-transform hover:scale-110 active:scale-95" data-rating="4">
                                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
                             </button>
-                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="5">
+                            <button type="button" class="star-btn focus:outline-none w-11 h-11 flex items-center justify-center transition-transform hover:scale-110 active:scale-95" data-rating="5">
                                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
                             </button>
                         </div>
@@ -389,12 +389,12 @@
                         <label for="review-body" class="block text-xs font-label-caps text-outline uppercase tracking-wider mb-sm">Review Comments</label>
                         <textarea id="review-body" rows="4" class="w-full rounded-xl border border-outline-variant bg-white p-4 text-sm focus:border-primary focus:ring-0 focus:outline-none" placeholder="Share your experience with this handmade piece..."></textarea>
                     </div>
-                    <button type="submit" class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-md rounded-xl font-semibold uppercase tracking-wider transition-all active:scale-95">
+                    <button type="submit" class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-md rounded-xl font-semibold uppercase tracking-wider transition-all active:scale-95 min-h-[44px]">
                         Submit Review
                     </button>
                 </form>
             </div>
-            <div id="review-gating-notice" class="mt-12 p-md bg-[#F7F3EC] border border-dashed border-outline-variant/60 rounded-xl text-center text-secondary text-sm">
+            <div id="review-gating-notice" class="mt-12 p-md bg-[#FCFAF5] border border-dashed border-[#8FAF82] rounded-xl text-center text-secondary text-sm">
                 Only verified buyers who received this item can write a review.
             </div>
         </section>
@@ -758,10 +758,10 @@
             const wishlistBtn = document.getElementById('wishlist-toggle-btn');
             if (isWishlisted) {
                 wishlistIcon.style.fontVariationSettings = "'FILL' 1";
-                wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-red-600 focus:outline-none";
+                wishlistBtn.className = "absolute top-6 right-6 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-red-600 focus:outline-none flex items-center justify-center";
             } else {
                 wishlistIcon.style.fontVariationSettings = "'FILL' 0";
-                wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none";
+                wishlistBtn.className = "absolute top-6 right-6 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none flex items-center justify-center";
             }
         }
 
