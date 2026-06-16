@@ -73,8 +73,6 @@ html, body {
   #related-treasures-grid,
   #catalog-grid,
   #custom-grid,
-  #product-feed-grid,
-  #sponsored-product-grid,
   .product-grid,
   .search-results-grid,
   .category-product-grid {
@@ -396,329 +394,179 @@ a.btn,
   }
 }
 
-/* ==========================================================================
-   Compact Mobile Product Cards (Amazon-style)
-   ========================================================================== */
-@media (max-width: 767px) {
-  /* Card padding and styling */
-  #product-feed-grid > div,
-  #sponsored-product-grid > div,
-  #product-grid > div,
-  #results-grid > div,
-  #related-treasures-grid > div,
-  #catalog-grid > div,
-  #custom-grid > div,
-  .product-grid > div,
-  .search-results-grid > div,
-  .category-product-grid > div {
-    padding: 8px !important;
-    border-radius: 8px !important;
-  }
-
-  /* Reduce margin-bottom inside card elements to tighten vertical spacing */
-  #product-feed-grid > div .mb-4,
-  #sponsored-product-grid > div .mb-4,
-  #product-grid > div .mb-4,
-  #results-grid > div .mb-4,
-  #catalog-grid > div .mb-4,
-  #custom-grid > div .mb-4,
-  .product-grid > div .mb-4,
-  .category-product-grid > div .mb-4 {
-    margin-bottom: 8px !important;
-  }
-
-  /* Image container adjustments */
-  #product-feed-grid > div img,
-  #sponsored-product-grid > div img,
-  #product-grid > div img,
-  #results-grid > div img,
-  #catalog-grid > div img,
-  #custom-grid > div img,
-  .product-grid > div img,
-  .category-product-grid > div img {
-    border-radius: 6px !important;
-  }
-
-  /* Typography: Title (13px) */
-  #product-feed-grid h4,
-  #sponsored-product-grid h4,
-  #product-grid h4,
-  #results-grid h4,
-  #catalog-grid h4,
-  #custom-grid h4,
-  .product-grid h4,
-  .category-product-grid h4 {
-    font-size: 13px !important;
-    line-height: 16px !important;
-    margin-bottom: 2px !important;
-  }
-
-  /* Typography: Price (15px) */
-  #product-feed-grid .text-lg,
-  #sponsored-product-grid .text-lg,
-  #product-grid .text-lg,
-  #results-grid .text-lg,
-  #catalog-grid .text-lg,
-  #custom-grid .text-lg,
-  .product-grid .text-lg,
-  .category-product-grid .text-lg {
-    font-size: 15px !important;
-    line-height: 18px !important;
-    margin-bottom: 2px !important;
-  }
-
-  /* Typography: Rating, reviews, seller (11px) */
-  #product-feed-grid .text-xs,
-  #sponsored-product-grid .text-xs,
-  #product-grid .text-xs,
-  #results-grid .text-xs,
-  #catalog-grid .text-xs,
-  #custom-grid .text-xs,
-  .product-grid .text-xs,
-  .category-product-grid .text-xs {
-    font-size: 11px !important;
-    line-height: 14px !important;
-  }
-
-  /* Add to Cart button compact layout */
-  #product-feed-grid .add-to-cart-btn,
-  #sponsored-product-grid .add-to-cart-btn,
-  #product-grid .add-to-cart-btn,
-  #results-grid .add-to-cart-btn,
-  #catalog-grid .add-to-cart-btn,
-  #custom-grid .add-to-cart-btn,
-  .product-grid .add-to-cart-btn,
-  .category-product-grid .add-to-cart-btn {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-    font-size: 11px !important;
-    line-height: 14px !important;
-    border-radius: 6px !important;
-    min-height: 28px !important;
-    height: 28px !important;
-  }
-
-  /* Slide indicator dots scaling and layout for mobile */
-  #hero-slide-dots {
-    bottom: -20px !important;
-  }
-  #hero-slide-dots button {
-    min-height: unset !important;
-    min-width: unset !important;
-    width: 6px !important;
-    height: 6px !important;
-    background-color: rgba(61, 107, 79, 0.3) !important;
-  }
-  #hero-slide-dots button.bg-white {
-    background-color: rgba(61, 107, 79, 1) !important;
-    transform: scale(1.25) !important;
-  }
-
-  /* Compact Filter & Sort Bar (Category Page Mobile Only) */
-  .mobile-sort-label {
+/* Hide desktop buyer header on mobile — MobileBuyerTopBar replaces it */
+@media (max-width: 768px) {
+  #tohfa-navbar > header,
+  body > header:not(#mbt-topbar):not(#msn-topbar) {
     display: none !important;
   }
-  
-  #filter-btn-text {
-    display: none !important;
-  }
-  
-  #filter-btn {
-    padding: 0 !important;
-    border-radius: 9999px !important;
-    width: 38px !important;
-    height: 38px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: relative !important;
-    flex-shrink: 0 !important;
-  }
-  
-  #filter-btn .material-symbols-outlined {
-    font-size: 20px !important;
-    margin-right: 0 !important;
-  }
-  
-  #filter-badge {
-    position: absolute !important;
-    top: -2px !important;
-    right: -2px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background-color: #3D6B4F !important;
-    color: #FFFFFF !important;
-    font-size: 9px !important;
-    font-weight: bold !important;
-    width: 15px !important;
-    height: 15px !important;
-    border-radius: 9999px !important;
-    border: 1.5px solid #FFFFFF !important;
-  }
-  
-  .mobile-filter-border {
-    margin-right: 4px !important;
-    padding-right: 8px !important;
-  }
+}
 
-  .mobile-sort-container {
-    margin-left: 4px !important;
-    padding-left: 8px !important;
+/* Mobile section block utility */
+.mobile-section-block {
+  display: block;
+  width: 100%;
+}
+@media (max-width: 768px) {
+  .mobile-section-block {
+    margin-top: 20px;
   }
-  
-  .mobile-sort-wrapper {
-    width: 38px !important;
-    height: 38px !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
+  .mobile-section-block + .mobile-section-block {
+    border-top: 1px solid #F7F3EC;
+    padding-top: 20px;
   }
-  
-  #sort-select {
-    position: absolute !important;
-    inset: 0 !important;
+}
+
+/* Responsive charts */
+@media (max-width: 768px) {
+  canvas {
     width: 100% !important;
-    height: 100% !important;
-    opacity: 0 !important;
-    z-index: 10 !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    max-width: 100% !important;
+    height: 220px !important;
   }
-  
-  .mobile-sort-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 38px !important;
-    height: 38px !important;
-    pointer-events: none !important;
-  }
-  
-  .mobile-sort-icon .material-symbols-outlined {
-    font-size: 20px !important;
-  }
-  
-  #subcategory-filters-container {
-    padding-bottom: 2px !important;
-    padding-top: 2px !important;
-    scrollbar-width: none !important;
-  }
-  #subcategory-filters-container::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  /* Compact Reels Action Buttons (Mobile Only) */
-  #like-btn,
-  #comment-btn,
-  #save-btn,
-  #share-btn {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-  }
-  
-  #like-btn .material-symbols-outlined,
-  #comment-btn .material-symbols-outlined,
-  #save-btn .material-symbols-outlined,
-  #share-btn .material-symbols-outlined {
-    font-size: 20px !important;
-  }
-  
-  #like-count,
-  #comment-count,
-  #save-count {
-    font-size: 10px !important;
-    margin-top: 1px !important;
+  .chart-wrapper,
+  [id*="chart-container"],
+  [class*="chart-container"] {
+    width: 100% !important;
+    height: 220px !important;
+    overflow: hidden !important;
   }
 }
 
-/* Mobile Saved Reels 3-Column Instagram-Style Grid (Mobile Only) */
+/* Mobile card-row: replaces table rows on mobile */
+@media (max-width: 768px) {
+  .mobile-card-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid rgba(61,107,79,0.12);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(61,107,79,0.06);
+  }
+  .mobile-card-row-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8FAF82;
+  }
+  .mobile-card-row-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #1A1A1A;
+  }
+  /* Hide <thead> when table is converted to card-list */
+  .mobile-card-table thead { display: none !important; }
+  .mobile-card-table tbody tr {
+    display: block !important;
+  }
+}
+
+/* Fix for checkboxes, radios, and table controls to prevent stretching on mobile */
 @media (max-width: 767px) {
-  #reels-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 2px !important;
-    margin-left: -16px !important;
-    margin-right: -16px !important;
-    width: calc(100% + 32px) !important;
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    box-sizing: content-box !important;
   }
-  
-  #reels-grid .group,
-  #reels-grid .animate-pulse {
-    aspect-ratio: 1/1 !important;
-    border-radius: 0px !important;
-    border: none !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    transform: none !important;
-  }
-  
-  /* Hide all info overlay & controls on mobile grid items */
-  #reels-grid .group .absolute {
-    display: none !important;
-  }
-  
-  /* Scale down empty state image & content */
-  #empty-state .relative {
-    width: 120px !important;
-    height: 120px !important;
-  }
-  #empty-state h3 {
-    font-size: 1.25rem !important;
-    margin-top: 0.5rem !important;
-  }
-  #empty-state p {
-    font-size: 0.875rem !important;
-    padding: 0 16px !important;
+
+  table input,
+  table select,
+  table button,
+  .overflow-x-auto input,
+  .overflow-x-auto select,
+  .overflow-x-auto button {
+    width: auto !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    height: auto !important;
   }
 }
 
-/* Mobile Product Card Info Layout (Mobile Only) */
+/* Global button override for small inline elements like switches and table buttons */
+button.relative.inline-flex.h-5.w-8,
+table button {
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+
+/* ==========================================================================
+   Seller Studio Responsive Sidebar and Drawer Overrides
+   ========================================================================== */
+@media (max-width: 1023px) {
+  /* 1. Stack flex layout containers holding aside panels vertically */
+  .seller-main-panel .flex:has(> aside):not(.chat-container),
+  .seller-layout-container .flex:has(> aside):not(.chat-container),
+  .flex-1.flex:has(> aside),
+  div.flex:has(> aside) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* 2. Force sidebars to expand to full width on mobile/tablet viewports */
+  aside.w-80,
+  aside.w-\[360px\],
+  aside.w-96,
+  aside:not(.absolute) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid rgba(61, 107, 79, 0.12) !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. Constrain absolute drawers/slide-overs to viewport width */
+  aside.absolute {
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  /* 4. Remove dividing vertical borders from stacked columns */
+  .border-r,
+  .border-r-secondary,
+  .border-l,
+  .border-l-secondary {
+    border-right: none !important;
+    border-left: none !important;
+  }
+}
+
+/* Constrain all horizontal scroll containers globally to prevent layout overflow */
+.overflow-x-auto {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  display: block !important;
+  -webkit-overflow-scrolling: touch;
+}
 @media (max-width: 767px) {
-  .group > div > .flex.flex-col {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    gap: 2px !important;
-    margin-bottom: 8px !important;
+  /* Enforce horizontal scrolling tables on mobile */
+  .overflow-x-auto table {
+    min-width: 750px !important;
   }
-
-  /* Price: Left-aligned on the first row */
-  .group > div > .flex.flex-col > span.text-lg {
-    grid-row: 1 !important;
-    grid-column: 1 !important;
-    margin-bottom: 0 !important;
-    align-self: center !important;
-    line-height: 1.2 !important;
+  /* Override desktop-level paddings on mobile viewports */
+  .px-12 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
-
-  /* Rating: Right-aligned on the first row */
-  .group > div > .flex.flex-col > div.flex {
-    grid-row: 1 !important;
-    grid-column: 2 !important;
-    margin-bottom: 0 !important;
-    align-self: center !important;
-    justify-self: end !important;
-    line-height: 1.2 !important;
-  }
-
-  /* Product Name: Stacked below the price/rating row */
-  .group > div > .flex.flex-col > h4 {
-    grid-row: 2 !important;
-    grid-column: 1 / span 2 !important;
-    margin-top: 4px !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* Seller Name: Stacked below the product name */
-  .group > div > .flex.flex-col > span.text-xs:not(.text-lg) {
-    grid-row: 3 !important;
-    grid-column: 1 / span 2 !important;
-    margin-top: 2px !important;
-    margin-bottom: 0 !important;
-    opacity: 0.8 !important;
+  /* Wrap stats card elements to prevent horizontal page stretching */
+  .flex:has(> .bg-primary\/10),
+  .flex:has(> .bg-gold\/10),
+  .flex:has(> .bg-violet\/10) {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
 }
-
 
 
 
