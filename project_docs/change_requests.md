@@ -120,9 +120,9 @@
 
 **Request:** Create a public Cloudflare link for the local dev server.
 
-**Tool used:** `cloudflared tunnel --url http://localhost:5175`
+**Tool used:** `cloudflared tunnel --url http://localhost:5173`
 
-- Public URL generated: `https://eric-establishment-mixed-employ.trycloudflare.com`
+- Public URL generated: `https://aware-coupons-nyc-prior.trycloudflare.com`
 - Type: Quick (account-less) tunnel via `trycloudflare.com`
 - Note: URL is session-scoped — it changes each time the tunnel is restarted.
 
