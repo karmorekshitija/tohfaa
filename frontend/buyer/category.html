@@ -163,26 +163,13 @@
             top: 30px !important;
             left: -24px !important;
         }
-
-        /* Tohfa Branding Custom Card Styles */
-        .tofa-card {
-            background-color: #FCFAF5;
-            border: 1px solid #8FAF82;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(58,51,40,0.07);
-            transition: all 0.2s ease;
-        }
-        .tofa-card:hover {
-            box-shadow: 0 4px 12px rgba(58,51,40,0.12);
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">
 <!-- 1. TOP BAR (DESKTOP TASKBAR) -->
 <!-- Standardised Top Navigation Bar (Task 57) -->
 <!-- TopNavBar -->
-<header class="hidden md:flex w-full sticky top-0 z-50 bg-[#FFFFFF] border-b border-[#C5D6BC] justify-between items-center px-margin-desktop h-20">
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
     <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
@@ -287,82 +274,157 @@
 </div>
 <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
 <!-- Card 1 -->
-<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A close-up photograph of a hand-thrown ceramic vase with a speckled oatmeal glaze, sitting on a rustic wooden studio table." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALC6UYYOUWjs3W4VkD8uWjcppHVpQhleCxmEGF6UAFY8zCGq3M9x6zGcZb7ATlZPZWyZLbSbkv6C58GzEpFbGJJF7JEwus4RG0AzgYM1uMpb92qU1vu8i14hzLiI8fu0O8r26llYaiEO1t5Q9kPxeoUw1n4rvUdAC5wtPtJiaCY0kStW5phf-aTpMsoEorrV1be7nbHSSBZTPskASzrBSMxaqLYGItxSzojxseeJL8bn5hlwwz74rh9mHDKiSU_JfgVPudS3_BDcE">
-<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-2 flex flex-col mt-4">
-<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Speckled Moon Bowl</h3>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Speckled Moon Bowl</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹4,800</p>
-<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$48.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
 <!-- Card 2 -->
-<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A minimalist overhead shot of two hand-crafted ceramic espresso cups with a matte forest green dip glaze." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVOngRd-DVK72EyammumZPlK3sZdreV15xeleG5jZxygwSOJ09GzEOyVEuHGwUtHyHCjfb5iNmcXFEHLNU7dEdOrvZrIJ_SKc4RWteMPfH4UQt1iQ8fDsEpRhg7R0UA4jLfpudhLGVyoicGdIvGeezmZSBt5ehdb7pd2A6sr4tAHk8UyPCdXKv-zBNShdIwAEt7czXe-trxM6QSdALpWd-4QnZTcoprR1gR0j9mbqGZFAmnUcUnX5kvHlmhlV2oFJryqm0PKX-pbg">
-<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-2 flex flex-col mt-4">
-<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Forest Dip Espresso Set</h3>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Forest Dip Espresso Set</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹3,200</p>
-<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$32.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
 <!-- Card 3 -->
-<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A tall, elegant ceramic carafe with an irregular, hand-pinched rim and a pale sage green wash glaze." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfTUELyuKQTKXZ8luOpxbP9ZxSrvRQDToCQ0N18Chw5sTUg82THIln8Ywpy6ROctrBVZxm4zFsYwHOuhtAI92ZCIAbpe4eqUYATYVv7s9zWjEG9SfkJyQSQdzQBsrnhvLPPvDNP_-gMX3s304PZA5qDh3Joi58lbJcAkG31FdyaiEJhovOjCwL0xUY1mFiuqNY1vjkip3sOainPZ_dkH3YAFlh143DRgVjCKL1NQONSkN_iExDgNpXIkfSJ-VXTND2mi3OdvzYZrs">
-<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-2 flex flex-col mt-4">
-<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Sage Ribbed Carafe</h3>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Sage Ribbed Carafe</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹8,500</p>
-<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$85.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
 <!-- Card 4 -->
-<div class="tofa-card p-4 flex flex-col justify-between cursor-pointer relative group">
-<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest aspect-square">
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
 <div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A series of small, shallow ceramic ring dishes in varying earthy tones like terracotta, ivory, and soft violet." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnYwodC8O5OBIoHWDoOMQ_wndi6zN0wBAKqxarh1XKgMAwXhMz0eCaH5Wkv8xfSozcufOwFAreoGEys_Za0DK4CVqLAXxxQj2tFv-SxeEi3WaPLuHQNmvN_r_nTcljqc3Wdam1xn2LaMHwxF_rVy9UPcLza3R17VZXHodaznYkCDfp2J_pZ-GlA0qAOUsvFbwDA3jkJkx7vU1RFPUk_sgAmCNoVe9lWC9izWoIbkDhT3DxWPNVqGj9RPcExPbmQn9G0B9rZPcagxs">
-<div class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
 <span class="material-symbols-outlined text-primary hover:fill-1">favorite</span>
 </div>
 </div>
-<div class="p-2 flex flex-col mt-4">
-<h3 class="font-bold text-primary line-clamp-2" style="font-family: 'Lora', serif; font-size: 14px;">Petal Ring Dish</h3>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Petal Ring Dish</h3>
 <div class="flex items-center justify-between mt-md">
-<p class="text-lg text-secondary-fixed-variant font-bold" style="font-family: 'Space Mono', monospace; color: #C8973A;">₹2,400</p>
-<button class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$24.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
 <span class="material-symbols-outlined text-md">add_shopping_cart</span>
 </button>
 </div>
 </div>
 </div>
-
+<!-- Card 5 (Clone of 1) -->
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALC6UYYOUWjs3W4VkD8uWjcppHVpQhleCxmEGF6UAFY8zCGq3M9x6zGcZb7ATlZPZWyZLbSbkv6C58GzEpFbGJJF7JEwus4RG0AzgYM1uMpb92qU1vu8i14hzLiI8fu0O8r26llYaiEO1t5Q9kPxeoUw1n4rvUdAC5wtPtJiaCY0kStW5phf-aTpMsoEorrV1be7nbHSSBZTPskASzrBSMxaqLYGItxSzojxseeJL8bn5hlwwz74rh9mHDKiSU_JfgVPudS3_BDcE">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</div>
+</div>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Speckled Moon Bowl</h3>
+<div class="flex items-center justify-between mt-md">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$48.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-md">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 6 (Clone of 2) -->
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVOngRd-DVK72EyammumZPlK3sZdreV15xeleG5jZxygwSOJ09GzEOyVEuHGwUtHyHCjfb5iNmcXFEHLNU7dEdOrvZrIJ_SKc4RWteMPfH4UQt1iQ8fDsEpRhg7R0UA4jLfpudhLGVyoicGdIvGeezmZSBt5ehdb7pd2A6sr4tAHk8UyPCdXKv-zBNShdIwAEt7czXe-trxM6QSdALpWd-4QnZTcoprR1gR0j9mbqGZFAmnUcUnX5kvHlmhlV2oFJryqm0PKX-pbg">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</div>
+</div>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Forest Dip Espresso Set</h3>
+<div class="flex items-center justify-between mt-md">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$32.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-md">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 7 (Clone of 3) -->
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-bestseller">Best Seller</div></div>
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfTUELyuKQTKXZ8luOpxbP9ZxSrvRQDToCQ0N18Chw5sTUg82THIln8Ywpy6ROctrBVZxm4zFsYwHOuhtAI92ZCIAbpe4eqUYATYVv7s9zWjEG9SfkJyQSQdzQBsrnhvLPPvDNP_-gMX3s304PZA5qDh3Joi58lbJcAkG31FdyaiEJhovOjCwL0xUY1mFiuqNY1vjkip3sOainPZ_dkH3YAFlh143DRgVjCKL1NQONSkN_iExDgNpXIkfSJ-VXTND2mi3OdvzYZrs">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</div>
+</div>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Sage Ribbed Carafe</h3>
+<div class="flex items-center justify-between mt-md">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$85.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-md">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 8 (Clone of 4) -->
+<div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
+<div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
+<div class="ribbon-wrapper"><div class="ribbon-tag ribbon-sponsored">Sponsored</div></div>
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnYwodC8O5OBIoHWDoOMQ_wndi6zN0wBAKqxarh1XKgMAwXhMz0eCaH5Wkv8xfSozcufOwFAreoGEys_Za0DK4CVqLAXxxQj2tFv-SxeEi3WaPLuHQNmvN_r_nTcljqc3Wdam1xn2LaMHwxF_rVy9UPcLza3R17VZXHodaznYkCDfp2J_pZ-GlA0qAOUsvFbwDA3jkJkx7vU1RFPUk_sgAmCNoVe9lWC9izWoIbkDhT3DxWPNVqGj9RPcExPbmQn9G0B9rZPcagxs">
+<div class="absolute top-3 right-3 p-sm bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</div>
+</div>
+<div class="p-md">
+<h3 class="font-title-serif text-title-serif text-primary line-clamp-2">Petal Ring Dish</h3>
+<div class="flex items-center justify-between mt-md">
+<p class="font-data-price text-lg text-secondary-fixed-variant font-bold">$24.00</p>
+<button class="p-sm bg-primary-container text-white rounded-lg hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-md">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
 </div>
 </section>
 <!-- 5. INFINITE SCROLL VISUAL -->
@@ -789,18 +851,18 @@
             }
 
             return `
-              <div class="group tofa-card p-4 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='product.html?id=${p.id}'">
+              <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='product.html?id=${p.id}'">
                 <div>
                   <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imageUrl}" alt="${p.name}">
-                    <button class="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
+                    <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
                       <span class="material-symbols-outlined text-[20px] transition-all ${p.is_wishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${p.is_wishlisted ? 1 : 0};">favorite</span>
                     </button>
                   </div>
                   <div class="flex flex-col mb-4">
-                    <span class="mb-1" style="font-family: 'Space Mono', monospace; font-size: 16px; color: #C8973A; font-weight: 700;">${price}</span>
-                    <h4 class="font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Lora', serif; font-size: 14px;">${p.name}</h4>
+                    <span class="font-bold text-lg text-[#C8973A] mb-1">${price}</span>
+                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                     <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
                       <span class="text-[#C8973A] font-bold">★</span>
                       <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
@@ -810,7 +872,7 @@
                   </div>
                 </div>
                 <div class="w-full font-['DM_Sans']">
-                  <button class="w-full bg-[#3D6B4F] text-white min-h-[44px] rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                  <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
                     Add to Cart
                   </button>
                 </div>
@@ -976,12 +1038,5 @@
     checkAuthState();
 </script>
 
-<!-- Mobile Nav Injection -->
-<script type="module">
-  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
-  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
-  initMobileBuyerTopBar();
-  initMobileBuyerNav('category');
-</script>
 </body>
 </html>
