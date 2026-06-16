@@ -393,3 +393,107 @@ a.btn,
     scroll-behavior: auto !important;
   }
 }
+
+/* Hide desktop buyer header on mobile — MobileBuyerTopBar replaces it */
+@media (max-width: 768px) {
+  #tohfa-navbar > header,
+  body > header:not(#mbt-topbar):not(#msn-topbar) {
+    display: none !important;
+  }
+}
+
+/* Mobile section block utility */
+.mobile-section-block {
+  display: block;
+  width: 100%;
+}
+@media (max-width: 768px) {
+  .mobile-section-block {
+    margin-top: 20px;
+  }
+  .mobile-section-block + .mobile-section-block {
+    border-top: 1px solid #F7F3EC;
+    padding-top: 20px;
+  }
+}
+
+/* Responsive charts */
+@media (max-width: 768px) {
+  canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 220px !important;
+  }
+  .chart-wrapper,
+  [id*="chart-container"],
+  [class*="chart-container"] {
+    width: 100% !important;
+    height: 220px !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Mobile card-row: replaces table rows on mobile */
+@media (max-width: 768px) {
+  .mobile-card-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid rgba(61,107,79,0.12);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(61,107,79,0.06);
+  }
+  .mobile-card-row-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8FAF82;
+  }
+  .mobile-card-row-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #1A1A1A;
+  }
+  /* Hide <thead> when table is converted to card-list */
+  .mobile-card-table thead { display: none !important; }
+  .mobile-card-table tbody tr {
+    display: block !important;
+  }
+}
+
+/* Fix for checkboxes, radios, and table controls to prevent stretching on mobile */
+@media (max-width: 767px) {
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    box-sizing: content-box !important;
+  }
+
+  table input,
+  table select,
+  table button,
+  .overflow-x-auto input,
+  .overflow-x-auto select,
+  .overflow-x-auto button {
+    width: auto !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    height: auto !important;
+  }
+}
+
+/* Global button override for small inline elements like switches and table buttons */
+button.relative.inline-flex.h-5.w-8,
+table button {
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+
+
