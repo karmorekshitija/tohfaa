@@ -270,7 +270,7 @@
 <span class="material-symbols-outlined text-9xl opacity-20">eco</span>
 </div>
 <!-- Greeting Banner -->
-<section class="bg-[#F7F3EC] w-full py-xl px-margin-desktop relative overflow-hidden">
+<section class="hidden md:block bg-[#F7F3EC] w-full py-xl px-margin-desktop relative overflow-hidden">
 <div class="max-w-[1440px] mx-auto flex flex-col items-center justify-center text-center py-xl relative z-10">
 <h1 class="font-headline-lg text-display-hero italic text-primary mb-sm">
                     Good morning <span class="font-normal not-italic opacity-60">✦</span>
@@ -284,8 +284,34 @@
 <div class="absolute top-10 right-[10%] w-24 h-8 bg-surface-variant/30 rotate-12 border-l border-r border-outline-variant/20 shadow-sm opacity-60"></div>
 <div class="absolute bottom-10 left-[15%] w-32 h-10 bg-primary-fixed-dim/20 -rotate-6 border-l border-r border-outline-variant/10 shadow-sm opacity-40"></div>
 </section>
+
+<!-- Mobile Hero Section (Mobile/Phone UI Only) -->
+<section class="block md:hidden w-full relative overflow-hidden">
+  <!-- Full-width edge-to-edge carousel -->
+  <div id="mobile-carousel-container" class="w-full relative aspect-[16/10] overflow-hidden group select-none">
+    <div id="mobile-carousel-slides" class="w-full h-full relative">
+      <div class="absolute inset-0 bg-surface-variant animate-pulse"></div> <!-- Skeleton -->
+    </div>
+    <!-- Dot Indicators overlay -->
+    <div id="mobile-carousel-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
+      <!-- Dots injected via JS -->
+    </div>
+  </div>
+
+  <!-- Center-aligned Text Block -->
+  <div class="px-6 py-8 flex flex-col items-center text-center bg-white border-b border-outline-variant/30">
+    <span class="font-['DM_Sans'] text-xs tracking-widest text-[#7B5EA7] uppercase font-bold mb-2">Est. 2024 • Handmade with Love</span>
+    <h2 class="font-['Playfair_Display'] text-2xl text-[#3D6B4F] leading-tight mb-3">
+      Artisan crafts for a <span class="italic">slower, intentional</span> life.
+    </h2>
+    <p class="font-['DM_Sans'] text-sm text-[#605e57] leading-relaxed max-w-sm">
+      Discover our curated collection of hand-carved ceramics, sustainable textiles, and hand-crafted stationery crafted by local artisans.
+    </p>
+  </div>
+</section>
+
 <!-- Explore Collection Hero -->
-<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-xl">
+<section class="hidden md:block py-xl px-margin-desktop max-w-[1440px] mx-auto mt-xl">
 <div class="grid grid-cols-12 gap-xl items-center">
 <div class="col-span-12 lg:col-span-7 relative">
 <div id="hero-slideshow-container" class="rounded-xl overflow-hidden aspect-[16/10] shadow-xl relative group">
@@ -778,42 +804,61 @@
     const prevBtn = document.getElementById('hero-slide-prev');
     const nextBtn = document.getElementById('hero-slide-next');
 
+    // Mobile specific
+    let mobileCurrentSlide = 0;
+    let mobileSlideInterval;
+    const MOBILE_SLIDE_DURATION = 4000;
+    const mobileWrapper = document.getElementById('mobile-carousel-slides');
+    const mobileDotsContainer = document.getElementById('mobile-carousel-dots');
+
+    const FALLBACK_SLIDES = [
+        { imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBBjSHDpc5HHHXnpAGCGGOIGRoumhZ9KlYdQmei0_40xNo1ftiEDRwwgy7CLHit8khhBsBrN82VUtp1Ancwg4HV13_20NgID3qzZN8ri6GsGRKSFFWZLqujEfX1aNxbOS4BRbn9pDCB0DkULgpZFq447D_KJ6WLA6pQgZ6ioSS8jr5DLWBb3QEoUjHf6WS34Xm2rWGRxkklcrCnRPe3XJZPvDcohsaRH-EuliTOZA5fnBgOd3fUr6qla_5R4vWfsQ_AHKo8At4ajSI", altText: "Artisan Ceramic" },
+        { imageUrl: "https://images.unsplash.com/photo-1576016770956-debb63d900bb?w=800&auto=format&fit=crop&q=80", altText: "Ceramic Bowls" },
+        { imageUrl: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80", altText: "Linen Journal" },
+        { imageUrl: "https://images.unsplash.com/photo-1602872030219-c16779798575?w=800&auto=format&fit=crop&q=80", altText: "Incense Holder" },
+        { imageUrl: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=800&auto=format&fit=crop&q=80", altText: "Stoneware Vase" }
+    ];
+
     async function loadHeroSlides() {
         try {
             const response = await apiClient.get('/hero-slides');
             if (response.data && response.data.success && response.data.data.length > 0) {
                 slides = response.data.data;
-                renderSlides();
-                startSlideshow();
-            } else {
-                // Fallback static image if no slides configured
-                wrapper.innerHTML = `<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBjSHDpc5HHHXnpAGCGGOIGRoumhZ9KlYdQmei0_40xNo1ftiEDRwwgy7CLHit8khhBsBrN82VUtp1Ancwg4HV13_20NgID3qzZN8ri6GsGRKSFFWZLqujEfX1aNxbOS4BRbn9pDCB0DkULgpZFq447D_KJ6WLA6pQgZ6ioSS8jr5DLWBb3QEoUjHf6WS34Xm2rWGRxkklcrCnRPe3XJZPvDcohsaRH-EuliTOZA5fnBgOd3fUr6qla_5R4vWfsQ_AHKo8At4ajSI" alt="Ceramic Artisan">`;
             }
         } catch (error) {
             console.error('Failed to load hero slides:', error);
-            wrapper.innerHTML = `<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBjSHDpc5HHHXnpAGCGGOIGRoumhZ9KlYdQmei0_40xNo1ftiEDRwwgy7CLHit8khhBsBrN82VUtp1Ancwg4HV13_20NgID3qzZN8ri6GsGRKSFFWZLqujEfX1aNxbOS4BRbn9pDCB0DkULgpZFq447D_KJ6WLA6pQgZ6ioSS8jr5DLWBb3QEoUjHf6WS34Xm2rWGRxkklcrCnRPe3XJZPvDcohsaRH-EuliTOZA5fnBgOd3fUr6qla_5R4vWfsQ_AHKo8At4ajSI" alt="Ceramic Artisan">`;
         }
+
+        if (slides.length === 0) {
+            slides = FALLBACK_SLIDES;
+        }
+
+        // Setup desktop
+        renderSlides();
+        startSlideshow();
+
+        // Setup mobile
+        renderMobileSlides();
+        startMobileSlideshow();
     }
 
     function renderSlides() {
+        if (!wrapper) return;
         wrapper.innerHTML = '';
         dotsContainer.innerHTML = '';
 
         slides.forEach((slide, index) => {
-            // Slide Image
             const img = document.createElement('img');
             img.src = slide.imageUrl || slide.image_url;
             img.alt = slide.altText || slide.alt_text || 'Artisan Craft';
-            // Smooth fade classes with pointer cursor
             img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out cursor-pointer ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
             img.id = `hero-slide-${index}`;
             img.onclick = () => {
                 const prodId = slide.productId || slide.product_id || slide.id;
-                window.location.href = `/buyer/product.html?id=${prodId}`;
+                if (prodId) window.location.href = `/buyer/product.html?id=${prodId}`;
             };
             wrapper.appendChild(img);
 
-            // Dot Indicator
             const dot = document.createElement('button');
             dot.className = `w-6 h-6 rounded-full transition-all duration-300 -mx-1 border border-white/40 shadow-sm backdrop-blur-xs flex-shrink-0 ${index === 0 ? 'bg-white' : 'bg-white/50 hover:bg-white/80'}`;
             dot.onclick = () => goToSlide(index);
@@ -824,20 +869,22 @@
     function goToSlide(index) {
         if (slides.length === 0) return;
 
-        // Hide current
-        document.getElementById(`hero-slide-${currentSlide}`).classList.replace('opacity-100', 'opacity-0');
-        dotsContainer.children[currentSlide].classList.replace('bg-white', 'bg-white/50');
+        const currentImg = document.getElementById(`hero-slide-${currentSlide}`);
+        if (currentImg) currentImg.classList.replace('opacity-100', 'opacity-0');
+        if (dotsContainer.children[currentSlide]) {
+            dotsContainer.children[currentSlide].classList.replace('bg-white', 'bg-white/50');
+        }
 
-        // Update index
         currentSlide = index;
         if (currentSlide < 0) currentSlide = slides.length - 1;
         if (currentSlide >= slides.length) currentSlide = 0;
 
-        // Show new
-        document.getElementById(`hero-slide-${currentSlide}`).classList.replace('opacity-0', 'opacity-100');
-        dotsContainer.children[currentSlide].classList.replace('bg-white/50', 'bg-white');
+        const nextImg = document.getElementById(`hero-slide-${currentSlide}`);
+        if (nextImg) nextImg.classList.replace('opacity-0', 'opacity-100');
+        if (dotsContainer.children[currentSlide]) {
+            dotsContainer.children[currentSlide].classList.replace('bg-white/50', 'bg-white');
+        }
 
-        // Reset timer when manually interacted
         resetSlideshow();
     }
 
@@ -858,8 +905,105 @@
         startSlideshow();
     }
 
-    prevBtn.addEventListener('click', prevSlide);
-    nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+
+    // --- Mobile Slideshow Logic ---
+    function renderMobileSlides() {
+        if (!mobileWrapper) return;
+        mobileWrapper.innerHTML = '';
+        mobileDotsContainer.innerHTML = '';
+
+        // Supplement to ensure 4-5 slides if list is too short
+        let mobileSlidesList = [...slides];
+        if (mobileSlidesList.length < 4) {
+            mobileSlidesList = [...mobileSlidesList, ...FALLBACK_SLIDES].slice(0, 5);
+        }
+
+        mobileSlidesList.forEach((slide, index) => {
+            const img = document.createElement('img');
+            img.src = slide.imageUrl || slide.image_url;
+            img.alt = slide.altText || slide.alt_text || 'Artisan Craft';
+            img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out cursor-pointer ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+            img.id = `mobile-slide-${index}`;
+            img.onclick = () => {
+                const prodId = slide.productId || slide.product_id || slide.id;
+                if (prodId && typeof prodId === 'number') {
+                    window.location.href = `/buyer/product.html?id=${prodId}`;
+                }
+            };
+            mobileWrapper.appendChild(img);
+
+            const dot = document.createElement('button');
+            dot.className = `w-3 h-3 rounded-full transition-all duration-300 border border-white/40 flex-shrink-0 ${index === 0 ? 'bg-white' : 'bg-white/40'}`;
+            dot.onclick = () => goToMobileSlide(index, mobileSlidesList.length);
+            mobileDotsContainer.appendChild(dot);
+        });
+
+        setupMobileSwipe(mobileSlidesList.length);
+    }
+
+    function goToMobileSlide(index, listLength) {
+        const slidesCount = listLength || (mobileWrapper ? mobileWrapper.children.length : 0);
+        if (slidesCount === 0) return;
+
+        const currentImg = document.getElementById(`mobile-slide-${mobileCurrentSlide}`);
+        if (currentImg) currentImg.classList.replace('opacity-100', 'opacity-0');
+        if (mobileDotsContainer.children[mobileCurrentSlide]) {
+            mobileDotsContainer.children[mobileCurrentSlide].classList.replace('bg-white', 'bg-white/40');
+        }
+
+        mobileCurrentSlide = index;
+        if (mobileCurrentSlide < 0) mobileCurrentSlide = slidesCount - 1;
+        if (mobileCurrentSlide >= slidesCount) mobileCurrentSlide = 0;
+
+        const nextImg = document.getElementById(`mobile-slide-${mobileCurrentSlide}`);
+        if (nextImg) nextImg.classList.replace('opacity-0', 'opacity-100');
+        if (mobileDotsContainer.children[mobileCurrentSlide]) {
+            mobileDotsContainer.children[mobileCurrentSlide].classList.replace('bg-white/40', 'bg-white');
+        }
+
+        resetMobileSlideshow();
+    }
+
+    function nextMobileSlide() {
+        goToMobileSlide(mobileCurrentSlide + 1);
+    }
+
+    function startMobileSlideshow() {
+        mobileSlideInterval = setInterval(nextMobileSlide, MOBILE_SLIDE_DURATION);
+    }
+
+    function resetMobileSlideshow() {
+        clearInterval(mobileSlideInterval);
+        startMobileSlideshow();
+    }
+
+    function setupMobileSwipe(slidesCount) {
+        if (!mobileWrapper) return;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        mobileWrapper.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        mobileWrapper.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe Left -> next
+                goToMobileSlide(mobileCurrentSlide + 1, slidesCount);
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe Right -> prev
+                goToMobileSlide(mobileCurrentSlide - 1, slidesCount);
+            }
+        }
+    }
 
     const FALLBACK_SPONSORED = [
         {

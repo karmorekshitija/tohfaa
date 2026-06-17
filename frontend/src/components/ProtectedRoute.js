@@ -268,20 +268,15 @@
           <span class="material-symbols-outlined text-[24px]">home</span>
           <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Home</span>
         </a>
-        <a href="/buyer/search.html" id="bottom-nav-btn-search" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
-          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-search"></div>
-          <span class="material-symbols-outlined text-[24px]">search</span>
-          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Search</span>
+        <a href="/buyer/categories.html" id="bottom-nav-btn-category" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-category"></div>
+          <span class="material-symbols-outlined text-[24px]">category</span>
+          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Category</span>
         </a>
         <a href="/buyer/reels.html" id="bottom-nav-btn-reels" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
           <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-reels"></div>
           <span class="material-symbols-outlined text-[24px]">palette</span>
           <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Reels</span>
-        </a>
-        <a href="/buyer/saved-makes.html" id="bottom-nav-btn-wishlist" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
-          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-wishlist"></div>
-          <span class="material-symbols-outlined text-[24px]">favorite</span>
-          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Wishlist</span>
         </a>
         <a href="/buyer/profile.html" id="bottom-nav-btn-profile" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
           <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-profile"></div>
@@ -308,12 +303,10 @@
       let activeTab = '';
       if (path.endsWith('/home.html') || path === '/buyer/' || path === '/buyer') {
         activeTab = 'home';
-      } else if (path.endsWith('/search.html') || path.endsWith('/categories.html') || path.endsWith('/category.html')) {
-        activeTab = 'search';
+      } else if (path.endsWith('/categories.html') || path.endsWith('/category.html') || path.endsWith('/search.html')) {
+        activeTab = 'category';
       } else if (path.endsWith('/reels.html') || path.endsWith('/saved-reels.html')) {
         activeTab = 'reels';
-      } else if (path.endsWith('/saved-makes.html')) {
-        activeTab = 'wishlist';
       } else if (
         path.endsWith('/profile.html') || 
         path.endsWith('/edit-profile.html') || 
