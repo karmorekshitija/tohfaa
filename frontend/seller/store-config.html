@@ -174,8 +174,49 @@
       text-align: left !important;
       position: relative !important;
     }
+
+    /* Ivory card styling overrides for containers on mobile */
+    .bg-surface-container-lowest,
+    section > div {
+      background: #FCFAF5 !important;
+      border: 1px solid #8FAF82 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 2px 8px rgba(58,51,40,0.07) !important;
+      padding: 16px !important;
+    }
+
+    /* Team access invite field stacking */
+    .flex-1 > .flex.gap-2.mb-8 {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      gap: 12px !important;
+    }
+    .flex-1 > .flex.gap-2.mb-8 input {
+      width: 100% !important;
+      height: 48px !important;
+    }
+    .flex-1 > .flex.gap-2.mb-8 button {
+      width: 100% !important;
+      height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    /* Save delivery and policies buttons */
+    #save-delivery-btn,
+    #save-policies-btn {
+      width: 100% !important;
+      height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 9999px !important;
+    }
   }
 </style>
+
 
 </head>
 <body class="font-body-md text-on-surface bg-white">
