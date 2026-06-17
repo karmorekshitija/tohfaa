@@ -11139,10 +11139,10 @@ const chatStorage = multer.diskStorage({
 });
 
 const chatFileFilter = async (req, file, cb) => {
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.doc', '.docx'];
   const ext = path.extname(file.originalname).toLowerCase();
   if (!allowedExtensions.includes(ext)) {
-    return cb(new Error('Format check: jpg/jpeg/png/webp only'), false);
+    return cb(new Error('Format check: jpg/jpeg/png/webp/pdf/doc/docx only'), false);
   }
   cb(null, true);
 };

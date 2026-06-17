@@ -116,6 +116,62 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #F7F3EC;
         }
+        
+        @media (max-width: 768px) {
+            /* Shrink right rail action buttons on mobile */
+            main.min-h-screen div.absolute.right-md.bottom-1\\/4 {
+                bottom: 22% !important;
+                gap: 12px !important;
+            }
+            #like-btn, #comment-btn, #save-btn, #share-btn {
+                width: 40px !important;
+                height: 40px !important;
+                min-width: 40px !important;
+                min-height: 40px !important;
+            }
+            #like-btn span, #comment-btn span, #save-btn span, #share-btn span {
+                font-size: 20px !important;
+            }
+            #like-count, #comment-count, #save-count {
+                font-size: 11px !important;
+            }
+        }
+
+        /* Double-tap heart animation styles */
+        .double-tap-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            color: rgba(239, 68, 68, 0.95);
+            pointer-events: none;
+            z-index: 40;
+            animation: heartFadeScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            font-variation-settings: 'FILL' 1;
+        }
+        @keyframes heartFadeScale {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            30% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.0);
+                opacity: 1;
+            }
+            80% {
+                transform: translate(-50%, -50%) scale(1.0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body class="bg-white font-body-md text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed">
@@ -783,10 +839,66 @@
       if (sendBtn) sendBtn.disabled = (len === 0 || len > 300);
     };
 
+    async function handleDoubleTapLike() {
+      if (reelsList.length === 0) return;
+      const activeReel = reelsList[currentIndex];
+
+      // Spawn heart animation at the center of the video container
+      const heart = document.createElement('span');
+      heart.className = 'material-symbols-outlined double-tap-heart';
+      heart.innerText = 'favorite';
+      videoContainer.appendChild(heart);
+
+      // Clean up heart element after animation finishes
+      setTimeout(() => {
+        heart.remove();
+      }, 800);
+
+      // If not already liked, trigger the like API/state toggle (no unliking on double-tap)
+      if (!activeReel.is_liked) {
+        activeReel.is_liked = true;
+        activeReel.like_count = (activeReel.like_count || 0) + 1;
+        updateLikeUI(activeReel.is_liked, activeReel.like_count);
+
+        if (activeReel.id && !String(activeReel.id).startsWith('mock-')) {
+          try {
+            const res = await apiClient.post(`/reels/${activeReel.id}/like`);
+            if (res.data && res.data.success) {
+              activeReel.is_liked = res.data.data.liked;
+              activeReel.like_count = res.data.data.like_count;
+              updateLikeUI(activeReel.is_liked, activeReel.like_count);
+            }
+          } catch (err) {
+            console.error("Failed to like on server:", err);
+          }
+        }
+      }
+    }
+
     // Event setup
     function setupEvents() {
-      // Play/Pause
-      videoEl.addEventListener('click', togglePlay);
+      // Play/Pause and Double-tap/Double-click to Like
+      let lastTap = 0;
+      let tapTimeout;
+      
+      const handleTapOrClick = (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        
+        if (tapLength < 300 && tapLength > 0) {
+          // Double tap/click detected
+          clearTimeout(tapTimeout);
+          handleDoubleTapLike();
+        } else {
+          // Single tap/click detected
+          tapTimeout = setTimeout(() => {
+            togglePlay();
+          }, 300);
+        }
+        lastTap = currentTime;
+      };
+
+      videoEl.addEventListener('click', handleTapOrClick);
       
       // Mute/Unmute
       volumeToggleBtn.addEventListener('click', (e) => {

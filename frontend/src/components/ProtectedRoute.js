@@ -133,7 +133,8 @@
     // 1. Setup Buyer Mobile Navbar Hamburger and Drawer
     const buyerHeader = document.querySelector('header:not(.seller-topbar-header)');
     // Check that we are in a buyer/auth page
-    if (buyerHeader && (path.includes('/buyer/') || path.includes('/auth/')) && !document.getElementById('mobile-hamburger')) {
+    const isHomePage = path.endsWith('/home.html') || path === '/buyer/' || path === '/buyer' || path === '/';
+    if (buyerHeader && (path.includes('/buyer/') || path.includes('/auth/')) && !isHomePage && !document.getElementById('mobile-hamburger')) {
       // Create Hamburger Toggle Button
       const hamburger = document.createElement('button');
       hamburger.id = 'mobile-hamburger';
@@ -254,6 +255,86 @@
           aside.classList.remove('active');
         }
       });
+    }
+
+    // 3. Inject Bottom Navigation Bar for Buyer Panels
+    if (path.includes('/buyer/') && !document.getElementById('buyer-bottom-nav')) {
+      const bottomNav = document.createElement('div');
+      bottomNav.id = 'buyer-bottom-nav';
+      bottomNav.className = 'lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-[#C5D6BC] flex items-center justify-around z-50 pb-[safe-area-inset-bottom]';
+      bottomNav.innerHTML = `
+        <a href="/buyer/home.html" id="bottom-nav-btn-home" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-home"></div>
+          <span class="material-symbols-outlined text-[24px]">home</span>
+          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Home</span>
+        </a>
+        <a href="/buyer/search.html" id="bottom-nav-btn-search" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-search"></div>
+          <span class="material-symbols-outlined text-[24px]">search</span>
+          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Search</span>
+        </a>
+        <a href="/buyer/reels.html" id="bottom-nav-btn-reels" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-reels"></div>
+          <span class="material-symbols-outlined text-[24px]">palette</span>
+          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Reels</span>
+        </a>
+        <a href="/buyer/saved-makes.html" id="bottom-nav-btn-wishlist" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-wishlist"></div>
+          <span class="material-symbols-outlined text-[24px]">favorite</span>
+          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Wishlist</span>
+        </a>
+        <a href="/buyer/profile.html" id="bottom-nav-btn-profile" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-profile"></div>
+          <div class="w-7 h-7 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white mb-0.5" id="bottom-nav-profile-badge">
+            <span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">flag</span>
+          </div>
+          <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Profile</span>
+        </a>
+      `;
+      document.body.appendChild(bottomNav);
+
+      // Add bottom padding to body on mobile
+      const addBottomPadding = () => {
+        if (window.innerWidth < 1024) {
+          document.body.style.paddingBottom = '72px';
+        } else {
+          document.body.style.paddingBottom = '';
+        }
+      };
+      addBottomPadding();
+      window.addEventListener('resize', addBottomPadding);
+
+      // Highlight active tab
+      let activeTab = '';
+      if (path.endsWith('/home.html') || path === '/buyer/' || path === '/buyer') {
+        activeTab = 'home';
+      } else if (path.endsWith('/search.html') || path.endsWith('/categories.html') || path.endsWith('/category.html')) {
+        activeTab = 'search';
+      } else if (path.endsWith('/reels.html') || path.endsWith('/saved-reels.html')) {
+        activeTab = 'reels';
+      } else if (path.endsWith('/saved-makes.html')) {
+        activeTab = 'wishlist';
+      } else if (
+        path.endsWith('/profile.html') || 
+        path.endsWith('/edit-profile.html') || 
+        path.endsWith('/addresses.html') || 
+        path.endsWith('/orders.html') || 
+        path.endsWith('/become-seller.html')
+      ) {
+        activeTab = 'profile';
+      }
+
+      if (activeTab) {
+        const btn = document.getElementById(`bottom-nav-btn-${activeTab}`);
+        const line = document.getElementById(`bottom-nav-line-${activeTab}`);
+        if (btn) {
+          btn.classList.remove('text-[#6E6453]');
+          btn.classList.add('text-[#3D6B4F]');
+        }
+        if (line) {
+          line.classList.remove('hidden');
+        }
+      }
     }
   }
 })();

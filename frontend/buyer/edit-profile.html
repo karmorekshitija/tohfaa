@@ -290,36 +290,22 @@
     <div class="flex-1 overflow-y-auto px-xl py-lg space-y-xl custom-scrollbar">
 
       <!-- Avatar Upload Section -->
-      <div class="flex flex-col items-center gap-md">
+      <div class="flex flex-col items-center gap-sm">
         <p class="font-label-caps text-on-surface-variant self-start">Profile Picture</p>
-        <div class="flex items-center gap-lg">
-          <!-- Avatar preview with click-to-upload -->
-          <div class="relative group cursor-pointer" onclick="document.getElementById('input-avatar-file').click()">
-            <img id="avatar-preview" alt="Edit Avatar"
-                 class="w-20 h-20 rounded-full border-2 border-outline object-cover transition-opacity group-hover:opacity-70"
-                 src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face"/>
-            <div class="absolute inset-0 rounded-full flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span class="material-symbols-outlined text-white text-xl">photo_camera</span>
-            </div>
-          </div>
-          <div class="flex-1">
-            <button onclick="document.getElementById('input-avatar-file').click()"
-                    class="text-sm font-semibold text-primary hover:underline flex items-center gap-xs">
-              <span class="material-symbols-outlined text-sm">upload</span>
-              Upload photo
-            </button>
-            <p class="text-xs text-on-surface-variant mt-xs">JPG, PNG up to 5MB</p>
+        
+        <!-- Clickable avatar circle -->
+        <div class="relative w-28 h-28 rounded-full overflow-hidden border-2 border-outline group cursor-pointer shadow-md" onclick="document.getElementById('input-avatar-file').click()">
+          <img id="avatar-preview" alt="Avatar Preview"
+               class="w-full h-full object-cover"
+               src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face"/>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-all flex flex-col items-center justify-center text-white p-2">
+            <span class="material-symbols-outlined text-[24px] mb-1">photo_camera</span>
+            <span class="text-[10px] font-['DM_Sans'] font-medium text-center leading-tight">Upload photo</span>
           </div>
         </div>
+        <p class="text-xs text-on-surface-variant mt-sm">JPG, PNG up to 5MB</p>
+        
         <input type="file" id="input-avatar-file" class="hidden" accept="image/*"/>
-
-        <!-- OR URL input -->
-        <div class="w-full space-y-sm">
-          <label class="font-label-caps text-on-surface-variant">Or paste image URL (optional)</label>
-          <input id="input-avatar-url" class="input-field" type="url"
-                 placeholder="https://example.com/your-photo.jpg"/>
-          <p class="text-xs text-on-surface-variant">Paste a direct link to an image</p>
-        </div>
       </div>
 
       <!-- Fields Grid -->
@@ -434,8 +420,6 @@
         const displayName = document.getElementById('input-display-name').value;
         const email = document.getElementById('input-email').value;
         const phone = document.getElementById('input-phone').value;
-        const avatarUrl = document.getElementById('input-avatar-url').value;
-
         let hasErrors = false;
 
         // Validate Name
@@ -479,19 +463,7 @@
             const response = await apiClient.patch('/profile/me', payload);
 
             if (response.data && response.data.success) {
-                // If user provided an avatar URL, try to patch avatar_url
-                if (avatarUrl && avatarUrl.trim() && avatarUrl.trim().startsWith('http')) {
-                    try {
-                        // Direct DB update through API if supported — otherwise just update preview
-                        const avatarResp = await apiClient.patch('/profile/me', { avatar_url: avatarUrl.trim() }).catch(() => null);
-                        if (avatarResp && avatarResp.data && avatarResp.data.success) {
-                            const previewEl = document.getElementById('avatar-preview');
-                            const bgAvatarEl = document.getElementById('bg-user-avatar');
-                            if (previewEl) previewEl.src = avatarUrl.trim();
-                            if (bgAvatarEl) bgAvatarEl.src = avatarUrl.trim();
-                        }
-                    } catch (_) { /* silently ignore */ }
-                }
+
 
                 // Update sessionStorage
                 const userStr = sessionStorage.getItem('tohfa_user');
@@ -578,7 +550,7 @@
                 });
                 if (resp.data && resp.data.success) {
                     const newUrl = resp.data.data.avatar_url;
-                    document.getElementById('input-avatar-url').value = newUrl;
+
                     document.getElementById('avatar-preview').src = newUrl;
                     document.getElementById('bg-user-avatar').src = newUrl;
                     // Update session
@@ -596,14 +568,7 @@
             }
         });
 
-        // Avatar URL input → live preview
-        document.getElementById('input-avatar-url').addEventListener('input', (e) => {
-            const url = e.target.value.trim();
-            if (url.startsWith('http')) {
-                document.getElementById('avatar-preview').src = url;
-                document.getElementById('bg-user-avatar').src = url;
-            }
-        });
+
     });
 
     /* ── Close on scrim click ── */

@@ -186,6 +186,29 @@
       padding: 4px 0 !important;
       text-align: left !important;
     }
+    #messages-container {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    #messages-container > div {
+      max-width: 100% !important;
+    }
+    .product-inquiry-card,
+    [id^="offer-card-"] {
+      max-w-full !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    .product-inquiry-card h4,
+    [id^="offer-card-"] span {
+      word-break: break-word !important;
+    }
+    section#chat-area > div.p-4.bg-white.border-t {
+      margin-bottom: 64px !important;
+      position: relative !important;
+      z-index: 40 !important;
+    }
   }
 </style>
 
@@ -334,7 +357,7 @@
     <!-- Input Bar -->
     <div class="p-4 bg-white border-t border-outline-variant shrink-0">
       <div class="flex items-center gap-3">
-        <input type="file" id="file-picker" accept="image/*" class="hidden" multiple onchange="handleFileSelection(event)">
+        <input type="file" id="file-picker" accept="image/*,application/pdf,.doc,.docx" class="hidden" multiple onchange="handleFileSelection(event)">
         <button onclick="triggerFilePicker()" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-100 rounded-xl transition-all">
           <span class="material-symbols-outlined">attach_file</span>
         </button>
@@ -943,7 +966,24 @@
         div.className = "flex justify-end w-full";
         let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${msg.content}</p>` : '';
         if (msg.image_url) {
-          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
+          const isImage = msg.image_url.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+          if (isImage) {
+            contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
+          } else {
+            const fileName = msg.image_url.split('/').pop().replace(/^chat-\d+-/, '');
+            let icon = 'insert_drive_file';
+            if (msg.image_url.endsWith('.pdf')) icon = 'picture_as_pdf';
+            else if (msg.image_url.endsWith('.doc') || msg.image_url.endsWith('.docx')) icon = 'description';
+            contentHtml += `
+              <a href="${API_BASE}${msg.image_url}" target="_blank" class="flex items-center gap-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg text-white mt-2 transition-all border border-white/10 min-w-[200px] text-left">
+                <span class="material-symbols-outlined text-2xl">${icon}</span>
+                <div class="flex-grow min-w-0">
+                  <p class="text-xs font-bold truncate">${fileName}</p>
+                  <p class="text-[9px] opacity-70">Tap to download</p>
+                </div>
+              </a>
+            `;
+          }
         }
         div.innerHTML = `
           <div class="flex flex-col items-end gap-1 max-w-[80%]">
@@ -957,7 +997,24 @@
         div.className = "flex justify-start w-full";
         let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>` : '';
         if (msg.image_url) {
-          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
+          const isImage = msg.image_url.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+          if (isImage) {
+            contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}">`;
+          } else {
+            const fileName = msg.image_url.split('/').pop().replace(/^chat-\d+-/, '');
+            let icon = 'insert_drive_file';
+            if (msg.image_url.endsWith('.pdf')) icon = 'picture_as_pdf';
+            else if (msg.image_url.endsWith('.doc') || msg.image_url.endsWith('.docx')) icon = 'description';
+            contentHtml += `
+              <a href="${API_BASE}${msg.image_url}" target="_blank" class="flex items-center gap-2 p-3 bg-surface-variant hover:bg-surface-variant/80 rounded-lg text-on-surface mt-2 transition-all border border-outline-variant min-w-[200px] text-left">
+                <span class="material-symbols-outlined text-2xl text-primary">${icon}</span>
+                <div class="flex-grow min-w-0">
+                  <p class="text-xs font-bold truncate">${fileName}</p>
+                  <p class="text-[9px] text-gray-500">Tap to download</p>
+                </div>
+              </a>
+            `;
+          }
         }
         div.innerHTML = `
           <div class="flex items-start gap-3 max-w-[80%]">
@@ -1137,11 +1194,29 @@
     
     strip.classList.remove('hidden');
     container.innerHTML = selectedFiles.map((file, idx) => {
-      const url = URL.createObjectURL(file);
+      const isImage = file.type.startsWith('image/');
+      const url = isImage ? URL.createObjectURL(file) : '';
+      
+      let previewHtml = '';
+      if (isImage) {
+        previewHtml = `<img class="w-full h-full object-cover" src="${url}">`;
+      } else {
+        let icon = 'insert_drive_file';
+        if (file.name.endsWith('.pdf')) icon = 'picture_as_pdf';
+        else if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) icon = 'description';
+        
+        previewHtml = `
+          <div class="w-full h-full bg-surface-variant flex flex-col items-center justify-center text-primary p-1">
+            <span class="material-symbols-outlined text-[18px]">${icon}</span>
+            <span class="text-[8px] truncate max-w-full font-mono font-medium">${file.name}</span>
+          </div>
+        `;
+      }
+      
       return `
-        <div class="relative w-16 h-12 rounded-lg border border-outline-variant overflow-hidden shrink-0 shadow-sm">
-          <img class="w-full h-full object-cover" src="${url}">
-          <button onclick="removeSelectedFile(${idx})" class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors focus:outline-none">
+        <div class="relative w-16 h-12 rounded-lg border border-outline-variant overflow-hidden shrink-0 shadow-sm bg-white">
+          ${previewHtml}
+          <button onclick="removeSelectedFile(${idx})" class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors focus:outline-none z-10">
             <span class="material-symbols-outlined text-[10px]">close</span>
           </button>
         </div>

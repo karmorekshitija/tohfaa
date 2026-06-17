@@ -43,7 +43,7 @@ html, body {
 }
 
 /* Adjust base line height for body readability on mobile */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   body {
     line-height: 1.5 !important;
     font-size: 15px !important;
@@ -51,14 +51,14 @@ html, body {
 }
 
 /* iOS Safari auto-zoom prevention: inputs must be >= 16px */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   input, textarea, select {
     font-size: 16px !important;
   }
 }
 
 /* Clean up hero banners and text overlays on mobile */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .hero-banner-text {
     position: relative !important;
     transform: none !important;
@@ -86,7 +86,7 @@ html, body {
 }
 
 /* Layout overrides for general sections */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   /* Enforce minimum horizontal padding for content areas */
   .px-margin-desktop,
   .px-64,
@@ -96,7 +96,7 @@ html, body {
   }
   
   /* Reset grid columns except for product grids */
-  [class*="grid-cols-"]:not(#product-feed-grid):not(#sponsored-product-grid) {
+  [class*="grid-cols-"]:not(#product-feed-grid):not(#sponsored-product-grid):not(#product-grid):not(#results-grid):not(#related-treasures-grid):not(#catalog-grid):not(#custom-grid):not(.product-grid):not(.search-results-grid):not(.category-product-grid) {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
 
@@ -159,6 +159,7 @@ html, body {
     padding: 4px !important;
     min-width: 28px !important;
     min-height: 28px !important;
+    z-index: 10 !important;
   }
   #product-grid > div .toggle-wishlist-btn span,
   #product-feed-grid > div .toggle-wishlist-btn span,
@@ -172,6 +173,8 @@ html, body {
 
   /* Typography overrides */
   #product-grid > div h4,
+  #product-grid > div h3,
+  #product-grid > div .font-title-serif,
   #product-feed-grid > div h4,
   #sponsored-product-grid > div h4,
   #results-grid > div h4,
@@ -182,11 +185,12 @@ html, body {
   .search-results-grid > div h4,
   .category-product-grid > div h4 {
     font-size: 13px !important;
-    line-height: 18px !important;
+    line-height: 1.2 !important;
     margin-bottom: 2px !important;
   }
 
   #product-grid > div span.text-lg,
+  #product-grid > div .font-data-price,
   #product-feed-grid > div span.text-lg,
   #sponsored-product-grid > div span.text-lg,
   #results-grid > div span.text-lg,
@@ -202,6 +206,7 @@ html, body {
 
   /* Rating and Seller text overrides */
   #product-grid > div .text-xs,
+  #product-grid > div span,
   #product-feed-grid > div .text-xs,
   #sponsored-product-grid > div .text-xs,
   #results-grid > div .text-xs,
@@ -216,6 +221,7 @@ html, body {
   }
 
   /* Add to Cart button override - make it compact and minimal */
+  #product-grid > div button,
   #product-grid > div .add-to-cart-btn,
   #product-feed-grid > div .add-to-cart-btn,
   #sponsored-product-grid > div .add-to-cart-btn,
@@ -226,12 +232,13 @@ html, body {
   .product-grid > div .add-to-cart-btn,
   .search-results-grid > div .add-to-cart-btn,
   .category-product-grid > div .add-to-cart-btn {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
     font-size: 11px !important;
     border-radius: 6px !important;
     min-height: 28px !important;
     height: 28px !important;
+    margin-top: 4px !important;
   }
 
   /* Tighter spacing in card body */
@@ -246,6 +253,17 @@ html, body {
   .search-results-grid > div .flex-col,
   .category-product-grid > div .flex-col {
     margin-bottom: 2px !important;
+  }
+  
+  /* Reset tailwind margins */
+  #product-grid > div .mb-4,
+  #product-feed-grid > div .mb-4,
+  #sponsored-product-grid > div .mb-4,
+  #results-grid > div .mb-4,
+  #related-treasures-grid > div .mb-4,
+  #catalog-grid > div .mb-4,
+  #custom-grid > div .mb-4 {
+    margin-bottom: 4px !important;
   }
 
   /* Flex row stacks */
@@ -423,7 +441,7 @@ footer {
   width: 100% !important;
   box-sizing: border-box !important;
 }
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   footer .grid,
   footer div.flex {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
@@ -446,7 +464,7 @@ footer {
 /* ==========================================================================
    Global Form & Input overrides
    ========================================================================== */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   form,
   .form-container {
     width: 100% !important;
@@ -520,7 +538,7 @@ a.btn,
 }
 
 /* Order Rows reflowing */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .order-row,
   [class*="order-row"] {
     display: flex !important;
