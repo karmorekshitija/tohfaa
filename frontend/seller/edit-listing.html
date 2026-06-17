@@ -188,13 +188,27 @@
                   <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Units in Inventory</label>
                   <input id="stock-count" type="number" step="1" min="0" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium"/>
               </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+              <div class="flex flex-col justify-end">
+                  <div class="flex items-center justify-between p-4 bg-surface border border-outline-variant/30 rounded-xl">
+                      <div>
+                          <p class="text-xs font-bold text-forest">Customisable option</p>
+                          <p class="text-[10px] text-on-surface-variant">Allow buyers to request custom work</p>
+                      </div>
+                      <button id="customisable-toggle" type="button" class="w-12 h-6 bg-outline-variant/40 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center">
+                          <div id="customisable-toggle-circle" class="w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0"></div>
+                      </button>
+                  </div>
+              </div>
               <div class="flex flex-col justify-end">
                   <div class="flex items-center justify-between p-4 bg-surface border border-outline-variant/30 rounded-xl">
                       <div>
                           <p class="text-xs font-bold text-forest">Pre-booking option</p>
                           <p class="text-[10px] text-on-surface-variant">Allow buyers to order before dispatch</p>
                       </div>
-                      <button id="prebook-toggle" class="w-12 h-6 bg-outline-variant/40 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center">
+                      <button id="prebook-toggle" type="button" class="w-12 h-6 bg-outline-variant/40 rounded-full p-1 transition-colors duration-300 focus:outline-none flex items-center">
                           <div id="prebook-toggle-circle" class="w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0"></div>
                       </button>
                   </div>
@@ -255,6 +269,7 @@
     const API_BASE = window.location.origin;
     let productId = null;
     let prebookEnabled = false;
+    let customisableEnabled = false;
 
     // Photos state (up to 4 slots)
     let photoFiles = [null, null, null, null];
@@ -396,6 +411,16 @@
                 document.getElementById('prebook-limit').value = data.prebook_limit || data.prebooking_window || '';
             }
 
+            // Customisable
+            customisableEnabled = data.isCustomisable || data.listing_type === 'custom';
+            const customisableBtn = document.getElementById('customisable-toggle');
+            const customisableCircle = document.getElementById('customisable-toggle-circle');
+            if (customisableEnabled) {
+                customisableBtn.classList.remove('bg-outline-variant/40');
+                customisableBtn.classList.add('bg-forest');
+                customisableCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-6';
+            }
+
             // Photos
             if (data.photos && data.photos.length > 0) {
                 data.photos.forEach((photo, index) => {
@@ -453,6 +478,23 @@
             prebookBtn.classList.remove('bg-forest');
             prebookCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0';
             prebookLimitBox.classList.add('hidden');
+        }
+    });
+
+    const customisableBtn = document.getElementById('customisable-toggle');
+    const customisableCircle = document.getElementById('customisable-toggle-circle');
+
+    customisableBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        customisableEnabled = !customisableEnabled;
+        if (customisableEnabled) {
+            customisableBtn.classList.remove('bg-outline-variant/40');
+            customisableBtn.classList.add('bg-forest');
+            customisableCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-6';
+        } else {
+            customisableBtn.classList.add('bg-outline-variant/40');
+            customisableBtn.classList.remove('bg-forest');
+            customisableCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0';
         }
     });
 
@@ -534,6 +576,7 @@
             allow_prebooking: prebookEnabled ? 1 : 0,
             prebook_limit: prebookEnabled ? prebook_limit : null,
             prebooking_window: prebookEnabled ? prebook_limit : null,
+            isCustomisable: customisableEnabled,
             dimensions_l,
             length_cm: dimensions_l,
             dimensions_w,

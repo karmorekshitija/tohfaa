@@ -713,7 +713,10 @@ function rowHTML(l) {
                 </div>
                 <div class="min-w-0">
                     <p class="font-semibold text-primary truncate">${l.title}</p>
-                    <p class="text-[10px] text-on-surface-variant uppercase tracking-widest">${l.category || 'Uncategorized'}</p>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span class="text-[10px] text-on-surface-variant uppercase tracking-widest">${l.category || 'Uncategorized'}</span>
+                        ${l.listing_type === 'custom' || l.isCustomisable ? `<span style="font-family:'Cinzel', serif; font-size:9px; background-color:#D8CBE9; color:#7B5EA7; border-radius:20px; padding:3px 8px;" class="uppercase font-bold">Customisable</span>` : ''}
+                    </div>
                 </div>
             </div>
         </td>
