@@ -17,8 +17,12 @@ export function initMobileBuyerNav(activePage = '') {
         position: fixed;
         bottom: 0; left: 0; right: 0;
         height: 60px;
-        background: var(--surface);
-        border-top: 1px solid var(--secondary-sage);
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        border-top: 0.5px solid rgba(0, 0, 0, 0.1) !important;
+        opacity: 1 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
         z-index: 200;
         align-items: stretch;
       }

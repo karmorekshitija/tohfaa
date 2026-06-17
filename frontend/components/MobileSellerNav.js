@@ -17,7 +17,8 @@ export function initMobileSellerNav(activeTab = '') {
         position: fixed;
         top: 0; left: 0; right: 0;
         height: 56px;
-        background: var(--surface);
+        background-color: #ffffff !important;
+        background: #ffffff !important;
         border-bottom: 1px solid var(--secondary-sage);
         align-items: center;
         justify-content: space-between;
@@ -53,7 +54,8 @@ export function initMobileSellerNav(activeTab = '') {
         top: 0; left: 0;
         width: 280px;
         height: 100vh;
-        background: var(--surface);
+        background-color: #ffffff !important;
+        background: #ffffff !important;
         border-right: 1px solid var(--secondary-sage);
         box-shadow: 10px 0 30px rgba(0,0,0,0.15);
         transform: translateX(-100%);
