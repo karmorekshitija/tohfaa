@@ -122,6 +122,22 @@
         ::-webkit-scrollbar-thumb { background: #F7F3EC; border-radius: 10px; }
 
         @media (max-width: 768px) {
+            /* Stack dashboard header on mobile */
+            header.flex {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 16px !important;
+            }
+            header.flex > div {
+                width: 100% !important;
+                text-align: left !important;
+            }
+            header.flex > div.flex.items-center.gap-lg {
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+            }
+            
             /* Stack grid & flex items */
             .grid:not(#kpi-grid):not(#quick-actions-grid), 
             [class*="grid-cols-"]:not(#kpi-grid):not(#quick-actions-grid), 
@@ -819,8 +835,8 @@
                     const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
                     labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
                     
-                    const baseVisits = 10 + Math.sin(i / 2) * 5 + Math.random() * 8;
-                    const baseRevenue = baseVisits * (100 + Math.random() * 50);
+                    const baseVisits = 0;
+                    const baseRevenue = 0;
                     visits.push(Math.round(baseVisits));
                     revenue.push(Math.round(baseRevenue / 100)); // Rupees
                 }
@@ -1038,6 +1054,12 @@
           });
         })();
     });
+</script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileSellerNav } from '/components/MobileSellerNav.js';
+  initMobileSellerNav('home');
 </script>
 </body>
 </html>

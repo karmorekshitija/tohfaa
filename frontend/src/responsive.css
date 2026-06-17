@@ -1,5 +1,38 @@
 /* Tohfa Marketplace - Mobile Responsiveness Global Styles */
 
+:root {
+  --color-bg-primary:     #FFFFFF;
+  --color-bg-cream-deep:  #F1EADD;
+  --color-surface-ivory:  #FCFAF5;
+  --color-primary-forest: #3D6B4F;
+  --color-primary-deep:   #2E5340;
+  --color-secondary-sage: #8FAF82;
+  --color-sage-soft:      #C5D6BC;
+  --color-accent-violet:  #7B5EA7;
+  --color-violet-soft:    #D8CBE9;
+  --color-highlight-gold: #C8973A;
+  --color-gold-soft:      #EBD7AE;
+  --color-text-default:   #3A3328;
+  --color-text-muted:     #6E6453;
+  --color-text-faint:     #9A8F7A;
+  --color-danger:         #B14B3E;
+
+  --font-display: 'Playfair Display', serif;
+  --font-serif-ui: 'Lora', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-data: 'Space Mono', monospace;
+  --font-accent: 'Cinzel', serif;
+}
+
+/* Card utility styles */
+.tofa-card {
+  background: var(--color-surface-ivory) !important;
+  border: 1px solid var(--color-secondary-sage) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 8px rgba(58,51,40,0.07) !important;
+  padding: 16px !important;
+}
+
 /* Ensure the body hides horizontal overflow and wraps content cleanly */
 html, body {
   overflow-x: hidden !important;
@@ -512,5 +545,15 @@ a.btn,
     animation-iteration-count: 1 !important;
     transition-duration: 0s !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Card default styling on mobile viewports */
+@media (max-width: 768px) {
+  .bg-surface.border, .bg-surface-ivory, .card, .tofa-card {
+    background: #FCFAF5 !important;
+    border: 1px solid #8FAF82 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 8px rgba(58,51,40,0.07) !important;
   }
 }
