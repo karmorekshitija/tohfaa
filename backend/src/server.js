@@ -9786,7 +9786,7 @@ app.get('/api/admin/dashboard/revenue-chart', authenticateAdminToken, async (req
         d.setDate(d.getDate() - i);
         data.push({
           date: d.toISOString().split('T')[0],
-          revenue: Math.floor(Math.random() * 200000) + 10000
+          revenue: 0
         });
       }
     }
@@ -9837,7 +9837,7 @@ app.get('/api/admin/dashboard/footfall', authenticateAdminToken, async (req, res
         d.setDate(d.getDate() - i);
         data.push({
           date: d.toISOString().split('T')[0],
-          unique_visitors: Math.floor(Math.random() * 50) + 10
+          unique_visitors: 0
         });
       }
     }
@@ -9870,8 +9870,8 @@ app.get('/api/admin/dashboard/top-products', authenticateAdminToken, async (req,
     const data = rows.map(r => {
       const views = parseInt(r.views || 0);
       const clicks = parseInt(r.clicks || 0);
-      const finalViews = views || Math.floor(Math.random() * 200) + 50;
-      const finalClicks = clicks || Math.floor(Math.random() * 30) + 5;
+      const finalViews = views || 0;
+      const finalClicks = clicks || 0;
       const viral_score = (finalClicks / (finalViews || 1)) * 100 + (finalViews * 0.1);
 
       return {
