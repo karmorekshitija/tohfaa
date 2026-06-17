@@ -280,9 +280,7 @@
         </a>
         <a href="/buyer/profile.html" id="bottom-nav-btn-profile" class="flex flex-col items-center justify-center flex-1 h-full relative text-[#6E6453] hover:text-[#3D6B4F] transition-all">
           <div class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-[#3D6B4F] rounded-b-sm hidden" id="bottom-nav-line-profile"></div>
-          <div class="w-7 h-7 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white mb-0.5" id="bottom-nav-profile-badge">
-            <span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">flag</span>
-          </div>
+          <span class="material-symbols-outlined text-[24px]">person</span>
           <span class="text-[10px] font-['DM_Sans'] mt-0.5 font-medium">Profile</span>
         </a>
       `;

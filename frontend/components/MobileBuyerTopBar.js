@@ -19,7 +19,7 @@ export function initMobileBuyerTopBar() {
         position: fixed;
         top: 0; left: 0; right: 0;
         height: 56px;
-        background: var(--surface);
+        background: #F7F3EC !important;
         border-bottom: 1px solid var(--secondary-sage);
         z-index: 200;
         padding: 0 16px;
