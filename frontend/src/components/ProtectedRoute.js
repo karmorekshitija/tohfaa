@@ -187,7 +187,8 @@
     }
 
     // 3. Inject Mascot FAB chatbot trigger globally for buyer pages (except chat.html itself)
-    if (path.includes('/buyer/') && !path.endsWith('/chat.html') && !document.getElementById('tohfa-mascot-fab')) {
+    if (path.includes('/buyer/') && !path.endsWith('/chat.html') && !document.getElementById('tohfa-mascot-fab') && !window.__mascotFabInjected) {
+      window.__mascotFabInjected = true;
       const mascotFab = document.createElement('div');
       mascotFab.id = 'tohfa-mascot-fab';
       mascotFab.className = 'mascot-fab';
@@ -209,10 +210,12 @@
           cursor: pointer;
           width: clamp(56px, 14vw, 80px);
           height: clamp(56px, 14vw, 80px);
-          border-radius: 50%;
-          overflow: visible;
-          background: transparent;
-          border: none;
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+          overflow: visible !important;
           padding: 0;
           transition: transform 0.2s ease;
         }
@@ -230,8 +233,11 @@
           height: 100%;
           object-fit: contain;
           object-position: bottom center;
+          background: transparent !important;
+          background-color: transparent !important;
+          border-radius: 0 !important;
+          mix-blend-mode: normal;
           filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-          background: transparent;
         }
 
         @media (min-width: 768px) {
