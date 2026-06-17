@@ -1,0 +1,5 @@
+- [ ] Make main layout flex container responsive in `catalog.html`
+- [ ] Make stats row wrap and reduce padding on mobile in `catalog.html`
+- [ ] Make Filter & Sort row stack on mobile in `catalog.html`
+- [ ] Make Bulk Discount Bar stack on mobile in `catalog.html`
+- [ ] Verify build and layout
