@@ -163,6 +163,112 @@
             top: 30px !important;
             left: -24px !important;
         }
+        @media (max-width: 768px) {
+            /* Mobile-only badge overrides: replace diagonal ribbons with stacked horizontal pills in top-left */
+            .ribbon-wrapper {
+                position: absolute !important;
+                top: 8px !important;
+                left: 8px !important;
+                width: auto !important;
+                height: auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 4px !important;
+                z-index: 20 !important;
+                overflow: visible !important;
+                pointer-events: none !important;
+            }
+            .ribbon-tag {
+                position: static !important;
+                width: auto !important;
+                transform: none !important;
+                text-align: center !important;
+                font-size: 9px !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.05em !important;
+                color: #ffffff !important;
+                line-height: 1 !important;
+                padding: 4px 8px !important;
+                border-radius: 9999px !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+                display: inline-block !important;
+                white-space: nowrap !important;
+            }
+            .ribbon-tag::before,
+            .ribbon-tag::after {
+                display: none !important;
+            }
+            .ribbon-bestseller-double,
+            .ribbon-custom-double {
+                top: auto !important;
+                left: auto !important;
+                position: static !important;
+            }
+
+            /* Mobile Category page: Horizontal scrolling carousel with peeking cards */
+            body #product-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory !important;
+                -webkit-overflow-scrolling: touch !important;
+                gap: 12px !important;
+                padding: 4px 16px 16px 16px !important;
+                margin-left: -16px !important;
+                margin-right: -16px !important;
+                width: calc(100% + 32px) !important;
+                -ms-overflow-style: none !important;
+                scrollbar-width: none !important;
+            }
+            body #product-grid::-webkit-scrollbar {
+                display: none !important;
+            }
+            body #product-grid > div {
+                flex: 0 0 65% !important; /* ~65% width to allow the next card to peek in */
+                scroll-snap-align: start !important;
+                box-sizing: border-box !important;
+                padding: 10px !important;
+                border-radius: 12px !important;
+                background-color: #ffffff !important;
+                box-shadow: 0 2px 6px rgba(58,51,40,0.06) !important;
+                border: 1px solid #c3c8c1 !important;
+                height: auto !important;
+            }
+            /* Reduce spacing and make card layout tight/compact */
+            body #product-grid > div .relative.aspect-square {
+                margin-bottom: 8px !important;
+                border-radius: 8px !important;
+            }
+            /* Reduce padding and margins inside the card details */
+            body #product-grid > div .mb-4 {
+                margin-bottom: 6px !important;
+            }
+            body #product-grid > div h3,
+            body #product-grid > div h4 {
+                font-size: 13px !important;
+                line-height: 1.2 !important;
+                margin-bottom: 2px !important;
+            }
+            body #product-grid > div .font-data-price,
+            body #product-grid > div span.text-lg {
+                font-size: 15px !important;
+            }
+            body #product-grid > div .text-xs,
+            body #product-grid > div span {
+                font-size: 11px !important;
+            }
+            /* Add to Cart button styling */
+            body #product-grid > div .add-to-cart-btn {
+                padding-top: 6px !important;
+                padding-bottom: 6px !important;
+                font-size: 12px !important;
+                border-radius: 6px !important;
+                min-height: 36px !important;
+                height: 36px !important;
+                margin-top: 4px !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">

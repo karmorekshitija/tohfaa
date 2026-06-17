@@ -180,6 +180,28 @@
       padding: 4px 0 !important;
       text-align: left !important;
     }
+
+    /* Hide the leaf divider on mobile */
+    #usp-banner .story-divider {
+      display: none !important;
+    }
+    /* Reduce spacing between elements in the philosophy section */
+    #usp-banner h1 {
+      margin-bottom: 12px !important;
+    }
+    #usp-banner p {
+      margin-bottom: 16px !important;
+    }
+    /* Tighter button layout on mobile */
+    #usp-banner .flex.flex-wrap.gap-4 {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+    #usp-banner .flex.flex-wrap.gap-4 button {
+      width: 100% !important;
+      margin: 0 !important;
+    }
   }
 </style>
 
@@ -255,7 +277,7 @@
             <p class="font-body-lg italic text-on-surface-variant/80 mb-8 max-w-lg">
                 "At Tohfa, every gift tells a story. We bring you hand-selected, sustainably crafted treasures made by real artisans — not factories."
             </p>
-            <div class="flex items-center gap-4 mb-10">
+            <div class="story-divider flex items-center gap-4 mb-10">
                 <div class="h-px w-16 bg-brand-forest/20"></div>
                 <span class="material-symbols-outlined text-[#3D6B4F]">eco</span>
                 <div class="h-px w-16 bg-brand-forest/20"></div>

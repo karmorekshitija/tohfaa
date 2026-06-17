@@ -178,12 +178,12 @@
             }
             
             /* Activity Hub 2-column grid on mobile */
-            #profile-left-column .grid-cols-2 {
+            #activity-hub-grid {
                 display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 12px !important;
             }
-            #profile-left-column .grid-cols-2 > a {
+            #activity-hub-grid > a {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
@@ -191,20 +191,21 @@
                 text-align: center !important;
                 aspect-ratio: 1/1 !important;
                 padding: 12px !important;
+                height: auto !important;
             }
-            #profile-left-column .grid-cols-2 > a span.material-symbols-outlined {
+            #activity-hub-grid > a span.material-symbols-outlined {
                 margin-bottom: 4px !important;
                 font-size: 28px !important;
             }
-            #profile-left-column .grid-cols-2 > a p {
+            #activity-hub-grid > a p {
                 font-size: 13px !important;
                 margin-top: 2px !important;
             }
-            #profile-left-column .grid-cols-2 > a p.text-xs {
+            #activity-hub-grid > a p.text-xs {
                 font-size: 10px !important;
                 margin-top: 1px !important;
             }
-            #profile-left-column #custom-chat-card {
+            #activity-hub-grid > #custom-chat-card {
                 grid-column: span 2 !important;
                 aspect-ratio: auto !important;
                 display: flex !important;
@@ -213,6 +214,7 @@
                 justify-content: center !important;
                 text-align: left !important;
                 width: 100% !important;
+                height: auto !important;
             }
         }
     </style>
@@ -317,7 +319,7 @@
 <!-- Left Column: Quick Links Bento Grid -->
 <section class="col-span-12 lg:col-span-8" id="profile-left-column">
   <h3 class="font-title-serif text-title-serif mb-lg px-xs">Activity Hub</h3>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-gutter">
+  <div id="activity-hub-grid" class="grid grid-cols-2 md:grid-cols-3 gap-gutter">
     <!-- Quick Link Cards -->
     <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/orders.html">
       <span class="material-symbols-outlined text-primary mb-md" data-icon="package_2">package_2</span>

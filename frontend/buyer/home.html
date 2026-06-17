@@ -201,6 +201,51 @@
         .scrollbar-none::-webkit-scrollbar {
             display: none;
         }
+        
+        @media (max-width: 768px) {
+            /* Mobile-only badge overrides: replace diagonal ribbons with stacked horizontal pills in top-left */
+            .ribbon-wrapper {
+                position: absolute !important;
+                top: 8px !important;
+                left: 8px !important;
+                width: auto !important;
+                height: auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 4px !important;
+                z-index: 20 !important;
+                overflow: visible !important;
+                pointer-events: none !important;
+            }
+            .ribbon-tag {
+                position: static !important;
+                width: auto !important;
+                transform: none !important;
+                text-align: center !important;
+                font-size: 9px !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.05em !important;
+                color: #ffffff !important;
+                line-height: 1 !important;
+                padding: 4px 8px !important;
+                border-radius: 9999px !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+                display: inline-block !important;
+                white-space: nowrap !important;
+            }
+            /* Hide the corner shadow folds */
+            .ribbon-tag::before,
+            .ribbon-tag::after {
+                display: none !important;
+            }
+            /* Reset any double positioning offsets */
+            .ribbon-bestseller-double,
+            .ribbon-custom-double {
+                top: auto !important;
+                left: auto !important;
+                position: static !important;
+            }
+        }
     </style>
 </head>
 <body class="text-on-surface selection:bg-secondary-container bg-white">
