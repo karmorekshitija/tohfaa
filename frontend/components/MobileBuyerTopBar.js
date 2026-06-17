@@ -116,11 +116,37 @@ export function initMobileBuyerTopBar() {
   `;
   document.head.appendChild(style);
 
+  // Define back navigation helper on window
+  window.handleMobileBack = function() {
+    if (document.referrer && document.referrer.includes('/buyer/')) {
+      window.history.back();
+    } else {
+      window.location.href = '/buyer/profile.html';
+    }
+  };
+
   // Prepend topbar to body
   const topbar = document.createElement('div');
   topbar.id = 'mbt-topbar';
+
+  const path = window.location.pathname;
+  const isMainPage = path.endsWith('/home.html') || path.endsWith('/categories.html') || path.endsWith('/reels.html') || path.endsWith('/profile.html') || path === '/buyer/' || path === '/buyer';
+  const showBackButton = path.includes('/buyer/') && !isMainPage;
+
+  let leftHeaderHtml = `<a href="/buyer/home.html" class="mbt-logo">Tohfa<span>.</span></a>`;
+  if (showBackButton) {
+    leftHeaderHtml = `
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button onclick="handleMobileBack();" class="mbt-icon-btn" style="min-width:32px; min-height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#3D6B4F; background:none; border:none; cursor:pointer;" aria-label="Go Back">
+          <span class="material-symbols-outlined" style="font-size:24px; font-weight:bold;">arrow_back</span>
+        </button>
+        <a href="/buyer/home.html" class="mbt-logo">Tohfa<span>.</span></a>
+      </div>
+    `;
+  }
+
   topbar.innerHTML = `
-    <a href="/buyer/home.html" class="mbt-logo">Tohfa<span>.</span></a>
+    ${leftHeaderHtml}
     <div class="mbt-right-actions" id="mbt-actions">
       <a href="/buyer/search.html" class="mbt-icon-btn" aria-label="Search">
         <span class="material-symbols-outlined" style="font-size:22px">search</span>

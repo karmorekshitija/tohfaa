@@ -645,4 +645,27 @@ a.btn,
     background-image: none !important; /* Remove any linear-gradients */
     text-transform: uppercase !important;
   }
+
+  /* Mobile-only Saved Reels 3-column Grid (Instagram-style) */
+  #reels-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  #reels-grid > div {
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+  }
+  
+  #reels-grid > div img {
+    border-radius: 0 !important;
+  }
+  
+  #reels-grid > div .absolute {
+    display: none !important;
+  }
 }
