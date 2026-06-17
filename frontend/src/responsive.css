@@ -580,3 +580,69 @@ a.btn,
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Sponsored Badge and Wishlist Button styling overrides to prevent overlap
+   ========================================================================== */
+.toggle-wishlist-btn, .wishlist-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 3 !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+}
+
+.toggle-wishlist-btn .material-symbols-outlined, .wishlist-btn .material-symbols-outlined {
+  font-size: 16px !important;
+}
+
+/* Mobile-specific badge and ribbon overrides */
+@media (max-width: 768px) {
+  .ribbon-wrapper {
+    position: absolute !important;
+    top: 8px !important;
+    left: 8px !important;
+    width: auto !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    z-index: 2 !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+  }
+
+  .ribbon-tag, .sponsored-badge {
+    position: static !important;
+    width: auto !important;
+    transform: none !important;
+    text-align: center !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    color: #ffffff !important;
+    line-height: 1.3 !important;
+    padding: 3px 7px !important;
+    border-radius: 20px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+  }
+
+  .ribbon-sponsored, .sponsored-badge {
+    background-color: #E87C1E !important;
+    background-image: none !important; /* Remove any linear-gradients */
+    text-transform: uppercase !important;
+  }
+}
