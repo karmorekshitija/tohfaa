@@ -112,31 +112,83 @@
     h1, h2, h3, h4, h5, h6 {
       font-family: 'Playfair Display', serif !important;
     }
-  }
-</style>
 
+    /* Card styling overrides for Ivory cards */
+    .rounded-card, [class*="rounded-card"] {
+      background: #FCFAF5 !important;
+      border: 1px solid #8FAF82 !important;
+      border-radius: 16px !important;
+      box-shadow: 0 2px 8px rgba(58,51,40,0.07) !important;
+      padding: 16px !important;
+    }
 
-<!-- Payments Mobile Custom Styling -->
-<style>
-  @media (max-width: 768px) {
-    #revenue-chart, #revenue-chart-container, .chart-section,
-    [id*="chart"], [class*="chart-wrap"], canvas {
+    /* Chart responsive sizing */
+    #earningsChart, canvas {
       width: 100% !important;
       height: 220px !important;
     }
-    .stat-cards-row, .metrics-row, [class*="stats-grid"], .grid-cols-3 {
+
+    /* Convert tables to cards */
+    table, thead, tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tr {
+      background: #FCFAF5 !important;
+      border: 1px solid #8FAF82 !important;
+      border-radius: 12px !important;
+      padding: 12px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(58,51,40,0.07) !important;
+    }
+    td {
+      border: none !important;
+      padding: 6px 0 !important;
+      text-align: left !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+    /* Add labels before columns for better context */
+    #tx-tbody td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: #6E6453;
+      font-family: 'DM Sans', sans-serif;
+    }
+    #recent-payments-tbody td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: #6E6453;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Ledger action buttons stack */
+    .ledger-actions {
       display: flex !important;
       flex-direction: column !important;
-      gap: 12px !important;
-    }
-    .stat-card, .metric-card, [class*="stat-card"] {
       width: 100% !important;
-      margin-top: 0 !important;
+      gap: 8px !important;
     }
-    .payout-section + .payout-section {
-      border-top: 1px solid #F7F3EC !important;
-      margin-top: 20px !important;
-      padding-top: 20px !important;
+    .ledger-actions button, .ledger-actions a {
+      width: 100% !important;
+      min-height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    /* Form submit buttons on mobile */
+    #receiving-details-form button[type="submit"],
+    #tax-form button[type="submit"] {
+      width: 100% !important;
+      height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
   }
 </style>
@@ -317,7 +369,7 @@
                     <h3 class="text-xl font-bold text-forest">Recent Transaction Ledger</h3>
                     <p class="text-sm text-forest/80">A summary of sales, refunds, and adjustments.</p>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex gap-3 ledger-actions">
                     <button onclick="exportTransactions()" class="flex items-center gap-1 px-4 py-2 border border-sage text-forest hover:bg-sage/10 text-sm font-bold rounded-btn">
                         <span class="material-symbols-outlined text-sm">download</span> Export Ledger
                     </button>
@@ -790,9 +842,9 @@
 
         tbody.innerHTML = items.map(p => `
             <tr>
-                <td class="py-3 px-2">${formatDate(p.date)}</td>
-                <td class="py-3 px-2">${p.buyer_name}</td>
-                <td class="py-3 px-2 font-mono font-bold">${formatINR(p.amount)}</td>
+                <td class="py-3 px-2" data-label="Date">${formatDate(p.date)}</td>
+                <td class="py-3 px-2" data-label="Buyer">${p.buyer_name}</td>
+                <td class="py-3 px-2 font-mono font-bold" data-label="Amount">${formatINR(p.amount)}</td>
             </tr>
         `).join('');
     }
@@ -816,18 +868,18 @@
         empty.classList.add('hidden');
         tbody.innerHTML = list.map(tx => `
             <tr class="hover:bg-parchment/10 transition-colors">
-                <td class="py-3 px-4 text-sm text-forest">${formatDate(tx.date)}</td>
-                <td class="py-3 px-4 font-mono text-sm text-forest/80">${tx.order_id || tx.id}</td>
-                <td class="py-3 px-4">
+                <td class="py-3 px-4 text-sm text-forest" data-label="Date">${formatDate(tx.date)}</td>
+                <td class="py-3 px-4 font-mono text-sm text-forest/80" data-label="Reference">${tx.order_id || tx.id}</td>
+                <td class="py-3 px-4" data-label="Type">
                     <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${
                         tx.type === 'SALE' ? 'bg-forest/10 text-forest' : 
                         tx.type === 'REFUND' ? 'bg-error/10 text-error' : 'bg-violet/10 text-violet'
                     }">${tx.type}</span>
                 </td>
-                <td class="py-3 px-4 font-mono text-sm text-forest font-bold">${formatINR(tx.gross_amount)}</td>
-                <td class="py-3 px-4 font-mono text-sm text-forest/80">${formatINR(tx.platform_fee)}</td>
-                <td class="py-3 px-4 font-mono text-sm text-forest/80">${formatINR(tx.tax_amount)}</td>
-                <td class="py-3 px-4 font-mono text-sm font-bold ${tx.type === 'SALE' ? 'text-forest' : 'text-error'}">${formatINR(tx.net_amount)}</td>
+                <td class="py-3 px-4 font-mono text-sm text-forest font-bold" data-label="Gross Amt">${formatINR(tx.gross_amount)}</td>
+                <td class="py-3 px-4 font-mono text-sm text-forest/80" data-label="Platform Fee">${formatINR(tx.platform_fee)}</td>
+                <td class="py-3 px-4 font-mono text-sm text-forest/80" data-label="Tax (TDS)">${formatINR(tx.tax_amount)}</td>
+                <td class="py-3 px-4 font-mono text-sm font-bold ${tx.type === 'SALE' ? 'text-forest' : 'text-error'}" data-label="Net Amt">${formatINR(tx.net_amount)}</td>
             </tr>
         `).join('');
     }
