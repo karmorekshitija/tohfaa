@@ -122,7 +122,7 @@
 
 **Tool used:** `cloudflared tunnel --url http://localhost:5173`
 
-- Public URL generated: `https://aware-coupons-nyc-prior.trycloudflare.com`
+- Public URL generated: `https://hold-remains-instantly-mate.trycloudflare.com`
 - Type: Quick (account-less) tunnel via `trycloudflare.com`
 - Note: URL is session-scoped — it changes each time the tunnel is restarted.
 
