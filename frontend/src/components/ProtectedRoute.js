@@ -185,6 +185,89 @@
           .catch(err => console.error("Error loading MobileBuyerNav:", err));
       }
     }
+
+    // 3. Inject Mascot FAB chatbot trigger globally for buyer pages (except chat.html itself)
+    if (path.includes('/buyer/') && !path.endsWith('/chat.html') && !document.getElementById('tohfa-mascot-fab')) {
+      const mascotFab = document.createElement('div');
+      mascotFab.id = 'tohfa-mascot-fab';
+      mascotFab.className = 'mascot-fab';
+      mascotFab.setAttribute('role', 'button');
+      mascotFab.setAttribute('aria-label', 'Chat with Tohfa assistant');
+      mascotFab.setAttribute('tabindex', '0');
+      mascotFab.innerHTML = `
+        <img src="/src/assets/images/mascot/tohfa-mascot.png" alt="Tohfa mascot" class="mascot-img" />
+      `;
+
+      // CSS styles for the Mascot FAB
+      const style = document.createElement('style');
+      style.textContent = `
+        .mascot-fab {
+          position: fixed;
+          bottom: 80px;
+          right: 16px;
+          z-index: 1001;
+          cursor: pointer;
+          width: clamp(56px, 14vw, 80px);
+          height: clamp(56px, 14vw, 80px);
+          border-radius: 50%;
+          overflow: visible;
+          background: transparent;
+          border: none;
+          padding: 0;
+          transition: transform 0.2s ease;
+        }
+
+        .mascot-fab:hover {
+          transform: scale(1.08);
+        }
+
+        .mascot-fab:active {
+          transform: scale(0.96);
+        }
+
+        .mascot-fab .mascot-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          object-position: bottom center;
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+          background: transparent;
+        }
+
+        @media (min-width: 768px) {
+          .mascot-fab {
+            bottom: 32px;
+            right: 32px;
+            width: clamp(72px, 8vw, 100px);
+            height: clamp(72px, 8vw, 100px);
+          }
+        }
+
+        @media (min-width: 1200px) {
+          .mascot-fab {
+            bottom: 40px;
+            right: 40px;
+            width: clamp(88px, 6vw, 110px);
+            height: clamp(88px, 6vw, 110px);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // openChatbot function redirects to the chatbot page
+      window.openChatbot = function() {
+        window.location.href = '/buyer/chat.html';
+      };
+
+      mascotFab.addEventListener('click', window.openChatbot);
+      mascotFab.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          window.openChatbot();
+        }
+      });
+
+      document.body.appendChild(mascotFab);
+    }
   }
 })();
 
