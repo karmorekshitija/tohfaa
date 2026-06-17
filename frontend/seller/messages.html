@@ -86,6 +86,16 @@
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+  .product-context-card {
+    margin: 8px 16px;
+    padding: 10px 12px;
+    background: #FCFAF5;
+    border: 1px solid #C5D6BC;
+    border-radius: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 </style>
 
 <!-- Mobile Style Overrides -->
@@ -308,6 +318,9 @@
     <div id="messages-container" class="flex-grow overflow-y-auto p-6 space-y-6 bg-surface-variant/20 custom-scrollbar flex flex-col">
       <!-- Injected dynamically -->
     </div>
+
+    <!-- Pinned Product Context Card (Seller View) -->
+    <div id="product-context-card-container" class="hidden"></div>
 
     <!-- Image Attachment Preview Strip -->
     <div id="attachment-preview-strip" class="bg-white px-6 py-2 border-t border-outline-variant hidden">
@@ -714,6 +727,31 @@
       const container = document.getElementById('messages-container');
       container.scrollTop = container.scrollHeight;
 
+      // Render Pinned Product Context Card (Seller View)
+      const listing = data.listing;
+      const contextContainer = document.getElementById('product-context-card-container');
+      if (listing && listing.id) {
+        contextContainer.classList.remove('hidden');
+        const imgSrc = listing.cover_photo_url || listing.cover_image_url || '/placeholder.jpg';
+        const isCustomisable = listing.isCustomisable || listing.is_customisable || listing.listing_type === 'custom' || data.product_type_tag === 'custom' || data.status === 'custom';
+        const customisablePill = isCustomisable 
+          ? `<span class="text-[9px] font-bold uppercase tracking-wider" style="font-family: 'Cinzel'; background-color: #D8CBE9; color: #7B5EA7; padding: 3px 8px; border-radius: 20px; font-size: 9px; line-height: 1;">Customisable</span>`
+          : '';
+        contextContainer.innerHTML = `
+          <div class="product-context-card cursor-pointer" onclick="window.location.href='/seller/edit-listing.html?id=${listing.id}'">
+            <img class="w-12 h-12 object-cover rounded-lg border border-[#C5D6BC] shrink-0" src="${imgSrc}" alt="${listing.product_name || 'Product'}">
+            <div class="flex-grow min-w-0">
+              <h4 class="text-xs font-bold truncate text-[#3A3328]" style="font-family: 'Lora'; font-size: 13px;">${listing.product_name || 'Product'}</h4>
+              <p class="font-bold text-xs" style="font-family: 'Space Mono'; color: #C8973A; font-size: 13px; margin-top: 2px;">₹${(listing.base_price || 0).toFixed(2)}</p>
+            </div>
+            ${customisablePill}
+          </div>
+        `;
+      } else {
+        contextContainer.classList.add('hidden');
+        contextContainer.innerHTML = '';
+      }
+
     } catch (e) {
       triggerToastError(e.message);
     }
@@ -815,7 +853,7 @@
         const div = document.createElement('div');
         
         const cardHtml = `
-          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='/buyer/product.html?id=${product_id}'">
+          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='/seller/edit-listing.html?id=${product_id}'">
             <div class="flex items-center">
               <span class="font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold text-white" style="background-color: ${tagColor};">
                 ${tagLabel}
