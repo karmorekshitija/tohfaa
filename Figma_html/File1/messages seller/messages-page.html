@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TOFA Artisan Studio | Messages</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="/components/seller-components.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#3D6B4F",
+          "gold": "#C8973A",
+          "surface-variant": "#F7F3EC",
+          "sage": "#8FAF82",
+          "on-surface": "#211b11",
+          "outline-variant": "#E8E2D5"
+        },
+        fontFamily: {
+          display: ["Playfair Display", "serif"],
+          body: ["DM Sans", "sans-serif"],
+          mono: ["Space Mono", "monospace"],
+          eyebrow: ["Cinzel", "serif"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .bg-parchment { background-color: #F7F3EC; }
+  .text-on-surface { color: #211b11; }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #E8E2D5;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #C8973A;
+  }
+  .interactive-hover {
+    transition: all 0.2s ease;
+  }
+  .interactive-hover:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+  .pulse-green {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+  }
+  .shimmer {
+    background: linear-gradient(90deg, #F7F3EC 25%, #E8E2D5 50%, #F7F3EC 75%);
+    background-size: 200% 100%;
+    animation: shimmer-anim 1.5s infinite;
+  }
+  @keyframes shimmer-anim {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .product-context-card {
+    margin: 8px 16px;
+    padding: 10px 12px;
+    background: #FCFAF5;
+    border: 1px solid #C5D6BC;
+    border-radius: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+</style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack grid & flex items */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    /* Let card items span full width */
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Set min spacing */
+    .grid > div, .flex > div, .space-y-lg > div, .space-y-md > div {
+      margin-top: 12px;
+    }
+    /* Enforce playfair display for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+      position: relative !important;
+    }
+
+    /* Hide empty chat placeholder on mobile */
+    #chat-area-empty {
+      display: none !important;
+    }
+    /* COLUMN A: Sidebar takes 100% width on mobile */
+    aside.w-80 {
+      width: 100% !important;
+      display: flex !important;
+    }
+    /* When active conversation is open, COLUMN B covers COLUMN A */
+    #chat-area:not(.hidden) {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 100 !important;
+      width: 100% !important;
+      height: 100% !important;
+      display: flex !important;
+    }
+    
+    /* Outgoing seller bubble styling override */
+    .flex.justify-end.w-full .flex-col.items-end {
+      max-width: 72% !important;
+    }
+    .flex.justify-end.w-full .bg-primary {
+      background-color: #3D6B4F !important;
+      border: none !important;
+      border-radius: 18px 18px 4px 18px !important;
+      padding: 10px 14px !important;
+    }
+    .flex.justify-end.w-full .bg-primary p {
+      color: #FFFFFF !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 14px !important;
+    }
+    
+    /* Incoming buyer bubble styling override */
+    .flex.justify-start.w-full .flex-start,
+    .flex.justify-start.w-full .max-w-\[80\%\] {
+      max-width: 72% !important;
+    }
+    .flex.justify-start.w-full div.bg-\[\#FFFDFB\],
+    .flex.justify-start.w-full div[class*="bg-["] {
+      background-color: #FCFAF5 !important;
+      border: 1px solid #C5D6BC !important;
+      border-radius: 18px 18px 18px 4px !important;
+      padding: 10px 14px !important;
+    }
+    .flex.justify-start.w-full div.bg-\[\#FFFDFB\] p,
+    .flex.justify-start.w-full div[class*="bg-["] p {
+      color: #3A3328 !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 14px !important;
+    }
+
+    /* Fixed input bar above keyboard on mobile */
+    #chat-area > div.p-4.bg-white.border-t {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 105 !important;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+      background: #FFFFFF !important;
+      border-top: 1px solid #C5D6BC !important;
+    }
+    /* Message thread container padding-bottom to clear the input bar */
+    #messages-container {
+      padding-bottom: 90px !important;
+    }
+
+    /* Right Order Panel slideover layout */
+    #right-panel {
+      position: fixed !important;
+      right: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      z-index: 110 !important;
+    }
+  }
+</style>
+
+</head>
+<body class="bg-white text-on-surface font-body h-screen flex flex-col overflow-hidden">
+
+<seller-layout active-tab="messages">
+<div class="h-[calc(100vh-5rem)] flex relative w-full overflow-hidden bg-white">
+  
+  <!-- COLUMN A: SIDEBAR (320px) -->
+  <aside class="w-80 border-r border-outline-variant bg-white flex flex-col shrink-0 h-full relative z-10">
+    <div class="p-4 space-y-4 border-b border-outline-variant">
+      <div class="flex items-center justify-between">
+        <h2 class="font-display text-2xl text-primary font-bold">Messages</h2>
+        <span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">edit_note</span>
+      </div>
+      <div class="relative group">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+        <input id="sidebar-search" oninput="renderSidebarList()" class="w-full pl-10 pr-4 py-2 bg-surface-variant rounded-lg border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary text-xs outline-none transition-all" placeholder="Search chats..." type="text"/>
+      </div>
+      <!-- Filter Tabs -->
+      <div class="flex border-b border-outline-variant">
+        <button onclick="setSidebarFilter('all')" id="tab-all" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-primary text-primary transition-all">All</button>
+        <button onclick="setSidebarFilter('overflow')" id="tab-overflow" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-transparent text-gray-500 hover:text-primary transition-all">Overflow</button>
+        <button onclick="setSidebarFilter('custom')" id="tab-custom" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-transparent text-gray-500 hover:text-primary transition-all">Custom</button>
+      </div>
+    </div>
+    <!-- Conversation list -->
+    <div id="conversation-list" class="flex-grow overflow-y-auto custom-scrollbar divide-y divide-outline-variant">
+      <!-- Loading shimmer state -->
+      <div class="p-4 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full shimmer"></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-3 shimmer rounded w-1/2"></div>
+            <div class="h-2 shimmer rounded w-3/4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- COLUMN B: CHAT AREA (flex-grow) -->
+  <section id="chat-area-empty" class="flex-grow flex flex-col items-center justify-center bg-[#FFFDFB] text-center p-8 space-y-4">
+    <div class="w-20 h-20 rounded-full bg-surface-variant flex items-center justify-center text-primary">
+      <span class="material-symbols-outlined text-4xl">chat_bubble_outline</span>
+    </div>
+    <h3 class="font-display text-xl font-bold text-primary italic">No Conversation Selected</h3>
+    <p class="text-xs text-gray-500 max-w-[280px]">Choose an artisan inquiry from the left sidebar to start collaborating.</p>
+  </section>
+
+  <section id="chat-area" class="flex-grow flex flex-col bg-white h-full relative hidden">
+    <!-- Chat Header -->
+    <header class="h-16 border-b border-outline-variant flex items-center justify-between px-6 bg-white shrink-0 z-10 shadow-sm">
+      <div class="flex items-center gap-3">
+        <!-- Back button on mobile -->
+        <button onclick="goBackToInbox()" class="md:hidden mr-2 p-1 hover:bg-gray-100 rounded-full text-primary min-w-[44px] min-h-[44px] flex items-center justify-center border-none bg-transparent" style="cursor:pointer;">
+          <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+        </button>
+        <div id="chat-avatar" class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-display text-sm font-bold shadow-inner">KB</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="chat-name" class="font-display text-base font-bold text-primary">Buyer Name</h3>
+            <div class="w-2.5 h-2.5 rounded-full bg-green-500 pulse-green"></div>
+          </div>
+          <div id="chat-context-badges" class="flex items-center gap-1.5 mt-0.5">
+            <!-- Context badge chip -->
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="toggleRightPanel()" class="flex items-center gap-1 px-3 py-1.5 border border-primary text-primary hover:bg-primary/5 rounded-lg text-xs font-bold transition-all" id="btn-custom-order-toggle">
+          <span class="material-symbols-outlined text-sm">assignment</span>
+          <span>Custom Order</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Pinned banner when an offer is pending -->
+    <div id="pending-offer-banner" class="bg-surface-variant border-b border-primary/20 px-6 py-2 flex items-center justify-between text-xs text-primary font-medium hidden">
+      <span>✦ A custom offer has been sent — awaiting buyer response</span>
+      <button onclick="openCustomOrderPanel(true)" class="text-gold hover:underline font-bold transition-all">Edit Offer</button>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="messages-container" class="flex-grow overflow-y-auto p-6 space-y-6 bg-surface-variant/20 custom-scrollbar flex flex-col">
+      <!-- Injected dynamically -->
+    </div>
+
+    <!-- Pinned Product Context Card (Seller View) -->
+    <div id="product-context-card-container" class="hidden"></div>
+
+    <!-- Image Attachment Preview Strip -->
+    <div id="attachment-preview-strip" class="bg-white px-6 py-2 border-t border-outline-variant hidden">
+      <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-1" id="preview-thumbnails">
+        <!-- Preview cards -->
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="p-4 bg-white border-t border-outline-variant shrink-0">
+      <div class="flex items-center gap-3">
+        <input type="file" id="file-picker" accept="image/*,application/pdf,.doc,.docx" class="hidden" multiple onchange="handleFileSelection(event)">
+        <button onclick="triggerFilePicker()" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-100 rounded-xl transition-all">
+          <span class="material-symbols-outlined">attach_file</span>
+        </button>
+        <div class="flex-grow relative">
+          <textarea id="message-input" rows="1" class="w-full pl-4 pr-12 py-3 bg-surface-variant rounded-xl border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none text-sm" placeholder="Write a message..." onkeydown="handleInputKeydown(event)"></textarea>
+          <button id="send-msg-btn" onclick="submitMessage()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-sm">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLUMN C: RIGHT ORDER PANEL (360px) -->
+  <div id="right-panel-backdrop" onclick="toggleRightPanel()" class="fixed inset-0 bg-black/40 z-20 xl:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+  <aside id="right-panel" class="w-[360px] border-l border-outline-variant bg-[#FFFDFB] flex flex-col shrink-0 h-full relative z-30 transition-transform duration-300 transform translate-x-full xl:translate-x-0 xl:flex hidden">
+    <header class="h-16 border-b border-outline-variant flex items-center justify-between px-6 shrink-0 bg-[#FFFDFB]">
+      <h3 id="panel-title" class="font-display text-lg font-bold text-primary">Custom Order</h3>
+      <button onclick="toggleRightPanel()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 rounded-lg transition-all">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
+
+    <div class="flex-grow overflow-y-auto p-6 space-y-6 custom-scrollbar">
+      <!-- Order Creation / Edit Form -->
+      <form id="custom-order-form" onsubmit="handleOfferSubmit(event)" class="space-y-4">
+        <input type="hidden" id="form-offer-id">
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Product Name</label>
+          <input type="text" id="form-product-name" required class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Price ₹</label>
+            <input type="number" id="form-price" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Quantity</label>
+            <input type="number" id="form-quantity" required min="1" value="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Delivery Date</label>
+          <input type="date" id="form-delivery-date" required class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider">Custom Notes</label>
+            <span id="char-counter" class="text-[10px] text-gray-400">0/300</span>
+          </div>
+          <textarea id="form-custom-notes" maxlength="300" oninput="updateCharCounter(this)" rows="3" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all resize-none" placeholder="Add custom notes or personalization requirements..."></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Offer Expiry</label>
+          <select id="form-expiry" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+            <option value="24">24 Hours</option>
+            <option value="48" selected>48 Hours</option>
+            <option value="72">72 Hours</option>
+          </select>
+        </div>
+        <button type="submit" id="btn-send-offer" class="w-full py-3 bg-primary text-white hover:bg-primary/95 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-widest uppercase">Send Offer</button>
+      </form>
+
+      <!-- Read-Only Order Details Card -->
+      <div id="accepted-order-card" class="space-y-4 hidden">
+        <h4 class="font-eyebrow text-xs text-gray-500 font-bold tracking-widest uppercase border-b border-outline-variant pb-1">Order Details</h4>
+        <div class="bg-[#FFFDFB] border-2 border-primary/20 p-4 rounded-xl space-y-3 relative shadow-sm">
+          <div class="absolute top-3 right-3 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[9px] font-bold">CONFIRMED</div>
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">ORDER CODE</p>
+            <p id="accepted-order-code" class="text-sm font-bold text-primary font-mono"></p>
+          </div>
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">PRODUCT</p>
+            <p id="accepted-order-product" class="text-xs text-primary font-medium"></p>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">DELIVERY DATE</p>
+              <p id="accepted-order-date" class="text-xs text-primary font-medium"></p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">TOTAL AMOUNT</p>
+              <p id="accepted-order-amount" class="text-xs text-gold font-bold font-mono"></p>
+            </div>
+          </div>
+          <a class="block text-center text-[10px] font-eyebrow text-primary hover:underline pt-2 border-t border-outline-variant font-bold uppercase tracking-widest" href="/seller/orders.html">View Studio Orders →</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</seller-layout>
+
+<!-- Branded Error Toast / Dismissible Snackbar -->
+<div id="error-toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 bg-white border-2 border-gold rounded-xl shadow-2xl text-on-surface text-sm font-medium transform translate-y-20 transition-all duration-300 pointer-events-none opacity-0">
+  <span class="material-symbols-outlined text-gold">error</span>
+  <span id="error-toast-msg" class="flex-grow">An error occurred</span>
+  <button onclick="dismissErrorToast()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-primary rounded transition-all">
+    <span class="material-symbols-outlined text-base">close</span>
+  </button>
+</div>
+
+<!-- Image Lightbox Overlay -->
+<div id="lightbox-overlay" onclick="closeLightbox()" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+  <img id="lightbox-img" class="max-w-[90%] max-h-[90%] object-contain rounded-lg" src="">
+</div>

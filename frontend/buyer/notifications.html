@@ -275,6 +275,38 @@
         renderGroup('EARLIER', earlierItems);
     }
 
+    async function updateCartBadge() {
+        try {
+            const cartRes = await apiClient.get('/cart');
+            const navBadge = document.getElementById('nav-cart-badge');
+            if (navBadge && cartRes.data && cartRes.data.success) {
+                const count = cartRes.data.data.item_count || 0;
+                if (count > 0) {
+                    navBadge.innerText = count;
+                    navBadge.classList.remove('hidden');
+                } else {
+                    navBadge.classList.add('hidden');
+                }
+            }
+        } catch(e){}
+    }
+
+    async function updateWishlistBadge() {
+        try {
+            const wishlistRes = await apiClient.get('/wishlist');
+            const navWishlistBadge = document.getElementById('nav-wishlist-badge');
+            if (navWishlistBadge && wishlistRes.data && wishlistRes.data.success) {
+                const count = wishlistRes.data.data.count || 0;
+                if (count > 0) {
+                    navWishlistBadge.innerText = count;
+                    navWishlistBadge.classList.remove('hidden');
+                } else {
+                    navWishlistBadge.classList.add('hidden');
+                }
+            }
+        } catch(e){}
+    }
+
     async function fetchNotifications() {
         try {
             const res = await apiClient.get('/notifications');
@@ -319,6 +351,8 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         fetchNotifications();
+        updateCartBadge();
+        updateWishlistBadge();
 
         // Bind Mark all read button
         const markAllBtn = document.querySelector('button.text-[#7B5EA7]');
@@ -366,6 +400,8 @@
                 if (authContainer) {
                     authContainer.innerHTML = '';
                 }
+                updateCartBadge();
+                updateWishlistBadge();
             } catch(e) {
                 console.error("Failed to parse token:", e);
                 logout();
@@ -384,6 +420,14 @@
     }
 
     checkAuthState();
+</script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+  initMobileBuyerTopBar();
+  initMobileBuyerNav('');
 </script>
 </body>
 </html>

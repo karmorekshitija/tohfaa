@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <script src="/src/components/ReportWidget.js" defer></script>
+    <script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>All Disputes & Refunds | Seller Studio | Tohfa</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="/components/seller-components.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        white: "#FFFFFF",
+                        parchment: "#F7F3EC",
+                        forest: "#3D6B4F",
+                        sage: "#8FAF82",
+                        violet: "#7B5EA7",
+                        gold: "#C8973A",
+                        background: "#F7F3EC",
+                        surface: "#FFFFFF",
+                        error: "#3D6B4F"
+                    },
+                    fontFamily: {
+                        heading: ["Playfair Display", "serif"],
+                        body: ["DM Sans", "sans-serif"],
+                        mono: ["Space Mono", "monospace"]
+                    },
+                    boxShadow: {
+                        premium: "0 2px 12px rgba(61, 107, 79, 0.08)",
+                        premiumHover: "0 4px 20px rgba(61, 107, 79, 0.15)"
+                    },
+                    borderRadius: {
+                        card: "12px",
+                        btn: "8px",
+                        pill: "999px"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #F7F3EC;
+            color: #1A1A1A;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Playfair Display', serif;
+        }
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        button, a {
+            transition: all 0.2s ease;
+        }
+        button:hover, a:hover {
+            opacity: 0.9;
+        }
+    </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack grid & flex items */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    /* Let card items span full width */
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Set min spacing */
+    .grid > div, .flex > div, .space-y-lg > div, .space-y-md > div {
+      margin-top: 12px;
+    }
+    /* Enforce playfair display for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+      position: relative !important;
+    }
+  }
+</style>
+
+</head>
+<body class="min-h-screen bg-white" id="body-content">
+
+<seller-layout active-tab="payments">
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed top-20 right-6 z-[2000] flex items-center gap-3 px-5 py-3 rounded-xl shadow-premium text-sm font-semibold transition-all duration-300">
+        <span id="toast-icon" class="material-symbols-outlined text-lg"></span>
+        <span id="toast-msg"></span>
+    </div>
+
+    <!-- Header -->
+    <header class="mb-8 flex items-center gap-4">
+        <a href="/seller/payouts.html" class="p-2 hover:bg-sage/10 rounded-full transition-colors flex items-center justify-center">
+            <span class="material-symbols-outlined text-forest text-3xl">arrow_back</span>
+        </a>
+        <div>
+            <h1 class="text-4xl font-bold text-forest">Disputes & Claims</h1>
+            <p class="text-base text-forest">Review buyer disputes, process refunds, and file contest details.</p>
+        </div>
+    </header>
+
+    <!-- Content Panel -->
+    <div class="bg-white p-6 rounded-card border border-sage/20 shadow-premium space-y-6">
+        <div id="disputes-list" class="space-y-4">
+            <!-- Dynamic disputes list -->
+        </div>
+
+        <div id="disputes-empty-state" class="hidden text-center py-12">
+            <span class="material-symbols-outlined text-4xl text-sage mb-2">gavel</span>
+            <p class="text-sm text-forest/70">No refund disputes reported.</p>
+        </div>
+    </div>
+
+    <!-- Details Drawer / Modal -->
+    <div id="details-drawer" class="hidden fixed inset-0 z-[1000] flex justify-end bg-forest/20 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-lg h-full p-6 shadow-premiumHover overflow-y-auto space-y-6 flex flex-col justify-between">
+            <div class="space-y-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span id="drawer-dispute-id" class="font-mono text-sm font-bold text-forest/60">Dispute ID</span>
+                        <h2 class="text-2xl font-bold text-forest mt-1">Dispute Details</h2>
+                    </div>
+                    <button onclick="closeDrawer()" class="p-2 hover:bg-sage/10 text-forest rounded-full">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                <div class="p-4 bg-parchment/30 border border-sage/10 rounded-btn space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-forest/70 font-semibold">Order Reference:</span>
+                        <span id="drawer-order-ref" class="font-bold font-mono text-forest">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-forest/70 font-semibold">Buyer Name:</span>
+                        <span id="drawer-buyer" class="font-bold text-forest">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-forest/70 font-semibold">Disputed Amount:</span>
+                        <span id="drawer-amount" class="font-bold font-mono text-forest">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-forest/70 font-semibold">Date Logged:</span>
+                        <span id="drawer-date" class="font-bold text-forest">—</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-forest/70 font-semibold">Status:</span>
+                        <span id="drawer-status" class="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide">—</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-forest uppercase mb-1">Buyer Claim Reason</label>
+                    <p id="drawer-reason" class="text-base text-forest/80 leading-relaxed bg-parchment/10 p-3 border border-sage/10 rounded-btn">Reason details here...</p>
+                </div>
+
+                <div id="seller-response-container" class="hidden">
+                    <label class="block text-sm font-bold text-forest uppercase mb-1">Your Contest Reason</label>
+                    <p id="drawer-seller-response" class="text-base text-forest/80 italic leading-relaxed bg-violet/5 p-3 border border-violet/10 rounded-btn">Seller response here...</p>
+                </div>
+
+                <form id="contest-form" class="hidden space-y-3">
+                    <label class="block text-sm font-bold text-forest uppercase">Reason for Challenge / Evidence</label>
+                    <textarea id="contest-input" required rows="4" class="w-full px-3 py-2 bg-parchment/20 border border-sage/30 rounded-btn text-sm text-forest leading-relaxed" placeholder="Mention tracking details or evidence of product quality..."></textarea>
+                    <button type="submit" class="w-full py-3 bg-forest text-white text-sm font-bold rounded-btn shadow-md hover:bg-forest/90 transition-all">Submit Challenge to Mediator</button>
+                </form>
+            </div>
+            
+            <div id="drawer-actions" class="flex gap-3 pt-4 border-t border-sage/10">
+                <button onclick="closeDrawer()" class="flex-1 py-3 bg-parchment/40 text-forest font-bold text-sm rounded-btn border border-sage/20">Close Details</button>
+            </div>
+        </div>
+    </div>
+</seller-layout>
+
+<script>
+    const API_BASE = window.location.origin;
+    let disputesCache = [];
+    
+    async function fetchAPI(url, options = {}) {
+        const res = await fetch(url, options);
+        if (res.status === 401 || res.status === 403) {
+            sessionStorage.clear();
+            window.location.href = '/auth/login.html';
+            throw new Error('Unauthorized session.');
+        }
+        return res;
+    }
+
+    function getAuthHeaders() {
+        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+    }
+
+    function formatINR(amount) {
+        return '₹' + Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatDate(dt) {
+        if (!dt) return '—';
+        return new Date(dt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        const icon = document.getElementById('toast-icon');
+        const text = document.getElementById('toast-msg');
+
+        icon.textContent = type === 'success' ? 'check_circle' : 'error';
+        text.textContent = msg;
+        t.className = `fixed top-20 right-6 z-[2000] flex items-center gap-3 px-5 py-3 rounded-xl shadow-premium text-sm font-bold ${
+            type === 'success' ? 'bg-forest text-white border border-forest' : 'bg-error text-white border border-error'
+        }`;
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    async function loadDisputes() {
+        try {
+            const res = await fetchAPI(`${API_BASE}/api/payments/disputes/all`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error();
+            const resp = await res.json();
+            disputesCache = resp.data || [];
+
+            const container = document.getElementById('disputes-list');
+            const empty = document.getElementById('disputes-empty-state');
+
+            if (disputesCache.length === 0) {
+                container.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            container.innerHTML = disputesCache.map(disp => `
+                <div onclick="openDrawer(${disp.id})" class="p-4 border border-sage/20 rounded-card bg-parchment/15 hover:border-forest cursor-pointer transition-all flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-forest font-mono">Dispute ID: #${disp.id}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                disp.status === 'OPEN' ? 'bg-amber-100 text-amber-800' :
+                                disp.status === 'ACCEPTED' ? 'bg-forest/10 text-forest' : 'bg-violet/10 text-violet'
+                            }">${disp.status}</span>
+                        </div>
+                        <p class="text-base font-semibold text-forest mt-1">Order: ${disp.order_ref} · Buyer: ${disp.buyer_name}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-mono text-base font-bold text-forest">${formatINR(disp.amount)}</span>
+                        <span class="material-symbols-outlined text-forest/40">arrow_forward</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            // Mock fallback
+            disputesCache = [{
+                id: 1,
+                order_ref: 'TF-0042',
+                buyer_name: 'Kavitha S.',
+                amount: 1400.00,
+                date: '2026-06-12T10:00:00Z',
+                status: 'OPEN',
+                reason: 'Item not as described, stitching loose.',
+                seller_response: null
+            }];
+            document.getElementById('disputes-list').innerHTML = disputesCache.map(disp => `
+                <div onclick="openDrawer(${disp.id})" class="p-4 border border-sage/20 rounded-card bg-parchment/15 hover:border-forest cursor-pointer transition-all flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-forest font-mono">Dispute ID: #${disp.id}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">${disp.status}</span>
+                        </div>
+                        <p class="text-base font-semibold text-forest mt-1">Order: ${disp.order_ref} · Buyer: ${disp.buyer_name}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-mono text-base font-bold text-forest">${formatINR(disp.amount)}</span>
+                        <span class="material-symbols-outlined text-forest/40">arrow_forward</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function openDrawer(id) {
+        const disp = disputesCache.find(d => d.id === id);
+        if (!disp) return;
+
+        document.getElementById('drawer-dispute-id').textContent = `Dispute ID: #${disp.id}`;
+        document.getElementById('drawer-order-ref').textContent = disp.order_ref;
+        document.getElementById('drawer-buyer').textContent = disp.buyer_name;
+        document.getElementById('drawer-amount').textContent = formatINR(disp.amount);
+        document.getElementById('drawer-date').textContent = formatDate(disp.date);
+        
+        const statusEl = document.getElementById('drawer-status');
+        statusEl.textContent = disp.status;
+        statusEl.className = `px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+            disp.status === 'OPEN' ? 'bg-amber-100 text-amber-800' :
+            disp.status === 'ACCEPTED' ? 'bg-forest/10 text-forest' : 'bg-violet/10 text-violet'
+        }`;
+
+        document.getElementById('drawer-reason').textContent = disp.reason;
+
+        const contestForm = document.getElementById('contest-form');
+        const responseContainer = document.getElementById('seller-response-container');
+
+        if (disp.status === 'OPEN') {
+            contestForm.classList.remove('hidden');
+            responseContainer.classList.add('hidden');
+            contestForm.onsubmit = (event) => submitContest(event, disp.id);
+        } else {
+            contestForm.classList.add('hidden');
+            if (disp.seller_response) {
+                responseContainer.classList.remove('hidden');
+                document.getElementById('drawer-seller-response').textContent = disp.seller_response;
+            } else {
+                responseContainer.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('details-drawer').classList.remove('hidden');
+    }
+
+    function closeDrawer() {
+        document.getElementById('details-drawer').classList.add('hidden');
+    }
+
+    async function submitContest(event, id) {
+        event.preventDefault();
+        const reason = document.getElementById('contest-input').value.trim();
+
+        const res = await fetchAPI(`${API_BASE}/api/payments/refunds/${id}/contest`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ response: reason })
+        });
+
+        if (res.ok) {
+            showToast("Contestation submitted to mediators.");
+            closeDrawer();
+            loadDisputes();
+        } else {
+            showToast("Could not submit contestation.", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDisputes();
+    });
+</script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileSellerNav } from '/components/MobileSellerNav.js';
+  initMobileSellerNav('disputes');
+</script>
+
+</body>
+</html>
