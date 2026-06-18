@@ -26,8 +26,12 @@
         ? 'bg-[#3D6B4F] text-white' 
         : 'text-on-surface-variant hover:bg-surface-container-low transition-all duration-300';
       
+      const isCategories = item.name === 'Categories';
+      const hrefAttr = isCategories ? '#' : item.href;
+      const idAttr = isCategories ? 'id="sidebar-categories-btn"' : '';
+
       navHtml += `
-        <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activeClass}" href="${item.href}">
+        <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activeClass}" href="${hrefAttr}" ${idAttr}>
           <span class="material-symbols-outlined text-[20px]">${item.icon}</span>
           <span class="font-label-btn text-label-btn">${item.name}</span>
         </a>
@@ -52,6 +56,28 @@
         </div>
       </div>
     `;
+
+    // Hook Categories Click Event
+    setTimeout(() => {
+      const btn = document.getElementById('sidebar-categories-btn');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (window.CategoriesOverlay) {
+            window.CategoriesOverlay.open();
+          } else {
+            const script = document.createElement('script');
+            script.src = '/src/components/CategoriesOverlay.js';
+            script.onload = () => {
+              if (window.CategoriesOverlay) {
+                window.CategoriesOverlay.open();
+              }
+            };
+            document.head.appendChild(script);
+          }
+        });
+      }
+    }, 50);
   }
 
   if (document.readyState === 'loading') {

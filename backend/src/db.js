@@ -255,25 +255,76 @@ async function initDb() {
       console.log('PostgreSQL: Database tables already exist.');
     }
     
+    // Ensure parent_id exists and unique name constraint is dropped
+    await pool.query('ALTER TABLE categories DROP CONSTRAINT IF EXISTS categories_name_key');
+    await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS parent_id INTEGER REFERENCES categories(id) ON DELETE CASCADE');
+
     // Seed default categories if empty
     const catCheck = await pool.query('SELECT COUNT(*) FROM categories');
     if (parseInt(catCheck.rows[0].count) === 0) {
-      console.log('PostgreSQL: Seeding default categories...');
-      const seedCats = [
-        ['Textile Arts', 'textile-arts', 'Crochet, knitting, weaving & loom work', '🧶'],
-        ['Jewellery', 'jewellery', 'Handcrafted rings, necklaces & bangles', '💍'],
-        ['Ceramics & Pottery', 'ceramics-pottery', 'Wheel-thrown stoneware & hand-built clay', '🏺'],
-        ['Journals & Stationery', 'journals-stationery', 'Notebooks, journals & hand-pressed cards', '📓'],
-        ['Candles & Fragrance', 'candles-fragrance', 'Soy candles, incense & botanical wax', '🕯️'],
-        ['Paintings', 'paintings', 'Original artwork & hand-illustrated prints', '🖼️'],
-        ['Customized Gifts', 'customized-gifts', 'Personalised & bespoke handmade pieces', '🎁'],
-        ['Home Decor', 'home-decor', 'Hand-carved, woven & crafted home objects', '🏡']
+      console.log('PostgreSQL: Seeding default categories and subcategories...');
+      const seeds = [
+        {
+          name: 'Customized Gifts', icon: '🎁', description: 'Personalised & bespoke handmade pieces',
+          subs: ['Spotify Plaques', 'Polaroid Sets', 'Frames', 'Name Lamps', 'Keychains', 'QR Code Gifts', 'Personalized Bottles', 'Name Plates', 'Coasters', 'Phone Covers', 'Memory Books', 'Scrapbooks', 'Letters']
+        },
+        {
+          name: 'Jewellery', icon: '💍', description: 'Handcrafted rings, necklaces & bangles',
+          subs: ['Necklaces', 'Pendants', 'Earrings', 'Rings', 'Anklets', 'Hair Accessories', 'Resin Jewellery', 'Beaded Jewellery', 'Crochet Jewellery', 'Personalized Jewellery', 'Clay Jewellery', 'Couple Jewellery']
+        },
+        {
+          name: 'Hampers', icon: '🧺', description: 'Curated gift hampers for all occasions',
+          subs: ['Wedding Hampers', 'Birthday Hampers', 'Couple Hampers', 'Anniversary Hampers', 'Rakhi Hampers', 'Diwali Hampers', 'Holi Hampers', 'Valentine Hampers', 'Baby Shower Hampers', 'Farewell Hampers', 'Corporate Hampers', 'Chocolate Hampers', 'Sweet Hampers', 'Anime Hampers', 'Bridesmaid Hampers', 'Groom Gang Hampers', 'Skincare Hampers', 'Period Comfort Hampers', 'Friendship Hampers']
+        },
+        {
+          name: 'Wedding & Rituals', icon: '✨', description: 'Essentials and hampers for weddings and rituals',
+          subs: ['Shagun Envelopes', 'Wedding Hampers', 'Mehendi Essentials', 'Haldi Essentials', 'Wedding Decor', 'Return Gifts', 'Wedding Nameplates']
+        },
+        {
+          name: 'Crochet', icon: '🧶', description: 'Beautiful handcrafted crochet items',
+          subs: ['Sunflowers', 'Roses', 'Flower Bouquets', 'Other Flowers', 'Bags', 'Plushies', 'Phone Cases', 'Keychains']
+        },
+        {
+          name: 'Fabric Crafts', icon: '🧵', description: 'Tote bags, embroidery, and knitted items',
+          subs: ['Tote Bags', 'Knitted Items', 'Embroidery']
+        },
+        {
+          name: 'Festivals', icon: '🎉', description: 'Festival gifts and decorations',
+          subs: ['Rakhi', 'Diwali', 'Navratri', 'Holi', 'Christmas', 'Eid', 'Karwa Chauth']
+        },
+        {
+          name: 'Couples', icon: '💖', description: 'Gifts and accessories for couples',
+          subs: ['Hampers', 'Customized Gifts', 'Jewellery', 'Portraits', 'Scrapbooks & Memory Books', 'Letters & Cards', 'Flowers', 'Lamps', 'Keychains', 'Home Decor', 'Candles', 'Proposal Gifts', 'Anniversary Gifts', 'Matching Accessories']
+        },
+        {
+          name: 'Home Decor', icon: '🏡', description: 'Handmade decor items for home',
+          subs: ['Candles', 'Wall Art', 'Clay Articles', 'Resin Decor', 'Name Boards', 'Decorative Frames', 'Planters']
+        },
+        {
+          name: 'Art & Portraits', icon: '🖼️', description: 'Paintings, sketches, and digital portraits',
+          subs: ['Digital Portraits', 'Couple Portraits', 'Family Portraits', 'Pet Portraits', 'Paintings', 'Sketches', 'Caricatures']
+        }
       ];
-      for (const cat of seedCats) {
-        await pool.query(
-          'INSERT INTO categories (name, slug, description, icon_emoji, item_count) VALUES ($1, $2, $3, $4, 0)',
-          cat
+
+      let sortOrder = 1;
+      for (const item of seeds) {
+        const slug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const res = await pool.query(
+          `INSERT INTO categories (name, display_name, slug, description, emoji_icon, icon_emoji, sort_order, is_active, product_count)
+           VALUES ($1, $1, $2, $3, $4, $4, $5, 1, 0) RETURNING id`,
+          [item.name, slug, item.description, item.icon, sortOrder++]
         );
+        const parentId = res.rows[0].id;
+        
+        let subSortOrder = 1;
+        for (const sub of item.subs) {
+          const subSlug = `${slug}-${sub.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
+          await pool.query(
+            `INSERT INTO categories (name, display_name, slug, description, emoji_icon, icon_emoji, sort_order, is_active, product_count, parent_id)
+             VALUES ($1, $1, $2, $3, '🏷️', '🏷️', $4, 1, 0, $5)`,
+            [sub, subSlug, `${sub} subcategory of ${item.name}`, subSortOrder++, parentId]
+          );
+        }
       }
     }
 

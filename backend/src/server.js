@@ -9221,7 +9221,8 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
       sort_order: c.sort_order || 0,
       is_active: c.is_active !== undefined ? !!c.is_active : true,
       status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
-      product_count: c.product_count || c.item_count || 0
+      product_count: c.product_count || c.item_count || 0,
+      parent_id: c.parent_id || null
     }));
     return res.status(200).json({ success: true, data: { categories, total: categories.length } });
   } catch (err) {
@@ -9233,7 +9234,7 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
 // TASK 18: POST /api/admin/categories
 app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
   try {
-    const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
+    const { emoji_icon, display_name, slug, description, sort_order, is_active, parent_id } = req.body;
     if (!emoji_icon || !display_name || !slug || sort_order === undefined || is_active === undefined) {
       return res.status(400).json({ error: true, message: 'emoji_icon, display_name, slug, sort_order, is_active are required', code: 'VALIDATION_ERROR' });
     }
@@ -9244,9 +9245,9 @@ app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
     if (existing) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
 
     const result = await db.prepare(`
-      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'))
-    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sort_order, is_active ? 1 : 0);
+      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, parent_id, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, datetime('now'))
+    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sort_order, is_active ? 1 : 0, parent_id || null);
 
     await writeAuditLog('admin.category.created', req.admin.id, req.admin.display_name, 'category', result.lastInsertRowid, `Category: ${display_name}`);
 
@@ -9261,7 +9262,8 @@ app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
         sort_order: newCat.sort_order,
         is_active: !!newCat.is_active,
         status_label: newCat.is_active ? 'Active' : 'Hidden',
-        product_count: 0
+        product_count: 0,
+        parent_id: newCat.parent_id || null
       }
     });
   } catch (err) {
@@ -9277,7 +9279,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
-    const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
+    const { emoji_icon, display_name, slug, description, sort_order, is_active, parent_id } = req.body;
     if (slug !== undefined) {
       if (!/^[a-z0-9-]+$/.test(slug)) {
         return res.status(400).json({ error: true, message: 'Invalid slug format', code: 'INVALID_SLUG' });
@@ -9296,6 +9298,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
     if (description !== undefined) { updates.push('description = ?'); params.push(description); }
     if (sort_order !== undefined) { updates.push('sort_order = ?'); params.push(sort_order); }
     if (is_active !== undefined) { updates.push('is_active = ?'); params.push(is_active ? 1 : 0); }
+    if (parent_id !== undefined) { updates.push('parent_id = ?'); params.push(parent_id || null); }
 
     updates.push("updated_at = datetime('now')");
     params.push(catId);
@@ -9315,7 +9318,8 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
         sort_order: updated.sort_order,
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
-        product_count: updated.product_count || updated.item_count || 0
+        product_count: updated.product_count || updated.item_count || 0,
+        parent_id: updated.parent_id || null
       }
     });
   } catch (err) {
@@ -9331,11 +9335,18 @@ app.delete('/api/admin/categories/:category_id', authenticateAdminToken, async (
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
-    const productCount = await db.prepare("SELECT COUNT(*) AS c FROM products WHERE category_id = ? AND status = 'active'").get(catId).c;
+    // Check products in this category and all its subcategories
+    const subcats = await db.prepare('SELECT id FROM categories WHERE parent_id = ?').all(catId);
+    const catIds = [catId, ...subcats.map(s => s.id)];
+    const placeholders = catIds.map(() => '?').join(',');
+
+    const productCountRow = await db.prepare(`SELECT COUNT(*) AS c FROM products WHERE category_id IN (${placeholders}) AND status = 'active'`).get(...catIds);
+    const productCount = productCountRow ? parseInt(productCountRow.c) : 0;
+
     if (productCount > 0) {
       return res.status(400).json({
         error: true,
-        message: `Cannot delete: this category has ${productCount} active products.`,
+        message: `Cannot delete: this category or its subcategories have ${productCount} active products.`,
         code: 'HAS_ACTIVE_PRODUCTS',
         product_count: productCount
       });
