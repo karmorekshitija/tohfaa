@@ -215,7 +215,6 @@
                 <button id="apply-to-all-link" class="block text-[9px] text-on-surface-variant/60 underline hover:text-violet transition-colors font-sans mt-0.5">Apply to all</button>
               </th>
               <th class="py-4 px-3 font-label-caps uppercase text-on-surface-variant text-[10px]">Stock Units</th>
-              <th class="py-4 px-3 font-label-caps uppercase text-on-surface-variant text-[10px]">Status</th>
               <th class="py-4 px-4 text-right font-label-caps uppercase text-on-surface-variant text-[10px]">Actions</th>
             </tr>
           </thead>
@@ -567,28 +566,34 @@ function rowHTML(l) {
     
     if (discountActive && !isEditing) {
         discountCellHTML = `
-            <div class="flex items-center gap-2" onclick="event.stopPropagation();">
-                <div class="cursor-pointer" onclick="startEditDiscount('${l.listing_id}')">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-violet/10 text-violet">
-                        ${l.discount_percentage}% off
-                    </span>
-                    <span class="block text-[10px] text-on-surface-variant font-mono mt-0.5">${formatPaise(l.discounted_price)}</span>
+            <div class="flex flex-col gap-1" onclick="event.stopPropagation();">
+                <span class="text-[10px] text-gray-400 block font-mono font-bold tracking-wider uppercase">DISCOUNT</span>
+                <div class="flex items-center gap-2">
+                    <div class="cursor-pointer" onclick="startEditDiscount('${l.listing_id}')">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-violet/10 text-violet">
+                            ${l.discount_percentage}% off
+                        </span>
+                        <span class="block text-[10px] text-on-surface-variant font-mono mt-0.5">${formatPaise(l.discounted_price)}</span>
+                    </div>
+                    <button type="button" class="relative inline-flex h-5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-forest" onclick="toggleDiscount('${l.listing_id}', false)">
+                        <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-3.5"></span>
+                    </button>
                 </div>
-                <button type="button" class="relative inline-flex h-5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-forest" onclick="toggleDiscount('${l.listing_id}', false)">
-                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-3.5"></span>
-                </button>
             </div>
         `;
     } else {
         discountCellHTML = `
-            <div class="flex items-center gap-2" onclick="event.stopPropagation();">
-                <input type="number" min="1" max="90" placeholder="—%" id="discount-input-${l.listing_id}" 
-                    value="${l.discount_percentage || ''}" 
-                    class="w-12 px-1 py-0.5 border border-sage/30 rounded text-center text-xs focus:ring-1 focus:ring-forest focus:border-forest"
-                    onkeydown="if(event.key==='Enter') saveDiscount('${l.listing_id}')"/>
-                <button type="button" class="relative inline-flex h-5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${toggleBgClass}" onclick="toggleDiscount('${l.listing_id}', ${!discountActive})">
-                    <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${toggleTranslateClass}"></span>
-                </button>
+            <div class="flex flex-col gap-1" onclick="event.stopPropagation();">
+                <span class="text-[10px] text-gray-400 block font-mono font-bold tracking-wider uppercase">DISCOUNT</span>
+                <div class="flex items-center gap-2">
+                    <input type="number" min="1" max="90" placeholder="—%" id="discount-input-${l.listing_id}" 
+                        value="${l.discount_percentage || ''}" 
+                        class="w-12 px-1 py-0.5 border border-sage/30 rounded text-center text-xs focus:ring-1 focus:ring-forest focus:border-forest"
+                        onkeydown="if(event.key==='Enter') saveDiscount('${l.listing_id}')"/>
+                    <button type="button" class="relative inline-flex h-5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${toggleBgClass}" onclick="toggleDiscount('${l.listing_id}', ${!discountActive})">
+                        <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${toggleTranslateClass}"></span>
+                    </button>
+                </div>
             </div>
         `;
     }
@@ -627,9 +632,11 @@ function rowHTML(l) {
         <td class="py-4 px-3 font-data-price">${priceHTML}</td>
         <td class="py-4 px-3">${discountCellHTML}</td>
         <td class="py-4 px-3">${stockHTML}</td>
-        <td class="py-4 px-3">${statusBadge(l.status, l.stock_count)}</td>
         <td class="py-4 px-4 text-right">
             <div class="flex items-center justify-end gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                <div class="flex items-center gap-1">
+                    ${statusBadge(l.status, l.stock_count)}
+                </div>
                 <button class="edit-btn text-sage hover:text-forest transition-colors" title="Edit" data-id="${l.listing_id}">
                     <span class="material-symbols-outlined text-lg">edit</span>
                 </button>

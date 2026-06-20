@@ -262,8 +262,7 @@
 <div class="col-span-1 text-right">Price</div>
 <div class="col-span-2 text-center">Discount</div>
 <div class="col-span-1 text-center">Stock</div>
-<div class="col-span-1 text-center">Status</div>
-<div class="col-span-2 text-right">Actions</div>
+<div class="col-span-3 text-right">Actions</div>
 </div>
 <!-- List Container -->
 <div class="divide-y divide-sage/5">
@@ -287,8 +286,8 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
               ₦8,500
             </div>
-<div class="lg:col-span-2 flex items-center justify-center gap-3">
-<span class="lg:hidden text-[10px] text-gray-400 block mr-2">DISCOUNT</span>
+<div class="lg:col-span-2 flex flex-col items-center justify-center gap-1">
+<span class="lg:hidden text-[10px] text-gray-400 block font-mono font-bold tracking-wider">DISCOUNT</span>
 <div class="flex items-center gap-2">
 <input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
 <label class="switch">
@@ -301,11 +300,11 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
 <span class="text-red-500 font-bold">1</span>
 </div>
-<div class="lg:col-span-1 text-center">
-<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<div class="lg:col-span-3 flex items-center justify-end gap-3">
+<div class="flex items-center gap-1">
 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-active">Active</span>
 </div>
-<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<div class="flex items-center gap-1">
 <button class="touch-target p-2 text-gray-400 hover:text-forest transition-colors" title="Edit">
 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </button>
@@ -315,6 +314,7 @@
 <button class="touch-target p-2 text-gray-400 hover:text-red-500 transition-colors" title="Delete">
 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </button>
+</div>
 </div>
 </div>
 </div>
@@ -337,7 +337,8 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
               ₦2,200
             </div>
-<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<div class="lg:col-span-2 flex flex-col items-center justify-center gap-1">
+<span class="lg:hidden text-[10px] text-gray-400 block font-mono font-bold tracking-wider">DISCOUNT</span>
 <div class="flex items-center gap-2">
 <input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
 <label class="switch">
@@ -348,16 +349,17 @@
 </div>
 <div class="lg:col-span-1 text-center">
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
-<span class="text-red-500 font-bold">4</span>
+<span class="text-gray-700">25</span>
 </div>
-<div class="lg:col-span-1 text-center">
-<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<div class="lg:col-span-3 flex items-center justify-end gap-3">
+<div class="flex items-center gap-1">
 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-active">Active</span>
 </div>
-<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<div class="flex items-center gap-1">
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
 </div>
 </div>
 </div>
@@ -380,7 +382,8 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
               ₦14,000
             </div>
-<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<div class="lg:col-span-2 flex flex-col items-center justify-center gap-1">
+<span class="lg:hidden text-[10px] text-gray-400 block font-mono font-bold tracking-wider">DISCOUNT</span>
 <div class="flex items-center gap-2">
 <input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
 <label class="switch">
@@ -393,14 +396,15 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
 <span class="text-gray-700">12</span>
 </div>
-<div class="lg:col-span-1 text-center">
-<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<div class="lg:col-span-3 flex items-center justify-end gap-3">
+<div class="flex items-center gap-1">
 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-paused">Paused</span>
 </div>
-<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<div class="flex items-center gap-1">
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
 <button class="touch-target p-2 text-forest"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
 </div>
 </div>
 </div>
@@ -423,7 +427,8 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
               ₦3,500
             </div>
-<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<div class="lg:col-span-2 flex flex-col items-center justify-center gap-1">
+<span class="lg:hidden text-[10px] text-gray-400 block font-mono font-bold tracking-wider">DISCOUNT</span>
 <div class="flex items-center gap-2">
 <input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
 <label class="switch">
@@ -436,14 +441,15 @@
 <span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
 <span class="text-red-500 font-bold">0</span>
 </div>
-<div class="lg:col-span-1 text-center">
-<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<div class="lg:col-span-3 flex items-center justify-end gap-3">
+<div class="flex items-center gap-1">
 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-outofstock">Out of Stock</span>
 </div>
-<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<div class="flex items-center gap-1">
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
 <button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
 </div>
 </div>
 </div>
