@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa Seller Studio - Catalog</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+
+    (async function verifySellerRole() {
+        const token = getTohfaToken();
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+        try {
+            const res = await fetch(`${window.location.origin}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Unverified');
+            const profile = await res.json();
+            const user = profile.data || profile;
+            if (user.role !== 'seller') {
+                window.location.href = './buyer-home.html';
+            }
+        } catch (e) {
+            window.location.href = '/auth/login.html';
+        }
+    })();
+    
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#3D6B4F',
+            parchment: '#F7F3EC',
+            sage: '#8FAF82',
+            violet: '#7B5EA7',
+            gold: '#C8973A',
+            cream: '#FCFAF7',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"DM Sans"', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #F7F3EC;
+      color: #333;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .status-active { background-color: #3D6B4F; color: white; }
+    .status-paused { background-color: #8FAF82; color: white; }
+    .status-outofstock { background-color: #E2E8F0; color: #64748b; }
+    
+    /* Custom scrollbar for desktop sidebar */
+    .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
+
+    /* Touch target minimums */
+    .touch-target { min-width: 44px; min-height: 44px; }
+    
+    /* Toggle Switch Style */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #3D6B4F; }
+    input:checked + .slider:before { transform: translateX(20px); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row">
+<!-- BEGIN: Mobile Navigation Header -->
+<header class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-parchment border-b border-sage/20 px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button aria-label="Open Menu" class="touch-target flex items-center justify-center" id="menuOpen">
+<svg class="h-6 w-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<h1 class="font-serif text-2xl font-bold text-forest">Tohfa</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="touch-target flex items-center justify-center">
+<svg class="h-6 w-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</header>
+<!-- END: Mobile Navigation Header -->
+<!-- BEGIN: Side Panel (Desktop Sidebar / Mobile Drawer) -->
+<aside class="fixed lg:sticky top-0 left-0 h-screen w-72 bg-white lg:bg-transparent border-r border-sage/10 z-[60] transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out sidebar-scroll overflow-y-auto" id="sidePanel">
+<div class="p-6">
+<h1 class="hidden lg:block font-serif text-3xl font-bold text-forest mb-10">Tohfa</h1>
+<div class="flex flex-col gap-1">
+<nav class="space-y-1" data-purpose="primary-navigation">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">📊</span> Dashboard
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-forest text-white font-medium" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">📁</span> Catalog
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">📦</span> Orders
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">🔄</span> Overflow
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">💳</span> Payments
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">📈</span> Analytics
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors relative" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">✉️</span> Messages
+            <span class="absolute right-4 bg-violet text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">⭐</span> Reviews
+          </a>
+</nav>
+<div class="my-6 border-t border-sage/10"></div>
+<nav class="space-y-1" data-purpose="secondary-navigation">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">👤</span> Profile &amp; Settings
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-forest font-semibold hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">🌐</span> View store
+          </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors" href="javascript:void(0)">
+<span class="w-5 h-5 flex items-center justify-center">🚪</span> Log out
+          </a>
+</nav>
+</div>
+</div>
+<!-- Mobile close button -->
+<button class="lg:hidden absolute top-4 right-4 touch-target text-gray-400" id="menuClose">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</aside>
+<!-- END: Side Panel -->
+<!-- Overlay for mobile menu -->
+<div class="fixed inset-0 bg-black/50 z-[55] hidden lg:hidden" id="sideOverlay"></div>
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 lg:pl-0 pt-20 lg:pt-8 px-4 lg:px-8 pb-12 w-full max-w-full overflow-hidden">
+<!-- BEGIN: Top Summary Cards -->
+<section class="mb-8 overflow-x-auto no-scrollbar" data-purpose="summary-stats">
+<div class="flex lg:grid lg:grid-cols-3 gap-4 min-w-max lg:min-w-0">
+<!-- Total Listings -->
+<div class="bg-[#EFF3F0] border border-sage/20 rounded-xl p-5 w-44 lg:w-full">
+<p class="text-forest text-xs font-mono tracking-wider uppercase mb-2">Total Listings</p>
+<p class="font-serif text-4xl text-forest">7</p>
+</div>
+<!-- Low Stock -->
+<div class="bg-[#FAF6ED] border border-gold/20 rounded-xl p-5 w-44 lg:w-full">
+<p class="text-gold text-xs font-mono tracking-wider uppercase mb-2">Low Stock</p>
+<p class="font-serif text-4xl text-gold">4</p>
+</div>
+<!-- On Discount -->
+<div class="bg-[#F3F0F7] border border-violet/20 rounded-xl p-5 w-44 lg:w-full">
+<p class="text-violet text-xs font-mono tracking-wider uppercase mb-2">On Discount</p>
+<p class="font-serif text-4xl text-violet">0</p>
+</div>
+</div>
+</section>
+<!-- END: Top Summary Cards -->
+<!-- BEGIN: Actions & Filters -->
+<section class="mb-8 space-y-4" data-purpose="catalog-controls">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="bg-white border border-sage/30 px-6 py-2.5 rounded-full text-sm font-medium text-forest flex items-center gap-2 touch-target shadow-sm">
+<span>📥</span> Download Report
+          </button>
+<button class="bg-forest px-6 py-2.5 rounded-full text-sm font-medium text-white flex items-center gap-2 touch-target shadow-lg">
+<span>+</span> New Listing
+          </button>
+</div>
+<div class="relative w-full md:w-80">
+<input class="w-full bg-white border-sage/20 rounded-full pl-10 pr-4 py-2.5 focus:ring-forest focus:border-forest text-sm" placeholder="Search entries..." type="text"/>
+<svg class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-6 text-sm text-gray-500 py-4 border-y border-sage/10">
+<div class="flex items-center gap-2">
+<span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Status:</span>
+<select class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+<option>All Statuses</option>
+</select>
+</div>
+<div class="flex items-center gap-2">
+<span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Category:</span>
+<select class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+<option>All Categories</option>
+</select>
+</div>
+<div class="flex items-center gap-2 md:ml-auto">
+<span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Sort by:</span>
+<select class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+<option>Newest First</option>
+</select>
+</div>
+</div>
+</section>
+<!-- END: Actions & Filters -->
+<!-- BEGIN: Catalog List -->
+<section class="bg-cream rounded-2xl shadow-sm border border-sage/10 overflow-hidden" data-purpose="catalog-grid">
+<!-- Desktop Table Header -->
+<div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-4 bg-parchment/50 border-b border-sage/10 text-[10px] font-mono uppercase tracking-widest text-gray-500">
+<div class="col-span-1 flex items-center justify-center"><input class="rounded text-forest focus:ring-forest" type="checkbox"/></div>
+<div class="col-span-4">Product</div>
+<div class="col-span-1 text-right">Price</div>
+<div class="col-span-2 text-center">Discount</div>
+<div class="col-span-1 text-center">Stock</div>
+<div class="col-span-1 text-center">Status</div>
+<div class="col-span-2 text-right">Actions</div>
+</div>
+<!-- List Container -->
+<div class="divide-y divide-sage/5">
+<!-- Product Item 1 -->
+<div class="lg:grid lg:grid-cols-12 items-center gap-4 px-4 lg:px-6 py-5 hover:bg-sage/5 transition-colors group">
+<!-- Selection & Mobile Header Info -->
+<div class="col-span-1 hidden lg:flex items-center justify-center">
+<input class="rounded text-forest focus:ring-forest" type="checkbox"/>
+</div>
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
+<img alt="Golden Fern" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+</div>
+<div>
+<h3 class="font-serif text-lg text-forest font-semibold leading-tight">Golden Fern Study No. 4</h3>
+<p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">Art Print</p>
+</div>
+</div>
+<div class="mt-4 lg:mt-0 flex flex-wrap lg:grid lg:grid-cols-7 lg:col-span-7 items-center justify-between lg:justify-normal gap-4">
+<div class="lg:col-span-1 text-left lg:text-right font-mono text-sm">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
+              ₦8,500
+            </div>
+<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<span class="lg:hidden text-[10px] text-gray-400 block mr-2">DISCOUNT</span>
+<div class="flex items-center gap-2">
+<input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
+<span class="text-red-500 font-bold">1</span>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-active">Active</span>
+</div>
+<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<button class="touch-target p-2 text-gray-400 hover:text-forest transition-colors" title="Edit">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<button class="touch-target p-2 text-gray-400 hover:text-forest transition-colors" title="Pause">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<button class="touch-target p-2 text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Item 2 -->
+<div class="lg:grid lg:grid-cols-12 items-center gap-4 px-4 lg:px-6 py-5 hover:bg-sage/5 transition-colors group">
+<div class="col-span-1 hidden lg:flex items-center justify-center">
+<input class="rounded text-forest focus:ring-forest" type="checkbox"/>
+</div>
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
+<img alt="Seeds" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+</div>
+<div>
+<h3 class="font-serif text-lg text-forest font-semibold leading-tight">Archival Wildflower Seeds</h3>
+<p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">Curated Seeds</p>
+</div>
+</div>
+<div class="mt-4 lg:mt-0 flex flex-wrap lg:grid lg:grid-cols-7 lg:col-span-7 items-center justify-between lg:justify-normal gap-4">
+<div class="lg:col-span-1 text-left lg:text-right font-mono text-sm">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
+              ₦2,200
+            </div>
+<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<div class="flex items-center gap-2">
+<input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
+<span class="text-red-500 font-bold">4</span>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-active">Active</span>
+</div>
+<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
+</div>
+</div>
+<!-- Product Item 3 (Paused) -->
+<div class="lg:grid lg:grid-cols-12 items-center gap-4 px-4 lg:px-6 py-5 hover:bg-sage/5 transition-colors group">
+<div class="col-span-1 hidden lg:flex items-center justify-center">
+<input class="rounded text-forest focus:ring-forest" type="checkbox"/>
+</div>
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
+<img alt="Bowl" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+</div>
+<div>
+<h3 class="font-serif text-lg text-forest font-semibold leading-tight">Forest Floor Ceramic Bowl</h3>
+<p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">Handmade Ceramic</p>
+</div>
+</div>
+<div class="mt-4 lg:mt-0 flex flex-wrap lg:grid lg:grid-cols-7 lg:col-span-7 items-center justify-between lg:justify-normal gap-4">
+<div class="lg:col-span-1 text-left lg:text-right font-mono text-sm">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
+              ₦14,000
+            </div>
+<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<div class="flex items-center gap-2">
+<input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
+<span class="text-gray-700">12</span>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-paused">Paused</span>
+</div>
+<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="touch-target p-2 text-forest"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
+</div>
+</div>
+<!-- Product Item 4 (Out of Stock) -->
+<div class="lg:grid lg:grid-cols-12 items-center gap-4 px-4 lg:px-6 py-5 hover:bg-sage/5 transition-colors group">
+<div class="col-span-1 hidden lg:flex items-center justify-center">
+<input class="rounded text-forest focus:ring-forest" type="checkbox"/>
+</div>
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
+<img alt="Apron" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+</div>
+<div>
+<h3 class="font-serif text-lg text-forest font-semibold leading-tight">Linen Studio Apron</h3>
+<p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-1">Textiles</p>
+</div>
+</div>
+<div class="mt-4 lg:mt-0 flex flex-wrap lg:grid lg:grid-cols-7 lg:col-span-7 items-center justify-between lg:justify-normal gap-4">
+<div class="lg:col-span-1 text-left lg:text-right font-mono text-sm">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">PRICE</span>
+              ₦3,500
+            </div>
+<div class="lg:col-span-2 flex items-center justify-center gap-3">
+<div class="flex items-center gap-2">
+<input class="w-12 h-8 text-xs border-sage/20 rounded-md text-center p-0" placeholder="-%" type="text"/>
+<label class="switch">
+<input disabled="" type="checkbox"/>
+<span class="slider opacity-50"></span>
+</label>
+</div>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STOCK</span>
+<span class="text-red-500 font-bold">0</span>
+</div>
+<div class="lg:col-span-1 text-center">
+<span class="lg:hidden text-[10px] text-gray-400 block mb-1">STATUS</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider status-outofstock">Out of Stock</span>
+</div>
+<div class="lg:col-span-2 flex items-center justify-end gap-1">
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="touch-target p-2 text-gray-400"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Catalog List -->
+</main>
+<!-- END: Main Content Area -->
+<script data-purpose="mobile-menu-logic">
+    const menuOpen = document.getElementById('menuOpen');
+    const menuClose = document.getElementById('menuClose');
+    const sidePanel = document.getElementById('sidePanel');
+    const sideOverlay = document.getElementById('sideOverlay');
+
+    function toggleMenu(show) {
+      if (show) {
+        sidePanel.classList.remove('-translate-x-full');
+        sideOverlay.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+      } else {
+        sidePanel.classList.add('-translate-x-full');
+        sideOverlay.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }
+    }
+
+    menuOpen?.addEventListener('click', () => toggleMenu(true));
+    menuClose?.addEventListener('click', () => toggleMenu(false));
+    sideOverlay?.addEventListener('click', () => toggleMenu(false));
+
+    // Handle screen resize to reset mobile states if jumping to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024) {
+        toggleMenu(false);
+      }
+    });
+  </script>
+</body></html>

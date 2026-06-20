@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Payouts & Settlements | Seller Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#3D6B4F",
+            secondary: "#49663f",
+            background: "#FFFFFF",
+            surface: "#FFFFFF"
+          },
+          fontFamily: {
+            body: ["DM Sans"],
+            heading: ["Playfair Display"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-white text-slate-800 font-body p-4 min-h-screen">
+  <header class="flex items-center gap-4 mb-6">
+    <a href="/mobile-seller/dashboard.html" class="p-2 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary text-3xl">arrow_back</span>
+    </a>
+    <div>
+      <h1 class="text-2xl font-heading font-bold text-primary">Payouts</h1>
+      <p class="text-xs text-slate-500">Track settled earnings and banking details.</p>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="flex border-b border-slate-200 mb-6 bg-slate-50 rounded-lg overflow-hidden">
+    <button id="tab-overview-btn" class="flex-1 py-3 text-center text-sm font-bold text-primary border-b-2 border-primary">Overview</button>
+    <button id="tab-bank-btn" class="flex-1 py-3 text-center text-sm font-bold text-slate-500 border-b-2 border-transparent">Bank Info</button>
+  </div>
+
+  <!-- Overview Tab -->
+  <div id="tab-overview" class="space-y-6">
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <span class="text-[10px] uppercase font-bold text-slate-400">Total Earnings</span>
+        <span id="stat-total-earnings" class="block text-lg font-bold text-primary font-mono mt-1">₹0.00</span>
+      </div>
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <span class="text-[10px] uppercase font-bold text-slate-400">This Month</span>
+        <span id="stat-month-earnings" class="block text-lg font-bold text-primary font-mono mt-1">₹0.00</span>
+      </div>
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <span class="text-[10px] uppercase font-bold text-slate-400">This Week</span>
+        <span id="stat-week-earnings" class="block text-lg font-bold text-primary font-mono mt-1">₹0.00</span>
+      </div>
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <span class="text-[10px] uppercase font-bold text-slate-400">Direct Settled</span>
+        <span id="stat-pending-payout" class="block text-lg font-bold text-primary font-mono mt-1">₹0.00</span>
+      </div>
+    </div>
+
+    <!-- Recent Settlements -->
+    <div class="space-y-3">
+      <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Recent Transactions</h3>
+      <div id="recent-payments" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- Bank details tab -->
+  <div id="tab-bank" class="space-y-4 hidden">
+    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-4">
+      <h3 class="text-sm font-bold text-primary font-heading">Receiving Bank Details</h3>
+      <form id="receiving-details-form" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Account Holder Name</label>
+          <input type="text" id="bank-holder" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" placeholder="Amit Sharma" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Bank Name</label>
+          <input type="text" id="bank-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" placeholder="State Bank of India" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Account Number</label>
+          <input type="password" id="bank-acc" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono" placeholder="••••••••••••" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Confirm Account Number</label>
+          <input type="text" id="bank-confirm-acc" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono" placeholder="Re-enter Account Number" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">IFSC Code</label>
+          <input type="text" id="bank-ifsc" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono uppercase" placeholder="SBIN0001234" required>
+        </div>
+        <button type="submit" class="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-bold shadow-md shadow-primary/10">Save Settlements Details</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] items-center gap-3 px-5 py-3 rounded-full text-white text-sm font-bold shadow-lg transition-all duration-300"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = '/auth/login.html?next=/mobile-seller/payouts.html';
+        return;
+      }
+
+      // Tab Management
+      const tabOverviewBtn = document.getElementById('tab-overview-btn');
+      const tabBankBtn = document.getElementById('tab-bank-btn');
+      const tabOverview = document.getElementById('tab-overview');
+      const tabBank = document.getElementById('tab-bank');
+
+      tabOverviewBtn.addEventListener('click', () => {
+        tabOverview.classList.remove('hidden');
+        tabBank.classList.add('hidden');
+        tabOverviewBtn.className = "flex-1 py-3 text-center text-sm font-bold text-primary border-b-2 border-primary";
+        tabBankBtn.className = "flex-1 py-3 text-center text-sm font-bold text-slate-500 border-b-2 border-transparent";
+      });
+
+      tabBankBtn.addEventListener('click', () => {
+        tabBank.classList.remove('hidden');
+        tabOverview.classList.add('hidden');
+        tabBankBtn.className = "flex-1 py-3 text-center text-sm font-bold text-primary border-b-2 border-primary";
+        tabOverviewBtn.className = "flex-1 py-3 text-center text-sm font-bold text-slate-500 border-b-2 border-transparent";
+      });
+
+      function formatINR(amount) {
+        if (amount == null) return '₹0.00';
+        return '₹' + Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function showToast(msg, type='success') {
+        const toast = document.getElementById('toast');
+        toast.style.backgroundColor = type === 'success' ? '#3D6B4F' : '#BA1A1A';
+        toast.innerHTML = `<span>${msg}</span>`;
+        toast.classList.remove('hidden');
+        toast.classList.add('flex');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+          toast.classList.remove('flex');
+        }, 3000);
+      }
+
+      // Load statistics & history
+      fetch('/api/payments/earnings', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(resp => {
+        const data = resp.data || {};
+        document.getElementById('stat-total-earnings').textContent = formatINR(data.total_earned / 100);
+        document.getElementById('stat-month-earnings').textContent = formatINR(data.this_month_earned / 100);
+        document.getElementById('stat-week-earnings').textContent = formatINR(data.this_week_earned / 100);
+        document.getElementById('stat-pending-payout').textContent = formatINR(data.total_earned / 100);
+      })
+      .catch(() => {});
+
+      // Recent Settlements list
+      fetch('/api/payments/history/all?limit=10', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(resp => {
+        const items = resp.data.items || [];
+        const container = document.getElementById('recent-payments');
+        container.innerHTML = '';
+        if (items.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-500 italic py-4">No settlements processed.</p>';
+          return;
+        }
+        items.forEach(p => {
+          const row = document.createElement('div');
+          row.className = "flex items-center justify-between p-3 border border-slate-100 rounded-lg bg-slate-50 text-xs";
+          row.innerHTML = `
+            <div>
+              <span class="font-bold block">${new Date(p.date).toLocaleDateString()}</span>
+              <span class="text-slate-500">Buyer: ${p.buyer_name}</span>
+            </div>
+            <span class="font-mono font-bold text-primary text-sm">${formatINR(p.amount)}</span>
+          `;
+          container.appendChild(row);
+        });
+      })
+      .catch(() => {});
+
+      // Bank Details form loaders & submitters
+      fetch('/api/payments/receiving-details', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(resp => {
+        const data = resp.data || {};
+        if (data.bank) {
+          document.getElementById('bank-holder').value = data.bank.account_holder_name || '';
+          document.getElementById('bank-name').value = data.bank.bank_name || '';
+          document.getElementById('bank-acc').value = data.bank.account_number || '';
+          document.getElementById('bank-confirm-acc').value = data.bank.account_number || '';
+          document.getElementById('bank-ifsc').value = data.bank.ifsc_code || '';
+        }
+      })
+      .catch(() => {});
+
+      document.getElementById('receiving-details-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const acc = document.getElementById('bank-acc').value;
+        const confirmAcc = document.getElementById('bank-confirm-acc').value;
+        if (acc !== confirmAcc) {
+          showToast("Account numbers do not match!", "error");
+          return;
+        }
+
+        const payload = {
+          type: 'BANK',
+          account_holder_name: document.getElementById('bank-holder').value,
+          bank_name: document.getElementById('bank-name').value,
+          account_number: acc,
+          ifsc_code: document.getElementById('bank-ifsc').value.toUpperCase()
+        };
+
+        fetch('/api/payments/receiving-details', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showToast("Bank details saved successfully!");
+          } else {
+            showToast(data.message || "Failed to update Details.", "error");
+          }
+        })
+        .catch(() => showToast("Network error saving bank details.", "error"));
+      });
+    });
+  </script>
+</body>
+</html>

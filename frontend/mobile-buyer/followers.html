@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <script src="/src/components/ReportWidget.js" defer></script>
+    <script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Followers & Following | Tohfa</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#49663f",
+                      "on-surface": "#211b11",
+                      "surface-dim": "#e5d8c8",
+                      "secondary-fixed": "#caecbb",
+                      "primary-fixed": "#bceecb",
+                      "outline": "#717972",
+                      "surface-container": "#f9ecdc",
+                      "on-background": "#211b11",
+                      "tertiary-container": "#7B5EA7",
+                      "secondary-container": "#8FAF82",
+                      "on-tertiary-fixed-variant": "#54387e",
+                      "on-tertiary-container": "#e8d6ff",
+                      "surface": "#FFFFFF",
+                      "inverse-primary": "#a0d2b0",
+                      "background": "#ffffff",
+                      "inverse-on-surface": "#fcefde",
+                      "surface-bright": "#FFFFFF",
+                      "surface-container-high": "#f3e6d6",
+                      "on-tertiary-fixed": "#270550",
+                      "on-primary-fixed": "#002110",
+                      "tertiary": "#7B5EA7",
+                      "tertiary-fixed": "#ecdcff",
+                      "outline-variant": "#F7F3EC",
+                      "tertiary-fixed-dim": "#d6baff",
+                      "surface-tint": "#3a684c",
+                      "surface-container-highest": "#F7F3EC",
+                      "surface-variant": "#F7F3EC",
+                      "on-primary-fixed-variant": "#214f36",
+                      "on-error-container": "#3D6B4F",
+                      "primary-fixed-dim": "#a0d2b0",
+                      "on-error": "#ffffff",
+                      "secondary-fixed-dim": "#afd0a0",
+                      "on-primary": "#ffffff",
+                      "primary-container": "#3d6b4f",
+                      "on-primary-container": "#b7e9c6",
+                      "inverse-surface": "#362f25",
+                      "primary": "#3D6B4F",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#414942",
+                      "on-secondary-fixed-variant": "#324e29",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-container": "#4d6a43",
+                      "on-secondary-fixed": "#062103",
+                      "surface-container-low": "#fff2e1",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#F7F3EC",
+                      "error": "#3D6B4F",
+                      "ivory": "#F7F3EC",
+                      "sage": "#8FAF82",
+                      "gold-brand": "#C8973A",
+                      "violet-brand": "#7B5EA7",
+                      "terracotta": "#C87A53",
+                      "gold-custom": "#C8973A"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "16px",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "margin-desktop": "64px",
+                      "xl": "40px",
+                      "gutter": "16px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xs": "4px",
+                      "margin-mobile": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Playfair Display"],
+                      "body-lg": ["DM Sans"],
+                      "body-sm": ["DM Sans"],
+                      "headline-lg": ["Playfair Display"],
+                      "title-md": ["DM Sans"],
+                      "label-caps": ["DM Sans"],
+                      "display-lg": ["Playfair Display"],
+                      "title-serif": ["Playfair Display"],
+                      "body-md": ["DM Sans"],
+                      "data-price": ["DM Sans"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "display-hero": ["56px", {"lineHeight": "64px", "fontWeight": "700"}],
+                      "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        /* Custom skeleton animation */
+        @keyframes pulse-light {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.3; }
+        }
+        .skeleton-pulse {
+            animation: pulse-light 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col font-body-md text-on-surface selection:bg-[#8FAF82]/35">
+
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="./buyer-home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="./buyer-categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- Reels -->
+    <a href="./buyer-reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">movie</span>
+      <span>Reels</span>
+    </a>
+    <!-- Profile -->
+    <a href="./buyer-profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="./buyer-search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="./buyer-saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="./buyer-cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="./buyer-notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+
+<!-- Main Container -->
+<main class="flex-grow pt-12 pb-xl max-w-2xl mx-auto w-full px-margin-mobile md:px-0 relative">
+  <!-- Back navigation and Header -->
+  <header class="mb-lg select-none">
+    <a href="./buyer-profile.html" class="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      <span>Back to Profile</span>
+    </a>
+    <h1 id="page-title" class="font-serif text-[#3D6B4F] text-[40px] font-['Playfair_Display'] font-normal leading-tight">Followers & Following</h1>
+    <p id="page-subtitle" class="text-outline text-sm font-sans mt-1">Connect and follow your favorite handcrafted makers and artisans.</p>
+  </header>
+
+  <!-- Tabs -->
+  <div id="tabs-container" class="flex border-b border-[#F7F3EC] mb-lg select-none">
+    <button id="tab-following" onclick="switchTab('following')" 
+            class="flex-1 py-4 text-center font-semibold text-[15px] border-b-2 border-primary text-primary transition-all duration-200">
+      Artisans You Follow (<span id="count-following">0</span>)
+    </button>
+    <button id="tab-followers" onclick="switchTab('followers')" 
+            class="flex-1 py-4 text-center font-semibold text-[15px] border-b-2 border-transparent text-outline hover:text-primary transition-all duration-200">
+      Your Followers (<span id="count-followers">0</span>)
+    </button>
+  </div>
+
+  <!-- Search Filter -->
+  <div class="relative w-full mb-lg">
+    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+    <input type="text" id="search-input" oninput="handleSearch(this.value)"
+           placeholder="Search by name or shop..." 
+           class="w-full pl-12 pr-4 py-3 border border-outline-variant bg-[#F7F3EC]/40 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-sans text-sm" />
+  </div>
+
+  <!-- Dynamic Lists Container -->
+  <div id="list-container" class="flex flex-col gap-sm">
+    <!-- Skeletons (Visible on Load) -->
+    <div id="skeleton-loader" class="flex flex-col gap-sm">
+      <div class="flex items-center gap-md p-md border border-outline-variant/60 bg-surface rounded-xl skeleton-pulse">
+        <div class="w-12 h-12 rounded-full bg-surface-container-high flex-shrink-0"></div>
+        <div class="flex-grow flex flex-col gap-xs">
+          <div class="w-32 h-4 bg-surface-container-high rounded-md"></div>
+          <div class="w-20 h-3 bg-surface-container-high rounded-md"></div>
+        </div>
+        <div class="w-24 h-9 bg-surface-container-high rounded-full"></div>
+      </div>
+      <div class="flex items-center gap-md p-md border border-outline-variant/60 bg-surface rounded-xl skeleton-pulse">
+        <div class="w-12 h-12 rounded-full bg-surface-container-high flex-shrink-0"></div>
+        <div class="flex-grow flex flex-col gap-xs">
+          <div class="w-24 h-4 bg-surface-container-high rounded-md"></div>
+          <div class="w-16 h-3 bg-surface-container-high rounded-md"></div>
+        </div>
+        <div class="w-24 h-9 bg-surface-container-high rounded-full"></div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="hidden flex flex-col items-center justify-center py-20 text-center" id="empty-state">
+      <div class="relative mb-lg">
+        <img class="w-32 h-32 object-contain mx-auto" alt="Sleeping cat illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy7Dkw6YcOzNwI8rYZLTx1KA5-p6EP7biAJDNFZocYDhEPbjlNYORfHIO5W_4idkTjhTScxi_zqKueNEJVLw-ue2oq4BHxeccIsEuiKLTkjJvIGWmsnRLIz3JXVUADuu4omQhl_APy8jTNO915RkbxVEBumzeBVN-3oWVDBo25IcJKc_bntpF7m2jZylB5a-4q7gohkwhTbxxWEb5IvVWUwYvK0AVgPYjKFGhTI1LYJdsDA8jmTcQtR4sUhcdFQPwbrqPxCLzkmec">
+        <div class="absolute -right-4 bottom-2 text-secondary opacity-60">
+          <span class="material-symbols-outlined text-4xl text-primary">nest_eco_leaf</span>
+        </div>
+      </div>
+      <h3 id="empty-title" class="font-serif italic text-2xl text-primary mb-sm">No connections yet</h3>
+      <p id="empty-subtitle" class="text-body-md text-on-surface-variant">Makers you follow will appear here.</p>
+    </div>
+
+    <!-- Rendered Cards -->
+    <div id="cards-wrapper" class="flex flex-col gap-md"></div>
+  </div>
+
+  <!-- Load More Button -->
+  <div class="mt-lg flex justify-center">
+    <button id="load-more-btn" onclick="loadMore()" 
+            class="hidden px-xl py-sm border-2 border-outline-variant font-label-caps text-on-surface rounded-full hover:bg-surface-container-highest transition-all active:scale-95 cursor-pointer">
+      Load More
+    </button>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-transparent border-t border-[#F7F3EC]/30 py-8 text-center text-xs text-outline/60 mt-auto select-none">
+  <p>© 2026 Tohfa Studio. All rights reserved.</p>
+</footer>
+
+<script type="module">
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || getTohfaToken();
+        } catch(e) {
+            return getTohfaToken();
+        }
+    }
+
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+    import Toast from '/src/components/Toast.js';
+
+    let currentTab = 'following'; // 'following' or 'followers'
+    let followingList = [];
+    let followersList = [];
+    let activeList = [];
+    let searchQuery = '';
+
+    let followingCursor = null;
+    let followersCursor = null;
+    let hasMoreFollowing = false;
+    let hasMoreFollowers = false;
+
+    let counts = {
+        following: 0,
+        followers: 0
+    };
+
+    let loggedInUser = null;
+
+    async function init() {
+        try {
+            // Get logged-in user profile details first
+            const profileRes = await apiClient.get('/profile/me');
+            if (profileRes.data && profileRes.data.success) {
+                loggedInUser = profileRes.data.data;
+                counts.following = loggedInUser.following_count || 0;
+                counts.followers = loggedInUser.followers_count || 0;
+                document.getElementById('count-following').innerText = counts.following;
+                document.getElementById('count-followers').innerText = counts.followers;
+                
+                // Adaptive layout based on role
+                if (loggedInUser.role === 'buyer') {
+                    document.getElementById('page-title').innerText = "Artisans You Follow";
+                    document.getElementById('page-subtitle').innerText = "Artisans and makers whose updates you follow.";
+                    document.getElementById('tabs-container').classList.add('hidden');
+                }
+            }
+            
+            // Fetch initial lists
+            await fetchFollowing(true);
+            if (loggedInUser && loggedInUser.role !== 'buyer') {
+                await fetchFollowers(true);
+            }
+            
+            // Initial render
+            switchTab('following');
+            updateBadges();
+        } catch (err) {
+            console.error('Initialization failed:', err);
+            document.getElementById('skeleton-loader').classList.add('hidden');
+        }
+    }
+
+    async function fetchFollowing(reset = false) {
+        if (!loggedInUser) return;
+        try {
+            const url = `/users/${loggedInUser.id}/following?limit=30` + (reset ? '' : (followingCursor ? `&cursor=${followingCursor}` : ''));
+            const res = await apiClient.get(url);
+            if (res.data && res.data.success) {
+                const data = res.data.data;
+                if (reset) {
+                    followingList = data.following || [];
+                } else {
+                    followingList = [...followingList, ...(data.following || [])];
+                }
+                followingCursor = data.next_cursor;
+                hasMoreFollowing = data.has_more;
+                counts.following = data.total_count || followingList.length;
+                document.getElementById('count-following').innerText = counts.following;
+            }
+        } catch (err) {
+            console.error('Failed to fetch following:', err);
+        }
+    }
+
+    async function fetchFollowers(reset = false) {
+        if (!loggedInUser) return;
+        try {
+            const url = `/users/${loggedInUser.id}/followers?limit=30` + (reset ? '' : (followersCursor ? `&cursor=${followersCursor}` : ''));
+            const res = await apiClient.get(url);
+            if (res.data && res.data.success) {
+                const data = res.data.data;
+                if (reset) {
+                    followersList = data.followers || [];
+                } else {
+                    followersList = [...followersList, ...(data.followers || [])];
+                }
+                followersCursor = data.next_cursor;
+                hasMoreFollowers = data.has_more;
+                counts.followers = data.total_count || followersList.length;
+                document.getElementById('count-followers').innerText = counts.followers;
+            }
+        } catch (err) {
+            console.error('Failed to fetch followers:', err);
+        }
+    }
+
+    window.switchTab = function(tab) {
+        if (loggedInUser && loggedInUser.role === 'buyer') {
+            tab = 'following';
+        }
+        currentTab = tab;
+        
+        const tabFollowing = document.getElementById('tab-following');
+        const tabFollowers = document.getElementById('tab-followers');
+
+        if (tab === 'following') {
+            tabFollowing.className = "flex-1 py-4 text-center font-semibold text-[15px] border-b-2 border-primary text-primary transition-all duration-200";
+            tabFollowers.className = "flex-1 py-4 text-center font-semibold text-[15px] border-b-2 border-transparent text-outline hover:text-primary transition-all duration-200";
+            activeList = followingList;
+        } else {
+            tabFollowing.className = "flex-1 py-4 text-center font-semibold text-[15px] border-b-2 border-transparent text-outline hover:text-primary transition-all duration-200";
+            tabFollowers.className = "flex-1 py-4 text-center font-semibold text-[15px] border-b-2 border-primary text-primary transition-all duration-200";
+            activeList = followersList;
+        }
+
+        renderActiveList();
+    };
+
+    window.handleSearch = function(query) {
+        searchQuery = query.trim().toLowerCase();
+        renderActiveList();
+    };
+
+    function renderActiveList() {
+        const skeleton = document.getElementById('skeleton-loader');
+        if (skeleton) skeleton.classList.add('hidden');
+
+        const wrapper = document.getElementById('cards-wrapper');
+        const emptyState = document.getElementById('empty-state');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        
+        wrapper.innerHTML = '';
+
+        // Filter list based on search query
+        let filtered = activeList;
+        if (searchQuery) {
+            filtered = activeList.filter(item => 
+                (item.display_name && item.display_name.toLowerCase().includes(searchQuery))
+            );
+        }
+
+        // Handle Empty State
+        if (filtered.length === 0) {
+            emptyState.classList.remove('hidden');
+            if (searchQuery) {
+                document.getElementById('empty-title').innerText = "No results found";
+                document.getElementById('empty-subtitle').innerText = `We couldn't find anyone matching "${searchQuery}"`;
+            } else {
+                if (currentTab === 'following') {
+                    document.getElementById('empty-title').innerText = "Not following anyone";
+                    document.getElementById('empty-subtitle').innerText = "Makers you follow will appear here. Find artisans in Category or Reels!";
+                } else {
+                    document.getElementById('empty-title').innerText = "No followers yet";
+                    document.getElementById('empty-subtitle').innerText = "Makers and buyers who follow your profile will appear here.";
+                }
+            }
+            loadMoreBtn.classList.add('hidden');
+            return;
+        }
+
+        emptyState.classList.add('hidden');
+
+        // Render cards
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = "flex items-center gap-md p-md border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-300 rounded-xl relative group artisan-card-hover";
+            
+            // Name link details
+            const isSeller = item.role === 'seller';
+            const profileLink = isSeller ? `./buyer-seller-profile.html?id=${item.id}` : '#';
+            const nameClickableClass = isSeller ? 'hover:text-primary hover:underline cursor-pointer' : 'cursor-default';
+
+            // Avatar fallback details
+            const initial = (item.display_name || 'T').charAt(0).toUpperCase();
+            const avatarHtml = item.avatar_url 
+                ? `<img src="${item.avatar_url}" alt="${item.display_name}" class="w-12 h-12 rounded-full object-cover border border-[#8FAF82]/40" />`
+                : `<div class="w-12 h-12 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center font-bold text-lg border border-[#8FAF82]/20">${initial}</div>`;
+
+            // Badges
+            const roleBadgeClass = isSeller 
+                ? 'bg-primary/10 text-primary border border-primary/20' 
+                : 'bg-secondary-container/15 text-secondary border border-secondary-container/30';
+            const roleBadgeText = isSeller ? 'MAKER' : 'BUYER';
+
+            // Button Action HTML
+            let actionBtnHtml = '';
+            if (currentTab === 'following') {
+                actionBtnHtml = `
+                    <button onclick="toggleFollow(event, ${item.id}, true)" 
+                            class="px-lg py-1.5 border border-primary text-primary font-semibold text-xs rounded-full hover:bg-primary hover:text-white transition-all duration-200 active:scale-95 cursor-pointer">
+                        Unfollow
+                    </button>
+                `;
+            } else {
+                const following = item.is_following;
+                if (following) {
+                    actionBtnHtml = `
+                        <button onclick="toggleFollow(event, ${item.id}, false)" 
+                                class="px-lg py-1.5 border border-[#8FAF82] bg-sage-soft text-primary font-semibold text-xs rounded-full hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-200 active:scale-95 group/btn cursor-pointer">
+                            <span class="group-hover/btn:hidden">Following</span>
+                            <span class="hidden group-hover/btn:inline">Unfollow</span>
+                        </button>
+                    `;
+                } else {
+                    actionBtnHtml = `
+                        <button onclick="toggleFollow(event, ${item.id}, false)" 
+                                class="px-lg py-1.5 bg-primary text-white font-semibold text-xs rounded-full hover:opacity-95 transition-all duration-200 active:scale-95 cursor-pointer">
+                            Follow Back
+                        </button>
+                    `;
+                }
+            }
+
+            card.innerHTML = `
+                <div class="flex-shrink-0">
+                    ${isSeller ? `<a href="${profileLink}">${avatarHtml}</a>` : avatarHtml}
+                </div>
+                <div class="flex-grow min-w-0">
+                    <div class="flex items-center gap-xs flex-wrap">
+                        <h3 class="font-semibold text-on-surface text-base truncate font-sans">
+                            ${isSeller ? `<a href="${profileLink}" class="${nameClickableClass}">${item.display_name}</a>` : `<span class="${nameClickClass(isSeller)}">${item.display_name}</span>`}
+                        </h3>
+                        <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider font-sans ${roleBadgeClass}">
+                            ${roleBadgeText}
+                        </span>
+                    </div>
+                    <p class="text-xs text-outline font-sans truncate mt-0.5">${isSeller ? 'Handcrafted Goods Artisan' : 'Tohfa Goods Enthusiast'}</p>
+                </div>
+                <div class="flex-shrink-0">
+                    ${actionBtnHtml}
+                </div>
+            `;
+            
+            wrapper.appendChild(card);
+        });
+
+        // Show Load More Button if applicable
+        const hasMore = currentTab === 'following' ? hasMoreFollowing : hasMoreFollowers;
+        if (hasMore && !searchQuery) {
+            loadMoreBtn.classList.remove('hidden');
+        } else {
+            loadMoreBtn.classList.add('hidden');
+        }
+    }
+
+    function nameClickClass(isSeller) {
+        return isSeller ? 'hover:text-primary hover:underline cursor-pointer' : 'cursor-default';
+    }
+
+    window.toggleFollow = async function(e, id, isFollowingTab) {
+        if (e) e.stopPropagation();
+        
+        // Find if we are currently following this user
+        let itemIndex = -1;
+        let isFollowing = false;
+        
+        if (isFollowingTab) {
+            itemIndex = followingList.findIndex(x => x.id === id);
+            isFollowing = true;
+        } else {
+            itemIndex = followersList.findIndex(x => x.id === id);
+            if (itemIndex !== -1) {
+                isFollowing = followersList[itemIndex].is_following;
+            }
+        }
+
+        try {
+            if (isFollowing) {
+                // Perform Unfollow
+                const res = await apiClient.delete(`/follows/${id}`);
+                if (res.data && res.data.success) {
+                    Toast.show('Artisan unfollowed successfully', 'success');
+                    
+                    if (isFollowingTab) {
+                        // Remove from following list
+                        followingList.splice(itemIndex, 1);
+                        counts.following = Math.max(0, counts.following - 1);
+                        document.getElementById('count-following').innerText = counts.following;
+                        activeList = followingList;
+                    } else {
+                        // Mark is_following = false in followers list
+                        if (itemIndex !== -1) {
+                            followersList[itemIndex].is_following = false;
+                        }
+                        counts.following = Math.max(0, counts.following - 1);
+                        document.getElementById('count-following').innerText = counts.following;
+                        
+                        // If that user is also in the followingList, remove them from there
+                        const followIdx = followingList.findIndex(x => x.id === id);
+                        if (followIdx !== -1) {
+                            followingList.splice(followIdx, 1);
+                        }
+                        activeList = followersList;
+                    }
+                }
+            } else {
+                // Perform Follow
+                const res = await apiClient.post(`/follows/${id}`);
+                if (res.data && res.data.success) {
+                    Toast.show('Now following artisan', 'success');
+                    
+                    if (!isFollowingTab) {
+                        // Mark is_following = true in followers list
+                        if (itemIndex !== -1) {
+                            followersList[itemIndex].is_following = true;
+                        }
+                        counts.following += 1;
+                        document.getElementById('count-following').innerText = counts.following;
+                        
+                        // Add this user to our followingList since we just followed them
+                        const follower = followersList[itemIndex];
+                        followingList.unshift({
+                            id: follower.id,
+                            display_name: follower.display_name,
+                            avatar_url: follower.avatar_url,
+                            role: follower.role,
+                            role_label: follower.role_label,
+                            is_following: true
+                        });
+                        activeList = followersList;
+                    }
+                }
+            }
+            renderActiveList();
+        } catch (err) {
+            console.error('Failed to toggle follow status:', err);
+            Toast.show('Failed to update follow status', 'error');
+        }
+    };
+
+    window.loadMore = async function() {
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        loadMoreBtn.innerText = 'Loading...';
+        loadMoreBtn.disabled = true;
+
+        if (currentTab === 'following') {
+            await fetchFollowing(false);
+            activeList = followingList;
+        } else {
+            await fetchFollowers(false);
+            activeList = followersList;
+        }
+
+        loadMoreBtn.innerText = 'Load More';
+        loadMoreBtn.disabled = false;
+        renderActiveList();
+    };
+
+    async function updateBadges() {
+        // Fetch cart badge
+        try {
+            const res = await apiClient.get('/cart');
+            if (res.data && res.data.success) {
+                const count = res.data.data.item_count;
+                const navBadge = document.getElementById('nav-cart-badge');
+                if (navBadge) {
+                    if (count > 0) {
+                        navBadge.innerText = count;
+                        navBadge.classList.remove('hidden');
+                    } else {
+                        navBadge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (e) { console.error(e); }
+
+        // Fetch wishlist badge
+        try {
+            const res = await apiClient.get('/wishlist');
+            if (res.data && res.data.success) {
+                const items = res.data.data.items || res.data.data || [];
+                const navBadge = document.getElementById('nav-wishlist-badge');
+                if (navBadge) {
+                    if (items.length > 0) {
+                        navBadge.innerText = items.length;
+                        navBadge.classList.remove('hidden');
+                    } else {
+                        navBadge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (e) { console.error(e); }
+
+        // Fetch notifications badge
+        try {
+            const res = await apiClient.get('/notifications');
+            if (res.data && res.data.success) {
+                const unreadCount = res.data.data.unread_count || 0;
+                const navBadge = document.getElementById('nav-notifications-badge');
+                if (navBadge) {
+                    if (unreadCount > 0) {
+                        navBadge.classList.remove('hidden');
+                    } else {
+                        navBadge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function checkAuthState() {
+        const token = getTohfaToken();
+        const authContainer = document.getElementById('auth-buttons-container');
+        
+        if (token) {
+            try {
+                let avatarUrl = null;
+                let initial = 'A';
+                try {
+                    const res = await apiClient.get('/profile/me');
+                    if (res.data && res.data.success) {
+                        avatarUrl = res.data.data.avatar_url;
+                        if (res.data.data.display_name) {
+                            initial = res.data.data.display_name.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile avatar:", err);
+                }
+                
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                } else {
+                    avatarHtml = `
+                        <a href="./buyer-profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                            ${initial}
+                        </a>
+                    `;
+                }
+
+                if (authContainer) {
+                    authContainer.innerHTML = avatarHtml;
+                }
+            } catch(e) {
+                console.error("Failed to parse auth state:", e);
+                logout();
+            }
+        } else {
+            if (authContainer) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-md">
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                    </div>
+                `;
+            }
+            window.location.href = '/auth/login.html?redirect=./buyer-followers.html';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAuthState();
+        init();
+    });
+</script>
+</body>
+</html>

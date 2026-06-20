@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html class="light scroll-smooth" lang="en">
+<head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Our Story | Tohfa</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#3D6B4F",
+                        "primary": "#3D6B4F",
+                        "on-surface": "#1f1b15",
+                        "on-surface-variant": "#444840",
+                        "outline": "#74786f",
+                        "outline-variant": "#F7F3EC",
+                        "background": "#FFFFFF",
+                        "gold-custom": "#C8973A",
+                        "ivory-card": "#FFFDFB",
+                        "sage": "#8FAF82",
+                        "sage-soft": "#F0F5EE",
+                        "terracotta": "#C87A53",
+                        "secondary-fixed": "#ffdbc9",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#331200",
+                        "tertiary-fixed-dim": "#cfc5b8",
+                        "tertiary": "#332d24",
+                        "surface-container": "#f0eded",
+                        "surface-dim": "#dcd9d9",
+                        "secondary": "#8f4d23",
+                        "primary-container": "#2d4a35",
+                        "secondary-container": "#fda775",
+                        "on-primary-fixed": "#03210f",
+                        "on-tertiary-container": "#b9afa3",
+                        "surface-tint": "#47654e",
+                        "on-primary": "#ffffff",
+                        "error-container": "#F7F3EC",
+                        "inverse-surface": "#303030",
+                        "inverse-primary": "#aecfb3",
+                        "surface-container-highest": "#e4e2e1",
+                        "on-error-container": "#3D6B4F",
+                        "on-background": "#1b1c1c",
+                        "on-primary-fixed-variant": "#304d38",
+                        "inverse-on-surface": "#f3f0f0",
+                        "on-secondary-container": "#773a11",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#494339",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#98b99e",
+                        "on-secondary-fixed-variant": "#71360d",
+                        "primary-fixed-dim": "#aecfb3",
+                        "on-tertiary-fixed-variant": "#4c463c",
+                        "surface-container-high": "#eae8e7",
+                        "surface": "#fbf9f8",
+                        "secondary-fixed-dim": "#ffb68d",
+                        "on-tertiary-fixed": "#201b13",
+                        "on-tertiary": "#ffffff",
+                        "brand-cream": "#F7F3EC",
+                        "brand-forest": "#2D4A35",
+                        "brand-sand": "#E8DDD0",
+                        "brand-terracotta": "#C4784A"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "container-max": "1440px",
+                        "margin-desktop": "64px",
+                        "unit": "4px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Playfair Display"],
+                        "body-md": ["DM Sans"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "display-lg-mobile": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "headline-lg": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "label-md": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { background-color: #F7F3EC; color: #173320; }
+        .linen-texture {
+            background-image: url("https://www.transparenttextures.com/patterns/linen.png");
+        }
+        .grain-texture {
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+        .organic-mask-1 { clip-path: ellipse(45% 50% at 50% 50%); }
+        .organic-mask-2 { clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 20%); }
+        .organic-mask-3 { clip-path: inset(5% 10% 5% 10% round 30% 60% 40% 70%); }
+        
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .masonry-item { break-inside: avoid; margin-bottom: 24px; }
+        .hover-zoom:hover img { transform: scale(1.05); }
+    </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack layout sections */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Product grids must be 2 columns */
+    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
+    .product-grid, .search-results-grid, .category-product-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+    }
+
+    /* Hide the leaf divider on mobile */
+    #usp-banner .story-divider {
+      display: none !important;
+    }
+    /* Reduce spacing between elements in the philosophy section */
+    #usp-banner h1 {
+      margin-bottom: 12px !important;
+    }
+    #usp-banner p {
+      margin-bottom: 16px !important;
+    }
+    /* Tighter button layout on mobile */
+    #usp-banner .flex.flex-wrap.gap-4 {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+    #usp-banner .flex.flex-wrap.gap-4 button {
+      width: 100% !important;
+      margin: 0 !important;
+    }
+  }
+</style>
+
+</head>
+<body class="bg-white min-h-screen flex flex-col font-body-md text-on-surface selection:bg-[#8FAF82]/35">
+
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="./buyer-home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="./buyer-categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- Reels -->
+    <a href="./buyer-reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">movie</span>
+      <span>Reels</span>
+    </a>
+    <!-- Profile -->
+    <a href="./buyer-profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="./buyer-search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="./buyer-saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+    </a>
+    <a href="./buyer-cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+    </a>
+    <a href="./buyer-notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+  
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+
+<!-- Main content container -->
+<main class="flex-grow">
+    <!-- USP Banner / Hero Section -->
+    <section class="linen-texture pt-8 pb-16 md:py-32 flex flex-col md:flex-row items-stretch gap-12 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop fade-up visible" id="usp-banner">
+        <div class="hidden md:block w-full md:w-[45%] rounded-xl overflow-hidden aspect-[4/5] shadow-2xl">
+            <img alt="Potter hands molding clay" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoYDucXjaBiXiW69rEdxrHHFpZCIJLQCg4wla2YyndECsmiQv6FBtufolt_ihuQ-klYOHNKW13tKjoirRgkMPje9nPb3aNghgnuI7eO0RtfSgt9QsV-5IJZKnVrAcj9kDZKOV0W27GNPUJEOfBkEmpQwbuBGospmWoOlc25Eu9iMXbzMwJ_miQGasn6IPPZVSXKfCxXyU1kqgPsiD1yWgZ-94houfaHvG4MI3IdqSGbqDLqNN6QYEJurrW_SP22KtPeDRJzgsO4Cg">
+        </div>
+        <div class="w-full md:w-[55%] flex flex-col justify-center border-l-4 border-brand-terracotta pl-8 md:pl-12">
+            <span class="font-label-md text-label-md text-brand-forest tracking-[0.2em] mb-4">OUR PHILOSOPHY</span>
+            <h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-[#3D6B4F] mb-6 max-w-xl">Every gift holds the hands that made it.</h1>
+            <p class="font-body-lg italic text-on-surface-variant/80 mb-8 max-w-lg">
+                "At Tohfa, every gift tells a story. We bring you hand-selected, sustainably crafted treasures made by real artisans — not factories."
+            </p>
+            <div class="story-divider flex items-center gap-4 mb-10">
+                <div class="h-px w-16 bg-brand-forest/20"></div>
+                <span class="material-symbols-outlined text-[#3D6B4F]">eco</span>
+                <div class="h-px w-16 bg-brand-forest/20"></div>
+            </div>
+            <div class="flex flex-wrap gap-4">
+                <button onclick="window.location.href='./buyer-categories.html'" class="bg-primary text-white px-8 py-3 font-label-md uppercase tracking-widest hover:bg-opacity-90 transition-all rounded-lg">Explore Collection</button>
+                <button onclick="document.getElementById('artisans-section').scrollIntoView({ behavior: 'smooth' })" class="border border-[#3D6B4F] text-[#3D6B4F] px-8 py-3 font-label-md uppercase tracking-widest hover:bg-primary hover:text-white transition-all rounded-lg">Meet Our Artisans</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Artisans Section -->
+    <section id="artisans-section" class="bg-brand-sand grain-texture py-24 md:py-32 fade-up visible" style="background-color: #E8DDD0;">
+        <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-16">
+            <h2 class="font-headline-md text-headline-md text-primary mb-4">Hands Behind Tohfa</h2>
+            <div class="flex justify-center mb-4">
+                <span class="material-symbols-outlined text-brand-terracotta">spa</span>
+            </div>
+            <p class="font-body-lg italic text-on-surface-variant/70">Meet the makers who craft every piece with love.</p>
+        </div>
+        <div id="artisans-grid" class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-gutter">
+            <!-- Artisans will be dynamically loaded here by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Join Community Section -->
+    <section class="relative h-[600px] flex items-center justify-center overflow-hidden fade-up visible">
+        <div class="absolute inset-0 z-0">
+            <img alt="Craftsman workshop detail" class="w-full h-full object-cover scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPBbWxLAv5lfCUHG4_fhQ1toL95dmzT8hxfu2LIxyf4vaYfZzic9KSiF7BrmOLC01KGXVdC_cYylkAWe_RzrhHjoW3bK-YncfK6C6UjzlN9jli2ON6BmGAsk-WZ0wFI64oNRNXTyIYO2JDDhnjT6XxkSpEIPXlOv5GhshNIymEe2rfajdE3xYXucUSiSaoIKLlNBXyaJmlVod5c67e6Jjbas9l4FYfnu7soYZFWUqu_rTe90Q9wQN2AtfP5v_4Ilew6k3uTjmLth8">
+            <div class="absolute inset-0 bg-[#3D6B4F]/60 backdrop-blur-[2px]"></div>
+        </div>
+        <div class="relative z-10 text-center px-margin-mobile">
+            <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-white mb-10 max-w-3xl mx-auto leading-tight italic">
+                'Craftsmanship is not a transaction. It's a relationship.'
+            </h2>
+            <button class="border-2 border-white text-white px-10 py-4 font-label-md uppercase tracking-[0.2em] hover:bg-white hover:text-brand-forest transition-all duration-300">
+                Join the Tohfa Community
+            </button>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="w-full mt-auto border-t border-outline-variant/30 bg-[#F7F3EC]" style="background-color: #F7F3EC;">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-xl px-margin-desktop py-xl max-w-[1440px] mx-auto relative">
+        <!-- Brand Info -->
+        <div class="md:col-span-5">
+            <h2 class="font-headline-lg text-headline-lg italic text-primary mb-md">Tohfa<span style="color: rgb(227, 176, 75);">.</span></h2>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-sm mb-lg">
+                Cultivating a community of makers and dreamers. Our studio curates the finest handmade goods from across the globe, prioritizing sustainability and craftsmanship.
+            </p>
+            <div class="flex gap-md">
+                <a class="w-10 h-10 rounded-full border border-outline flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+                    <span class="material-symbols-outlined text-sm">public</span>
+                </a>
+                <a class="w-10 h-10 rounded-full border border-outline flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+                    <span class="material-symbols-outlined text-sm">share</span>
+                </a>
+                <a class="w-10 h-10 rounded-full border border-outline flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+                    <span class="material-symbols-outlined text-sm">mail</span>
+                </a>
+            </div>
+        </div>
+        <!-- Links Column 1 -->
+        <div class="md:col-span-2">
+            <h4 class="font-label-caps text-label-caps text-primary mb-lg">Navigation</h4>
+            <ul class="flex flex-col gap-sm">
+                <li class=""><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Sustainability</a></li>
+                <li class=""><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Our Artisans</a></li>
+                <li class=""><a class="font-body-md text-body-md text-primary font-bold" href="./buyer-our-story.html">Our Story</a></li>
+                <li class=""><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Journal</a></li>
+            </ul>
+        </div>
+        <!-- Links Column 2 -->
+        <div class="md:col-span-2">
+            <h4 class="font-label-caps text-label-caps text-primary mb-lg">Service</h4>
+            <ul class="flex flex-col gap-sm">
+                <li class=""><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping</a></li>
+                <li class=""><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Care Guide</a></li>
+                <li class=""><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Returns</a></li>
+            </ul>
+        </div>
+        <!-- Newsletter -->
+        <div class="md:col-span-3">
+            <h4 class="font-title-serif italic text-primary text-lg mb-md">Stay Inspired</h4>
+            <p class="font-body-md text-sm text-on-surface-variant mb-md leading-snug">
+                Subscribe to receive artisan stories and exclusive collections.
+            </p>
+            <form id="newsletter-form" class="flex flex-col gap-sm">
+                <input class="w-full px-4 py-3 rounded-lg bg-surface-container-low border border-outline-variant focus:border-primary focus:ring-0 font-body-md text-sm" placeholder="Your email address" type="email" required>
+                <button class="bg-[#3D6B4F] text-white py-3 rounded-lg font-label-caps text-xs tracking-widest hover:opacity-90 active:scale-95 transition-all uppercase" type="submit">
+                    SUBSCRIBE
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Bottom Footer -->
+    <div class="border-t border-outline-variant/10 py-md px-margin-desktop max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-md text-outline">
+        <p class="font-body-md text-xs">© 2024 Tohfa Artisan Studio. Handcrafted with intention.</p>
+        <div class="flex gap-lg">
+            <a class="font-body-md text-xs hover:text-primary" href="#">Privacy Policy</a>
+            <a class="font-body-md text-xs hover:text-primary" href="#">Terms of Service</a>
+            <a class="font-body-md text-xs hover:text-primary" href="#">Sustainability</a>
+        </div>
+    </div>
+</footer>
+
+<script type="module">
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || getTohfaToken();
+        } catch(e) {
+            return getTohfaToken();
+        }
+    }
+
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
+    let isLoggedIn = false;
+    async function checkAuthState() {
+        const token = getTohfaToken();
+        const authContainer = document.getElementById('auth-buttons-container');
+        
+        if (token) {
+            isLoggedIn = true;
+            try {
+                let avatarUrl = null;
+                let initial = 'A';
+                try {
+                    const res = await apiClient.get('/profile/me');
+                    if (res.data && res.data.success) {
+                        avatarUrl = res.data.data.avatar_url;
+                        if (res.data.data.full_name) {
+                            initial = res.data.data.full_name.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile avatar:", err);
+                }
+                
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                } else {
+                    avatarHtml = `
+                        <a href="./buyer-profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                            ${initial}
+                        </a>
+                    `;
+                }
+
+                if (authContainer) {
+                    authContainer.innerHTML = '';
+                }
+            } catch(e) {
+                console.error("Failed to parse token:", e);
+                logout();
+            }
+        } else {
+            isLoggedIn = false;
+            if (authContainer) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-md">
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    async function updateCartBadge() {
+        try {
+            const cartRes = await apiClient.get('/cart');
+            const navBadge = document.getElementById('nav-cart-badge');
+            if (navBadge && cartRes.data && cartRes.data.success) {
+                const count = cartRes.data.data.item_count || 0;
+                if (count > 0) {
+                    navBadge.innerText = count;
+                    navBadge.classList.remove('hidden');
+                } else {
+                    navBadge.classList.add('hidden');
+                }
+            }
+        } catch(e){}
+    }
+
+    async function updateWishlistBadge() {
+        try {
+            const wishlistRes = await apiClient.get('/wishlist');
+            const navWishlistBadge = document.getElementById('nav-wishlist-badge');
+            if (navWishlistBadge && wishlistRes.data && wishlistRes.data.success) {
+                const count = wishlistRes.data.data.count || 0;
+                if (count > 0) {
+                    navWishlistBadge.innerText = count;
+                    navWishlistBadge.classList.remove('hidden');
+                } else {
+                    navWishlistBadge.classList.add('hidden');
+                }
+            }
+        } catch(e){}
+    }
+
+    async function updateNotificationsBadge() {
+        try {
+            const res = await apiClient.get('/notifications');
+            if (res.data && res.data.success) {
+                const unreadCount = res.data.data.unread_count || 0;
+                const badge = document.getElementById('nav-notifications-badge');
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (err) {}
+    }
+
+    window.followArtisan = function(id) {
+        fetch(`/api/artisans/${id}/follow`, { 
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${getTohfaToken() || ''}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const countEl = document.getElementById(`count-${id}`);
+                if (countEl) countEl.innerText = data.data.followerCount;
+                alert('Followed successfully!');
+            } else {
+                alert(data.message || 'Action failed');
+            }
+        })
+        .catch(err => alert('You must be logged in to follow.'));
+    };
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        await checkAuthState();
+        await updateCartBadge();
+        await updateWishlistBadge();
+        await updateNotificationsBadge();
+
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+        // Fetch Artisans
+        const grid = document.getElementById('artisans-grid');
+        if (grid) {
+            fetch('/api/artisans')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        grid.innerHTML = data.data.map((artisan, index) => {
+                            const styles = [
+                                { bg: 'bg-[#3D6B4F] text-white', tag: 'bg-brand-terracotta text-white', border: 'border-brand-cream' },
+                                { bg: 'bg-[#F7F3EC] text-primary', tag: 'bg-brand-terracotta text-white', border: 'border-brand-sand' },
+                                { bg: 'bg-[#3D6B4F] text-white', tag: 'bg-brand-terracotta text-white', border: 'border-brand-cream' }
+                            ];
+                            const style = styles[index % styles.length];
+                            
+                            return `
+                            <div class="${style.bg} p-8 pt-20 rounded-2xl relative group transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
+                                <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-32 h-32 organic-mask-${(index % 3) + 1} overflow-hidden shadow-lg border-2 ${style.border}">
+                                    <img alt="${artisan.user?.name}" class="w-full h-full object-cover" src="${artisan.coverImageUrl || 'https://via.placeholder.com/150'}">
+                                </div>
+                                <div class="mt-4 text-center">
+                                    <span class="inline-block ${style.tag} px-3 py-1 text-[10px] tracking-widest uppercase mb-4">${artisan.craft || 'Craft'} · ${artisan.location || 'Unknown'}</span>
+                                    <h3 class="font-headline-md text-2xl mb-4">${artisan.user?.name}</h3>
+                                    <div class="relative mb-6">
+                                        <span class="absolute -top-4 -left-2 text-4xl text-brand-terracotta font-serif opacity-50">“</span>
+                                        <p class="text-sm leading-relaxed italic opacity-90 px-4">${artisan.quote || artisan.bio || ''}</p>
+                                    </div>
+                                    <button onclick="followArtisan('${artisan.id}')" class="border border-current rounded-full px-6 py-2 text-[10px] tracking-widest uppercase hover:bg-current hover:text-surface transition-colors mb-8">Follow (<span id="count-${artisan.id}">${artisan.followerCount || 0}</span>)</button>
+                                    
+                                    <div class="grid grid-cols-4 gap-2 mt-auto">
+                                        ${(artisan.products || []).slice(0, 4).map(p => `
+                                            <div class="aspect-square bg-current/10 rounded overflow-hidden hover-zoom"><img class="w-full h-full object-cover transition-transform" alt="Product" src="${p.imageUrl}"></div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div onclick="window.location.href='./buyer-seller-profile.html?id=${artisan.id}'" class="absolute inset-0 bg-[#3D6B4F] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity rounded-2xl cursor-pointer">
+                                    <span class="text-brand-cream uppercase tracking-[0.3em] font-label-md">View Studio</span>
+                                    <span class="material-symbols-outlined text-brand-cream mt-4">arrow_forward</span>
+                                </div>
+                            </div>
+                            `;
+                        }).join('');
+                    }
+                })
+                .catch(err => console.error('Failed to fetch artisans:', err));
+        }
+
+        // Newsletter Form
+        const form = document.getElementById('newsletter-form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = e.target.querySelector('input').value;
+                fetch('/api/newsletter/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                }).then(res => res.json()).then(data => {
+                    if (data.success) {
+                        alert('Subscribed successfully!');
+                        e.target.reset();
+                    } else {
+                        alert('Subscription failed: ' + data.message);
+                    }
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+  initMobileBuyerTopBar();
+  initMobileBuyerNav('');
+</script>
+
+</body>
+</html>

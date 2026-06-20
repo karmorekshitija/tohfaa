@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa Seller Studio - Craft New Listing (Shipping)</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+
+    (async function verifySellerRole() {
+        const token = getTohfaToken();
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+        try {
+            const res = await fetch(`${window.location.origin}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Unverified');
+            const profile = await res.json();
+            const user = profile.data || profile;
+            if (user.role !== 'seller') {
+                window.location.href = './buyer-home.html';
+            }
+        } catch (e) {
+            window.location.href = '/auth/login.html';
+        }
+    })();
+    
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#3D6B4F',
+            parchment: '#F7F3EC',
+            sage: '#8FAF82',
+            violet: '#7B5EA7',
+            gold: '#C8973A',
+            offwhite: '#FCFAF7'
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    body {
+      background-color: #F7F3EC;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .step-line {
+      height: 2px;
+      background: #D1D5DB;
+      position: absolute;
+      top: 15px;
+      left: 0;
+      right: 0;
+      z-index: 0;
+    }
+    .step-line-active {
+      background: #3D6B4F;
+    }
+    /* Hide scrollbar for cleaner look */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Mobile Menu Transition */
+    #mobile-menu {
+      transition: transform 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body class="text-slate-800">
+<!-- BEGIN: Mobile Top Nav -->
+<header class="md:hidden sticky top-0 z-50 bg-parchment border-b border-forest/10 px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button aria-label="Open Menu" class="p-2 -ml-2" onclick="toggleMenu()">
+<svg class="h-6 w-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<span class="font-serif text-xl font-bold text-forest tracking-tight">Tohfa</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-forest font-medium text-sm">Save</button>
+<button class="bg-forest text-white px-4 py-2 rounded-full text-sm font-semibold">Continue</button>
+</div>
+</header>
+<!-- END: Mobile Top Nav -->
+<!-- BEGIN: Navigation Container -->
+<div class="flex min-h-screen">
+<!-- BEGIN: Desktop Sidebar -->
+<aside class="hidden md:flex flex-col w-64 bg-offwhite border-r border-forest/10 fixed h-full z-40" id="sidebar">
+<div class="p-6">
+<h1 class="font-serif text-2xl font-bold text-forest">Tohfa Studio</h1>
+</div>
+<nav class="flex-1 px-4 space-y-1 overflow-y-auto no-scrollbar">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Dashboard</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Catalog</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Orders</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Overflow</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Payments</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Analytics</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors" href="javascript:void(0)">Messages</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-forest/5 text-slate-600 transition-colors font-medium" href="javascript:void(0)">Reviews</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-forest/10 text-forest font-semibold" href="javascript:void(0)">Profile &amp; Settings</a>
+</nav>
+<div class="p-4 border-t border-forest/10 space-y-2">
+<button class="w-full text-left px-3 py-2 text-sm text-forest font-medium flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          View Store
+        </button>
+<button class="w-full text-left px-3 py-2 text-sm text-red-600 font-medium flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          Log Out
+        </button>
+</div>
+</aside>
+<!-- END: Desktop Sidebar -->
+<!-- BEGIN: Mobile Slide-in Menu -->
+<div class="md:hidden fixed inset-0 z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out" id="mobile-menu">
+<div class="absolute inset-0 bg-black/50" onclick="toggleMenu()"></div>
+<div class="relative w-72 h-full bg-offwhite flex flex-col">
+<div class="p-6 flex items-center justify-between border-b border-forest/10">
+<span class="font-serif text-xl font-bold text-forest">Tohfa Studio</span>
+<button class="p-2" onclick="toggleMenu()">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+</button>
+</div>
+<nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Dashboard</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Catalog</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Orders</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Overflow</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Payments</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Analytics</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Messages</a>
+<a class="block px-3 py-3 rounded-lg text-slate-700" href="javascript:void(0)">Reviews</a>
+<a class="block px-3 py-3 rounded-lg bg-forest/10 text-forest font-bold" href="javascript:void(0)">Profile &amp; Settings</a>
+</nav>
+<div class="p-4 border-t border-forest/10">
+<button class="w-full mb-3 text-left px-3 py-3 text-forest font-medium">View Store</button>
+<button class="w-full text-left px-3 py-3 text-red-600 font-medium">Log Out</button>
+</div>
+</div>
+</div>
+<!-- END: Mobile Slide-in Menu -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 md:ml-64 w-full min-h-screen">
+<!-- BEGIN: Content Header -->
+<div class="bg-offwhite border-b border-forest/10 p-4 md:px-8 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<button class="p-2 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors">
+<svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<div class="flex items-center gap-2">
+<span class="text-forest">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"></path></svg>
+</span>
+<h2 class="font-serif text-xl md:text-3xl text-forest font-semibold">Craft New Listing</h2>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-4">
+<button class="px-6 py-2 border border-forest/20 text-forest font-medium rounded-full hover:bg-forest/5">Save as Draft</button>
+<button class="px-8 py-2 bg-forest text-white font-bold rounded-full hover:bg-forest/90 flex items-center gap-2">
+            Continue 
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+</button>
+<button class="px-6 py-2 border border-red-200 text-red-600 font-medium rounded-full hover:bg-red-50">Discard Draft</button>
+</div>
+</div>
+<!-- END: Content Header -->
+<!-- BEGIN: Stepper Navigation -->
+<div class="max-w-4xl mx-auto py-8 px-4 overflow-x-auto no-scrollbar">
+<div class="flex justify-between items-center relative min-w-[600px]">
+<!-- Progress Lines -->
+<div class="absolute top-[18px] left-[5%] right-[5%] h-[2px] bg-slate-200 -z-10"></div>
+<div class="absolute top-[18px] left-[5%] w-[60%] h-[2px] bg-forest -z-10"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-9 h-9 rounded-full bg-forest text-white flex items-center justify-center border-4 border-parchment shadow-sm">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-mono">Photos</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-9 h-9 rounded-full bg-forest text-white flex items-center justify-center border-4 border-parchment shadow-sm">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-mono">Details</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-9 h-9 rounded-full bg-forest text-white flex items-center justify-center border-4 border-parchment shadow-sm">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-mono">Pricing</span>
+</div>
+<!-- Step 4 (Active) -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-11 h-11 rounded-full bg-forest text-white flex items-center justify-center border-4 border-white shadow-md">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="text-[10px] font-bold tracking-widest text-forest uppercase font-mono border-b-2 border-forest pb-1">Shipping</span>
+</div>
+<!-- Step 5 -->
+<div class="flex flex-col items-center gap-2 opacity-40">
+<div class="w-9 h-9 rounded-full bg-white text-slate-300 border-2 border-slate-200 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+</div>
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-mono">Preview</span>
+</div>
+<!-- Step 6 -->
+<div class="flex flex-col items-center gap-2 opacity-40">
+<div class="w-9 h-9 rounded-full bg-white text-slate-300 border-2 border-slate-200 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+</div>
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-mono">Publish</span>
+</div>
+</div>
+</div>
+<!-- END: Stepper Navigation -->
+<!-- BEGIN: Layout Content -->
+<div class="max-w-6xl mx-auto px-4 md:px-8 pb-20">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- BEGIN: Left Column Form -->
+<div class="lg:col-span-8 space-y-12">
+<!-- 01 Pickup Address -->
+<section data-purpose="pickup-address-section">
+<div class="flex items-center gap-3 mb-6">
+<span class="font-serif italic text-gold text-2xl">01</span>
+<h3 class="font-serif text-2xl text-forest font-semibold">Pickup Address</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Address Card 1 (Selected) -->
+<div class="relative p-6 bg-white border-2 border-forest rounded-2xl shadow-sm cursor-pointer ring-4 ring-forest/5">
+<div class="flex items-start gap-3">
+<div class="mt-1 w-5 h-5 rounded-full border-4 border-forest bg-white flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-forest"></div>
+</div>
+<div>
+<h4 class="font-bold text-forest text-lg mb-1">Kshitija's Studio</h4>
+<p class="text-slate-500 text-sm leading-relaxed">
+                        Plot No. 42, Viman Nagar, Pune, Maharashtra 411014, India
+                      </p>
+</div>
+</div>
+</div>
+<!-- Address Card 2 -->
+<div class="relative p-6 bg-white border border-slate-200 rounded-2xl shadow-sm cursor-pointer hover:border-forest/40 transition-colors">
+<div class="flex items-start gap-3">
+<div class="mt-1 w-5 h-5 rounded-full border-2 border-slate-300 bg-white"></div>
+<div>
+<h4 class="font-bold text-slate-700 text-lg mb-1">Tohfa Main Warehouse</h4>
+<p class="text-slate-500 text-sm leading-relaxed">
+                        Building B, Sector 4, Indiranagar, Bengaluru, Karnataka 560038, India
+                      </p>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-6 flex items-center gap-2 text-forest font-bold text-sm hover:underline">
+<span class="w-5 h-5 rounded-full border-2 border-forest flex items-center justify-center text-xs">+</span>
+                Add New Address
+              </button>
+</section>
+<!-- 02 Shipping Preferences -->
+<section data-purpose="shipping-preferences-section">
+<div class="flex items-center gap-3 mb-6">
+<span class="font-serif italic text-gold text-2xl">02</span>
+<h3 class="font-serif text-2xl text-forest font-semibold">Shipping Preferences</h3>
+</div>
+<div class="bg-white border border-slate-200 rounded-3xl p-6 md:p-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Dispatch Time -->
+<div class="space-y-2">
+<label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Estimated Dispatch Time</label>
+<div class="relative">
+<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option>3–5 days</option>
+<option>1–2 days</option>
+<option>Next day</option>
+<option>Within a week</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+<!-- Carrier Preference -->
+<div class="space-y-2">
+<label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Shipping Carrier Preference (Optional)</label>
+<div class="relative">
+<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option>No preference</option>
+<option>FedEx</option>
+<option>DHL</option>
+<option>BlueDart</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+<!-- Packaging Type -->
+<div class="space-y-2">
+<label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Packaging Type</label>
+<div class="relative">
+<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option>Standard</option>
+<option>Fragile / Premium</option>
+<option>Eco-friendly</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+<!-- Return Policy -->
+<div class="space-y-2">
+<label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Return Policy</label>
+<div class="relative">
+<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option>No Returns</option>
+<option>7-day window</option>
+<option>14-day window</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- END: Left Column Form -->
+<!-- BEGIN: Right Column Summary & Tips -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Shipping Summary Card -->
+<div class="bg-offwhite border border-forest/10 rounded-3xl overflow-hidden shadow-sm">
+<div class="bg-forest/5 px-6 py-4 border-b border-forest/10">
+<h4 class="text-[11px] font-bold text-forest uppercase tracking-[0.2em] font-mono">Shipping Summary</h4>
+</div>
+<div class="p-6 space-y-8">
+<!-- Stat 1 -->
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-parchment rounded-full flex items-center justify-center flex-shrink-0 border border-forest/5">
+<svg class="w-6 h-6 text-forest/70" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+</div>
+<div>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono block mb-1">Est. Dispatch</span>
+<p class="font-serif text-2xl text-slate-700">3–5 days</p>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-parchment rounded-full flex items-center justify-center flex-shrink-0 border border-forest/5">
+<svg class="w-6 h-6 text-forest/70" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+</div>
+<div>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono block mb-1">Carrier Preference</span>
+<p class="font-serif text-2xl text-slate-700">No preference</p>
+</div>
+</div>
+<div class="pt-6 border-t border-forest/10">
+<p class="text-sm text-slate-600">
+                    Pickup Address: <span class="font-bold text-forest">Kshitija's Studio</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Zai Tip Card -->
+<div class="bg-violet/5 border border-violet/10 rounded-3xl p-6 relative overflow-hidden group">
+<!-- Decorative Sparkle -->
+<div class="absolute -right-4 -top-4 text-violet/10 opacity-50 group-hover:scale-110 transition-transform">
+<svg class="w-24 h-24" fill="currentColor" viewbox="0 0 24 24"><path d="M12 1L9 9L1 12L9 15L12 23L15 15L23 12L15 9L12 1Z"></path></svg>
+</div>
+<div class="flex items-center gap-2 mb-4">
+<span class="text-violet">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+</span>
+<span class="font-bold text-[11px] text-violet uppercase tracking-widest font-mono">Zai Tip</span>
+</div>
+<p class="font-serif italic text-lg text-violet/80 leading-relaxed">
+                "Items with precise dimensions often see 15% fewer shipping disputes."
+               </p>
+<!-- Rabbit Mascot Placeholder - Logic follows image structure -->
+<div class="flex justify-end mt-4">
+<img alt="Mascot" class="w-16 h-16 rounded-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn-6-CDvo-diKxMsoyC8W2YCkFE7N_jAicOqH7WDWkeCxyBVYCSKzguNB68xAiFZ_FZW7TYb9FHaCnoj-BExNhPC3sCsOT7l9J_VXsrrZvxV0Rve3bQatrS664ELZENgpK_emXM6oTTMcYi3AQWFa7_U83AZAW83qPE5OHfFTz_U0-1HkfX6ylziJ89ngByfiI1x36uKxhdqZ-_i1FAC5W33xKPM0gxLHhSUUWs7q3zlUDhecf9gkiMzNYgkWWQCJP0_bbcxNa7w"/>
+</div>
+</div>
+</div>
+<!-- END: Right Column Summary & Tips -->
+</div>
+</div>
+<!-- END: Layout Content -->
+<!-- BEGIN: Mobile Bottom Bar -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex items-center justify-between z-50">
+<button class="text-forest font-bold px-4 py-3 h-11 flex items-center">Save Draft</button>
+<button class="bg-forest text-white font-bold px-8 py-3 rounded-full h-11 flex items-center shadow-lg shadow-forest/20">
+            Continue   →
+          </button>
+</div>
+<!-- END: Mobile Bottom Bar -->
+</main>
+<!-- END: Main Content Area -->
+</div>
+<!-- END: Navigation Container -->
+<!-- BEGIN: Logic Scripts -->
+<script data-purpose="event-handlers">
+    function toggleMenu() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu.classList.contains('-translate-x-full')) {
+        menu.classList.remove('-translate-x-full');
+        document.body.style.overflow = 'hidden';
+      } else {
+        menu.classList.add('-translate-x-full');
+        document.body.style.overflow = '';
+      }
+    }
+  </script>
+<!-- END: Logic Scripts -->
+</body></html>

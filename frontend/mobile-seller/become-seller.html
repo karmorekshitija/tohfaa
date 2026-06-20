@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Become a Seller | TOFA Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary": "#3D6B4F",
+            "secondary": "#49663f",
+            "tertiary": "#7B5EA7",
+            "background": "#FFFFFF",
+            "on-surface": "#1a1c1a",
+            "on-surface-variant": "#414942"
+          },
+          "fontFamily": {
+            "body": ["DM Sans"],
+            "heading": ["Playfair Display"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-white text-on-surface p-4">
+  <div class="max-w-md mx-auto space-y-8 py-8">
+    <div class="text-center">
+      <span class="material-symbols-outlined text-primary text-5xl">nature_people</span>
+      <h1 class="font-heading text-3xl font-bold text-primary mt-2">Become a Seller</h1>
+      <p class="font-body text-sm text-on-surface-variant mt-2">Open your artisan atelier in the night-market.</p>
+    </div>
+
+    <div class="bg-slate-50 p-6 rounded-2xl border border-secondary/20 space-y-6">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-secondary mb-1">Shop Display Name</label>
+          <input type="text" id="display-name" class="w-full px-3 py-2 border border-secondary/20 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary font-body" placeholder="e.g. Fern & Ivy Crafts">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-secondary mb-1">Shop Handle</label>
+          <input type="text" id="handle" class="w-full px-3 py-2 border border-secondary/20 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary font-body lowercase" placeholder="e.g. fern_ivy">
+          <p class="text-[10px] text-on-surface-variant mt-1">Lowercase, numbers, and underscores only.</p>
+        </div>
+      </div>
+
+      <button id="submit-btn" class="w-full bg-primary text-on-primary py-3 rounded-full font-body font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20">
+        Register Atelier &amp; Open Shop
+      </button>
+    </div>
+
+    <div class="text-center font-body text-xs text-on-surface-variant space-y-2">
+      <p>Already a seller? <a href="/mobile-seller/dashboard.html" class="text-primary underline">Go to Studio Dashboard</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = '/auth/login.html?next=/mobile-seller/become-seller.html';
+        return;
+      }
+
+      // Check if user is already a seller
+      fetch('/api/profile/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const user = data.data || data;
+        if (user.role === 'seller') {
+          window.location.href = '/mobile-seller/dashboard.html';
+        }
+      })
+      .catch(() => {});
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.addEventListener('click', () => {
+        const displayName = document.getElementById('display-name').value.trim();
+        const handle = document.getElementById('handle').value.trim();
+        if (!displayName || !handle) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Opening Shop...';
+
+        fetch('/api/seller/become', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ display_name: displayName, handle: handle, store_currency: 'INR' })
+        })
+        .then(res => {
+          if (res.status === 409) {
+            window.location.href = '/mobile-seller/dashboard.html';
+            return;
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data) {
+            if (data.success) {
+              window.location.href = '/mobile-seller/dashboard.html';
+            } else if (data.code === 'HANDLE_TAKEN') {
+              alert("This handle is taken, please try another");
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Register Atelier & Open Shop';
+            } else {
+              alert(data.message || "An error occurred");
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Register Atelier & Open Shop';
+            }
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Failed to submit request to server");
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Register Atelier & Open Shop';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
