@@ -11,153 +11,10 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-  <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .watercolor-bg {
-            background: radial-gradient(circle at 20% 30%, rgba(175, 208, 160, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(61, 107, 79, 0.1) 0%, transparent 50%);
-        }
-        .nav-drawer-transition {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        canvas#confetti {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-        .touch-target {
-            min-width: 44px;
-            min-height: 44px;
-        }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
+  <script src="/components/seller-components.js"></script>
+</head>
 <body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
-<!-- Mobile Top Taskbar -->
-<header class="md:hidden flex items-center justify-between px-margin-mobile py-stack-md w-full sticky top-0 bg-background/80 backdrop-blur-md z-[100] border-b border-outline-variant">
-<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary">Tohfa</h1>
-<button class="touch-target p-2 text-primary active:opacity-80 transition-opacity" id="menu-toggle">
-<span class="material-symbols-outlined text-[32px]">menu</span>
-</button>
-</header>
-<!-- Mobile Hamburger Menu (Drawer) -->
-<div class="fixed inset-0 z-[110] pointer-events-none" id="mobile-drawer">
-<div class="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 pointer-events-none" id="drawer-overlay"></div>
-<aside class="nav-drawer-transition absolute left-0 top-0 h-full w-[280px] bg-surface shadow-md -translate-x-full pointer-events-auto flex flex-col p-stack-md border-r border-outline-variant" id="drawer-panel">
-<div class="flex items-center gap-stack-md mb-stack-lg px-stack-md">
-<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-lg">TS</div>
-<div>
-<p class="font-bold text-on-surface">Tohfa Studio</p>
-<p class="text-xs text-on-surface-variant">Master Artisan</p>
-</div>
-</div>
-<nav class="flex-1 space-y-1">
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">dashboard</span>
-<span>Dashboard</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">inventory_2</span>
-<span>Catalog</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">shopping_bag</span>
-<span>Orders</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">more_horiz</span>
-<span>Overflow</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">payments</span>
-<span>Payments</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">analytics</span>
-<span>Analytics</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">forum</span>
-<span>Messages</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">reviews</span>
-<span>Reviews</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-3 rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">settings</span>
-<span>Profile &amp; Settings</span>
-</a>
-</nav>
-<div class="mt-auto border-t border-outline-variant pt-stack-md space-y-2">
-<button class="w-full text-left flex items-center gap-stack-md text-primary px-stack-md py-3 rounded-xl font-bold">
-<span class="material-symbols-outlined">visibility</span>
-<span>View store</span>
-</button>
-<button class="w-full text-left flex items-center gap-stack-md text-error px-stack-md py-3 rounded-xl">
-<span class="material-symbols-outlined">logout</span>
-<span>Log out</span>
-</button>
-</div>
-</aside>
-</div>
-<!-- Desktop Sidebar (Preserved) -->
-<aside class="hidden md:flex flex-col h-full w-[280px] fixed left-0 top-0 z-[100] bg-surface dark:bg-surface-dim border-r border-outline-variant p-stack-md shadow-md">
-<div class="flex items-center gap-stack-md mb-stack-lg px-stack-md">
-<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-lg">TS</div>
-<div>
-<p class="font-bold text-on-surface">Tohfa Studio</p>
-<p class="text-xs text-on-surface-variant">Master Artisan</p>
-<span class="text-[10px] text-primary bg-primary-fixed px-1 rounded">Verified Seller</span>
-</div>
-</div>
-<nav class="space-y-1">
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="font-body-md">Dashboard</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">inventory_2</span>
-<span class="font-body-md">Catalog</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">shopping_bag</span>
-<span class="font-body-md">Orders</span>
-</a>
-<a class="flex items-center gap-stack-md bg-secondary-container text-primary rounded-xl px-stack-md py-stack-sm font-bold" href="javascript:void(0)">
-<span class="material-symbols-outlined">movie</span>
-<span class="font-body-md">Reels</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">payments</span>
-<span class="font-body-md">Payments</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">analytics</span>
-<span class="font-body-md">Analytics</span>
-</a>
-<a class="flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all" href="javascript:void(0)">
-<span class="material-symbols-outlined">forum</span>
-<span class="font-body-md">Messages</span>
-</a>
-</nav>
-<div class="mt-auto pt-stack-md border-t border-outline-variant">
-<button class="w-full flex items-center gap-stack-md text-on-surface-variant px-stack-md py-stack-sm rounded-xl hover:bg-surface-container-high transition-all">
-<span class="material-symbols-outlined">settings</span>
-<span class="font-body-md">Settings</span>
-</button>
-</div>
-</aside>
+<seller-layout active-tab="reels">
 <!-- Main Content Area -->
 <main class="md:ml-[280px] min-h-screen relative overflow-hidden watercolor-bg flex items-center justify-center px-margin-mobile">
 <canvas id="confetti"></canvas>
@@ -236,32 +93,6 @@
             window.location.href = '/auth/login.html';
         }
     })();
-
-        // Drawer Logic
-        const menuToggle = document.getElementById('menu-toggle');
-        const drawerPanel = document.getElementById('drawer-panel');
-        const drawerOverlay = document.getElementById('drawer-overlay');
-        const mobileDrawer = document.getElementById('mobile-drawer');
-
-        function openMenu() {
-            mobileDrawer.classList.remove('pointer-events-none');
-            drawerOverlay.classList.remove('opacity-0', 'pointer-events-none');
-            drawerOverlay.classList.add('opacity-100');
-            drawerPanel.classList.remove('-translate-x-full');
-        }
-
-        function closeMenu() {
-            drawerPanel.classList.add('-translate-x-full');
-            drawerOverlay.classList.remove('opacity-100');
-            drawerOverlay.classList.add('opacity-0');
-            setTimeout(() => {
-                mobileDrawer.classList.add('pointer-events-none');
-                drawerOverlay.classList.add('pointer-events-none');
-            }, 300);
-        }
-
-        menuToggle.addEventListener('click', openMenu);
-        drawerOverlay.addEventListener('click', closeMenu);
 
         // Confetti Logic
         const canvas = document.getElementById('confetti');
@@ -347,4 +178,5 @@
             spawnConfetti();
         });
     </script>
+</seller-layout>
 </body></html>

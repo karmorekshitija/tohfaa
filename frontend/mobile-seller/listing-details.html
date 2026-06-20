@@ -12,150 +12,11 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-<!-- Google Fonts -->
-  <script>
-
-    function getTohfaToken() {
-        try {
-            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
-        } catch(e) {
-            return null;
-        }
-    }
-
-    (async function verifySellerRole() {
-        const token = getTohfaToken();
-        if (!token) {
-            window.location.href = '/auth/login.html';
-            return;
-        }
-        try {
-            const res = await fetch(`${window.location.origin}/api/profile/me`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Unverified');
-            const profile = await res.json();
-            const user = profile.data || profile;
-            if (user.role !== 'seller') {
-                window.location.href = '/mobile-buyer/profile.html';
-            }
-        } catch (e) {
-            window.location.href = '/auth/login.html';
-        }
-    })();
-
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: '#3D6B4F',
-            parchment: '#F7F3EC',
-            sage: '#8FAF82',
-            violet: '#7B5EA7',
-            gold: '#C8973A',
-          },
-          fontFamily: {
-            playfair: ['"Playfair Display"', 'serif'],
-            sans: ['"DM Sans"', 'sans-serif'],
-            mono: ['"Space Mono"', 'monospace'],
-          },
-        }
-      }
-    }
-  </script>
-<style data-purpose="custom-layout">
-    body {
-      background-color: #F7F3EC;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    /* Fixed bottom navigation space */
-    main {
-      padding-bottom: 100px;
-    }
-    .progress-line {
-      height: 1px;
-      background: #3D6B4F;
-      opacity: 0.3;
-      position: absolute;
-      top: 18px;
-      left: 0;
-      right: 0;
-      z-index: 0;
-    }
-    .drawer-transition {
-      transition: transform 0.3s ease-in-out;
-    }
-    .step-active {
-      border: 2px solid #3D6B4F;
-      color: #3D6B4F;
-    }
-    .step-completed {
-      background-color: #3D6B4F;
-      color: white;
-    }
-  </style>
+  <script src="/components/seller-components.js"></script>
 </head>
 <body class="bg-parchment text-forest">
-<!-- BEGIN: Navigation -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-parchment border-b border-forest/10 px-4 h-16 flex items-center justify-between">
-<div class="flex items-center gap-3">
-<button class="p-2 min-w-[44px] min-h-[44px]" data-purpose="hamburger-menu" id="menuBtn">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</button>
-<div class="flex items-center gap-2">
-<span class="text-2xl font-playfair font-bold">Tohfa</span>
-</div>
-</div>
-<div class="flex items-center">
-<button class="p-2 min-w-[44px] min-h-[44px]">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</button>
-</div>
-</nav>
-<!-- END: Navigation -->
-<!-- BEGIN: Sidebar Drawer -->
-<div class="fixed inset-0 z-[60] drawer-transition -translate-x-full" data-purpose="mobile-drawer" id="drawer">
-<div class="absolute inset-0 bg-black/50" id="drawerOverlay"></div>
-<div class="absolute left-0 top-0 bottom-0 w-3/4 max-w-sm bg-parchment p-6 overflow-y-auto">
-<div class="flex justify-between items-center mb-8">
-<span class="text-2xl font-playfair font-bold">Tohfa</span>
-<button class="p-2" id="closeDrawer">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</button>
-</div>
-<ul class="space-y-4 font-sans text-lg">
-<li><a class="block py-2" href="javascript:void(0)">Dashboard</a></li>
-<li><a class="block py-2 font-bold border-l-4 border-forest pl-3" href="javascript:void(0)">Catalog</a></li>
-<li><a class="block py-2" href="javascript:void(0)">Orders</a></li>
-<li><a class="block py-2" href="javascript:void(0)">Overflow</a></li>
-<li><a class="block py-2" href="javascript:void(0)">Payments</a></li>
-<li><a class="block py-2" href="javascript:void(0)">Analytics</a></li>
-<li><a class="block py-2" href="javascript:void(0)">Messages</a></li>
-<li><a class="block py-2" href="javascript:void(0)">Reviews</a></li>
-<li><a class="block py-2 border-t border-forest/10 pt-4" href="javascript:void(0)">Profile and settings</a></li>
-</ul>
-<div class="mt-8 space-y-4">
-<button class="w-full py-3 border border-forest rounded-full font-bold">View store</button>
-<button class="w-full py-3 text-red-600 font-bold">Log out</button>
-</div>
-</div>
-</div>
-<!-- END: Sidebar Drawer -->
-<main class="mt-16 px-4 py-6">
+<seller-layout active-tab="catalog">
+<main class="px-4 py-6">
 <!-- BEGIN: Header Section -->
 <section class="mb-8" data-purpose="listing-header">
 <div class="flex items-center gap-4 mb-4">
@@ -334,19 +195,5 @@
 </div>
 </footer>
 <!-- END: Footer Actions -->
-<!-- Scripts -->
-<script data-purpose="ui-handlers">
-    const menuBtn = document.getElementById('menuBtn');
-    const closeDrawer = document.getElementById('closeDrawer');
-    const drawer = document.getElementById('drawer');
-    const drawerOverlay = document.getElementById('drawerOverlay');
-
-    const toggleDrawer = () => {
-      drawer.classList.toggle('-translate-x-full');
-    };
-
-    menuBtn.addEventListener('click', toggleDrawer);
-    closeDrawer.addEventListener('click', toggleDrawer);
-    drawerOverlay.addEventListener('click', toggleDrawer);
-  </script>
+</seller-layout>
 </body></html>

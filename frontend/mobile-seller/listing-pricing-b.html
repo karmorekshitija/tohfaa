@@ -13,144 +13,11 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-<script>
-
-    function getTohfaToken() {
-        try {
-            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
-        } catch(e) {
-            return null;
-        }
-    }
-
-    (async function verifySellerRole() {
-        const token = getTohfaToken();
-        if (!token) {
-            window.location.href = '/auth/login.html';
-            return;
-        }
-        try {
-            const res = await fetch(`${window.location.origin}/api/profile/me`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Unverified');
-            const profile = await res.json();
-            const user = profile.data || profile;
-            if (user.role !== 'seller') {
-                window.location.href = '/mobile-buyer/profile.html';
-            }
-        } catch (e) {
-            window.location.href = '/auth/login.html';
-        }
-    })();
-
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: '#3D6B4F',
-            parchment: '#F7F3EC',
-            sage: '#8FAF82',
-            violet: '#7B5EA7',
-            gold: '#C8973A',
-            offwhite: '#FCFAF7'
-          },
-          fontFamily: {
-            serif: ['"Playfair Display"', 'serif'],
-            sans: ['"DM Sans"', 'sans-serif'],
-            mono: ['"Space Mono"', 'monospace'],
-          },
-        }
-      }
-    }
-  </script>
-<style data-purpose="custom-styling">
-    body {
-      background-color: #F7F3EC;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .step-active { color: #3D6B4F; border-bottom: 2px solid #3D6B4F; }
-    .step-inactive { color: #A0A0A0; }
-    .card { background-color: #FCFAF7; border: 1px solid #E5E1D8; border-radius: 12px; }
-    
-    /* Custom Scrollbar for side panel */
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
-
-    /* Touch target minimums */
-    button, input, select, .touch-target { min-height: 44px; }
-    
-    /* Animation for mobile menu */
-    #mobile-menu { transition: transform 0.3s ease-in-out; }
-    .menu-open { transform: translateX(0) !important; }
-  </style>
+  <script src="/components/seller-components.js"></script>
 </head>
 <body class="text-slate-800">
-<!-- BEGIN: Mobile Top Taskbar -->
-<header class="md:hidden fixed top-0 left-0 right-0 bg-forest text-parchment h-16 flex items-center justify-between px-4 z-50">
-<div class="flex items-center gap-2">
-<span class="font-serif text-xl font-bold tracking-tight">Tohfa</span>
-</div>
-<button aria-label="Open Menu" class="p-2 touch-target" id="menu-toggle">
-<svg class="h-8 w-8" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</button>
-</header>
-<!-- END: Mobile Top Taskbar -->
-<!-- BEGIN: Navigation Sidebars -->
-<!-- Desktop Sidebar -->
-<aside class="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 bg-forest text-parchment p-6 z-40">
-<div class="mb-10">
-<h1 class="font-serif text-3xl font-bold tracking-wide">Tohfa</h1>
-<p class="font-mono text-[10px] uppercase tracking-widest opacity-70">Seller Studio</p>
-</div>
-<nav class="flex-grow space-y-2">
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Dashboard</a>
-<a class="block py-2 px-3 rounded bg-white/10 font-bold border-l-4 border-gold" href="javascript:void(0)">Catalog</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Orders</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Overflow</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Payments</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Analytics</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Messages</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Reviews</a>
-<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="javascript:void(0)">Settings</a>
-</nav>
-<div class="mt-auto pt-6 border-t border-white/20 space-y-2">
-<a class="block py-2 px-3 hover:text-gold transition-colors" href="javascript:void(0)">View store</a>
-<a class="block py-2 px-3 opacity-70 hover:opacity-100 transition-colors" href="javascript:void(0)">Log out</a>
-</div>
-</aside>
-<!-- Mobile Slide-out Menu -->
-<div class="md:hidden fixed inset-0 bg-forest text-parchment z-[60] p-6 -translate-x-full transition-transform duration-300 overflow-y-auto" id="mobile-menu">
-<div class="flex justify-between items-center mb-8">
-<span class="font-serif text-2xl font-bold">Tohfa</span>
-<button class="p-2 touch-target" id="menu-close">
-<svg class="h-8 w-8" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</button>
-</div>
-<nav class="space-y-4 text-lg">
-<a class="block py-2" href="javascript:void(0)">Dashboard</a>
-<a class="block py-2 font-bold text-gold" href="javascript:void(0)">Catalog</a>
-<a class="block py-2" href="javascript:void(0)">Orders</a>
-<a class="block py-2" href="javascript:void(0)">Overflow</a>
-<a class="block py-2" href="javascript:void(0)">Payments</a>
-<a class="block py-2" href="javascript:void(0)">Analytics</a>
-<a class="block py-2" href="javascript:void(0)">Messages</a>
-<a class="block py-2" href="javascript:void(0)">Reviews</a>
-<a class="block py-2" href="javascript:void(0)">Settings</a>
-</nav>
-<div class="mt-12 pt-8 border-t border-white/20 space-y-4">
-<a class="block" href="javascript:void(0)">View store</a>
-<a class="block text-white/60" href="javascript:void(0)">Log out</a>
-</div>
-</div>
-<!-- END: Navigation Sidebars -->
-<!-- BEGIN: Main Content Area -->
-<main class="md:ml-64 pt-20 md:pt-8 pb-32 px-4 md:px-12 max-w-5xl">
+<seller-layout active-tab="catalog">
+<main class="pt-20 md:pt-8 pb-32 px-4 md:px-12 max-w-5xl">
 <!-- Header Section -->
 <header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
 <div class="flex items-center gap-4">
@@ -362,19 +229,5 @@
 </button>
 </footer>
 <!-- END: Fixed Mobile Action Buttons -->
-<script data-purpose="mobile-menu-handlers">
-    const menuToggle = document.getElementById('menu-toggle');
-    const menuClose = document.getElementById('menu-close');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    menuToggle.addEventListener('click', () => {
-      mobileMenu.classList.add('menu-open');
-      document.body.style.overflow = 'hidden';
-    });
-
-    menuClose.addEventListener('click', () => {
-      mobileMenu.classList.remove('menu-open');
-      document.body.style.overflow = 'auto';
-    });
-  </script>
+</seller-layout>
 </body></html>

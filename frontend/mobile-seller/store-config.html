@@ -13,19 +13,14 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-  
+  <script src="/components/seller-components.js"></script>
 </head>
 <body class="bg-white text-[#1A1A1A] font-body p-4 min-h-screen">
-  <!-- Header Navigation -->
-  <header class="flex items-center gap-4 mb-6">
-    <a href="/mobile-seller/dashboard.html" class="p-2 hover:bg-[#8FAF82]/10 rounded-full transition-colors flex items-center justify-center">
-      <span class="material-symbols-outlined text-primary text-3xl">arrow_back</span>
-    </a>
-    <div>
-      <h1 class="text-2xl font-heading font-bold text-primary">Store Settings</h1>
-      <p class="text-xs text-[#717972]">Configure delivery rules, vacation controls, and policies.</p>
-    </div>
-  </header>
+<seller-layout active-tab="profile">
+  <div class="mb-6">
+    <h1 class="text-2xl font-heading font-bold text-primary">Store Settings</h1>
+    <p class="text-xs text-[#717972]">Configure delivery rules, vacation controls, and policies.</p>
+  </div>
 
   <!-- Content Sections -->
   <div class="space-y-6">
@@ -153,5 +148,6 @@
       });
     });
   </script>
+</seller-layout>
 </body>
 </html>

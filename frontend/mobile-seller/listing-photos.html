@@ -13,124 +13,11 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-<script>
-
-    function getTohfaToken() {
-        try {
-            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
-        } catch(e) {
-            return null;
-        }
-    }
-
-    (async function verifySellerRole() {
-        const token = getTohfaToken();
-        if (!token) {
-            window.location.href = '/auth/login.html';
-            return;
-        }
-        try {
-            const res = await fetch(`${window.location.origin}/api/profile/me`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Unverified');
-            const profile = await res.json();
-            const user = profile.data || profile;
-            if (user.role !== 'seller') {
-                window.location.href = '/mobile-buyer/profile.html';
-            }
-        } catch (e) {
-            window.location.href = '/auth/login.html';
-        }
-    })();
-
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: '#3D6B4F',
-            parchment: '#F7F3EC',
-            sage: '#8FAF82',
-            violet: '#7B5EA7',
-            gold: '#C8973A',
-          },
-          fontFamily: {
-            serif: ['"Playfair Display"', 'serif'],
-            sans: ['"DM Sans"', 'sans-serif'],
-            mono: ['"Space Mono"', 'monospace'],
-          },
-        },
-      },
-    }
-  </script>
-<style data-purpose="custom-layouts">
-    body {
-      background-color: #F7F3EC;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .step-active {
-      color: #3D6B4F;
-      border-bottom: 2px solid #3D6B4F;
-    }
-    .check-list-item::before {
-      content: '✓';
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 1px solid #3D6B4F;
-      margin-right: 10px;
-      font-size: 10px;
-      font-weight: bold;
-    }
-    /* Hide scrollbar for mobile nav */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
+  <script src="/components/seller-components.js"></script>
 </head>
 <body class="min-h-screen pb-32">
-<!-- BEGIN: Mobile Navigation Header -->
-<header class="fixed top-0 left-0 right-0 h-14 bg-parchment border-b border-gray-200 z-50 flex items-center justify-between px-4 md:hidden" data-purpose="global-header">
-<div class="flex items-center gap-2">
-<span class="text-forest font-serif text-xl font-bold">Tohfa</span>
-</div>
-<button class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" id="menuToggle">
-<svg class="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</button>
-</header>
-<!-- END: Mobile Navigation Header -->
-<!-- BEGIN: Sidebar / Slide-out Panel -->
-<aside class="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-[60] transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col" id="sidePanel">
-<div class="p-6 border-b border-gray-100 hidden md:block">
-<span class="text-forest font-serif text-2xl font-bold">Tohfa</span>
-</div>
-<nav class="flex-1 overflow-y-auto p-4 space-y-1">
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Dashboard</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest bg-parchment font-bold border-l-4 border-forest" href="javascript:void(0)"><span>Catalog</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Orders</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Overflow</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Payments</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Analytics</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Messages</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Reviews</span></a>
-<a class="flex items-center gap-3 p-3 rounded-lg text-forest hover:bg-parchment" href="javascript:void(0)"><span>Profile &amp; Settings</span></a>
-</nav>
-<div class="p-4 border-t border-gray-100 space-y-2">
-<button class="w-full text-left p-3 text-forest font-medium hover:bg-parchment rounded-lg">View store</button>
-<button class="w-full text-left p-3 text-red-600 font-medium hover:bg-red-50 rounded-lg">Log out</button>
-</div>
-</aside>
-<!-- END: Sidebar / Slide-out Panel -->
-<!-- BEGIN: Main Content Area -->
-<main class="md:ml-64 pt-14 md:pt-0">
+<seller-layout active-tab="catalog">
+<main>
 <!-- Top Progress Header (Desktop Style) -->
 <div class="hidden md:flex items-center justify-between px-8 py-6 bg-parchment border-b border-gray-100">
 <div class="flex items-center gap-3">
@@ -259,19 +146,5 @@
 <button class="flex-1 min-h-[44px] border border-red-200 text-red-500 text-sm font-bold rounded-lg px-2">Discard</button>
 </footer>
 <!-- END: Mobile Fixed Footer -->
-<script data-purpose="sidebar-logic">
-    const menuToggle = document.getElementById('menuToggle');
-    const sidePanel = document.getElementById('sidePanel');
-    
-    menuToggle.addEventListener('click', () => {
-      sidePanel.classList.toggle('-translate-x-full');
-    });
-
-    // Close panel when clicking outside on mobile
-    document.addEventListener('click', (e) => {
-      if (!sidePanel.contains(e.target) && !menuToggle.contains(e.target) && window.innerWidth < 768) {
-        sidePanel.classList.add('-translate-x-full');
-      }
-    });
-  </script>
+</seller-layout>
 </body></html>
