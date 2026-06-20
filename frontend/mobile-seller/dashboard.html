@@ -34,16 +34,16 @@
 
         @media (max-width: 768px) {
             /* Stack dashboard header on mobile */
-            header.flex {
+            header.dashboard-header {
                 flex-direction: column !important;
                 align-items: flex-start !important;
                 gap: 16px !important;
             }
-            header.flex > div {
+            header.dashboard-header > div {
                 width: 100% !important;
                 text-align: left !important;
             }
-            header.flex > div.flex.items-center.gap-lg {
+            header.dashboard-header > div.flex.items-center.gap-lg {
                 flex-direction: row !important;
                 justify-content: space-between !important;
                 width: 100% !important;
@@ -202,7 +202,7 @@
 
 <seller-layout active-tab="home">
   <!-- Header -->
-  <header class="flex justify-between items-end mb-xl">
+  <header class="dashboard-header flex justify-between items-end mb-xl">
     <div>
       <h1 class="font-headline-lg text-on-background flex items-center gap-sm">
         Good morning, <span id="seller-display-name">—</span> <span class="text-tertiary">✦</span>
