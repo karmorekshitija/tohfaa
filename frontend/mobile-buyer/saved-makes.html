@@ -31,6 +31,7 @@
     }
     /* Product grids must be 2 columns */
     #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
+    #product-feed-grid, #sponsored-product-grid, #feed-skeletons, #makes-grid,
     .product-grid, .search-results-grid, .category-product-grid {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -131,6 +132,11 @@
       <img class="w-96 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFzy6Bk7lLfRfZkQLEHDhCi6P35UKR0jPZKGhebJtK4xHxoUu8JshgQiOLaAaacLPOGWoynaOqAkU3hq6ERTgjT2ndbqXVB6euDVW30ZxlIaag4woHRRu7TXmngVuLZ8JperE0DR7Gmm4NyYdcaY7kKkFdhAUQfcv1EpBeN1BfgIqGWrzR8g0FpV-VZWPQSdUlBjooGDx0yiWY-_fyVq8kfWmbtzDu-zq9xu9y_BV6t5COk24R7I7eYVkWHTmkX8JfCHxqhcbo3qE" alt="watermark" loading="lazy">
     </div>
     <div class="relative z-10">
+      <div class="flex items-center gap-2 mb-4 md:hidden">
+        <a class="w-9 h-9 rounded-full bg-[#F0EDE6] border border-[#c3c8c1] text-[#3D6B4F] flex items-center justify-center active:scale-90 transition-all" href="/mobile-buyer/profile.html">
+          <span class="material-symbols-outlined text-[20px] font-bold">chevron_left</span>
+        </a>
+      </div>
       <p class="font-label-caps text-label-caps text-secondary mb-xs">YOUR COLLECTION ✦</p>
       <div class="flex items-baseline gap-sm select-none">
         <h1 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
@@ -327,23 +333,32 @@
                 
                 grid.innerHTML = items.map(item => {
                     const imgUrl = item.image_url || 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=500&auto=format&fit=crop&q=60';
+                    const formattedPrice = `₹${(item.price_paise / 100).toLocaleString('en-IN')}`;
                     return `
-                        <div class="bg-[#F7F3EC] p-lg rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${item.product_id}'">
+                        <div class="bg-[#F7F3EC] p-4 rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${item.product_id}'">
                             <div>
-                                <div class="relative aspect-square overflow-hidden rounded-lg mb-md">
-                                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${imgUrl}" alt="${item.name}" loading="lazy">
-                                    <button class="absolute top-sm right-sm w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-primary hover:scale-110 transition-transform remove-wishlist-btn" data-id="${item.product_id}">
-                                        <span class="material-symbols-outlined active-heart text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imgUrl}" alt="${item.name}" loading="lazy">
+                                    <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 remove-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${item.product_id}" onclick="event.stopPropagation();">
+                                        <span class="material-symbols-outlined active-heart text-[20px] text-red-500 transition-all" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                     </button>
                                 </div>
-                                <div class="flex flex-col gap-xs mb-md">
-                                    <h3 class="font-lora text-title-serif text-on-background">${item.name}</h3>
-                                    <p class="font-data-price text-data-price text-on-tertiary-fixed-variant">₹${(item.price_paise / 100).toLocaleString('en-IN')}</p>
+                                <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1 text-left">
+                                    <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
+                                    <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                                        <span class="text-[#C8973A] font-bold">★</span>
+                                        <span class="font-semibold text-on-surface">${parseFloat(item.avg_rating || 0).toFixed(1)}</span>
+                                        <span>(${parseInt(item.review_count || 0, 10)})</span>
+                                    </div>
+                                    <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${item.name}</h4>
+                                    <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation();">By ${item.seller_name}</span>
                                 </div>
                             </div>
-                            <button class="w-full py-sm px-md border border-secondary text-secondary font-body-md text-body-md rounded-lg hover:bg-secondary hover:text-white transition-all active:scale-[0.98] add-to-cart-btn mt-auto ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" ${item.in_cart ? 'disabled' : ''}>
-                                ${item.in_cart ? 'Added ✦' : 'Add to cart'}
-                            </button>
+                            <div class="w-full mt-auto">
+                                <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" onclick="event.stopPropagation();" ${item.in_cart ? 'disabled' : ''}>
+                                    ${item.in_cart ? 'Added ✦' : 'Add to cart'}
+                                </button>
+                            </div>
                         </div>
                     `;
                 }).join('');

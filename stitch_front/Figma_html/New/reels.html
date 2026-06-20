@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<script defer="" src="/src/components/ReportWidget.js"></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa | Artisan Reels</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;600&amp;family=Cinzel:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#3D6B4F",
+                        "primary-container": "#8FAF82",
+                        "inverse-surface": "#343029",
+                        "secondary-fixed-dim": "#F7F3EC",
+                        "inverse-primary": "#8FAF82",
+                        "on-surface": "#1f1b15",
+                        "on-tertiary-fixed-variant": "#593d5d",
+                        "on-secondary-fixed-variant": "#484740",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#3D6B4F",
+                        "surface-tint": "#3D6B4F",
+                        "tertiary-fixed": "#7B5EA7",
+                        "tertiary-container": "#b492b7",
+                        "on-primary-fixed-variant": "#3D6B4F",
+                        "on-tertiary-container": "#452b4a",
+                        "inverse-on-surface": "#f8efe5",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#F7F3EC",
+                        "tertiary": "#7B5EA7",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#F7F3EC",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#444840",
+                        "outline": "#74786f",
+                        "tertiary-fixed-dim": "#dfbbe2",
+                        "on-error-container": "#3D6B4F",
+                        "secondary-container": "#F7F3EC",
+                        "secondary-fixed": "#F7F3EC",
+                        "primary-fixed-dim": "#8FAF82",
+                        "secondary": "#605e57",
+                        "on-secondary-fixed": "#1c1c16",
+                        "background": "#FFFFFF",
+                        "surface-dim": "#e1d9cf",
+                        "primary-fixed": "#8FAF82",
+                        "outline-variant": "#F7F3EC",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#f0e7dd",
+                        "surface-bright": "#FFFFFF",
+                        "on-primary-fixed": "#101f09",
+                        "on-background": "#1f1b15",
+                        "on-secondary-container": "#66645d",
+                        "surface-container": "#f6ece3",
+                        "on-primary-container": "#283920",
+                        "surface": "#FFFFFF",
+                        "surface-container-highest": "#F7F3EC",
+                        "error-container": "#F7F3EC",
+                        "on-tertiary-fixed": "#2a122f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "40px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Playfair Display"],
+                        "title-serif": ["Playfair Display"],
+                        "body-md": ["DM Sans"],
+                        "data-price": ["DM Sans"],
+                        "label-caps": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                        "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .scrim-warm {
+            background: linear-gradient(to top, rgba(30, 20, 10, 0.85) 0%, rgba(30, 20, 10, 0.3) 40%, transparent 70%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #F7F3EC;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #F7F3EC;
+        }
+        
+        @media (max-width: 767px) {
+            .mobile-screen-height {
+                height: calc(100dvh - 120px); /* 64px top + 56px bottom approx */
+            }
+        }
+
+        /* Double-tap heart animation styles */
+        .double-tap-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            color: rgba(239, 68, 68, 0.95);
+            pointer-events: none;
+            z-index: 40;
+            animation: heartFadeScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            font-variation-settings: 'FILL' 1;
+        }
+        @keyframes heartFadeScale {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            30% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.0);
+                opacity: 1;
+            }
+            80% {
+                transform: translate(-50%, -50%) scale(1.0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white font-body-md text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<!-- Standardised Top Navigation Bar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-4 md:px-margin-desktop h-16 md:h-20">
+<!-- Brand Logo -->
+<div class="flex items-center flex-1">
+<a class="font-['Playfair_Display'] text-[24px] md:text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+</a>
+</div>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center justify-center gap-xl h-full">
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-home.html">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-categories.html">
+<span class="material-symbols-outlined text-[20px]">category</span>
+<span>Category</span>
+</a>
+<a class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-reels.html">
+<span class="material-symbols-outlined text-[20px]">movie</span>
+<span>Reels</span>
+</a>
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-profile.html">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span>Profile</span>
+</a>
+</nav>
+<!-- Right side items (Icons only on mobile) -->
+<div class="flex items-center justify-end flex-1 gap-2 md:gap-lg">
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center" href="./buyer-categories.html">
+<span class="material-symbols-outlined text-[22px] md:text-[24px]">search</span>
+</a>
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative" href="./buyer-saved-makes.html">
+<span class="material-symbols-outlined text-primary text-[22px] md:text-[24px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="absolute top-1 right-1 bg-[#C8973A] text-white text-[9px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold hidden" id="nav-wishlist-badge">0</span>
+</a>
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative" href="./buyer-cart.html">
+<span class="material-symbols-outlined text-[22px] md:text-[24px]">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-[#C8973A] text-white text-[9px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold hidden" id="nav-cart-badge">0</span>
+</a>
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative" href="./buyer-notifications.html">
+<span class="material-symbols-outlined text-[22px] md:text-[24px]">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-[#C8973A] rounded-full hidden" id="nav-notif-badge"></span>
+</a>
+<div class="hidden md:flex items-center gap-md ml-4" id="auth-buttons-container"></div>
+</div>
+</header>
+<!-- Main Reels Content -->
+<main class="min-h-[calc(100vh-120px)] flex flex-col items-center md:pt-8 md:pb-xl bg-black md:bg-white overflow-hidden">
+<div class="relative w-full md:max-w-[500px] h-[calc(100dvh-120px)] md:aspect-[9/16] md:h-auto bg-surface-container-low md:rounded-[20px] overflow-hidden md:shadow-[0_12px_40px_-12px_rgba(58,51,40,0.15)] group">
+<!-- Main Video Player -->
+<div class="relative w-full h-full cursor-pointer" id="video-container">
+<div class="absolute inset-0 flex flex-col items-center justify-center bg-[#F7F3EC]/40 text-primary p-lg hidden" id="no-reels-placeholder">
+<span class="material-symbols-outlined text-5xl mb-md">movie_filter</span>
+<p class="font-title-serif text-lg font-bold text-center">No artisan reels active</p>
+<p class="font-body-md text-sm text-outline text-center mt-xs">Check back later for beautiful handmade curations.</p>
+</div>
+<video autoplay="" class="w-full h-full object-cover" id="reel-video" loop="" muted="" playsinline=""></video>
+<!-- Custom Play/Pause Overlay -->
+<div class="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 pointer-events-none transition-opacity duration-200" id="play-overlay">
+<span class="material-symbols-outlined text-white text-6xl font-light" id="play-overlay-icon">play_arrow</span>
+</div>
+<!-- Volume Overlay -->
+<button class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors" id="volume-toggle-btn">
+<span class="material-symbols-outlined text-[20px]" id="volume-icon">volume_off</span>
+</button>
+</div>
+<!-- Bottom Scrim Overlay -->
+<div class="absolute inset-0 scrim-warm flex flex-col justify-end p-md md:p-lg pointer-events-none pb-16 md:pb-lg">
+<div class="pointer-events-auto flex flex-col w-full">
+<!-- Product CTA -->
+<div class="mb-md md:mb-lg translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 md:opacity-100 md:translate-y-0 transition-all duration-300" id="product-cta-container">
+<a class="bg-primary hover:bg-[#3D6B4F] text-white px-md py-sm rounded-full flex items-center gap-sm shadow-lg transition-transform active:scale-95 inline-flex" href="#" id="product-cta-link">
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
+<img alt="Product thumbnail" class="w-full h-full object-cover" id="product-img" src=""/>
+</div>
+<span class="font-body-md text-sm font-bold flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+<span id="product-name">View Product</span>
+</span>
+<span class="mx-xs opacity-40">|</span>
+<span class="font-data-price text-sm" id="product-price">₹0</span>
+<span class="material-symbols-outlined text-[18px] ml-xs cursor-pointer select-none hover:scale-125 transition-transform hidden" id="multiple-products-chevron" title="Show all products">expand_less</span>
+</a>
+</div>
+<!-- Info Section -->
+<div class="flex flex-col gap-xs md:gap-sm select-none">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold text-xs overflow-hidden flex-shrink-0 border border-white/20 cursor-pointer hover:scale-105 hover:border-white/50 transition-all" id="seller-avatar-wrapper">
+<span id="seller-avatar-letter">S</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-title-serif text-white text-base md:text-lg font-bold cursor-pointer hover:underline transition-all" id="seller-name">Midnight Lily Ceramics</h3>
+<button class="mt-xs bg-white/20 backdrop-blur-md text-white px-2 py-0.5 md:px-md md:py-1 rounded-full text-[10px] md:text-xs font-bold border border-white/30 hover:bg-white/30 transition-all active:scale-95 inline-block w-fit" id="follow-btn">
+    + Follow
+  </button>
+</div>
+</div>
+<p class="font-body-md text-white/90 text-xs md:text-sm max-w-[90%] md:max-w-[80%] leading-relaxed line-clamp-2 hover:line-clamp-none transition-all cursor-pointer mt-sm md:mt-0" id="reel-caption">
+                        Creating tiny bees for tiny people 🐝... Every wing is stitched with intention in our studio.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Right Action Rail -->
+<div class="absolute right-4 bottom-[20%] md:right-md md:bottom-1/4 flex flex-col gap-6 md:gap-lg items-center z-10">
+<div class="flex flex-col items-center gap-1">
+<button class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform" id="like-btn">
+<span class="material-symbols-outlined text-[24px] md:text-[24px]" id="like-icon">favorite</span>
+</button>
+<span class="font-data-price text-[11px] md:text-xs text-white drop-shadow-md" id="like-count">0</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<button class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform" id="comment-btn">
+<span class="material-symbols-outlined text-[24px] md:text-[24px]">chat_bubble</span>
+</button>
+<span class="font-data-price text-[11px] md:text-xs text-white drop-shadow-md" id="comment-count">0</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<button class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform" id="save-btn">
+<span class="material-symbols-outlined text-[24px] md:text-[24px]" id="save-icon">bookmark</span>
+</button>
+<span class="font-data-price text-[11px] md:text-xs text-white drop-shadow-md" id="save-count">0</span>
+</div>
+<button class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-low/80 backdrop-blur-md flex items-center justify-center text-primary shadow-md hover:scale-110 active:scale-90 transition-transform" id="share-btn">
+<span class="material-symbols-outlined text-[24px] md:text-[24px]">share</span>
+</button>
+</div>
+<!-- Progress Bar -->
+<div class="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-10">
+<div class="h-full bg-primary transition-all duration-100 ease-linear" id="progress-bar" style="width: 0%;"></div>
+</div>
+<!-- Comments Drawer -->
+<div class="absolute bottom-0 left-0 w-full h-[75%] bg-white rounded-t-[24px] shadow-2xl flex flex-col z-30 transform translate-y-full transition-transform duration-300 ease-in-out font-['DM_Sans']" id="comments-drawer">
+<div class="w-12 h-1 bg-outline-variant/60 rounded-full mx-auto my-3 cursor-pointer" id="comments-notch"></div>
+<div class="px-md pb-md border-b border-outline-variant flex justify-between items-center select-none">
+<h3 class="font-title-serif text-primary text-xl font-bold font-['Playfair_Display']">
+      Comments <span class="text-sm font-normal font-sans text-secondary pl-1" id="comments-title-count">0</span>
+</h3>
+<button class="text-secondary hover:text-error transition-all p-1 hover:bg-[#8FAF82]/20 rounded-full flex items-center justify-center" id="close-comments-btn">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex-grow overflow-y-auto px-md py-sm space-y-md custom-scrollbar" id="comments-list"></div>
+<div class="border-t border-outline-variant bg-[#F7F3EC]">
+<div class="px-md py-sm flex items-center gap-md overflow-x-auto select-none scrollbar-hide" id="emoji-reactions-row" style="scrollbar-width:none; -ms-overflow-style:none;">
+<span class="text-xs text-outline mr-xs font-medium whitespace-nowrap">React:</span>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('❤️')">❤️</button>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('🔥')">🔥</button>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('✨')">✨</button>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('🙌')">🙌</button>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('👏')">👏</button>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('😍')">😍</button>
+<button class="text-2xl md:text-3xl hover:scale-125 transition-transform cursor-pointer select-none flex-shrink-0" onclick="appendEmoji('🥰')">🥰</button>
+</div>
+<div class="px-md pb-md flex items-start gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden border border-outline-variant mt-1" id="user-avatar-circle">
+<span id="user-avatar-letter">U</span>
+</div>
+<div class="flex-grow flex flex-col gap-xs">
+<textarea class="w-full bg-[#F7F3EC] rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none placeholder:text-outline/70" id="comment-input" maxlength="300" placeholder="Add a comment..." rows="2"></textarea>
+<div class="flex items-center justify-between mt-1">
+<span class="text-xs text-outline font-sans" id="char-counter">0/300</span>
+<button class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-1.5 rounded-full text-xs font-bold flex items-center gap-xs shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled="" id="send-comment-btn">
+<span>Send</span>
+<span class="material-symbols-outlined text-[14px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Products Tray -->
+<div class="absolute bottom-0 left-0 w-full bg-[#F7F3EC] border-t border-[#8FAF82] rounded-t-2xl shadow-2xl z-30 transform translate-y-full transition-transform duration-300 ease-in-out flex flex-col max-h-[50%] pointer-events-auto" id="products-tray">
+<div class="px-md py-sm flex items-center justify-between border-b border-[#8FAF82]/50 bg-[#F7F3EC]/30">
+<span class="text-xs font-label-caps text-[#3D6B4F] tracking-widest uppercase font-bold">Tagged Products</span>
+<button class="p-xs hover:bg-[#F7F3EC] rounded-full transition-colors flex items-center justify-center" id="close-tray-btn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex-grow overflow-y-auto p-md space-y-sm custom-scrollbar max-h-[240px]" id="products-tray-list"></div>
+</div>
+</div>
+<!-- Desktop-only Navigation Arrows -->
+<div class="fixed right-margin-desktop top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-lg">
+<button class="p-md rounded-full bg-surface-container-low border border-sage hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 duration-100" id="btn-prev">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+<button class="p-md rounded-full bg-surface-container-low border border-sage hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95 duration-100" id="btn-next">
+<span class="material-symbols-outlined">arrow_downward</span>
+</button>
+</div>
+</main>
+<!-- Mobile Bottom Navigation Bar -->
+<footer class="md:hidden fixed bottom-0 left-0 w-full bg-[#F7F3EC] border-t border-[#8FAF82] flex justify-around items-center h-14 z-50 px-4">
+<a class="flex flex-col items-center gap-0.5 text-[#414942] active:text-[#3D6B4F]" href="./buyer-home.html">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-bold uppercase tracking-wider font-['DM_Sans']">Home</span>
+</a>
+<a class="flex flex-col items-center gap-0.5 text-[#414942] active:text-[#3D6B4F]" href="./buyer-categories.html">
+<span class="material-symbols-outlined text-[24px]">category</span>
+<span class="text-[10px] font-bold uppercase tracking-wider font-['DM_Sans']">Category</span>
+</a>
+<a class="flex flex-col items-center gap-0.5 text-[#3D6B4F]" href="./buyer-reels.html">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">movie</span>
+<span class="text-[10px] font-bold uppercase tracking-wider font-['DM_Sans']">Reel</span>
+</a>
+<a class="flex flex-col items-center gap-0.5 text-[#414942] active:text-[#3D6B4F]" href="./buyer-profile.html">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-bold uppercase tracking-wider font-['DM_Sans']">Profile</span>
+</a>
+</footer>
+<script type="module">
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token;
+        } catch(e) {
+            return null;
+        }
+    }
+
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+    import { initCategoryDrawer } from '/src/components/CategoryDrawer.js';
+    import Toast from '/src/components/Toast.js';
+    import { initSearchOverlay } from '/buyer/searchOverlay.js';
+
+    const MOCK_REELS = [
+      {
+        id: "mock-reel-pottery",
+        video_url: "https://assets.mixkit.co/videos/preview/mixkit-hand-pottery-wheel-firing-clay-41560-large.mp4",
+        thumbnail_url: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?q=80&w=600&auto=format&fit=crop",
+        caption: "Crafting beautiful earthy terracotta pots on the pottery wheel. #pottery #ceramics #handmade #craft",
+        like_count: 128,
+        comment_count: 24,
+        save_count: 42,
+        is_liked: false,
+        is_saved: false,
+        seller: {
+          id: "mock-seller-pottery",
+          seller_name: "Clay Alchemy",
+          avatar_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150&auto=format&fit=crop"
+        },
+        linked_product: {
+          id: "mock-prod-pottery",
+          name: "Hand-thrown Clay Vase",
+          price_paise: 120000
+        }
+      },
+      {
+        id: "mock-reel-weaving",
+        video_url: "https://assets.mixkit.co/videos/preview/mixkit-weaving-on-a-wooden-loom-41566-large.mp4",
+        thumbnail_url: "https://images.unsplash.com/photo-1590736969955-71cb94801759?q=80&w=600&auto=format&fit=crop",
+        caption: "Rhythmic weaving on our antique wooden loom. Made from organic hand-dyed wool. #weaving #tapestry #slowcraft #loom",
+        like_count: 84,
+        comment_count: 9,
+        save_count: 16,
+        is_liked: false,
+        is_saved: false,
+        seller: {
+          id: "mock-seller-weaving",
+          seller_name: "Heritage Loom",
+          avatar_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150&auto=format&fit=crop"
+        },
+        linked_product: {
+          id: "mock-prod-weaving",
+          name: "Organic Woolen Tapestry",
+          price_paise: 350000
+        }
+      },
+      {
+        id: "mock-reel-candles",
+        video_url: "https://assets.mixkit.co/videos/preview/mixkit-pouring-melted-wax-into-candle-molds-41568-large.mp4",
+        thumbnail_url: "https://images.unsplash.com/photo-1603006905003-be475563bc59?q=80&w=600&auto=format&fit=crop",
+        caption: "Pouring hand-poured beeswax scented candles. Lavender and honey notes. #candlemaking #beeswax #essentialoils #ambience",
+        like_count: 312,
+        comment_count: 45,
+        save_count: 98,
+        is_liked: false,
+        is_saved: false,
+        seller: {
+          id: "mock-seller-candles",
+          seller_name: "Aura Candle Lab",
+          avatar_url: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=150&auto=format&fit=crop"
+        },
+        linked_product: {
+          id: "mock-prod-candles",
+          name: "Premium Beeswax Lavender Candle",
+          price_paise: 69900
+        }
+      }
+    ];
+
+    let reelsList = [];
+    let currentIndex = 0;
+    let commentsList = [];
+    let currentReelId = null;
+    let isMuted = true;
+    let isLoadingFeed = false;
+    let nextCursor = null;
+    let hasMore = false;
+
+    // Elements
+    const videoEl = document.getElementById('reel-video');
+    const videoContainer = document.getElementById('video-container');
+    const playOverlay = document.getElementById('play-overlay');
+    const playOverlayIcon = document.getElementById('play-overlay-icon');
+    const volumeToggleBtn = document.getElementById('volume-toggle-btn');
+    const volumeIcon = document.getElementById('volume-icon');
+    const progressBar = document.getElementById('progress-bar');
+    const noReelsPlaceholder = document.getElementById('no-reels-placeholder');
+
+    const sellerAvatarLetter = document.getElementById('seller-avatar-letter');
+    const sellerAvatarWrapper = document.getElementById('seller-avatar-wrapper');
+    const sellerNameEl = document.getElementById('seller-name');
+    const followBtn = document.getElementById('follow-btn');
+    const reelCaptionEl = document.getElementById('reel-caption');
+
+    const productCtaContainer = document.getElementById('product-cta-container');
+    const productCtaLink = document.getElementById('product-cta-link');
+    const productImg = document.getElementById('product-img');
+    const productNameEl = document.getElementById('product-name');
+    const productPriceEl = document.getElementById('product-price');
+    const multipleProductsChevron = document.getElementById('multiple-products-chevron');
+    const productsTray = document.getElementById('products-tray');
+    const closeTrayBtn = document.getElementById('close-tray-btn');
+    const productsTrayList = document.getElementById('products-tray-list');
+
+    const likeBtn = document.getElementById('like-btn');
+    const likeIcon = document.getElementById('like-icon');
+    const likeCountEl = document.getElementById('like-count');
+
+    const commentBtn = document.getElementById('comment-btn');
+    const commentCountEl = document.getElementById('comment-count');
+
+    const saveBtn = document.getElementById('save-btn');
+    const saveIcon = document.getElementById('save-icon');
+    const saveCountEl = document.getElementById('save-count');
+
+    const shareBtn = document.getElementById('share-btn');
+
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    // Comments Overlay Elements
+    const commentsDrawer = document.getElementById('comments-drawer');
+    const commentsTitleCount = document.getElementById('comments-title-count');
+    const closeCommentsBtn = document.getElementById('close-comments-btn');
+    const commentsListEl = document.getElementById('comments-list');
+    const userAvatarLetter = document.getElementById('user-avatar-letter');
+    const userAvatarCircle = document.getElementById('user-avatar-circle');
+    const commentInput = document.getElementById('comment-input');
+    const charCounter = document.getElementById('char-counter');
+    const sendCommentBtn = document.getElementById('send-comment-btn');
+    const commentsNotch = document.getElementById('comments-notch');
+
+    const COLORS = ['#3D6B4F', '#7B5EA7', '#593d5d', '#b492b7', '#8FAF82', '#605e57', '#C8973A'];
+
+    // Helper functions
+    function getInitials(name) {
+      if (!name) return 'U';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length > 1) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      return parts[0][0].toUpperCase();
+    }
+
+    function getAvatarColor(name) {
+      if (!name) return COLORS[0];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      return COLORS[Math.abs(hash) % COLORS.length];
+    }
+
+    function formatCount(num) {
+      if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+      return num;
+    }
+
+    // Initialize Page
+    async function initPage() {
+      try { initCategoryDrawer(); } catch(e) {}
+      initSearchOverlay();
+      updateCurrentUserAvatar();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      let targetReelId = urlParams.get('id');
+
+      await fetchFeed(targetReelId);
+      setupEvents();
+    }
+
+    async function fetchFeed(targetReelId = null) {
+      if (isLoadingFeed) return;
+      isLoadingFeed = true;
+      reelsList = [...MOCK_REELS];
+      try {
+        const res = await apiClient.get('/reels/feed');
+        if (res.data?.success) {
+          const apiReels = res.data.data.reels || [];
+          if (apiReels.length > 0) reelsList = [...apiReels, ...MOCK_REELS];
+        }
+      } catch (err) {}
+      
+      currentIndex = 0;
+      if (targetReelId) {
+        const targetIndex = reelsList.findIndex(r => r.id == targetReelId);
+        if (targetIndex !== -1) currentIndex = targetIndex;
+      }
+      renderActiveReel();
+      isLoadingFeed = false;
+    }
+
+    function updateCurrentUserAvatar() {
+      const userStr = sessionStorage.getItem('tohfa_user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          const name = user.display_name || user.full_name || 'Artisan User';
+          const initials = getInitials(name);
+          const bgCol = getAvatarColor(name);
+          userAvatarLetter.textContent = initials;
+          userAvatarCircle.style.backgroundColor = bgCol;
+          if (user.avatar_url) userAvatarCircle.innerHTML = `<img src="${user.avatar_url}" class="w-full h-full object-cover" />`;
+        } catch (e) {}
+      }
+    }
+
+    function renderActiveReel() {
+      if (reelsList.length === 0) return;
+      const reel = reelsList[currentIndex];
+      currentReelId = reel.id;
+      videoEl.src = reel.video_url;
+      videoEl.muted = isMuted;
+      videoEl.play().catch(() => {});
+      volumeIcon.textContent = isMuted ? 'volume_off' : 'volume_up';
+      sellerNameEl.textContent = reel.seller.seller_name || 'Artisan Make';
+      reelCaptionEl.textContent = reel.caption || '';
+      const initials = getInitials(reel.seller.seller_name);
+      sellerAvatarLetter.textContent = initials;
+      sellerAvatarWrapper.style.backgroundColor = getAvatarColor(reel.seller.seller_name);
+      if (reel.seller.avatar_url) sellerAvatarWrapper.innerHTML = `<img src="${reel.seller.avatar_url}" class="w-full h-full object-cover" />`;
+      updateFollowUI(reel.seller.is_followed);
+      if (reel.linked_product) {
+        productCtaContainer.classList.remove('hidden');
+        productCtaLink.href = `./buyer-product.html?id=${reel.linked_product.id}`;
+        productNameEl.textContent = reel.linked_product.name;
+        productPriceEl.textContent = `₹${(reel.linked_product.price_paise || 0) / 100}`;
+        productImg.src = reel.thumbnail_url || '';
+        if (reel.linked_products?.length > 1) {
+          multipleProductsChevron.classList.remove('hidden');
+          renderProductsTray(reel.linked_products);
+        } else multipleProductsChevron.classList.add('hidden');
+      } else productCtaContainer.classList.add('hidden');
+      updateLikeUI(reel.is_liked, reel.like_count);
+      updateSaveUI(reel.is_saved, reel.save_count);
+      commentCountEl.textContent = formatCount(reel.comment_count || 0);
+      progressBar.style.width = '0%';
+    }
+
+    function updateFollowUI(isFollowed) {
+      if (isFollowed) {
+        followBtn.textContent = 'Following';
+        followBtn.classList.replace('bg-white/20', 'bg-primary/55');
+      } else {
+        followBtn.textContent = '+ Follow';
+        followBtn.classList.replace('bg-primary/55', 'bg-white/20');
+      }
+    }
+
+    function updateLikeUI(isLiked, count) {
+      likeCountEl.textContent = formatCount(count || 0);
+      likeIcon.style.color = isLiked ? '#ef4444' : '';
+      likeBtn.style.color = isLiked ? '#ef4444' : '#3D6B4F';
+      likeIcon.style.fontVariationSettings = `'FILL' ${isLiked ? 1 : 0}`;
+    }
+
+    function updateSaveUI(isSaved, count) {
+      saveCountEl.textContent = formatCount(count || 0);
+      saveBtn.style.color = isSaved ? '#C8973A' : '#3D6B4F';
+      saveIcon.style.fontVariationSettings = `'FILL' ${isSaved ? 1 : 0}`;
+    }
+
+    window.appendEmoji = function(emoji) {
+      const input = document.getElementById('comment-input');
+      input.value += emoji;
+      input.dispatchEvent(new Event('input'));
+    };
+
+    function handleDoubleTapLike() {
+      const heart = document.createElement('span');
+      heart.className = 'material-symbols-outlined double-tap-heart';
+      heart.innerText = 'favorite';
+      videoContainer.appendChild(heart);
+      setTimeout(() => heart.remove(), 800);
+      const activeReel = reelsList[currentIndex];
+      if (!activeReel.is_liked) {
+        activeReel.is_liked = true;
+        activeReel.like_count++;
+        updateLikeUI(true, activeReel.like_count);
+      }
+    }
+
+    function setupEvents() {
+      let lastTap = 0;
+      videoEl.addEventListener('click', () => {
+        const now = Date.now();
+        if (now - lastTap < 300) handleDoubleTapLike();
+        else setTimeout(() => { if (Date.now() - lastTap >= 300) togglePlay(); }, 300);
+        lastTap = now;
+      });
+
+      volumeToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isMuted = !isMuted;
+        videoEl.muted = isMuted;
+        volumeIcon.textContent = isMuted ? 'volume_off' : 'volume_up';
+      });
+
+      videoEl.addEventListener('timeupdate', () => {
+        if (videoEl.duration) progressBar.style.width = `${(videoEl.currentTime / videoEl.duration) * 100}%`;
+      });
+
+      likeBtn.addEventListener('click', () => {
+        const reel = reelsList[currentIndex];
+        reel.is_liked = !reel.is_liked;
+        reel.like_count += reel.is_liked ? 1 : -1;
+        updateLikeUI(reel.is_liked, reel.like_count);
+      });
+
+      saveBtn.addEventListener('click', () => {
+        const reel = reelsList[currentIndex];
+        reel.is_saved = !reel.is_saved;
+        reel.save_count += reel.is_saved ? 1 : -1;
+        updateSaveUI(reel.is_saved, reel.save_count);
+      });
+
+      commentBtn.addEventListener('click', openCommentsDrawer);
+      closeCommentsBtn.addEventListener('click', closeCommentsDrawer);
+      commentsNotch.addEventListener('click', closeCommentsDrawer);
+      
+      multipleProductsChevron.addEventListener('click', e => { e.preventDefault(); toggleProductsTray(); });
+      closeTrayBtn.addEventListener('click', closeProductsTray);
+
+      if (btnPrev) btnPrev.addEventListener('click', () => navigateFeed(-1));
+      if (btnNext) btnNext.addEventListener('click', () => navigateFeed(1));
+
+      // Simple vertical swipe detection for mobile
+      let touchStartY = 0;
+      videoContainer.addEventListener('touchstart', e => touchStartY = e.touches[0].clientY);
+      videoContainer.addEventListener('touchend', e => {
+        const touchEndY = e.changedTouches[0].clientY;
+        if (touchStartY - touchEndY > 50) navigateFeed(1);
+        else if (touchEndY - touchStartY > 50) navigateFeed(-1);
+      });
+
+      commentInput.addEventListener('input', () => {
+        const len = commentInput.value.length;
+        charCounter.textContent = `${len}/300`;
+        sendCommentBtn.disabled = len === 0;
+      });
+    }
+
+    function togglePlay() {
+      if (videoEl.paused) { videoEl.play(); playOverlay.style.opacity = '0'; }
+      else { videoEl.pause(); playOverlay.style.opacity = '1'; }
+    }
+
+    function navigateFeed(dir) {
+      if (reelsList.length === 0) return;
+      closeCommentsDrawer();
+      closeProductsTray();
+      const nextIndex = currentIndex + dir;
+      if (nextIndex >= 0 && nextIndex < reelsList.length) {
+        currentIndex = nextIndex;
+        renderActiveReel();
+      }
+    }
+
+    function openCommentsDrawer() { commentsDrawer.classList.remove('translate-y-full'); loadComments(); }
+    function closeCommentsDrawer() { commentsDrawer.classList.add('translate-y-full'); }
+    function closeProductsTray() { productsTray.classList.add('translate-y-full'); }
+    function toggleProductsTray() { productsTray.classList.toggle('translate-y-full'); }
+
+    async function loadComments() {
+      commentsListEl.innerHTML = '<div class="flex justify-center py-10"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>';
+      try {
+        const res = await apiClient.get(`/reels/${currentReelId}/comments`);
+        if (res.data?.success) {
+          commentsList = res.data.data.comments || [];
+          commentsTitleCount.textContent = res.data.data.comment_count;
+          renderCommentsSection();
+        }
+      } catch (err) { commentsListEl.innerHTML = '<p class="text-center py-10">No comments found.</p>'; }
+    }
+
+    function renderCommentsSection() {
+      if (commentsList.length === 0) {
+        commentsListEl.innerHTML = '<div class="text-center py-10 text-outline">No comments yet.</div>';
+        return;
+      }
+      commentsListEl.innerHTML = commentsList.map(c => `
+        <div class="flex items-start gap-sm">
+          <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs">
+            ${getInitials(c.user_name)}
+          </div>
+          <div>
+            <div class="flex items-baseline gap-2">
+              <span class="font-bold text-sm">${c.user_name}</span>
+              <span class="text-[10px] text-outline">${c.time_ago || ''}</span>
+            </div>
+            <p class="text-sm mt-0.5">${c.body}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', initPage);
+
+    async function checkAuthState() {
+        const token = getTohfaToken();
+        const authContainer = document.getElementById('auth-buttons-container');
+        if (token && authContainer) authContainer.innerHTML = ''; 
+        else if (authContainer) {
+            authContainer.innerHTML = `
+                <div class="flex items-center gap-md">
+                    <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                    <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold">Register</a>
+                </div>
+            `;
+        }
+    }
+    checkAuthState();
+</script>
+</body></html>

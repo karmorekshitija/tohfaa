@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<script defer="" src="/src/components/ReportWidget.js"></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa | Product Details</title>
+<meta content="Explore and purchase unique handcrafted products directly from independent artisans." name="description"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;600&amp;family=Cinzel:wght@400;600;700&amp;family=Space+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "forest": "#3D6B4F",
+                        "parchment": "#F7F3EC",
+                        "sage": "#8FAF82",
+                        "violet": "#7B5EA7",
+                        "gold": "#C8973A",
+                        "error": "#3D6B4F",
+                        "primary-container": "#8FAF82",
+                        "inverse-surface": "#343029",
+                        "secondary-fixed-dim": "#F7F3EC",
+                        "inverse-primary": "#8FAF82",
+                        "on-surface": "#1f1b15",
+                        "on-tertiary-fixed-variant": "#593d5d",
+                        "on-secondary-fixed-variant": "#484740",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#3D6B4F",
+                        "surface-tint": "#3D6B4F",
+                        "tertiary-fixed": "#7B5EA7",
+                        "tertiary-container": "#b492b7",
+                        "on-primary-fixed-variant": "#3D6B4F",
+                        "on-tertiary-container": "#452b4a",
+                        "inverse-on-surface": "#f8efe5",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#F7F3EC",
+                        "tertiary": "#7B5EA7",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#F7F3EC",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#444840",
+                        "outline": "#74786f",
+                        "tertiary-fixed-dim": "#dfbbe2",
+                        "on-error-container": "#3D6B4F",
+                        "secondary-container": "#F7F3EC",
+                        "secondary-fixed": "#F7F3EC",
+                        "primary-fixed-dim": "#8FAF82",
+                        "secondary": "#605e57",
+                        "on-secondary-fixed": "#1c1c16",
+                        "background": "#FFFFFF",
+                        "surface-dim": "#e1d9cf",
+                        "primary-fixed": "#8FAF82",
+                        "outline-variant": "#F7F3EC",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#f0e7dd",
+                        "surface-bright": "#FFFFFF",
+                        "on-primary-fixed": "#101f09",
+                        "on-background": "#1f1b15",
+                        "on-secondary-container": "#66645d",
+                        "surface-container": "#f6ece3",
+                        "on-primary-container": "#283920",
+                        "surface": "#FFFFFF",
+                        "surface-container-highest": "#F7F3EC",
+                        "error-container": "#F7F3EC",
+                        "on-tertiary-fixed": "#2a122f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "40px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Playfair Display"],
+                        "title-serif": ["Playfair Display"],
+                        "body-md": ["DM Sans"],
+                        "data-price": ["DM Sans"],
+                        "label-caps": ["DM Sans"],
+                        "accent": ["Space Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                        "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .watercolour-wash { background: linear-gradient(135deg, #F7F3EC 0%, #8FAF82 100%); }
+        
+        @media (max-width: 768px) {
+            #product-details-container {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 24px !important;
+            }
+            #product-info-column {
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            #product-title-price-block { order: 1 !important; }
+            #add-to-cart-widget-block { order: 2 !important; margin-top: 16px !important; }
+            #product-description-block { order: 3 !important; margin-top: 24px !important; }
+            #seller-profile-link { order: 4 !important; margin-top: 24px !important; }
+            
+            .mobile-touch-target {
+                min-height: 44px !important;
+                min-width: 44px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">
+<!-- TopNavBar (Standardized) -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-4 md:px-margin-desktop h-16 md:h-20">
+<div class="flex items-center">
+<a class="font-['Playfair_Display'] text-[24px] md:text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+                Tohfa<span class="text-[#C8973A]">.</span>
+</a>
+</div>
+<nav class="hidden md:flex items-center justify-center gap-xl h-full">
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-home.html">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-categories.html">
+<span class="material-symbols-outlined text-[20px]">category</span>
+<span>Category</span>
+</a>
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-reels.html">
+<span class="material-symbols-outlined text-[20px]">movie</span>
+<span>Reels</span>
+</a>
+<a class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal" href="./buyer-profile.html">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="flex items-center gap-2 md:gap-lg">
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 transition-all flex items-center justify-center mobile-touch-target" href="./buyer-categories.html">
+<span class="material-symbols-outlined">search</span>
+</a>
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 transition-all flex items-center justify-center relative mobile-touch-target" href="./buyer-saved-makes.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="absolute top-1 right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden" id="nav-wishlist-badge">0</span>
+</a>
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 transition-all flex items-center justify-center relative mobile-touch-target" href="./buyer-cart.html">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden" id="nav-cart-badge">0</span>
+</a>
+<a class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 transition-all flex items-center justify-center relative mobile-touch-target" href="./buyer-notifications.html">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-[#C8973A] rounded-full hidden" id="nav-notif-badge"></span>
+</a>
+<div class="hidden md:flex items-center gap-md ml-4" id="auth-buttons-container"></div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-4 md:px-margin-desktop py-6 md:py-12 pb-24 md:pb-12">
+<!-- BREADCRUMBS & BACK NAV -->
+<div class="flex items-center justify-between mb-6 md:mb-8">
+<div class="flex items-center gap-2 text-[10px] md:text-xs text-outline font-label-caps uppercase tracking-wider overflow-hidden whitespace-nowrap">
+<a class="hover:text-primary transition-colors" href="./buyer-home.html">Home</a>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<a class="hover:text-primary transition-colors truncate max-w-[80px] md:max-w-none" href="#" id="breadcrumb-category">Category</a>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-primary font-bold truncate max-w-[100px] md:max-w-none" id="breadcrumb-product">Product</span>
+</div>
+<button class="flex items-center gap-xs text-secondary hover:text-primary transition-colors text-sm font-semibold group focus:outline-none mobile-touch-target" onclick="window.history.back()">
+<span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="hidden md:inline">Back</span>
+</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-xl items-start" id="product-details-container">
+<!-- Left: Product Image Gallery -->
+<div class="lg:col-span-7 flex flex-col gap-md">
+<div class="bg-[#F7F3EC] border border-outline-variant/60 rounded-2xl overflow-hidden shadow-sm aspect-square relative flex items-center justify-center p-4 md:p-6">
+<img alt="Product Image" class="max-w-full max-h-full object-contain animate-fade-in" id="main-product-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzdcmGBxGOCOY13Vb3QH09UMOlTDGoVwx8d8ISOU3wy-6VGrrxR8_d_psdKmzI6QGn921wSVXCt9KoQDM377t46kPKmizLQx1mpiBoCAZuBZIByWNukdTI_2cum11QqkhXWwkbsExXrHh6PskeBLiQ6efsdg7yv6Tkx4D-riRwrljkPGvBz_8yel2JdeZH8gzDyrbYUyDPXb_i-pxQPwBzMKOu0rdslFnM7Gufvv-IGJU-sytOegfgyNzfTKbyKGD5jMkFQL--bO0"/>
+<button class="absolute top-4 right-4 md:top-6 md:right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none mobile-touch-target" id="wishlist-toggle-btn">
+<span class="material-symbols-outlined text-2xl" id="wishlist-icon">favorite</span>
+</button>
+</div>
+<div class="flex gap-sm overflow-x-auto no-scrollbar py-1" id="product-thumbnails"></div>
+</div>
+<!-- Right: Product Information -->
+<div class="lg:col-span-5 space-y-lg bg-[#F7F3EC] p-6 md:p-lg border border-outline-variant/60 rounded-2xl" id="product-info-column">
+<!-- Name & Price Block -->
+<div class="space-y-sm" id="product-title-price-block">
+<div class="flex flex-wrap gap-2 mb-2" id="product-tags-container"></div>
+<h1 class="font-headline-lg text-primary text-2xl md:text-3xl leading-tight" id="product-name">Product Name</h1>
+<div class="flex items-center gap-md pt-sm">
+<span class="text-2xl font-data-price text-secondary-fixed-variant font-bold" id="product-price">₹0.00</span>
+<span class="text-[10px] md:text-xs bg-success-container/20 text-success border border-success/20 px-2 md:px-sm py-[2px] rounded font-semibold" id="product-stock-badge">In Stock</span>
+</div>
+</div>
+<!-- Seller Profile Link -->
+<a class="border-t border-b border-outline-variant/20 py-md flex items-center gap-md hover:opacity-85 transition-opacity duration-200 mobile-touch-target" href="#" id="seller-profile-link">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm" id="seller-avatar">S</div>
+<div>
+<p class="text-[10px] text-outline uppercase tracking-wider font-label-caps">Shaped By</p>
+<p class="font-title-serif text-primary text-base font-semibold" id="product-seller">Seller Name</p>
+</div>
+</a>
+<!-- Description Block -->
+<div class="space-y-sm" id="product-description-block">
+<h4 class="font-label-caps text-outline text-[10px] md:text-xs tracking-wider uppercase">Description</h4>
+<p class="text-secondary text-sm leading-relaxed whitespace-pre-line" id="product-description">Loading details...</p>
+</div>
+<!-- Add to Cart Widget -->
+<div class="space-y-md pt-md border-t border-outline-variant/20" id="add-to-cart-widget-block">
+<div class="flex items-center justify-between" id="qty-selector-container">
+<span class="font-label-caps text-outline text-[10px] md:text-xs tracking-wider uppercase">Quantity</span>
+<div class="flex items-center border border-outline-variant rounded-lg bg-white overflow-hidden shadow-sm">
+<button class="px-4 py-2 hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none mobile-touch-target" id="qty-decrease">-</button>
+<input class="w-12 text-center border-none focus:ring-0 text-sm font-semibold text-primary p-0" id="qty-input" max="99" min="1" type="number" value="1"/>
+<button class="px-4 py-2 hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none mobile-touch-target" id="qty-increase">+</button>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-[#3D6B4F] text-white py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm mobile-touch-target" id="add-to-cart-btn">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span>Add to Cart</span>
+</button>
+<div class="hidden space-y-xs" id="overflow-container">
+<button class="w-full bg-primary hover:bg-[#3D6B4F] text-white py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm mobile-touch-target" id="chat-with-seller-btn">
+<span class="material-symbols-outlined">chat</span>
+<span>Chat with Seller</span>
+</button>
+<p class="text-xs text-amber-700 bg-amber-50/50 border border-amber-200/60 rounded-lg p-sm leading-relaxed" id="overflow-msg">
+                            Today's daily fulfillment limit for this product has been reached. Chat with the seller to arrange your order.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- REVIEWS SECTION -->
+<section class="mt-12 md:mt-16 border-t border-outline-variant/30 pt-8 md:pt-12 max-w-4xl" id="reviews-section">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="font-headline-lg text-primary text-xl md:text-2xl">Artisan Reviews</h2>
+<p class="text-[10px] text-outline tracking-wider uppercase mt-1" id="reviews-summary-text">0 reviews</p>
+</div>
+<div class="flex items-center gap-xs text-amber-500 font-bold" id="reviews-rating-summary"></div>
+</div>
+<div class="space-y-6" id="reviews-list"></div>
+<div class="mt-12 bg-[#F7F3EC] p-6 md:p-lg border border-outline-variant/60 rounded-2xl hidden" id="write-review-container">
+<h3 class="font-title-serif text-primary text-xl mb-md">Write a Review</h3>
+<form class="space-y-md" id="review-form">
+<div>
+<label class="block text-[10px] font-label-caps text-outline uppercase tracking-wider mb-sm">Rating</label>
+<div class="flex items-center gap-sm text-amber-500" id="star-input-container">
+<button class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95 mobile-touch-target" data-rating="1" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+</button>
+<button class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95 mobile-touch-target" data-rating="2" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+</button>
+<button class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95 mobile-touch-target" data-rating="3" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+</button>
+<button class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95 mobile-touch-target" data-rating="4" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+</button>
+<button class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95 mobile-touch-target" data-rating="5" type="button">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+</button>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-label-caps text-outline uppercase tracking-wider mb-sm" for="review-body">Review Comments</label>
+<textarea class="w-full rounded-xl border border-outline-variant bg-white p-4 text-sm focus:border-primary focus:ring-0 focus:outline-none" id="review-body" placeholder="Share your experience with this handmade piece..." rows="4"></textarea>
+</div>
+<button class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-md rounded-xl font-semibold uppercase tracking-wider transition-all active:scale-95 mobile-touch-target w-full md:w-auto" type="submit">
+                        Submit Review
+                    </button>
+</form>
+</div>
+<div class="mt-8 p-6 bg-[#F7F3EC] border border-dashed border-outline-variant/60 rounded-xl text-center text-secondary text-sm" id="review-gating-notice">
+                Only verified buyers who received this item can write a review.
+            </div>
+</section>
+<!-- Product Error State -->
+<div class="hidden text-center py-24" id="product-error-container">
+<span class="material-symbols-outlined text-6xl text-error mb-4">error</span>
+<h3 class="font-headline-lg text-headline-lg mb-2">Product Not Found</h3>
+<p class="text-secondary max-w-md mx-auto mb-6">The product you're looking for might have been removed or does not exist.</p>
+<button class="bg-primary text-background px-8 py-3 rounded-lg font-semibold uppercase tracking-wider mobile-touch-target" onclick="window.location.href='buyer-categories.html'">Back to Browse</button>
+</div>
+</main>
+<!-- BottomNavBar (Standardized) -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden bg-[#F7F3EC] border-t border-[#8FAF82] z-50 flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center text-[#3D6B4F] transition-all flex-1 mobile-touch-target" href="./buyer-home.html">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-['DM_Sans'] font-medium">HOME</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#3D6B4F] transition-all flex-1 mobile-touch-target" href="./buyer-categories.html">
+<span class="material-symbols-outlined text-[24px]">category</span>
+<span class="text-[10px] font-['DM_Sans'] font-medium">CATEGORY</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#3D6B4F] transition-all flex-1 mobile-touch-target" href="./buyer-reels.html">
+<span class="material-symbols-outlined text-[24px]">movie</span>
+<span class="text-[10px] font-['DM_Sans'] font-medium">REEL</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#3D6B4F] transition-all flex-1 mobile-touch-target" href="./buyer-profile.html">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-['DM_Sans'] font-medium">PROFILE</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="hidden md:block bg-inverse-surface text-inverse-on-surface pt-16 pb-20">
+<div class="max-w-[1440px] mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2 space-y-6">
+<h2 class="font-headline-lg text-inverse-primary italic text-3xl">Tohfa.</h2>
+<p class="text-secondary-fixed-dim max-w-sm text-sm">Cultivating a community of makers and dreamers. Our studio curates the finest handmade goods from across the globe, prioritizing sustainability and craftsmanship.</p>
+</div>
+<div class="space-y-6">
+<h5 class="font-title-md text-title-md text-inverse-primary font-semibold">Shop</h5>
+<ul class="space-y-3 text-secondary-fixed-dim text-sm">
+<li><a class="hover:text-inverse-primary transition-colors" href="buyer-categories.html">All Categories</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto px-margin-desktop mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-outline">
+<p>© 2026 Tohfa Artisan Studio. All rights reserved.</p>
+</div>
+</footer>
+<script type="module">
+        import apiClient from '/src/utils/apiClient.js';
+        import { formatPaise } from '/src/utils/currency.js';
+        import { logout } from '/src/utils/auth.js';
+
+        function getTohfaToken() {
+            try {
+                const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+                return user.token || user.accessToken || user.access_token;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id') || '';
+
+        let product = null;
+        let isCustomized = false;
+        let isSoldOut = false;
+        let isWishlisted = false;
+        let qty = 1;
+        let maxStock = 99;
+        let isLoggedIn = false;
+        let matchedOrderId = null;
+        let selectedRating = 0;
+
+        async function checkAuthState() {
+            const token = getTohfaToken();
+            const authContainer = document.getElementById('auth-buttons-container');
+            
+            if (token) {
+                isLoggedIn = true;
+                if (authContainer) authContainer.innerHTML = '';
+            } else {
+                isLoggedIn = false;
+                if (authContainer) {
+                    authContainer.innerHTML = `
+                        <div class="flex items-center gap-md">
+                            <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                            <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        async function loadProduct() {
+            if (!productId) {
+                showErrorState();
+                return;
+            }
+
+            try {
+                const response = await apiClient.get(`/products/${productId}`);
+                if (response.data && response.data.success) {
+                    product = response.data.data;
+                    maxStock = product.stock_qty || 0;
+                    isWishlisted = !!product.is_wishlisted;
+
+                    document.getElementById('product-name').innerText = product.name;
+                    document.getElementById('product-description').innerText = product.description || 'No description available.';
+                    document.getElementById('product-price').innerText = formatPaise(product.price_paise);
+                    document.getElementById('product-seller').innerText = product.seller?.seller_name || 'Artisan';
+                    
+                    const avatarEl = document.getElementById('seller-avatar');
+                    if (product.seller?.avatar_url) {
+                        avatarEl.innerHTML = `<img src="${product.seller.avatar_url}" alt="Seller Avatar" class="w-full h-full object-cover rounded-full"/>`;
+                        avatarEl.classList.remove('bg-primary/20', 'text-primary');
+                    } else {
+                        avatarEl.innerText = (product.seller?.seller_name || 'A').charAt(0).toUpperCase();
+                    }
+
+                    const sellerLink = document.getElementById('seller-profile-link');
+                    if (sellerLink && product.seller?.id) {
+                        sellerLink.href = `./buyer-seller-profile.html?id=${product.seller.id}`;
+                    }
+
+                    isCustomized = product.is_customized || product.category?.slug === 'customized-gifts';
+                    isSoldOut = !isCustomized && (product.status === 'sold_out' || maxStock === 0);
+
+                    const tagsContainer = document.getElementById('product-tags-container');
+                    if (tagsContainer) {
+                        tagsContainer.innerHTML = '';
+                        if (isCustomized) {
+                            const customTag = document.createElement('span');
+                            customTag.innerText = 'Customized';
+                            customTag.className = 'font-accent text-[10px] bg-forest text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            tagsContainer.appendChild(customTag);
+                        }
+                        if (product.is_sponsored) {
+                            const sponsoredTag = document.createElement('span');
+                            sponsoredTag.innerText = 'Sponsored';
+                            sponsoredTag.className = 'font-accent text-[10px] bg-gold text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            tagsContainer.appendChild(sponsoredTag);
+                        }
+                        if (product.is_best_seller) {
+                            const bestSellerTag = document.createElement('span');
+                            bestSellerTag.innerText = 'Best Seller';
+                            bestSellerTag.className = 'font-accent text-[10px] bg-[#C4622D] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            tagsContainer.appendChild(bestSellerTag);
+                        }
+                    }
+
+                    const qtySelector = document.getElementById('qty-selector-container');
+                    const addToCartBtn = document.getElementById('add-to-cart-btn');
+                    if (isCustomized || isSoldOut) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'chat';
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Chat with Seller';
+                        }
+                    }
+
+                    const stockBadge = document.getElementById('product-stock-badge');
+                    if (isCustomized) {
+                        stockBadge.innerText = 'Made to Order';
+                        stockBadge.className = 'text-[10px] bg-purple-100 text-purple-700 border border-purple-200 px-2 py-[2px] rounded font-semibold';
+                    } else if (isSoldOut) {
+                        stockBadge.innerText = 'Sold Out';
+                        stockBadge.className = 'text-[10px] bg-red-100 text-red-700 border border-red-200 px-2 py-[2px] rounded font-semibold';
+                    } else if (maxStock <= 3) {
+                        stockBadge.innerText = `Only ${maxStock} left!`;
+                        stockBadge.className = 'text-[10px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-[2px] rounded font-semibold';
+                    }
+
+                    const mainImage = document.getElementById('main-product-image');
+                    const thumbnailsContainer = document.getElementById('product-thumbnails');
+                    const productImages = product.images || [];
+                    if (productImages.length === 0) {
+                        mainImage.src = 'https://placehold.co/600x600/f4ede3/516447?text=Handcrafted';
+                    } else {
+                        mainImage.src = productImages[0].url;
+                        thumbnailsContainer.innerHTML = productImages.map((img, idx) => `
+                            <button class="w-16 h-16 rounded-lg overflow-hidden border-2 bg-white flex-shrink-0 p-1 flex items-center justify-center thumbnail-btn focus:outline-none transition-all ${idx === 0 ? 'border-forest' : 'border-outline-variant/40'} mobile-touch-target" data-url="${img.url}">
+                                <img src="${img.url}" class="max-w-full max-h-full object-contain rounded" alt="Thumbnail ${idx + 1}"/>
+                            </button>
+                        `).join('');
+
+                        thumbnailsContainer.querySelectorAll('.thumbnail-btn').forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                thumbnailsContainer.querySelectorAll('.thumbnail-btn').forEach(b => b.classList.replace('border-forest', 'border-outline-variant/40'));
+                                btn.classList.replace('border-outline-variant/40', 'border-forest');
+                                mainImage.src = btn.getAttribute('data-url');
+                            });
+                        });
+                    }
+
+                    const categoryBreadcrumb = document.getElementById('breadcrumb-category');
+                    const productBreadcrumb = document.getElementById('breadcrumb-product');
+                    if (product.category) {
+                        categoryBreadcrumb.innerText = product.category.name;
+                        categoryBreadcrumb.href = `buyer-categories.html?slug=${product.category.slug}`;
+                    }
+                    productBreadcrumb.innerText = product.name;
+
+                    updateWishlistButtonUI();
+                    renderReviewsSection();
+                    await checkReviewEligibility();
+
+                    if (!product.holiday_mode_active && !isCustomized && !isSoldOut && product.status !== 'sold_out' && maxStock > 0) {
+                        try {
+                            const checkRes = await apiClient.post('/capacity/check', { product_id: Number(productId), quantity: 1, preview: true });
+                            if (checkRes.data && checkRes.data.overflow) {
+                                showOverflowState("Today's capacity reached — next available: tomorrow");
+                            }
+                        } catch (e) {}
+                    }
+
+                    if (product.holiday_mode_active) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'beach_access';
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Shop on Break';
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    }
+                } else {
+                    showErrorState();
+                }
+            } catch (err) {
+                showErrorState();
+            }
+        }
+
+        function updateWishlistButtonUI() {
+            const wishlistIcon = document.getElementById('wishlist-icon');
+            const wishlistBtn = document.getElementById('wishlist-toggle-btn');
+            if (isWishlisted) {
+                wishlistIcon.style.fontVariationSettings = "'FILL' 1";
+                wishlistBtn.className = "absolute top-4 right-4 md:top-6 md:right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-red-600 focus:outline-none mobile-touch-target";
+            } else {
+                wishlistIcon.style.fontVariationSettings = "'FILL' 0";
+                wishlistBtn.className = "absolute top-4 right-4 md:top-6 md:right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none mobile-touch-target";
+            }
+        }
+
+        async function handleToggleWishlist() {
+            if (!isLoggedIn) { window.location.href = '/auth/login.html'; return; }
+            try {
+                if (isWishlisted) {
+                    await apiClient.delete(`/wishlist/${productId}`);
+                    isWishlisted = false;
+                } else {
+                    await apiClient.post(`/wishlist/${productId}`);
+                    isWishlisted = true;
+                }
+                updateWishlistButtonUI();
+            } catch (err) {}
+        }
+
+        function renderReviewsSection() {
+            const list = document.getElementById('reviews-list');
+            const ratingSummary = document.getElementById('reviews-rating-summary');
+            const summaryText = document.getElementById('reviews-summary-text');
+            const reviews = product.recent_reviews || [];
+            
+            summaryText.innerText = `${product.review_count || 0} reviews`;
+            if (product.review_count > 0) {
+                const avg = product.avg_rating || 0;
+                ratingSummary.innerHTML = `<span class="text-sm">${avg.toFixed(1)}</span><div class="flex items-center text-amber-500">${Array.from({ length: 5 }, (_, i) => `<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${i < Math.round(avg) ? 1 : 0};">star</span>`).join('')}</div>`;
+            }
+
+            if (reviews.length === 0) {
+                list.innerHTML = `<p class="text-secondary text-sm italic py-4 text-center md:text-left">No reviews yet for this product.</p>`;
+            } else {
+                list.innerHTML = reviews.map(r => `
+                    <div class="bg-[#F7F3EC] p-md rounded-2xl border border-outline-variant/40 space-y-sm">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-semibold text-sm text-primary block">${r.reviewer_name}</span>
+                                <span class="text-[10px] text-outline">${new Date(r.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="flex items-center text-amber-500">${Array.from({ length: 5 }, (_, i) => `<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${i < r.rating ? 1 : 0};">star</span>`).join('')}</div>
+                        </div>
+                        <p class="text-secondary text-sm leading-relaxed">${r.body || ''}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function checkReviewEligibility() {
+            if (!isLoggedIn) return;
+            try {
+                const res = await apiClient.get('/orders', { params: { status: 'Delivered' } });
+                const orders = res.data.data?.orders || res.data.data || [];
+                for (const order of orders) {
+                    const detailRes = await apiClient.get(`/orders/${order.id}`);
+                    if (detailRes.data.data.items?.some(item => String(item.product_id) === String(productId))) {
+                        matchedOrderId = order.id;
+                        document.getElementById('write-review-container').classList.remove('hidden');
+                        document.getElementById('review-gating-notice').classList.add('hidden');
+                        break;
+                    }
+                }
+            } catch (err) {}
+        }
+
+        function showOverflowState(msg) {
+            document.getElementById('add-to-cart-btn')?.classList.add('hidden');
+            const container = document.getElementById('overflow-container');
+            if (container) {
+                container.classList.remove('hidden');
+                document.getElementById('overflow-msg').innerText = msg;
+            }
+        }
+
+        async function handleAddToCart() {
+            if (product?.holiday_mode_active) return;
+            if (isCustomized || isSoldOut) {
+                if (!isLoggedIn) { window.location.href = '/auth/login.html'; return; }
+                const btn = document.getElementById('add-to-cart-btn');
+                btn.disabled = true;
+                btn.querySelector('span:last-child').innerText = 'Starting chat...';
+                try {
+                    const res = await apiClient.post('/conversations', { listing_id: Number(productId), product_type_tag: isCustomized ? 'custom' : 'sold_out', quantity: qty, bypass_intake: true });
+                    window.location.href = `./buyer-chat.html?conversationId=${res.data.conversation_id}`;
+                } catch (e) { btn.disabled = false; btn.querySelector('span:last-child').innerText = 'Chat with Seller'; }
+                return;
+            }
+
+            if (!isLoggedIn) { window.location.href = '/auth/login.html'; return; }
+            const btn = document.getElementById('add-to-cart-btn');
+            btn.disabled = true;
+            try {
+                const checkRes = await apiClient.post('/capacity/check', { product_id: Number(productId), quantity: qty });
+                if (checkRes.data && checkRes.data.overflow) {
+                    showOverflowState(checkRes.data.message);
+                    return;
+                }
+                const response = await apiClient.post('/cart/items', { product_id: Number(productId), quantity: qty });
+                if (response.data.success) {
+                    if (window.Toast) window.Toast.show("Added to cart!", "success");
+                }
+            } catch (e) {} finally { btn.disabled = false; }
+        }
+
+        function setupQuantityControls() {
+            const qtyInput = document.getElementById('qty-input');
+            document.getElementById('qty-decrease').addEventListener('click', () => { if (qty > 1) { qty--; qtyInput.value = qty; } });
+            document.getElementById('qty-increase').addEventListener('click', () => { if (qty < maxStock) { qty++; qtyInput.value = qty; } });
+        }
+
+        function setupReviewForm() {
+            const stars = document.querySelectorAll('.star-btn');
+            stars.forEach(btn => btn.addEventListener('click', () => {
+                selectedRating = parseInt(btn.getAttribute('data-rating'));
+                stars.forEach((b, idx) => b.querySelector('.material-symbols-outlined').style.fontVariationSettings = `'FILL' ${idx < selectedRating ? 1 : 0}`);
+            }));
+
+            document.getElementById('review-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (selectedRating === 0) return;
+                try {
+                    const res = await apiClient.post('/reviews', { product_id: Number(productId), order_id: matchedOrderId, rating: selectedRating, body: document.getElementById('review-body').value.trim() });
+                    if (res.data.success) {
+                        location.reload();
+                    }
+                } catch (err) {}
+            });
+        }
+
+        function showErrorState() {
+            document.getElementById('product-details-container').classList.add('hidden');
+            document.getElementById('reviews-section').classList.add('hidden');
+            document.getElementById('product-error-container').classList.remove('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await checkAuthState();
+            await loadProduct();
+            setupQuantityControls();
+            setupReviewForm();
+            document.getElementById('wishlist-toggle-btn')?.addEventListener('click', handleToggleWishlist);
+            document.getElementById('add-to-cart-btn')?.addEventListener('click', handleAddToCart);
+        });
+    </script>
+</body></html>

@@ -73,6 +73,10 @@ html, body {
   #related-treasures-grid,
   #catalog-grid,
   #custom-grid,
+  #product-feed-grid,
+  #sponsored-product-grid,
+  #feed-skeletons,
+  #makes-grid,
   .product-grid,
   .search-results-grid,
   .category-product-grid {
@@ -87,6 +91,10 @@ html, body {
     #related-treasures-grid,
     #catalog-grid,
     #custom-grid,
+    #product-feed-grid,
+    #sponsored-product-grid,
+    #feed-skeletons,
+    #makes-grid,
     .product-grid,
     .search-results-grid,
     .category-product-grid {

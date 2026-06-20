@@ -1785,8 +1785,8 @@ app.get('/api/cart', rateLimit(60), authenticateToken, async (req, res) => {
       item.quantity_warning = item.quantity > item.stock_qty;
     });
     
-    const subtotal_paise = items.reduce(async (sum, item) => sum + item.price_paise * item.quantity, 0);
-    const item_count = items.reduce(async (sum, item) => sum + item.quantity, 0);
+    const subtotal_paise = items.reduce((sum, item) => sum + item.price_paise * item.quantity, 0);
+    const item_count = items.reduce((sum, item) => sum + item.quantity, 0);
     
     const shipping_paise = (subtotal_paise === 0) ? 0 : (subtotal_paise < 50000 ? 12000 : 0);
     const total_paise = subtotal_paise + shipping_paise;
@@ -3823,7 +3823,9 @@ app.get('/api/wishlist', rateLimit(60), authenticateToken, async (req, res) => {
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
-        (SELECT 1 FROM cart_items ci WHERE ci.user_id = ? AND ci.product_id = p.id) IS NOT NULL AS in_cart
+        (SELECT 1 FROM cart_items ci WHERE ci.user_id = ? AND ci.product_id = p.id) IS NOT NULL AS in_cart,
+        p.avg_rating,
+        p.review_count
       FROM wishlists w
       JOIN products p ON w.product_id = p.id
       JOIN users u ON p.seller_id = u.id

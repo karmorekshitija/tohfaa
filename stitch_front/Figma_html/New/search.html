@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Tohfa | Search Handcrafted Goods</title>
+<!-- BEGIN: External Resources -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Cinzel:wght@700&amp;family=Space+Mono:wght@400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- END: External Resources -->
+<!-- BEGIN: Tailwind Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-tint": "#3a684c",
+            "primary": "#3D6B4F",
+            "surface-variant": "#F7F3EC",
+            "on-surface": "#211b11",
+            "secondary-container": "#8FAF82",
+            "tertiary": "#7B5EA7",
+            "gold": "#C8973A",
+            "sage": "#717972",
+            "ivory": "#F7F3EC",
+            "ink": "#3A3328"
+          },
+          fontFamily: {
+            "label-caps": ["Cinzel"],
+            "data-price": ["Space Mono"],
+            "title-serif": ["Merriweather"],
+            "body-md": ["DM Sans"],
+            "headline-lg": ["Playfair Display"]
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Tailwind Configuration -->
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-layout">
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    /* Mobile-First Reset */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    /* Speech Bubble Styling */
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: -10px;
+      transform: translateX(-50%);
+      border-width: 0 10px 10px 10px;
+      border-style: solid;
+      border-color: transparent transparent #F7F3EC transparent;
+    }
+    /* Responsive Grid fixes */
+    #results-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px) {
+      #results-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    /* Ribbon Badges */
+    .ribbon-wrapper {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 20;
+    }
+    .ribbon-tag {
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .ribbon-sponsored { background: #C8973A; }
+    .ribbon-bestseller { background: #3D6B4F; }
+    .ribbon-custom { background: #7B5EA7; }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="bg-[#F7F3EC] min-h-screen text-ink font-body-md pb-24">
+<!-- BEGIN: Top Taskbar -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-sage/30 z-[100] flex items-center justify-between px-4">
+<a class="font-['Playfair_Display'] text-2xl italic text-primary" href="./buyer-home.html">
+      Tohfa<span class="text-gold">.</span>
+</a>
+<div class="flex items-center gap-1">
+<button class="p-2 text-primary h-11 w-11 flex items-center justify-center" onclick="document.getElementById('search-input').focus()">
+<span class="material-symbols-outlined">search</span>
+</button>
+<a class="p-2 text-primary h-11 w-11 flex items-center justify-center" href="./buyer-saved-makes.html">
+<span class="material-symbols-outlined">favorite</span>
+</a>
+<a class="p-2 text-primary h-11 w-11 flex items-center justify-center" href="./buyer-cart.html">
+<span class="material-symbols-outlined">shopping_cart</span>
+</a>
+<a class="p-2 text-primary h-11 w-11 flex items-center justify-center" href="./buyer-notifications.html">
+<span class="material-symbols-outlined">notifications</span>
+</a>
+</div>
+</header>
+<!-- END: Top Taskbar -->
+<main class="pt-20 px-4">
+<!-- BEGIN: Search Bar (Mobile Inline) -->
+<section class="mb-6">
+<div class="relative flex items-center">
+<div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-sage text-xl">search</span>
+</div>
+<input autocomplete="off" class="w-full bg-white border border-sage/50 rounded-full py-3 pl-10 pr-10 text-sm focus:ring-primary focus:border-primary transition-all shadow-sm" id="search-input" placeholder="Search gifts, makers, magic..." type="text"/>
+<button class="absolute inset-y-0 right-3 flex items-center text-sage hidden" id="clear-search-btn">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+</div>
+</section>
+<!-- END: Search Bar -->
+<!-- BEGIN: Idle View (Default) -->
+<div class="space-y-8 animate-in fade-in duration-500" id="idle-view">
+<!-- Mascot Block -->
+<section class="flex flex-col items-center text-center gap-4">
+<div class="w-32 h-32">
+<img alt="Mascot" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY"/>
+</div>
+<div class="speech-bubble relative bg-white border border-sage/30 p-4 rounded-2xl shadow-sm max-w-xs">
+<h1 class="font-headline-lg italic text-lg text-primary leading-tight">What shall we find today? ✦</h1>
+<p class="text-xs text-sage mt-1">Search by product, artisan, or style.</p>
+</div>
+</section>
+<!-- Trending Section -->
+<section>
+<h2 class="font-label-caps text-[10px] text-gold tracking-widest mb-3 uppercase">Trending Searches</h2>
+<div class="flex flex-wrap gap-2">
+<button class="trending-chip px-4 py-2 bg-white border border-sage/20 rounded-full text-xs text-ink">hand-poured candles</button>
+<button class="trending-chip px-4 py-2 bg-white border border-sage/20 rounded-full text-xs text-ink">terracotta</button>
+<button class="trending-chip px-4 py-2 bg-white border border-sage/20 rounded-full text-xs text-ink">custom jewelry</button>
+<button class="trending-chip px-4 py-2 bg-white border border-sage/20 rounded-full text-xs text-ink">leather journals</button>
+</div>
+</section>
+<!-- Occasions -->
+<section>
+<h2 class="font-label-caps text-[10px] text-gold tracking-widest mb-3 uppercase">Shop by Occasion</h2>
+<div class="grid grid-cols-3 gap-2">
+<div class="occasion-card aspect-square bg-white border border-sage/20 rounded-xl flex flex-col items-center justify-center p-2" data-occasion="birthday">
+<span class="material-symbols-outlined text-primary mb-1">cake</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Birthday</span>
+</div>
+<div class="occasion-card aspect-square bg-white border border-sage/20 rounded-xl flex flex-col items-center justify-center p-2" data-occasion="wedding">
+<span class="material-symbols-outlined text-primary mb-1">celebration</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Wedding</span>
+</div>
+<div class="occasion-card aspect-square bg-white border border-sage/20 rounded-xl flex flex-col items-center justify-center p-2" data-occasion="anniversary">
+<span class="material-symbols-outlined text-primary mb-1">favorite</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Anniversary</span>
+</div>
+</div>
+</section>
+<!-- Recent Searches -->
+<section id="recent-searches-section">
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-label-caps text-[10px] text-gold tracking-widest uppercase">Recent</h2>
+<button class="text-[10px] text-tertiary uppercase font-bold" id="clear-recents-btn">Clear All</button>
+</div>
+<div class="bg-white rounded-xl border border-sage/10 divide-y divide-sage/5 overflow-hidden" id="recent-searches-list">
+<!-- Dynamically Injected -->
+</div>
+</section>
+</div>
+<!-- END: Idle View -->
+<!-- BEGIN: Typing View -->
+<div class="hidden space-y-6" id="typing-view">
+<div class="bg-white rounded-xl overflow-hidden shadow-sm" id="suggestions-list">
+<!-- Autocomplete rows -->
+</div>
+<section class="hidden" id="matching-sellers-section">
+<h3 class="font-label-caps text-[10px] text-gold mb-3 uppercase">Artisans</h3>
+<div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide" id="matching-sellers-list">
+<!-- Seller Chips -->
+</div>
+</section>
+</div>
+<!-- END: Typing View -->
+<!-- BEGIN: Results View -->
+<div class="hidden space-y-4" id="results-view">
+<div class="flex flex-col gap-2" id="results-header">
+<h2 class="font-headline-lg text-xl text-primary italic" id="results-title">Search Results</h2>
+<div class="flex items-center justify-between">
+<p class="text-xs text-sage" id="results-count">Finding treasures...</p>
+<select class="text-xs border-none bg-transparent font-bold text-primary p-0 pr-6 focus:ring-0" id="sort-select">
+<option value="newest">Newest</option>
+<option value="price_asc">Price: Low-High</option>
+<option value="price_desc">Price: High-Low</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center py-12" id="results-loader">
+<div class="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+</div>
+<div class="hidden" id="results-grid">
+<!-- Result Cards -->
+</div>
+<!-- No Results State -->
+<div class="hidden text-center py-10 space-y-4" id="no-results-view">
+<h3 class="font-headline-lg text-lg italic">No treasures found ✦</h3>
+<p class="text-sm text-sage px-6">Try broadening your search or exploring categories.</p>
+<a class="inline-block bg-primary text-white px-8 py-3 rounded-full text-sm font-bold" href="./buyer-categories.html">Browse Categories</a>
+</div>
+<div class="h-10" id="pagination-sentinel"></div>
+</div>
+<!-- END: Results View -->
+</main>
+<!-- BEGIN: Bottom Mobile Nav -->
+<nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-sage/20 z-[100] flex items-center justify-around px-2">
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px]" href="./buyer-home.html">
+<span class="material-symbols-outlined text-primary">home</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-sage">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px]" href="./buyer-categories.html">
+<span class="material-symbols-outlined text-sage">category</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-sage">Category</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px]" href="./buyer-reels.html">
+<span class="material-symbols-outlined text-sage">movie</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-sage">Reels</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 min-w-[64px]" href="./buyer-profile.html">
+<span class="material-symbols-outlined text-sage">person</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-sage">Profile</span>
+</a>
+</nav>
+<!-- END: Bottom Mobile Nav -->
+<!-- BEGIN: Logic & Interaction -->
+<script data-purpose="search-logic" type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { formatPaise } from '/src/utils/currency.js';
+
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const idleView = document.getElementById('idle-view');
+    const typingView = document.getElementById('typing-view');
+    const resultsView = document.getElementById('results-view');
+    const resultsGrid = document.getElementById('results-grid');
+    const resultsLoader = document.getElementById('results-loader');
+    const noResultsView = document.getElementById('no-results-view');
+
+    let typingTimeout = null;
+    let lastQuery = '';
+    let hasMore = false;
+    let isLoadingMore = false;
+    let nextOffset = 0;
+
+    function init() {
+      searchInput.addEventListener('input', handleTyping);
+      searchInput.addEventListener('keydown', (e) => e.key === 'Enter' && executeSearch(searchInput.value));
+      clearSearchBtn.addEventListener('click', clearSearch);
+      document.getElementById('clear-recents-btn').addEventListener('click', () => {
+        localStorage.removeItem('tohfa_recent_searches');
+        renderRecentSearches();
+      });
+      
+      document.querySelectorAll('.occasion-card').forEach(card => {
+        card.addEventListener('click', () => executeSearch(card.dataset.occasion));
+      });
+
+      window.addEventListener('scroll', handleInfiniteScroll);
+      renderRecentSearches();
+    }
+
+    function showState(state) {
+      idleView.classList.add('hidden');
+      typingView.classList.add('hidden');
+      resultsView.classList.add('hidden');
+      clearSearchBtn.classList.toggle('hidden', searchInput.value === '');
+
+      if (state === 'idle') idleView.classList.remove('hidden');
+      if (state === 'typing') typingView.classList.remove('hidden');
+      if (state === 'results') resultsView.classList.remove('hidden');
+    }
+
+    function handleTyping() {
+      const val = searchInput.value.trim();
+      if (!val) return showState('idle');
+      showState('typing');
+
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(async () => {
+        try {
+          const res = await apiClient.get('/products/search-suggestions', { params: { q: val } });
+          if (res.data.success) renderSuggestions(res.data.data, val);
+        } catch (err) {}
+      }, 300);
+    }
+
+    async function executeSearch(query, isAppend = false) {
+      if (!query.trim()) return;
+      query = query.trim();
+      searchInput.value = query;
+      lastQuery = query;
+      saveRecentSearch(query);
+      showState('results');
+
+      if (!isAppend) {
+        resultsGrid.innerHTML = '';
+        nextOffset = 0;
+        resultsLoader.classList.remove('hidden');
+        resultsGrid.classList.add('hidden');
+      }
+
+      try {
+        const sort = document.getElementById('sort-select').value;
+        const res = await apiClient.get('/products/search', { params: { q: query, sort, offset: nextOffset, limit: 12 } });
+        
+        resultsLoader.classList.add('hidden');
+        if (res.data.success) {
+          const products = res.data.data.products || [];
+          hasMore = res.data.data.has_more;
+          nextOffset = res.data.data.next_offset;
+
+          if (products.length === 0 && !isAppend) {
+            noResultsView.classList.remove('hidden');
+          } else {
+            noResultsView.classList.add('hidden');
+            resultsGrid.classList.remove('hidden');
+            renderProducts(products, isAppend);
+          }
+          document.getElementById('results-count').innerText = `${products.length} found for "${query}"`;
+        }
+      } catch (err) {
+        resultsLoader.classList.add('hidden');
+      }
+    }
+
+    function renderProducts(products, append) {
+      const html = products.map(p => `
+        <div class="bg-white rounded-2xl overflow-hidden border border-sage/10 shadow-sm relative active:scale-[0.98] transition-transform" onclick="window.location.href='./buyer-product.html?id=${p.id}'">
+          <div class="relative aspect-square">
+            <img src="${p.image_url || 'https://placehold.co/400x400'}" class="w-full h-full object-cover">
+            <div class="ribbon-wrapper">
+              ${p.is_bestseller ? '<div class="ribbon-tag ribbon-bestseller">Best Seller</div>' : ''}
+              ${p.listing_type === 'custom' ? '<div class="ribbon-tag ribbon-custom">Custom</div>' : ''}
+            </div>
+          </div>
+          <div class="p-4 space-y-1">
+            <div class="flex justify-between items-start">
+              <h4 class="font-headline-lg font-bold text-sm line-clamp-1">${p.name}</h4>
+              <span class="font-data-price text-gold font-bold text-sm">₹${(p.price_paise/100).toLocaleString('en-IN')}</span>
+            </div>
+            <p class="text-[10px] text-sage">By ${p.seller_name}</p>
+            <div class="flex items-center gap-1 text-[10px]">
+              <span class="text-gold">★</span>
+              <span>${p.avg_rating || '5.0'} (${p.review_count || 0})</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      if (append) resultsGrid.insertAdjacentHTML('beforeend', html);
+      else resultsGrid.innerHTML = html;
+    }
+
+    function renderSuggestions(data, query) {
+      const list = document.getElementById('suggestions-list');
+      list.innerHTML = data.suggestions.map(s => `
+        <div class="px-4 py-3 border-b border-sage/5 flex items-center justify-between" onclick="document.getElementById('search-input').value='${s}'; executeSearch('${s}')">
+          <span class="text-sm">${s}</span>
+          <span class="material-symbols-outlined text-sage text-sm">north_east</span>
+        </div>
+      `).join('');
+
+      const sellersList = document.getElementById('matching-sellers-list');
+      if (data.sellers.length) {
+        document.getElementById('matching-sellers-section').classList.remove('hidden');
+        sellersList.innerHTML = data.sellers.map(s => `
+          <div class="flex-shrink-0 bg-white border border-sage/20 rounded-full px-3 py-2 flex items-center gap-2" onclick="executeSearch('${s.shop_name}')">
+            <div class="w-6 h-6 rounded-full bg-primary text-white text-[8px] flex items-center justify-center font-bold">${s.shop_name.charAt(0)}</div>
+            <span class="text-xs font-bold">${s.shop_name}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function saveRecentSearch(q) {
+      let recents = JSON.parse(localStorage.getItem('tohfa_recent_searches') || '[]');
+      recents = [q, ...recents.filter(x => x !== q)].slice(0, 5);
+      localStorage.setItem('tohfa_recent_searches', JSON.stringify(recents));
+    }
+
+    function renderRecentSearches() {
+      const recents = JSON.parse(localStorage.getItem('tohfa_recent_searches') || '[]');
+      const list = document.getElementById('recent-searches-list');
+      if (!recents.length) {
+        document.getElementById('recent-searches-section').classList.add('hidden');
+        return;
+      }
+      document.getElementById('recent-searches-section').classList.remove('hidden');
+      list.innerHTML = recents.map(r => `
+        <div class="px-4 py-3 flex items-center justify-between" onclick="executeSearch('${r}')">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-sage text-sm">history</span>
+            <span class="text-sm">${r}</span>
+          </div>
+          <span class="material-symbols-outlined text-sage text-sm">north_east</span>
+        </div>
+      `).join('');
+    }
+
+    function clearSearch() {
+      searchInput.value = '';
+      showState('idle');
+    }
+
+    async function handleInfiniteScroll() {
+      if (!hasMore || isLoadingMore) return;
+      const sentinel = document.getElementById('pagination-sentinel');
+      if (sentinel.getBoundingClientRect().top <= window.innerHeight + 100) {
+        isLoadingMore = true;
+        await executeSearch(lastQuery, true);
+        isLoadingMore = false;
+      }
+    }
+
+    init();
+  </script>
+<!-- END: Logic -->
+</body></html>

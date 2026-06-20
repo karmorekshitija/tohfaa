@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa - Craft New Listing</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#3D6B4F',
+            parchment: '#F7F3EC',
+            sage: '#8FAF82',
+            violet: '#7B5EA7',
+            gold: '#C8973A',
+          },
+          fontFamily: {
+            playfair: ['"Playfair Display"', 'serif'],
+            sans: ['"DM Sans"', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #F7F3EC;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Fixed bottom navigation space */
+    main {
+      padding-bottom: 100px;
+    }
+    .progress-line {
+      height: 1px;
+      background: #3D6B4F;
+      opacity: 0.3;
+      position: absolute;
+      top: 18px;
+      left: 0;
+      right: 0;
+      z-index: 0;
+    }
+    .drawer-transition {
+      transition: transform 0.3s ease-in-out;
+    }
+    .step-active {
+      border: 2px solid #3D6B4F;
+      color: #3D6B4F;
+    }
+    .step-completed {
+      background-color: #3D6B4F;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-parchment text-forest">
+<!-- BEGIN: Navigation -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-parchment border-b border-forest/10 px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="p-2 min-w-[44px] min-h-[44px]" data-purpose="hamburger-menu" id="menuBtn">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<div class="flex items-center gap-2">
+<span class="text-2xl font-playfair font-bold">Tohfa</span>
+</div>
+</div>
+<div class="flex items-center">
+<button class="p-2 min-w-[44px] min-h-[44px]">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</nav>
+<!-- END: Navigation -->
+<!-- BEGIN: Sidebar Drawer -->
+<div class="fixed inset-0 z-[60] drawer-transition -translate-x-full" data-purpose="mobile-drawer" id="drawer">
+<div class="absolute inset-0 bg-black/50" id="drawerOverlay"></div>
+<div class="absolute left-0 top-0 bottom-0 w-3/4 max-w-sm bg-parchment p-6 overflow-y-auto">
+<div class="flex justify-between items-center mb-8">
+<span class="text-2xl font-playfair font-bold">Tohfa</span>
+<button class="p-2" id="closeDrawer">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<ul class="space-y-4 font-sans text-lg">
+<li><a class="block py-2" href="#">Dashboard</a></li>
+<li><a class="block py-2 font-bold border-l-4 border-forest pl-3" href="#">Catalog</a></li>
+<li><a class="block py-2" href="#">Orders</a></li>
+<li><a class="block py-2" href="#">Overflow</a></li>
+<li><a class="block py-2" href="#">Payments</a></li>
+<li><a class="block py-2" href="#">Analytics</a></li>
+<li><a class="block py-2" href="#">Messages</a></li>
+<li><a class="block py-2" href="#">Reviews</a></li>
+<li><a class="block py-2 border-t border-forest/10 pt-4" href="#">Profile and settings</a></li>
+</ul>
+<div class="mt-8 space-y-4">
+<button class="w-full py-3 border border-forest rounded-full font-bold">View store</button>
+<button class="w-full py-3 text-red-600 font-bold">Log out</button>
+</div>
+</div>
+</div>
+<!-- END: Sidebar Drawer -->
+<main class="mt-16 px-4 py-6">
+<!-- BEGIN: Header Section -->
+<section class="mb-8" data-purpose="listing-header">
+<div class="flex items-center gap-4 mb-4">
+<button class="bg-white rounded-full p-2 border border-forest/20">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<h1 class="text-3xl font-playfair">Craft New Listing</h1>
+</div>
+<!-- BEGIN: Progress Indicator -->
+<div class="relative py-4 overflow-x-auto scrollbar-hide" data-purpose="progress-stepper">
+<div class="flex items-center justify-between min-w-[500px] relative px-4">
+<div class="progress-line"></div>
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="w-9 h-9 rounded-full flex items-center justify-center step-completed">
+<svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase">Photos</span>
+</div>
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-forest ring-4 ring-parchment">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase border-b-2 border-forest pb-1">Details</span>
+</div>
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-forest/20">
+<svg class="h-5 w-5 opacity-40" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase opacity-40">Pricing</span>
+</div>
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-forest/20">
+<svg class="h-5 w-5 opacity-40" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6 0a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase opacity-40">Shipping</span>
+</div>
+<div class="flex flex-col items-center gap-2 relative z-10">
+<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-forest/20">
+<svg class="h-5 w-5 opacity-40" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase opacity-40">Preview</span>
+</div>
+</div>
+</div>
+<!-- END: Progress Indicator -->
+</section>
+<!-- END: Header Section -->
+<!-- BEGIN: Listing Form -->
+<form class="space-y-8" data-purpose="listing-form">
+<!-- BEGIN: Product Type -->
+<fieldset>
+<legend class="text-xl font-playfair mb-4">Product Type</legend>
+<div class="grid grid-cols-1 gap-4">
+<!-- Selection 1 -->
+<label class="relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer">
+<div class="flex items-start gap-4">
+<div class="mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center">
+<div class="w-2.5 h-2.5 bg-forest rounded-full"></div>
+</div>
+<div>
+<span class="block font-bold text-lg mb-1">Pre-made / Ready Inventory</span>
+<span class="text-sm opacity-70">Standard item ready to ship directly from inventory</span>
+</div>
+</div>
+<input checked="" class="hidden" name="product_type" type="radio" value="pre-made"/>
+</label>
+<!-- Selection 2 -->
+<label class="relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer">
+<div class="flex items-start gap-4">
+<div class="mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center">
+</div>
+<div>
+<span class="block font-bold text-lg mb-1">Customisable / Made-to-Order</span>
+<span class="text-sm opacity-70">Accept custom text, colors, photos, or special instructions</span>
+</div>
+</div>
+<input class="hidden" name="product_type" type="radio" value="custom"/>
+</label>
+</div>
+</fieldset>
+<!-- END: Product Type -->
+<!-- BEGIN: Discovery Settings -->
+<div class="p-6 bg-forest/[0.03] border border-forest/10 rounded-2xl">
+<h2 class="text-xl font-playfair mb-2">Discovery Settings</h2>
+<div class="space-y-2">
+<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Product Tags</label>
+<div class="relative">
+<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 font-sans focus:ring-forest focus:border-forest" placeholder="Add tags..." type="text"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-forest/40">#</span>
+</div>
+</div>
+</div>
+<!-- END: Discovery Settings -->
+<!-- BEGIN: Listing Title -->
+<div class="space-y-2">
+<h2 class="text-xl font-playfair">Listing Title</h2>
+<div class="relative">
+<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
+<div class="text-right mt-2">
+<span class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
+</div>
+</div>
+</div>
+<!-- END: Listing Title -->
+<!-- BEGIN: Category Selection -->
+<div class="space-y-4">
+<h2 class="text-xl font-playfair">Category Selection</h2>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Pressed Flowers</button>
+<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Cyanotypes</button>
+<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Handmade Paper</button>
+<button class="px-5 py-3 rounded-full bg-white border-2 border-forest text-sm font-sans" type="button">Artisan Kits</button>
+</div>
+</div>
+<!-- END: Category Selection -->
+<!-- BEGIN: Dimensions & Weight -->
+<div class="space-y-4">
+<h2 class="text-xl font-playfair">Dimensions &amp; Weight</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">L (CM)</label>
+<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">W (CM)</label>
+<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">H (CM)</label>
+<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Weight (G)</label>
+<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
+</div>
+</div>
+</div>
+<!-- END: Dimensions & Weight -->
+<!-- BEGIN: Product Description -->
+<div class="space-y-4">
+<h2 class="text-xl font-playfair">Product Description</h2>
+<textarea class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
+</div>
+<!-- END: Product Description -->
+</form>
+<!-- END: Listing Form -->
+</main>
+<!-- BEGIN: Footer Actions -->
+<footer class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4" data-purpose="sticky-footer">
+<div class="flex items-center gap-3">
+<button class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px]">
+        Keep Draft
+      </button>
+<button class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2">
+        Continue
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<button class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px]">
+        Discard
+      </button>
+</div>
+</footer>
+<!-- END: Footer Actions -->
+<!-- Scripts -->
+<script data-purpose="ui-handlers">
+    const menuBtn = document.getElementById('menuBtn');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const drawer = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+
+    const toggleDrawer = () => {
+      drawer.classList.toggle('-translate-x-full');
+    };
+
+    menuBtn.addEventListener('click', toggleDrawer);
+    closeDrawer.addEventListener('click', toggleDrawer);
+    drawerOverlay.addEventListener('click', toggleDrawer);
+  </script>
+</body></html>

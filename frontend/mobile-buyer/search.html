@@ -121,6 +121,14 @@
             left: auto !important;
             transform: none !important;
         }
+        @media (max-width: 768px) {
+            #results-grid,
+            #related-treasures-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 12px !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-white min-h-screen relative overflow-x-hidden text-ink font-body-md antialiased">
@@ -323,7 +331,7 @@
             </div>
 
             <!-- Product Grid -->
-            <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg hidden">
+            <div id="results-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-lg hidden">
                 <!-- Dynamic cards injected here -->
             </div>
 
@@ -345,7 +353,7 @@
                 <!-- Related Treasures section -->
                 <div class="pt-16 border-t border-outline-variant/20 text-left">
                     <h4 class="font-headline-lg text-[22px] text-primary italic text-center mb-10">Related treasures you might love</h4>
-                    <div id="related-treasures-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+                    <div id="related-treasures-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
                         <!-- Recommended items injected here -->
                     </div>
                 </div>

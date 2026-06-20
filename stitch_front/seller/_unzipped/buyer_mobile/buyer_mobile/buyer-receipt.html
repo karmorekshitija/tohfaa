@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Printable Receipt | Tohfa</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Merriweather:ital,wght@0,400;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;1,700&amp;family=Space+Mono:wght@400;700&amp;family=Lora:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#3D6B4F", // Forest Green
+                        "secondary": "#49663f",
+                        "tertiary": "#7B5EA7",
+                        "background": "#ffffff",
+                        "surface": "#FFFFFF",
+                        "surface-ivory": "#f9f6f1",
+                        "sage": "#717972",
+                        "sage-soft": "#F7F3EC",
+                        "gold": "#b08d57",
+                        "gold-soft": "#f9ecdc",
+                        "on-surface": "#211b11",
+                        "on-surface-variant": "#414942",
+                        "outline": "#717972",
+                        "outline-variant": "#F7F3EC"
+                    },
+                    "fontFamily": {
+                        "title-serif": ["Merriweather", "serif"],
+                        "headline-lg": ["Playfair Display", "serif"],
+                        "data-price": ["Space Mono", "monospace"],
+                        "label-caps": ["Cinzel", "serif"],
+                        "body-md": ["DM Sans", "sans-serif"],
+                        "artisan-serif": ["Lora", "serif"]
+                    },
+                    "fontSize": {
+                        "receipt-label": ["18px", {"lineHeight": "24px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "table-header": ["10px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                        "order-meta": ["13px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                background: white;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        body {
+            background-color: #f3f4f6;
+            -webkit-print-color-adjust: exact;
+        }
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 20px auto;
+            background: white;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        @media print {
+            .a4-page {
+                margin: 0;
+                box-shadow: none;
+                width: 100%;
+            }
+        }
+
+        .wax-seal {
+            border: 1.5px solid #3D6B4F;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+        }
+    </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack layout sections */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Product grids must be 2 columns */
+    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
+    .product-grid, .search-results-grid, .category-product-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+    }
+  }
+</style>
+
+</head>
+<body class="font-body-md text-on-surface bg-white">
+<!-- Screen Preview Only Notification -->
+<div class="no-print bg-primary text-white p-4 text-center sticky top-0 z-50">
+<p class="font-label-caps text-[12px]">Tohfa Merchant Studio • Print Layout Preview</p>
+</div>
+
+<!-- Main Receipt Canvas -->
+<main id="receipt-canvas" class="a4-page overflow-hidden flex flex-col">
+    <!-- Loaded dynamically -->
+</main>
+
+<!-- Invisible trigger for auto-print on load if needed or manual button for preview -->
+<div class="no-print fixed bottom-8 right-8 flex gap-4">
+<button class="bg-primary text-white font-label-caps px-8 py-4 shadow-xl hover:opacity-90 transition-all flex items-center gap-2" onclick="window.print()">
+<span class="material-symbols-outlined">print</span>
+            PRINT RECEIPT
+        </button>
+</div>
+
+<script type="module">
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || getTohfaToken();
+        } catch(e) {
+            return getTohfaToken();
+        }
+    }
+
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+    import { formatPaise } from '/src/utils/currency.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = getTohfaToken();
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (!id) {
+            document.getElementById('receipt-canvas').innerHTML = `<p class="p-8 text-center text-error">No order ID specified.</p>`;
+            return;
+        }
+
+        try {
+            const res = await apiClient.get(`/orders/${id}/receipt`);
+            if (res.data && res.data.success) {
+                const r = res.data.data;
+                document.title = `Tohfa - Printable Receipt #${r.order_ref}`;
+                renderReceipt(r);
+            }
+        } catch (err) {
+            console.error("Error fetching receipt:", err);
+            document.getElementById('receipt-canvas').innerHTML = `
+                <p class="p-8 text-center text-error font-semibold">Failed to load receipt.</p>
+            `;
+        }
+    });
+
+    function renderReceipt(r) {
+        const canvas = document.getElementById('receipt-canvas');
+        const formattedDate = new Date(r.created_at).toLocaleDateString('en-IN', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        canvas.innerHTML = `
+            <!-- Header Section -->
+            <!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="./buyer-home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="./buyer-categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- Reels -->
+    <a href="./buyer-reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">movie</span>
+      <span>Reels</span>
+    </a>
+    <!-- Profile -->
+    <a href="./buyer-profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="./buyer-categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="./buyer-saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="./buyer-cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="./buyer-notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+  
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+            
+            <!-- Shipping & Billing Info -->
+            <section class="grid grid-cols-2 gap-12 mb-16 border-b border-outline-variant/30 pb-12">
+            <div>
+            <h3 class="font-label-caps text-[11px] text-sage mb-4 uppercase">Billed to</h3>
+            <div class="space-y-1 text-[14px] leading-relaxed">
+            <p class="font-bold">${r.billed_to.full_name}</p>
+            <p>${r.billed_to.line1}</p>
+            ${r.billed_to.line2 ? `<p>${r.billed_to.line2}</p>` : ''}
+            <p>${r.billed_to.city}, ${r.billed_to.state}</p>
+            <p>${r.billed_to.pincode}</p>
+            ${r.billed_to.phone ? `<p class="pt-2 italic text-on-surface-variant">Phone: ${r.billed_to.phone}</p>` : ''}
+            </div>
+            </div>
+            <div>
+            <h3 class="font-label-caps text-[11px] text-sage mb-4 uppercase">Shipped to</h3>
+            <div class="space-y-1 text-[14px] leading-relaxed">
+            <p class="font-bold">${r.shipped_to.full_name}</p>
+            <p>${r.shipped_to.line1}</p>
+            ${r.shipped_to.line2 ? `<p>${r.shipped_to.line2}</p>` : ''}
+            <p>${r.shipped_to.city}, ${r.shipped_to.state}</p>
+            <p>${r.shipped_to.pincode}</p>
+            </div>
+            </div>
+            </section>
+            
+            <!-- Items Table -->
+            <section class="mb-12">
+            <table class="w-full text-left border-collapse">
+            <thead>
+            <tr class="border-b border-primary">
+            <th class="font-label-caps text-table-header py-4 text-primary">ITEM</th>
+            <th class="font-label-caps text-table-header py-4 text-primary text-center">QTY</th>
+            <th class="font-label-caps text-table-header py-4 text-primary text-right">UNIT</th>
+            <th class="font-label-caps text-table-header py-4 text-primary text-right">AMOUNT</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/30">
+            ${r.items.map(item => `
+                <tr>
+                <td class="py-6">
+                <p class="font-artisan-serif text-[16px] text-primary font-semibold">${item.product_name}</p>
+                <p class="text-[12px] text-on-surface-variant mt-1 italic">${item.description || ''}</p>
+                </td>
+                <td class="py-6 font-data-price text-[14px] text-center">${item.quantity}</td>
+                <td class="py-6 font-data-price text-[14px] text-right">${formatPaise(item.unit_price_paise)}</td>
+                <td class="py-6 font-data-price text-[14px] text-right font-semibold">${formatPaise(item.amount_paise)}</td>
+                </tr>
+            `).join('')}
+            </tbody>
+            </table>
+            </section>
+            
+            <!-- Totals Section -->
+            <section class="flex justify-end mb-24">
+            <div class="w-full max-w-[280px]">
+            <div class="flex justify-between py-2">
+            <span class="font-artisan-serif text-[14px] text-on-surface-variant">Subtotal</span>
+            <span class="font-data-price text-[14px]">${formatPaise(r.subtotal_paise)}</span>
+            </div>
+            <div class="flex justify-between py-2">
+            <span class="font-artisan-serif text-[14px] text-on-surface-variant">Shipping</span>
+            <span class="font-data-price text-[14px]">${formatPaise(r.shipping_paise)}</span>
+            </div>
+            <div class="flex justify-between py-4 mt-2 border-t border-outline-variant/50">
+            <span class="font-label-caps text-[14px] text-primary">Total Amount</span>
+            <span class="font-data-price text-[20px] font-bold text-gold">${formatPaise(r.total_paise)}</span>
+            </div>
+            </div>
+            </section>
+            
+            <!-- Footer Area -->
+            <footer class="mt-auto pt-12 border-t border-outline-variant/20 relative">
+            <div class="flex flex-col items-center gap-6">
+            <p class="font-artisan-serif text-[14px] text-primary">${r.seller_name || 'Tohfa Artisan'}</p>
+            <div class="flex items-center gap-3">
+            <div class="h-px w-8 bg-outline-variant"></div>
+            <p class="font-artisan-serif italic text-[14px] text-on-surface-variant">
+                                Made with care, thank you ✦
+                            </p>
+            <div class="h-px w-8 bg-outline-variant"></div>
+            </div>
+            </div>
+            <!-- Corner Detail (Wax Seal Motif) -->
+            <div class="absolute bottom-4 right-0 flex items-center gap-4 opacity-40">
+            <div class="text-right">
+            <p class="font-label-caps text-[9px] text-sage leading-tight">AUTHENTIC<br>ARTISAN GOODS</p>
+            </div>
+            <div class="wax-seal">
+            <span class="material-symbols-outlined text-[24px] text-primary" style="font-variation-settings: 'FILL' 1;">
+                                    verified
+                                </span>
+            </div>
+            </div>
+            </footer>
+            <!-- Bottom Border Accent -->
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-primary"></div>
+        `;
+    }
+
+    let isLoggedIn = false;
+    async function checkAuthState() {
+        const token = getTohfaToken();
+        const authContainer = document.getElementById('auth-buttons-container');
+        
+        if (token) {
+            isLoggedIn = true;
+            try {
+                let avatarUrl = null;
+                let initial = 'A';
+                try {
+                    const res = await apiClient.get('/profile/me');
+                    if (res.data && res.data.success) {
+                        avatarUrl = res.data.data.avatar_url;
+                        if (res.data.data.full_name) {
+                            initial = res.data.data.full_name.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile avatar:", err);
+                }
+                
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                } else {
+                    avatarHtml = `
+                        <a href="./buyer-profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                            ${initial}
+                        </a>
+                    `;
+                }
+
+                if (authContainer) {
+                    authContainer.innerHTML = '';
+                }
+            } catch(e) {
+                console.error("Failed to parse token:", e);
+                logout();
+            }
+        } else {
+            isLoggedIn = false;
+            if (authContainer) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-md">
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    checkAuthState();
+</script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+  initMobileBuyerTopBar();
+  initMobileBuyerNav('profile');
+</script>
+
+</body>
+</html>
