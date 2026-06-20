@@ -146,7 +146,7 @@
 
       .seller-main-panel {
         margin-left: 0 !important;
-        padding: 80px 16px 16px 16px !important;
+        padding: 68px 16px 16px 16px !important;
         height: auto !important;
         max-height: none !important;
         overflow-y: visible !important;
@@ -187,6 +187,11 @@ class SellerSidebar extends HTMLElement {
           <a class="sidebar-link ${activeTab === 'catalog' ? 'sidebar-link-active' : ''}" href="${prefix}/catalog.html" id="sidebar-catalog" title="Catalog">
             <span class="material-symbols-outlined mb-1 text-2xl">library_books</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Catalog</span>
+          </a>
+          <!-- Reels -->
+          <a class="sidebar-link ${activeTab === 'reels' ? 'sidebar-link-active' : ''}" href="${prefix}/upload-reel.html" id="sidebar-reels" title="Reels">
+            <span class="material-symbols-outlined mb-1 text-2xl">movie</span>
+            <span class="text-[9px] uppercase tracking-widest text-center">Reels</span>
           </a>
           <!-- Orders -->
           <a class="sidebar-link ${activeTab === 'orders' ? 'sidebar-link-active' : ''}" href="${prefix}/orders.html" id="sidebar-orders" title="Orders">

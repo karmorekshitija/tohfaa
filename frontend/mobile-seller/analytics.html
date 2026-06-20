@@ -47,6 +47,21 @@
     .grid > div, .flex > div, .space-y-lg > div, .space-y-md > div {
       margin-top: 12px;
     }
+    /* Enforce 2-column grid layout for KPI summary cards */
+    #kpi-strip {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      flex-direction: row !important;
+      gap: 12px !important;
+    }
+    #kpi-strip > div {
+      margin-top: 0 !important;
+      padding: 12px !important;
+    }
+    #kpi-strip h3.text-xl {
+      font-size: 1.25rem !important;
+      margin-top: 4px !important;
+    }
     /* Enforce playfair display for headings */
     h1, h2, h3, h4, h5, h6 {
       font-family: 'Playfair Display', serif !important;
@@ -126,7 +141,7 @@
     </section>
 
     <!-- KPI Cards -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-md mb-xl">
+    <section id="kpi-strip" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-md mb-xl">
         <!-- Card 1: Total Revenue -->
         <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
             <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Total Revenue</p>
