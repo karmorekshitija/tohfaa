@@ -188,6 +188,7 @@
     let currentPeriod = '30d';
     let searchQuery   = '';
     let searchTimer   = null;
+    let allOrders     = [];
 
     function formatPaise(p) {
         if (p == null) return '₹0';
@@ -222,6 +223,49 @@
         return `<span class="text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${m[s] || 'bg-surface-variant text-on-surface-variant'}">${labels[s] || s}</span>`;
     }
 
+    function renderOrders() {
+        const empty   = document.getElementById('empty-state');
+        const table   = document.getElementById('orders-table-wrap');
+
+        let filtered = allOrders;
+        if (currentStatus !== 'all') {
+            filtered = allOrders.filter(o => o.fulfillment_status === currentStatus || o.status === currentStatus);
+        }
+
+        document.getElementById('orders-count-label').textContent = `Curating ${filtered.length} order${filtered.length !== 1 ? 's' : ''} for your store.`;
+
+        if (filtered.length === 0) {
+            empty.classList.remove('hidden');
+            table.classList.add('hidden');
+            return;
+        }
+
+        empty.classList.add('hidden');
+        table.classList.remove('hidden');
+
+        // Render rows
+        document.getElementById('orders-tbody').innerHTML = filtered.map(o => `
+            <div class="order-row grid grid-cols-12 px-6 py-5 bg-white border border-outline-variant/30 rounded-xl items-center shadow-sm relative group cursor-pointer fade-in" data-id="${o.internal_id}">
+                <div class="col-span-1 flex justify-center"><input type="checkbox" class="order-select-checkbox rounded border-sage text-primary focus:ring-primary" data-id="${o.internal_id}" onclick="event.stopPropagation();"/></div>
+                <div class="col-span-2 font-data-price text-on-surface-variant">${formatDate(o.order_date)}</div>
+                <div class="col-span-1 font-data-price text-primary">#${o.order_id || '—'}</div>
+                <div class="col-span-2 flex flex-col">
+                    <span class="font-body-md font-bold text-on-surface">${o.buyer_name || '—'}</span>
+                </div>
+                <div class="col-span-3 flex flex-col">
+                    <span class="font-body-md truncate max-w-[200px] text-on-surface-variant font-medium">${o.item_title || '—'}</span>
+                </div>
+                <div class="col-span-1 text-center font-data-price text-primary font-bold">${formatPaise(o.total_paise)}</div>
+                <div class="col-span-2 flex justify-center">
+                    ${statusBadge(o.fulfillment_status)}
+                </div>
+            </div>
+        `).join('');
+
+        table.classList.remove('hidden');
+        attachTableListeners();
+    }
+
     async function loadOrders() {
         const loading = document.getElementById('loading-state');
         const error   = document.getElementById('error-state');
@@ -236,7 +280,7 @@
         kpi.classList.add('hidden');
 
         const token  = sessionStorage.getItem('tohfa_access_token');
-        const params = new URLSearchParams({ status: currentStatus, period: currentPeriod, ...(searchQuery ? { search: searchQuery } : {}) });
+        const params = new URLSearchParams({ tab: 'all', period: currentPeriod, ...(searchQuery ? { search: searchQuery } : {}) });
 
         try {
             const res  = await fetch(`${API_BASE_URL}/api/seller/orders?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -245,9 +289,7 @@
 
             const resp   = await res.json();
             const data   = resp.data || resp;
-            const orders = data.orders || [];
-
-            document.getElementById('orders-count-label').textContent = `Curating ${data.total || 0} order${data.total !== 1 ? 's' : ''} for your store.`;
+            allOrders    = data.orders || [];
 
             // KPIs
             document.getElementById('kpi-total').textContent    = data.total ?? '—';
@@ -259,29 +301,7 @@
             loading.classList.add('hidden');
             document.getElementById('body-content').classList.remove('opacity-0');
 
-            if (orders.length === 0) { empty.classList.remove('hidden'); return; }
-
-            // Render rows
-            document.getElementById('orders-tbody').innerHTML = orders.map(o => `
-                <div class="order-row grid grid-cols-12 px-6 py-5 bg-white border border-outline-variant/30 rounded-xl items-center shadow-sm relative group cursor-pointer fade-in" data-id="${o.internal_id}">
-                    <div class="col-span-1 flex justify-center"><input type="checkbox" class="order-select-checkbox rounded border-sage text-primary focus:ring-primary" data-id="${o.internal_id}" onclick="event.stopPropagation();"/></div>
-                    <div class="col-span-2 font-data-price text-on-surface-variant">${formatDate(o.order_date)}</div>
-                    <div class="col-span-1 font-data-price text-primary">#${o.order_id || '—'}</div>
-                    <div class="col-span-2 flex flex-col">
-                        <span class="font-body-md font-bold text-on-surface">${o.buyer_name || '—'}</span>
-                    </div>
-                    <div class="col-span-3 flex flex-col">
-                        <span class="font-body-md truncate max-w-[200px] text-on-surface-variant font-medium">${o.item_title || '—'}</span>
-                    </div>
-                    <div class="col-span-1 text-center font-data-price text-primary font-bold">${formatPaise(o.total_paise)}</div>
-                    <div class="col-span-2 flex justify-center">
-                        ${statusBadge(o.fulfillment_status)}
-                    </div>
-                </div>
-            `).join('');
-
-            table.classList.remove('hidden');
-            attachTableListeners();
+            renderOrders();
 
         } catch (err) {
             console.error('Load orders error:', err);
@@ -794,7 +814,7 @@
                 });
                 btn.className = 'filter-btn pb-3 px-1 border-b-2 border-primary text-primary font-bold whitespace-nowrap';
                 currentStatus = btn.dataset.status;
-                loadOrders();
+                renderOrders();
             });
         });
 

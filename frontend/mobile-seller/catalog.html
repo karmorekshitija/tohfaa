@@ -152,7 +152,7 @@
           </button>
 </div>
 <div class="relative w-full md:w-80">
-<input class="w-full bg-white border-sage/20 rounded-full pl-10 pr-4 py-2.5 focus:ring-forest focus:border-forest text-sm" placeholder="Search entries..." type="text"/>
+<input data-filter="search" class="w-full bg-white border-sage/20 rounded-full pl-10 pr-4 py-2.5 focus:ring-forest focus:border-forest text-sm" placeholder="Search entries..." type="text"/>
 <svg class="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
@@ -161,20 +161,26 @@
 <div class="flex flex-wrap items-center gap-6 text-sm text-gray-500 py-4 border-y border-sage/10">
 <div class="flex items-center gap-2">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Status:</span>
-<select class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
-<option>All Statuses</option>
+<select data-filter="status" class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+<option value="all">All Statuses</option>
+<option value="active">Active</option>
+<option value="paused">Paused</option>
+<option value="draft">Draft</option>
 </select>
 </div>
 <div class="flex items-center gap-2">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Category:</span>
-<select class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
-<option>All Categories</option>
+<select data-filter="category" class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+<option value="all">All Categories</option>
 </select>
 </div>
 <div class="flex items-center gap-2 md:ml-auto">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Sort by:</span>
-<select class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
-<option>Newest First</option>
+<select id="sort-select" class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+<option value="newest">Newest First</option>
+<option value="price-high">Price: High to Low</option>
+<option value="popular">Best Selling</option>
+<option value="low-stock">Low Stock</option>
 </select>
 </div>
 </div>
@@ -182,15 +188,342 @@
 <!-- END: Actions & Filters -->
 <!-- BEGIN: Catalog List -->
 <section class="bg-cream rounded-2xl shadow-sm border border-sage/10 overflow-hidden" data-purpose="catalog-grid">
-<!-- Desktop Table Header -->
-<div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-4 bg-parchment/50 border-b border-sage/10 text-[10px] font-mono uppercase tracking-widest text-gray-500">
-<div class="col-span-1 flex items-center justify-center"><input class="rounded text-forest focus:ring-forest" type="checkbox"/></div>
-<div class="col-span-4">Product</div>
-<div class="col-span-1 text-right">Price</div>
-<div class="col-span-2 text-center">Discount</div>
-<div class="col-span-1 text-center">Stock</div>
-<div class="col-span-3 text-right">Actions</div>
-</div>
+  <!-- Desktop Table Header (hidden on mobile) -->
+  <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-4 bg-parchment/50 border-b border-sage/10 text-[10px] font-mono uppercase tracking-widest text-gray-500">
+    <div class="col-span-1 flex items-center justify-center"><input class="rounded text-forest focus:ring-forest" type="checkbox"/></div>
+    <div class="col-span-4">Product</div>
+    <div class="col-span-1 text-right">Price</div>
+    <div class="col-span-2 text-center">Discount</div>
+    <div class="col-span-1 text-center">Stock</div>
+    <div class="col-span-3 text-right">Actions</div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="catalog-loading" class="py-16 flex flex-col items-center gap-3">
+    <div class="w-10 h-10 border-4 border-sage border-t-forest rounded-full animate-spin"></div>
+    <p class="text-sm text-gray-500 font-sans">Loading your catalog...</p>
+  </div>
+
+  <!-- Error state -->
+  <div id="catalog-error" class="hidden py-16 flex flex-col items-center gap-3 text-center px-6">
+    <span class="material-symbols-outlined text-4xl text-red-400">error_outline</span>
+    <p class="font-serif text-lg text-forest">Couldn't load listings</p>
+    <button onclick="loadCatalog()" class="mt-2 px-5 py-2 bg-forest text-white rounded-full text-sm font-sans font-semibold hover:opacity-90 active:scale-95 transition-all">Retry</button>
+  </div>
+
+  <!-- Empty state -->
+  <div id="catalog-empty" class="hidden py-16 flex flex-col items-center gap-3 text-center px-6">
+    <span class="material-symbols-outlined text-4xl text-sage">inventory_2</span>
+    <p class="font-serif italic text-xl text-forest">No listings yet</p>
+    <p class="text-sm text-gray-400">Create your first listing to get started.</p>
+  </div>
+
+  <!-- List Container -->
+  <div class="divide-y divide-sage/5" id="catalog-list-container"></div>
+</section>
+<!-- END: Catalog List -->
+</seller-layout>
+
+<script>
+  const API_BASE = window.location.origin;
+  let allListings = [];
+  let filteredListings = [];
+  let searchTimer = null;
+
+  function getTohfaToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch(e) { return null; }
+  }
+
+  function formatPaise(p) {
+    if (p == null || p === 0) return '\u20B90';
+    return '\u20B9' + (p / 100).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-mobile-catalog');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast-mobile-catalog';
+      document.body.appendChild(t);
+    }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3000);
+  }
+
+  async function loadCatalog() {
+    document.getElementById('catalog-loading').classList.remove('hidden');
+    document.getElementById('catalog-error').classList.add('hidden');
+    document.getElementById('catalog-empty').classList.add('hidden');
+    document.getElementById('catalog-list-container').innerHTML = '';
+
+    const token = getTohfaToken();
+    try {
+      if (!token) throw new Error('Not authenticated');
+      const res = await fetch(`${API_BASE}/api/seller/listings`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401 || res.status === 403) { sessionStorage.clear(); window.location.href = '/auth/login.html'; return; }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const resp = await res.json();
+      let raw = [];
+      if (resp?.data?.listings) raw = resp.data.listings;
+      else if (Array.isArray(resp?.data)) raw = resp.data;
+      else if (Array.isArray(resp)) raw = resp;
+      else if (resp?.listings) raw = resp.listings;
+
+      allListings = raw.map(l => ({
+        ...l,
+        listing_id: l.id || l.listing_id,
+        price_paise: l.price_paise || (l.price ? Math.round(l.price * 100) : 0) || l.base_price || 0,
+        stock_count: l.stock_count ?? l.stock ?? 0,
+        cover_photo_url: l.cover_photo_url || l.cover_image_url || null,
+        discount_active: l.discount_active === true || l.discount_active === 1,
+        discount_percentage: l.discount_percentage || 0,
+        discounted_price: l.discounted_price || null
+      }));
+
+      // Populate Category filter options dynamically
+      const categorySelect = document.querySelector('[data-filter="category"]');
+      if (categorySelect) {
+        const currentCategory = categorySelect.value || 'all';
+        const categories = new Set();
+        allListings.forEach(l => {
+          if (l.category) categories.add(l.category);
+        });
+        let categoryOptions = '<option value="all">All Categories</option>';
+        categories.forEach(cat => {
+          categoryOptions += `<option value="${cat}">${cat}</option>`;
+        });
+        categorySelect.innerHTML = categoryOptions;
+        categorySelect.value = currentCategory;
+      }
+    } catch (err) {
+      console.warn('Catalog load failed:', err);
+      document.getElementById('catalog-loading').classList.add('hidden');
+      document.getElementById('catalog-error').classList.remove('hidden');
+      return;
+    }
+
+    document.getElementById('catalog-loading').classList.add('hidden');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const statusVal = document.querySelector('[data-filter="status"]')?.value || 'all';
+    const categoryVal = document.querySelector('[data-filter="category"]')?.value || 'all';
+    const searchVal = (document.querySelector('[data-filter="search"]')?.value || '').toLowerCase();
+
+    filteredListings = allListings.filter(l => {
+      const matchStatus = statusVal === 'all' || l.status === statusVal;
+      const matchCategory = categoryVal === 'all' || l.category === categoryVal;
+      const matchSearch = !searchVal || (l.title || '').toLowerCase().includes(searchVal);
+      return matchStatus && matchCategory && matchSearch;
+    });
+
+    const sortVal = document.getElementById('sort-select')?.value || 'newest';
+    if (sortVal === 'newest') {
+      filteredListings.sort((a, b) => b.listing_id - a.listing_id || b.id - a.id);
+    } else if (sortVal === 'price-high') {
+      filteredListings.sort((a, b) => b.price_paise - a.price_paise);
+    } else if (sortVal === 'popular') {
+      filteredListings.sort((a, b) => (b.sale_count || 0) - (a.sale_count || 0));
+    } else if (sortVal === 'low-stock') {
+      filteredListings.sort((a, b) => a.stock_count - b.stock_count);
+    }
+
+    renderCatalog();
+  }
+
+  function renderCatalog() {
+    const container = document.getElementById('catalog-list-container');
+    const empty = document.getElementById('catalog-empty');
+
+    if (filteredListings.length === 0) {
+      empty.classList.remove('hidden');
+      container.innerHTML = '';
+      return;
+    }
+    empty.classList.add('hidden');
+
+    container.innerHTML = filteredListings.map(l => {
+      const img = l.cover_photo_url
+        ? `<img src="${l.cover_photo_url}" alt="${l.title}" class="w-full h-full object-cover" loading="lazy"/>`
+        : `<div class="w-full h-full bg-parchment flex items-center justify-center"><span class="material-symbols-outlined text-sage text-2xl">image</span></div>`;
+
+      const stockColor = l.stock_count === 0 ? 'text-red-500 font-bold' : l.stock_count <= 3 ? 'text-amber-500 font-bold' : 'text-gray-700';
+
+      const statusLabel = { active: 'Active', paused: 'Paused', draft: 'Draft', deleted: 'Deleted' }[l.status] || l.status;
+      const statusClass = { active: 'status-active', paused: 'status-paused', draft: 'bg-gray-200 text-gray-600' }[l.status] || 'bg-gray-200 text-gray-600';
+
+      const isPaused = l.status === 'paused';
+      const pauseIcon = isPaused
+        ? `<path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>`
+        : `<path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>`;
+
+      const discountToggleChecked = l.discount_active ? 'checked' : '';
+      const discountDisplay = l.discount_active && l.discount_percentage
+        ? `<span class="text-[10px] font-bold text-violet bg-violet/10 px-2 py-0.5 rounded-full">${l.discount_percentage}% off</span>`
+        : '';
+
+      return `
+        <div class="product-card group" data-id="${l.listing_id}">
+          <!-- Row 1: Image + Info + Status Badge -->
+          <div class="lg:grid lg:grid-cols-12 items-start gap-4 px-4 py-4 hover:bg-sage/5 transition-colors">
+            <div class="col-span-1 hidden lg:flex items-center justify-center">
+              <input class="rounded text-forest focus:ring-forest" type="checkbox"/>
+            </div>
+            <div class="col-span-4 flex items-center gap-3">
+              <div class="w-14 h-14 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0 border border-sage/10">${img}</div>
+              <div class="min-w-0 flex-1">
+                <h3 class="font-serif text-base text-forest font-semibold leading-tight truncate">${l.title}</h3>
+                <p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest mt-0.5">${l.category || 'Uncategorized'}</p>
+                ${discountDisplay}
+              </div>
+            </div>
+
+            <!-- Price + Stock + Discount + Actions — shown inline on mobile -->
+            <div class="col-span-7 mt-3 lg:mt-0 flex flex-wrap items-center justify-between gap-3">
+              <!-- Price -->
+              <div class="font-mono text-sm text-gray-700">
+                <span class="lg:hidden text-[10px] text-gray-400 block mb-0.5">PRICE</span>
+                ${l.discount_active && l.discounted_price
+                  ? `<span class="line-through text-gray-400 text-xs block">${formatPaise(l.price_paise)}</span><span class="text-forest font-bold">${formatPaise(l.discounted_price)}</span>`
+                  : formatPaise(l.price_paise)
+                }
+              </div>
+              <!-- Stock -->
+              <div class="text-center">
+                <span class="lg:hidden text-[10px] text-gray-400 block mb-0.5">STOCK</span>
+                <span class="${stockColor} text-sm">${l.stock_count}</span>
+              </div>
+              <!-- Discount toggle -->
+              <div class="flex flex-col gap-1" onclick="event.stopPropagation();">
+                <span class="lg:hidden text-[10px] text-gray-400 block font-mono font-bold tracking-wider">DISCOUNT</span>
+                <div class="flex items-center gap-2">
+                  <input type="number" min="1" max="90" placeholder="%" value="${l.discount_percentage || ''}" id="disc-input-${l.listing_id}"
+                    class="w-12 h-8 text-xs border border-sage/30 rounded-md text-center focus:ring-1 focus:ring-forest focus:border-forest"
+                    onkeydown="if(event.key==='Enter') saveDiscount('${l.listing_id}')" onclick="event.stopPropagation();"/>
+                  <label class="switch" title="Toggle discount" onclick="event.stopPropagation();">
+                    <input type="checkbox" id="disc-toggle-${l.listing_id}" ${discountToggleChecked} onchange="toggleDiscount('${l.listing_id}', this.checked)"/>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <!-- Action buttons + status badge -->
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusClass}">${statusLabel}</span>
+                <button class="touch-target p-2 text-gray-400 hover:text-forest active:scale-90 focus:outline-[#C8973A] transition-all" title="Edit" onclick="editListing('${l.listing_id}', '${l.status}')">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </button>
+                <button class="touch-target p-2 ${isPaused ? 'text-forest' : 'text-gray-400 hover:text-forest'} active:scale-90 focus:outline-[#C8973A] transition-all" title="${isPaused ? 'Resume' : 'Pause'}" onclick="togglePause('${l.listing_id}', '${l.status}')">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${pauseIcon}</svg>
+                </button>
+                <button class="touch-target p-2 text-gray-400 hover:text-red-500 active:scale-90 focus:outline-red-400 transition-all" title="Delete" onclick="deleteListing('${l.listing_id}', '${l.title}')">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function togglePause(id, currentStatus) {
+    const token = getTohfaToken();
+    const newStatus = currentStatus === 'paused' ? 'active' : 'paused';
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed');
+      showToast(newStatus === 'paused' ? 'Listing paused!' : 'Listing resumed!', 'success');
+      await loadCatalog();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  function editListing(id, status) {
+    if (status === 'draft') {
+      sessionStorage.setItem('draft_id', id);
+      window.location.href = '/mobile-seller/listing-photos.html';
+    } else {
+      window.location.href = `/mobile-seller/edit-listing.html?id=${id}`;
+    }
+  }
+
+  async function toggleDiscount(id, active) {
+    const input = document.getElementById(`disc-input-${id}`);
+    const pct = parseInt(input?.value || '0');
+    if (active && (!pct || pct < 1 || pct > 90)) {
+      showToast('Enter a discount % (1–90) first.', 'error');
+      document.getElementById(`disc-toggle-${id}`).checked = false;
+      return;
+    }
+    await saveDiscount(id, active);
+  }
+
+  async function saveDiscount(id, active) {
+    const token = getTohfaToken();
+    const input = document.getElementById(`disc-input-${id}`);
+    const pct = parseInt(input?.value || '0');
+    const discountActive = active !== undefined ? active : pct > 0;
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${id}/discount`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ discount_active: discountActive, discount_percentage: discountActive ? pct : 0 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed');
+      showToast(discountActive ? `${pct}% discount applied!` : 'Discount removed.', 'success');
+      await loadCatalog();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  async function deleteListing(id, title) {
+    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    const token = getTohfaToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      showToast(`"${title}" deleted.`, 'success');
+      await loadCatalog();
+    } catch (err) {
+      showToast('Delete failed: ' + err.message, 'error');
+    }
+  }
+
+  // Controls wire-up
+  document.querySelector('[data-filter="search"]')?.addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(applyFilters, 300);
+  });
+  document.querySelector('[data-filter="status"]')?.addEventListener('change', applyFilters);
+  document.querySelector('[data-filter="category"]')?.addEventListener('change', applyFilters);
+  document.getElementById('sort-select')?.addEventListener('change', applyFilters);
+
+  document.addEventListener('DOMContentLoaded', loadCatalog);
+  // Fallback if DOMContentLoaded already fired
+  if (document.readyState !== 'loading') loadCatalog();
+</script>
+</body></html>
 <!-- List Container -->
 <div class="divide-y divide-sage/5">
 <!-- Product Item 1 -->

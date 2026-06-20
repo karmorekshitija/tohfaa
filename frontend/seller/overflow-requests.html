@@ -110,12 +110,12 @@
         </div>
         
         <!-- Status Tabs -->
-        <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-2" id="status-tabs">
-            <button data-status="all" class="filter-btn active">All Requests</button>
-            <button data-status="pending" class="filter-btn">Pending</button>
-            <button data-status="accepted" class="filter-btn">Offered (Accepted)</button>
-            <button data-status="confirmed" class="filter-btn">Confirmed</button>
-            <button data-status="declined" class="filter-btn">Declined / Expired / Cancelled</button>
+        <div class="flex items-center gap-2 overflow-x-auto pb-1" id="status-tabs" style="-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none;">
+            <button data-status="all" class="filter-btn active flex-shrink-0" style="scroll-snap-align:start;">All</button>
+            <button data-status="pending" class="filter-btn flex-shrink-0" style="scroll-snap-align:start;">Pending</button>
+            <button data-status="accepted" class="filter-btn flex-shrink-0" style="scroll-snap-align:start;"><span class="hidden md:inline">Offered (Accepted)</span><span class="md:hidden">Offered</span></button>
+            <button data-status="confirmed" class="filter-btn flex-shrink-0" style="scroll-snap-align:start;">Confirmed</button>
+            <button data-status="declined" class="filter-btn flex-shrink-0" style="scroll-snap-align:start;"><span class="hidden md:inline">Declined / Expired / Cancelled</span><span class="md:hidden">Declined</span></button>
         </div>
     </header>
 
@@ -160,7 +160,7 @@
 
     <!-- Requests Table/Grid -->
     <section id="requests-grid" class="flex flex-col gap-4 hidden">
-        <div class="grid grid-cols-12 px-6 py-2 font-label-caps text-on-surface-variant opacity-60 text-xs tracking-wider border-b border-outline-variant/30 pb-3">
+        <div class="hidden md:grid grid-cols-12 px-6 py-2 font-label-caps text-on-surface-variant opacity-60 text-xs tracking-wider border-b border-outline-variant/30 pb-3">
             <div class="col-span-3">Product / Listing</div>
             <div class="col-span-2">Buyer</div>
             <div class="col-span-1 text-center">Qty</div>
@@ -376,33 +376,84 @@
             const imageUrl = r.product_image || 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
             
             // Generate actions UI
-            let actionsHtml = `<div class="flex flex-col items-center gap-1">${statusBadge(r.status)}</div>`;
+            let actionsHtmlDesktop = `<div class="flex flex-col items-center gap-1">${statusBadge(r.status)}</div>`;
+            let actionsHtmlMobile = `<div class="pt-1">${statusBadge(r.status)}</div>`;
+
             if (isPending) {
-                actionsHtml = `
+                actionsHtmlDesktop = `
                     <div class="flex gap-2 justify-center">
                         <button onclick="openAcceptForm(${r.id})" class="bg-primary text-white text-xs px-3 py-1.5 rounded-lg hover:opacity-90 transition-all font-bold">Offer Terms</button>
                         <button onclick="openDeclineForm(${r.id})" class="border border-error text-error text-xs px-3 py-1.5 rounded-lg hover:bg-error-container/20 transition-all font-bold">Decline</button>
                     </div>
                 `;
+                actionsHtmlMobile = `
+                    <div class="flex gap-2 pt-1 w-full">
+                        <button onclick="openAcceptForm(${r.id})" class="flex-1 bg-primary text-white text-xs font-bold py-2 rounded-lg hover:opacity-90 active:scale-95 focus:outline focus:outline-2 focus:outline-[#C8973A] transition-all">Offer Terms</button>
+                        <button onclick="openDeclineForm(${r.id})" class="flex-1 border border-error text-error text-xs font-bold py-2 rounded-lg hover:bg-error-container/20 active:scale-95 transition-all">Decline</button>
+                    </div>
+                `;
             } else if (r.status === 'accepted') {
-                actionsHtml = `
+                actionsHtmlDesktop = `
                     <div class="flex flex-col items-center gap-1.5">
                         ${statusBadge(r.status)}
                         <span class="text-[10px] text-on-surface-variant font-medium text-center">Proposed: ${new Date(r.seller_proposed_date).toLocaleDateString()}</span>
                         <button onclick="openDeclineForm(${r.id})" class="text-error text-[10px] hover:underline">Cancel Offer</button>
                     </div>
                 `;
+                actionsHtmlMobile = `
+                    <div class="flex gap-2 items-center pt-1 w-full">
+                        ${statusBadge(r.status)}
+                        <span class="text-[10px] text-on-surface-variant ml-1">Proposed: ${r.seller_proposed_date ? new Date(r.seller_proposed_date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '—'}</span>
+                        <button onclick="openDeclineForm(${r.id})" class="ml-auto text-error text-[10px] font-bold hover:underline active:scale-95 transition-all">Cancel</button>
+                    </div>
+                `;
             } else if (r.status === 'confirmed') {
-                actionsHtml = `
+                actionsHtmlDesktop = `
                     <div class="flex flex-col items-center gap-1.5">
                         ${statusBadge(r.status)}
                         <button onclick="openConfirmedDetail(${r.id})" class="mt-1 border border-primary text-primary text-xs px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-all font-bold">View Details</button>
                     </div>
                 `;
+                actionsHtmlMobile = `
+                    <div class="flex gap-2 items-center pt-1 w-full">
+                        ${statusBadge(r.status)}
+                        <button onclick="openConfirmedDetail(${r.id})" class="ml-auto border border-primary text-primary text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-primary/10 active:scale-95 transition-all">View Details</button>
+                    </div>
+                `;
             }
 
             return `
-                <div class="request-card grid grid-cols-12 px-6 py-5 bg-white border border-outline-variant/30 rounded-xl items-center shadow-sm relative group fade-in">
+                <!-- Mobile Compact Card View -->
+                <div class="md:hidden request-card bg-white border border-outline-variant/30 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-2 fade-in" style="max-width: 100%;">
+                  <!-- Row 1: Product image + name + listing ID -->
+                  <div class="flex items-center gap-3">
+                    <img class="w-10 h-10 rounded-lg object-cover border border-outline-variant/20 flex-shrink-0" src="${imageUrl}" />
+                    <div class="min-w-0 flex-1">
+                      <p class="font-serif font-semibold text-primary text-sm leading-tight truncate">${r.product_title || '—'}</p>
+                      <p class="text-[10px] text-outline" style="font-family:'Space Mono',monospace">ID: #${r.listing_id}</p>
+                    </div>
+                    ${statusBadge(r.status)}
+                  </div>
+                  <!-- Row 2: Buyer name + email -->
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-outline text-[16px]">person</span>
+                    <div>
+                      <p class="text-sm font-sans font-semibold text-on-surface">${r.buyer_name || '—'}</p>
+                      <p class="text-[10px] text-on-surface-variant truncate">${r.buyer_email || '—'}</p>
+                    </div>
+                  </div>
+                  <!-- Row 3: Qty · Price · Date in a flex row -->
+                  <div class="flex items-center gap-4 text-xs font-sans text-on-surface-variant border-t border-outline-variant/20 pt-2">
+                    <span><b class="text-primary font-mono">${r.quantity}</b> unit(s)</span>
+                    <span class="text-gold font-mono font-bold">${formatPaise(r.original_price_paise * r.quantity)}</span>
+                    <span class="ml-auto">${formatDate(r.created_at)}</span>
+                  </div>
+                  <!-- Row 4: Action buttons -->
+                  ${actionsHtmlMobile}
+                </div>
+
+                <!-- Desktop Row View -->
+                <div class="hidden md:grid request-card grid-cols-12 px-6 py-5 bg-white border border-outline-variant/30 rounded-xl items-center shadow-sm relative group fade-in">
                     <div class="col-span-3 flex items-center gap-md">
                         <div class="w-12 h-12 rounded-lg overflow-hidden border border-outline-variant/30 flex-shrink-0">
                             <img class="w-full h-full object-cover" src="${imageUrl}" alt="${r.product_title}" loading="lazy" />
@@ -420,7 +471,7 @@
                     <div class="col-span-2 text-center font-data-price text-on-surface">${formatPaise(r.original_price_paise * r.quantity)}</div>
                     <div class="col-span-2 text-center text-xs text-on-surface-variant font-data-price">${formatDate(r.created_at)}</div>
                     <div class="col-span-2">
-                        ${actionsHtml}
+                        ${actionsHtmlDesktop}
                     </div>
                 </div>
             `;

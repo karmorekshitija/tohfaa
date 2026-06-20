@@ -45,6 +45,64 @@
 <!-- Mobile Style Overrides -->
 <style>
   @media (max-width: 768px) {
+    /* Reflow table to card layouts */
+    table, thead, tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 6px 0 !important;
+    }
+    /* Force action button group and discount cell elements to layout horizontally */
+    td:last-child > div, td:nth-child(4) > div {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 12px !important;
+      margin-top: 0 !important;
+    }
+    /* Make buttons tappable with min touch target */
+    .edit-btn, .pause-btn, .delete-btn {
+      min-width: 44px !important;
+      min-height: 44px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 9999px !important;
+      background: #F7F3EC !important;
+      transition: all 0.2s ease !important;
+    }
+    .edit-btn:hover, .pause-btn:hover {
+      background: #8FAF82 !important;
+      color: white !important;
+    }
+    .delete-btn:hover {
+      background: #e53e3e !important;
+      color: white !important;
+    }
+    .edit-btn:active, .pause-btn:active, .delete-btn:active {
+      transform: scale(0.95) !important;
+    }
+    /* Ensure discount inputs are properly sized and not clipped */
+    [id^="discount-input-"] {
+      width: 48px !important;
+      height: 32px !important;
+      font-size: 14px !important;
+    }
+
     /* Stack grid & flex items */
     .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
       display: flex !important;
