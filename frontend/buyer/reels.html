@@ -1,105 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Artisan Reels</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#3D6B4F",
-                        "primary-container": "#8FAF82",
-                        "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#F7F3EC",
-                        "inverse-primary": "#8FAF82",
-                        "on-surface": "#1f1b15",
-                        "on-tertiary-fixed-variant": "#593d5d",
-                        "on-secondary-fixed-variant": "#484740",
-                        "on-tertiary": "#ffffff",
-                        "primary": "#3D6B4F",
-                        "surface-tint": "#3D6B4F",
-                        "tertiary-fixed": "#7B5EA7",
-                        "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3D6B4F",
-                        "on-tertiary-container": "#452b4a",
-                        "inverse-on-surface": "#f8efe5",
-                        "on-secondary": "#ffffff",
-                        "surface-variant": "#F7F3EC",
-                        "tertiary": "#7B5EA7",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#F7F3EC",
-                        "on-error": "#ffffff",
-                        "on-surface-variant": "#444840",
-                        "outline": "#74786f",
-                        "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#3D6B4F",
-                        "secondary-container": "#F7F3EC",
-                        "secondary-fixed": "#F7F3EC",
-                        "primary-fixed-dim": "#8FAF82",
-                        "secondary": "#605e57",
-                        "on-secondary-fixed": "#1c1c16",
-                        "background": "#FFFFFF",
-                        "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#8FAF82",
-                        "outline-variant": "#F7F3EC",
-                        "on-primary": "#ffffff",
-                        "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#FFFFFF",
-                        "on-primary-fixed": "#101f09",
-                        "on-background": "#1f1b15",
-                        "on-secondary-container": "#66645d",
-                        "surface-container": "#f6ece3",
-                        "on-primary-container": "#283920",
-                        "surface": "#FFFFFF",
-                        "surface-container-highest": "#F7F3EC",
-                        "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#2a122f"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xs": "4px",
-                        "sm": "8px",
-                        "md": "16px",
-                        "lg": "24px",
-                        "xl": "40px",
-                        "margin-desktop": "64px",
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "container-max": "1280px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Playfair Display"],
-                        "title-serif": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "data-price": ["DM Sans"],
-                        "label-caps": ["DM Sans"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-                        "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
         .scrim-warm {
             background: linear-gradient(to top, rgba(30, 20, 10, 0.85) 0%, rgba(30, 20, 10, 0.3) 40%, transparent 70%);
         }
@@ -187,7 +100,7 @@
     <p class="font-title-serif text-lg font-bold text-center">No artisan reels active</p>
     <p class="font-body-md text-sm text-outline text-center mt-xs">Check back later for beautiful handmade curations.</p>
   </div>
-  <video id="reel-video" class="w-full h-full object-cover" loop playsinline autoplay muted></video>
+  <video id="reel-video" class="w-full h-full object-cover" loop playsinline autoplay muted preload="metadata"></video>
   
   <!-- Custom Play/Pause Overlay indicator -->
   <div id="play-overlay" class="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 pointer-events-none transition-opacity duration-200">
@@ -206,7 +119,7 @@
 <div class="mb-lg translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300" id="product-cta-container">
 <a id="product-cta-link" href="#" class="bg-primary hover:bg-[#3D6B4F] text-white px-md py-sm rounded-full flex items-center gap-sm shadow-lg transition-transform active:scale-95 inline-flex">
 <div class="w-8 h-8 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
-<img id="product-img" alt="Product thumbnail" class="w-full h-full object-cover" src="">
+<img id="product-img" alt="Product thumbnail" class="w-full h-full object-cover" src="" loading="lazy">
 </div>
 <span class="font-body-md text-sm font-bold flex items-center gap-xs">
 <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
@@ -632,13 +545,13 @@
           userAvatarCircle.style.backgroundColor = bgCol;
           
           if (user.avatar_url) {
-            userAvatarCircle.innerHTML = `<img src="${user.avatar_url}" alt="${name}" class="w-full h-full object-cover" />`;
+            userAvatarCircle.innerHTML = `<img src="${user.avatar_url}" alt="${name}" class="w-full h-full object-cover" loading="lazy" />`;
           }
 
           // Also update header profile avatar if present
           const headerAvatar = document.querySelector('.header-profile-avatar');
           if (headerAvatar && user.avatar_url) {
-            headerAvatar.innerHTML = `<img src="${user.avatar_url}" alt="Avatar" class="w-full h-full object-cover rounded-full" />`;
+            headerAvatar.innerHTML = `<img src="${user.avatar_url}" alt="Avatar" class="w-full h-full object-cover rounded-full" loading="lazy" />`;
           } else if (headerAvatar && name) {
             headerAvatar.innerHTML = `<div class="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold" style="background-color: ${bgCol}">${initials}</div>`;
           }
@@ -675,7 +588,7 @@
       sellerAvatarWrapper.style.backgroundColor = bgCol;
       
       if (reel.seller.avatar_url) {
-        sellerAvatarWrapper.innerHTML = `<img src="${reel.seller.avatar_url}" alt="${sellerName}" class="w-full h-full object-cover" />`;
+        sellerAvatarWrapper.innerHTML = `<img src="${reel.seller.avatar_url}" alt="${sellerName}" class="w-full h-full object-cover" loading="lazy" />`;
       } else {
         sellerAvatarWrapper.innerHTML = `<span id="seller-avatar-letter">${initials}</span>`;
       }
@@ -1093,7 +1006,7 @@
         return `
           <div class="product-tray-item flex items-center gap-md p-sm bg-[#F7F3EC] border border-[#8FAF82]/50 rounded-xl hover:border-primary hover:bg-surface-container transition-all cursor-pointer active:scale-[0.98] pointer-events-auto" data-id="${p.id}">
             <div class="w-12 h-12 rounded-lg overflow-hidden bg-white border border-[#8FAF82]/20 flex-shrink-0">
-              <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-cover">
+              <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
             </div>
             <div class="flex-grow min-w-0">
               <h4 class="text-xs font-semibold text-primary truncate leading-tight">${p.name}</h4>
@@ -1156,7 +1069,7 @@
         const initials = getInitials(name);
         const bgCol = getAvatarColor(name);
         const avatarHtml = comment.avatar_url
-          ? `<img src="${comment.avatar_url}" alt="${name}" class="w-full h-full object-cover" />`
+          ? `<img src="${comment.avatar_url}" alt="${name}" class="w-full h-full object-cover" loading="lazy" />`
           : `<span class="text-white font-bold text-xs select-none">${initials}</span>`;
 
         return `
@@ -1203,7 +1116,7 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">

@@ -1,260 +1,267 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Payment Failed - Tohfa Artisan Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;family=Merriweather:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "secondary-fixed": "#caecbb",
-                    "surface-container-low": "#fff2e1",
-                    "inverse-primary": "#a0d2b0",
-                    "surface-variant": "#ede1d1",
-                    "surface-bright": "#fff8f3",
-                    "on-secondary": "#ffffff",
-                    "on-primary-fixed-variant": "#214f36",
-                    "tertiary-container": "#70539b",
-                    "primary-fixed": "#bceecb",
-                    "primary": "#255338",
-                    "on-tertiary-fixed-variant": "#54387e",
-                    "inverse-surface": "#362f25",
-                    "surface-container-lowest": "#ffffff",
-                    "error-container": "#ffdad6",
-                    "primary-container": "#3d6b4f",
-                    "surface-tint": "#3a684c",
-                    "surface-container-highest": "#ede1d1",
-                    "on-error-container": "#93000a",
-                    "secondary": "#49663f",
-                    "surface-dim": "#e5d8c8",
-                    "surface": "#fff8f3",
-                    "on-error": "#ffffff",
-                    "surface-container": "#f9ecdc",
-                    "on-surface-variant": "#414942",
-                    "inverse-on-surface": "#fcefde",
-                    "outline-variant": "#c1c9c0",
-                    "on-tertiary": "#ffffff",
-                    "secondary-container": "#c8e9b8",
-                    "on-background": "#211b11",
-                    "on-secondary-fixed": "#062103",
-                    "on-primary-container": "#b7e9c6",
-                    "tertiary": "#573b81",
-                    "outline": "#717972",
-                    "on-surface": "#211b11",
-                    "on-primary": "#ffffff",
-                    "primary-fixed-dim": "#a0d2b0",
-                    "on-tertiary-container": "#e8d6ff",
-                    "on-primary-fixed": "#002110",
-                    "background": "#fff8f3",
-                    "secondary-fixed-dim": "#afd0a0",
-                    "tertiary-fixed": "#ecdcff",
-                    "on-tertiary-fixed": "#270550",
-                    "error": "#ba1a1a",
-                    "surface-container-high": "#f3e6d6",
-                    "on-secondary-fixed-variant": "#324e29",
-                    "tertiary-fixed-dim": "#d6baff",
-                    "on-secondary-container": "#4d6a43",
-                    "terracotta": "#b14b3e",
-                    "sage": "#717972",
-                    "ivory": "#FCFAF5",
-                    "gold": "#967b4c"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "margin-desktop": "64px",
-                    "gutter": "16px",
-                    "xs": "4px",
-                    "unit": "4px",
-                    "margin-mobile": "20px",
-                    "md": "16px",
-                    "lg": "24px",
-                    "xl": "40px",
-                    "sm": "8px"
-            },
-            "fontFamily": {
-                    "body-md": ["DM Sans"],
-                    "label-caps": ["Cinzel"],
-                    "title-serif": ["Merriweather"],
-                    "headline-lg-mobile": ["Playfair Display"],
-                    "headline-lg": ["Playfair Display"],
-                    "display-hero": ["Playfair Display"],
-                    "data-price": ["Space Mono"]
-            },
-            "fontSize": {
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                    "title-serif": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                    "display-hero": ["48px", {"lineHeight": "56px", "fontWeight": "300"}],
-                    "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
-            }
-          },
-        },
-      }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+<html class="light" lang="en">
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="/src/components/DeviceRedirect.js"></script>
+    <script src="/src/components/ReportWidget.js" defer></script>
+    <script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <title>Tohfa | Your Orders</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
+        .artisan-card-hover {
+            transition: all 0.2s ease;
         }
-        .ink-splat {
-            background-image: radial-gradient(circle, rgba(177,75,62,0.1) 0%, transparent 70%);
+        .artisan-card-hover:active {
+            transform: scale(0.97);
         }
-        .sketch-overlay {
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.05;
-        }
-        .terracotta-glow {
-            box-shadow: 0 0 30px rgba(177,75,62,0.15);
-        }
-        .warm-card-shadow {
-            box-shadow: 0 10px 30px -5px rgba(58, 51, 40, 0.08);
-        }
-        @keyframes gentle-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        .mascot-float {
-            animation: gentle-float 4s ease-in-out infinite;
-        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#FFFFFF] text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col font-body-md">
-<!-- TopNavBar -->
-<header class="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
-<div class="flex flex-col md:flex-row items-center justify-between px-margin-mobile md:px-margin-desktop py-md max-w-full mx-auto">
-<div class="flex items-center gap-md">
-<span class="font-display-hero text-headline-lg italic text-primary">Tohfa<span class="text-[#967b4c]">.</span></span>
-</div>
-<nav class="hidden md:flex items-center gap-xl">
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Home</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Category</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Reels</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Profile</a>
-</nav>
-<div class="flex items-center gap-lg">
-<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity">shopping_bag</button>
-</div>
-</div>
+<body class="bg-background text-on-surface font-dm-sans min-h-screen pb-24">
+
+<!-- Mobile Header Bar -->
+<header class="flex justify-between items-center px-4 h-16 w-full z-50 bg-[#F7F3EC] border-b border-[#8FAF82] sticky top-0">
+    <button class="p-2 -ml-2 text-primary flex items-center justify-center min-h-[44px] min-w-[44px]" onclick="window.location.href='profile.html'">
+        <span class="material-symbols-outlined text-2xl">arrow_back</span>
+    </button>
+    <h1 class="font-playfair text-xl font-bold text-primary">Your Orders</h1>
+    <div class="w-10"></div> <!-- Spacer to center title -->
 </header>
-<!-- Main Content -->
-<main class="flex-grow flex items-center justify-center py-xl px-margin-mobile">
-<div class="max-w-2xl w-full flex flex-col items-center text-center space-y-lg">
-<!-- Failure Icon -->
-<div class="relative">
-<div class="absolute inset-0 terracotta-glow rounded-full scale-150"></div>
-<div class="w-20 h-20 rounded-full bg-error-container flex items-center justify-center z-10 relative">
-<span class="material-symbols-outlined text-terracotta text-4xl font-bold">close</span>
-</div>
-</div>
-<!-- Header Text -->
-<div class="space-y-sm">
-<h1 class="font-headline-lg text-[26px] italic text-primary leading-tight">Payment unsuccessful</h1>
-<p class="font-body-md text-[14px] text-on-surface-variant">We couldn't process your payment. No amount was deducted.</p>
-<p class="font-data-price text-[12px] text-outline tracking-wider uppercase">ERROR CODE: PAYMENT_FAILED · ORDER NOT PLACED</p>
-</div>
-<!-- Details Section with Mascot -->
-<div class="w-full flex flex-col md:flex-row items-center md:items-end justify-center gap-lg mt-md">
-<!-- Details Card -->
-<div class="relative bg-ivory border border-outline-variant rounded-xl p-lg warm-card-shadow text-left max-w-sm w-full overflow-hidden">
-<!-- Subtle Ink Sketch Texture Overlay -->
-<div class="absolute inset-0 opacity-[0.07] pointer-events-none flex items-center justify-center">
-<span class="material-symbols-outlined text-9xl">heart_broken</span>
-</div>
-<div class="relative z-10">
-<h2 class="font-label-caps text-[10px] text-gold mb-md">WHAT HAPPENED?</h2>
-<ul class="space-y-sm text-[13px] text-on-surface-variant list-none">
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Bank declined the transaction
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Session timed out
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Incorrect card details
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Network issue during payment
-                            </li>
-</ul>
-</div>
-</div>
-<!-- Mascot -->
-<div class="mascot-float hidden md:block">
-<img class="w-32 h-32 object-contain" data-alt="A charming Chibi-style artisan girl mascot for a boutique studio, wearing a sage green apron over a cream dress. She holds a small notepad and pencil with a sympathetic, kind expression. The illustration is in a soft watercolor style with hand-drawn ink outlines on an ivory background, reflecting a warm and intentional artisan brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPGmN2TlohJ2Cfae5kWQhuUAWKjyMiQvhjsjN8HlrMPR7TQ3NhmbQtsIRIlr2dmsauBQwrA7pzk3XXdSEI3-Kl2xsMWTI2eVhsGdfqeo-N4Qhx-wQ-BUpUYhktqMIVyJijCCxZT69RGMQ5P14E0o2Wwpgr9B3Rr-ybI0RZ_tXj5jf-KlnIR5-L32-DnGnj9wqzcWzzc8mcHdqdPlrvlRbfJdA8N-J3IO7xoz3xmhTOgMg01wym-hcXeWQYzp5ycobpang2SBsl-QU"/>
-</div>
-</div>
-<!-- Actions -->
-<div class="flex flex-col gap-md w-full max-w-xs mt-xl">
-<button class="h-12 bg-primary text-white font-body-md rounded-lg active:scale-95 transition-all hover:opacity-90">
-                    Try again
-                </button>
-<button class="h-12 bg-white border border-outline text-primary font-body-md rounded-lg active:scale-95 transition-all hover:bg-surface">
-                    Try a different method
-                </button>
-<a class="text-tertiary font-body-md text-sm mt-sm hover:underline flex items-center justify-center gap-xs" href="#">
-                    Contact support <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
+
+<main class="px-4 py-6 space-y-6 max-w-md mx-auto">
+    <!-- Filter Pills (Horizontal Scrollable) -->
+    <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
+        <button id="pill-all" onclick="filterStatus('all')" class="bg-primary text-white px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">All</button>
+        <button id="pill-active" onclick="filterStatus('active')" class="bg-white border border-[#8FAF82]/30 text-on-surface-variant px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">Active</button>
+        <button id="pill-delivered" onclick="filterStatus('Delivered')" class="bg-white border border-[#8FAF82]/30 text-on-surface-variant px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">Delivered</button>
+        <button id="pill-cancelled" onclick="filterStatus('Cancelled')" class="bg-white border border-[#8FAF82]/30 text-on-surface-variant px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">Cancelled</button>
+    </div>
+
+    <!-- Order List Stack -->
+    <div id="orders-list-container" class="space-y-4">
+        <!-- Loader State -->
+        <div class="flex flex-col items-center justify-center py-12 space-y-3 text-secondary">
+            <span class="material-symbols-outlined animate-spin text-3xl text-primary">sync</span>
+            <p class="text-xs">Loading your orders...</p>
+        </div>
+    </div>
+
+    <!-- Load More Button -->
+    <div class="flex justify-center pt-2">
+        <button id="btn-load-more" onclick="loadMore()" class="hidden w-full py-3 bg-white border border-[#8FAF82]/40 text-primary rounded-lg font-bold text-sm shadow-sm artisan-card-hover">
+            Load more orders
+        </button>
+    </div>
 </main>
-<!-- Footer -->
-<footer class="w-full relative bg-surface-container border-t border-outline-variant mt-xl">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-xl px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto">
-<div class="space-y-md">
-<span class="font-display-hero text-headline-lg text-primary">Tohfa</span>
-<p class="font-body-md text-on-surface-variant">© 2024 TOFA Artisan Studio. Handcrafted with intention.</p>
+
+<!-- Bottom Navigation Bar -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#F7F3EC] border-t border-[#8FAF82] h-16 flex items-center justify-around z-50">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">home</span>
+        <span class="text-[10px] font-medium">Home</span>
+    </a>
+    <a href="categories.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">category</span>
+        <span class="text-[10px] font-medium">Category</span>
+    </a>
+    <a href="reels.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">movie</span>
+        <span class="text-[10px] font-medium">Reels</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center gap-0.5 text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
+        <span class="text-[10px] font-bold">Profile</span>
+    </a>
 </div>
-<div class="flex flex-col gap-sm">
-<h4 class="font-label-caps text-label-caps text-primary">Studio Journal</h4>
-<nav class="flex flex-col gap-xs">
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Our Story</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Studio Journal</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Artisan Partners</a>
-</nav>
-</div>
-<div class="flex flex-col gap-sm">
-<h4 class="font-label-caps text-label-caps text-primary">Support</h4>
-<nav class="flex flex-col gap-xs">
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping &amp; Returns</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Help Center</a>
-</nav>
-</div>
-</div>
-</footer>
-<script>
-    function getTohfaToken() {
+
+<script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { formatPaise } from '/src/utils/currency.js';
+
+    let ordersList = [];
+    let nextCursor = null;
+    let currentStatus = 'all';
+
+    async function initOrders() {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+
+        await fetchOrders(true);
+    }
+
+    async function fetchOrders(reset = false) {
+        if (reset) {
+            nextCursor = null;
+            ordersList = [];
+        }
+
+        const container = document.getElementById('orders-list-container');
+        if (reset) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 space-y-3 text-secondary">
+                    <span class="material-symbols-outlined animate-spin text-3xl text-primary">sync</span>
+                    <p class="text-xs">Loading your orders...</p>
+                </div>
+            `;
+        }
+
         try {
-            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
-        } catch(e) {
-            return getTohfaToken();
+            let url = `/orders?limit=10`;
+            if (currentStatus !== 'all') {
+                url += `&status=${currentStatus}`;
+            }
+            if (nextCursor) {
+                url += `&cursor=${nextCursor}`;
+            }
+
+            const res = await apiClient.get(url);
+            if (res.data && res.data.success) {
+                const { orders, next_cursor, has_more } = res.data.data;
+                nextCursor = next_cursor;
+
+                if (reset) {
+                    ordersList = orders;
+                } else {
+                    ordersList = [...ordersList, ...orders];
+                }
+
+                renderOrders();
+
+                const loadMoreBtn = document.getElementById('btn-load-more');
+                if (loadMoreBtn) {
+                    if (has_more) {
+                        loadMoreBtn.classList.remove('hidden');
+                    } else {
+                        loadMoreBtn.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching orders:", err);
+            container.innerHTML = `
+                <div class="p-6 bg-red-50 border border-red-100 rounded-xl text-center space-y-3">
+                    <span class="material-symbols-outlined text-red-600 text-3xl">error</span>
+                    <p class="text-sm font-semibold text-red-900">Failed to load orders</p>
+                    <button onclick="window.location.reload()" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg artisan-card-hover">Retry</button>
+                </div>
+            `;
         }
     }
 
-        // Micro-interaction for buttons
-        document.querySelectorAll('button').forEach(button => {
-            button.addEventListener('mousedown', () => {
-                button.style.transform = 'scale(0.98)';
+    function getStatusBadgeClass(status) {
+        switch(status) {
+            case 'Awaiting Payment':
+                return 'bg-amber-50 text-amber-800 border-amber-200';
+            case 'Processing':
+                return 'bg-purple-50 text-purple-800 border-purple-200';
+            case 'Shipped':
+                return 'bg-green-50 text-green-800 border-green-200';
+            case 'Delivered':
+                return 'bg-emerald-800 text-white border-transparent';
+            case 'Cancelled':
+                return 'bg-gray-800 text-white border-transparent';
+            default:
+                return 'bg-slate-50 text-slate-800 border-slate-200';
+        }
+    }
+
+    function renderOrders() {
+        const container = document.getElementById('orders-list-container');
+        if (ordersList.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12 bg-white border border-dashed border-[#8FAF82]/40 rounded-xl p-6 space-y-3">
+                    <span class="material-symbols-outlined text-secondary text-4xl">receipt_long</span>
+                    <h3 class="font-playfair text-base font-bold text-primary">No orders found</h3>
+                    <p class="text-xs text-secondary max-w-xs mx-auto">You haven't placed any orders matching this filter yet.</p>
+                    <button onclick="window.location.href='categories.html'" class="px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-lg artisan-card-hover">Shop Handcrafted Goods</button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = ordersList.map(o => {
+            const formattedDate = new Date(o.created_at).toLocaleDateString('en-IN', {
+                year: 'numeric', month: 'short', day: 'numeric'
             });
-            button.addEventListener('mouseup', () => {
-                button.style.transform = 'scale(1)';
-            });
-            button.addEventListener('mouseleave', () => {
-                button.style.transform = 'scale(1)';
-            });
+
+            let displayRef = o.order_ref;
+            const seedMatch = o.order_ref.match(/^(TH-\d+)-(\d+)$/);
+            if (seedMatch) {
+                displayRef = seedMatch[1];
+            }
+
+            const urls = o.image_urls && o.image_urls.length > 0 
+                ? o.image_urls.slice(0, 3) 
+                : [o.primary_image_url || 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted'];
+
+            const isCancelled = o.status === 'Cancelled';
+            const cardOpacity = isCancelled ? 'opacity-60' : '';
+            const actionIcon = isCancelled ? 'close' : 'chevron_right';
+
+            const thumbnailsHtml = `<div class="flex -space-x-4">` + urls.map(url => `
+                <img class="w-10 h-10 rounded-lg object-cover border-2 border-white shadow-sm flex-shrink-0" src="${url || 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted'}" alt="Item preview" loading="lazy">
+            `).join('') + `</div>`;
+
+            return `
+                <div onclick="window.location.href='order-detail.html?id=${o.id}'" class="bg-white border border-[#8FAF82]/20 rounded-xl p-4 shadow-sm flex items-center justify-between artisan-card-hover cursor-pointer ${cardOpacity}">
+                    <div class="flex items-center gap-4 flex-1 min-w-0">
+                        ${thumbnailsHtml}
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                                <span class="font-space-mono text-[9px] text-secondary font-bold">#${displayRef}</span>
+                                <span class="text-[9px] text-secondary/30">•</span>
+                                <span class="text-[9px] text-secondary">${formattedDate}</span>
+                            </div>
+                            <h3 class="font-playfair text-sm font-bold text-on-surface truncate pr-2">${o.item_preview}</h3>
+                            <div class="mt-2">
+                                <span class="font-space-mono text-[9px] font-bold tracking-wider rounded-full px-2 py-0.5 border ${getStatusBadgeClass(o.status)}">${o.status}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right flex flex-col items-end gap-1 flex-shrink-0">
+                        <span class="font-space-mono text-xs font-bold text-gold">${formatPaise(o.total_paise)}</span>
+                        <span class="material-symbols-outlined text-secondary text-sm">${actionIcon}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterStatus(status) {
+        currentStatus = status;
+
+        const pills = ['all', 'active', 'Delivered', 'Cancelled'];
+        pills.forEach(p => {
+            const btn = document.getElementById(`pill-${p.toLowerCase()}`);
+            if (btn) {
+                if (p === status) {
+                    btn.className = "bg-primary text-white px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover";
+                } else {
+                    btn.className = "bg-white border border-[#8FAF82]/30 text-on-surface-variant px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover";
+                }
+            }
         });
-    </script>
-</body></html>
+
+        fetchOrders(true);
+    }
+
+    function loadMore() {
+        fetchOrders(false);
+    }
+
+    window.filterStatus = filterStatus;
+    window.loadMore = loadMore;
+
+    window.addEventListener('DOMContentLoaded', initOrders);
+</script>
+</body>
+</html>

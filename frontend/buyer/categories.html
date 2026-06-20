@@ -1,106 +1,19 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Explore Crafts</title>
     <meta name="description" content="Browse handcrafted treasures by craft category directly from independent makers."/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#3D6B4F",
-                        "primary-container": "#8FAF82",
-                        "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#F7F3EC",
-                        "inverse-primary": "#8FAF82",
-                        "on-surface": "#1f1b15",
-                        "on-tertiary-fixed-variant": "#593d5d",
-                        "on-secondary-fixed-variant": "#484740",
-                        "on-tertiary": "#ffffff",
-                        "primary": "#3D6B4F",
-                        "surface-tint": "#3D6B4F",
-                        "tertiary-fixed": "#7B5EA7",
-                        "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3D6B4F",
-                        "on-tertiary-container": "#452b4a",
-                        "inverse-on-surface": "#f8efe5",
-                        "on-secondary": "#ffffff",
-                        "surface-variant": "#F7F3EC",
-                        "tertiary": "#7B5EA7",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#F7F3EC",
-                        "on-error": "#ffffff",
-                        "on-surface-variant": "#444840",
-                        "outline": "#74786f",
-                        "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#3D6B4F",
-                        "secondary-container": "#F7F3EC",
-                        "secondary-fixed": "#F7F3EC",
-                        "primary-fixed-dim": "#8FAF82",
-                        "secondary": "#605e57",
-                        "on-secondary-fixed": "#1c1c16",
-                        "background": "#FFFFFF",
-                        "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#8FAF82",
-                        "outline-variant": "#F7F3EC",
-                        "on-primary": "#ffffff",
-                        "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#FFFFFF",
-                        "on-primary-fixed": "#101f09",
-                        "on-background": "#1f1b15",
-                        "on-secondary-container": "#66645d",
-                        "surface-container": "#f6ece3",
-                        "on-primary-container": "#283920",
-                        "surface": "#FFFFFF",
-                        "surface-container-highest": "#F7F3EC",
-                        "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#2a122f"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xs": "4px",
-                        "sm": "8px",
-                        "md": "16px",
-                        "lg": "24px",
-                        "xl": "40px",
-                        "margin-desktop": "64px",
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "container-max": "1280px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Playfair Display"],
-                        "title-serif": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "data-price": ["DM Sans"],
-                        "label-caps": ["DM Sans"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-                        "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
         .hover-lift {
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
         }
@@ -226,8 +139,6 @@
         </div>
     </footer>
 
-
-
     <script type="module">
         import apiClient from '/src/utils/apiClient.js';
         import { logout } from '/src/utils/auth.js';
@@ -341,7 +252,7 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
@@ -400,7 +311,7 @@
                   const countText = count !== null ? `${count} items` : '128 items';
                   html += `
                     <div ${clickAction} class="lg:col-span-2 lg:row-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${slot.image}" alt="${slot.displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       <div class="absolute bottom-0 left-0 p-lg text-white">
                         <span class="font-label-caps text-[10px] tracking-widest opacity-80 uppercase block mb-1">${slot.badge}</span>
@@ -424,7 +335,7 @@
                           <span class="font-data-price text-secondary">${countText}</span>
                         </div>
                         <div class="relative overflow-hidden">
-                          <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="${slot.image}" alt="${slot.displayName}">
+                          <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                         </div>
                       </div>
                       ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 left-4 text-tertiary/20 text-4xl">${slot.icon}</span>` : ''}
@@ -441,7 +352,7 @@
                           <button class="border border-primary text-primary hover:bg-primary hover:text-white px-lg py-xs rounded-full transition-all font-body-md text-xs">${slot.buttonText || 'Explore'}</button>
                         </div>
                         <div class="w-1/2 relative h-full">
-                          <img class="w-full h-full object-cover rounded-lg rotate-3 shadow-md group-hover:rotate-0 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}">
+                          <img class="w-full h-full object-cover rounded-lg rotate-3 shadow-md group-hover:rotate-0 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                         </div>
                       </div>
                       ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 right-4 text-tertiary-container/30 text-6xl">${slot.icon}</span>` : ''}
@@ -451,7 +362,7 @@
                   const countText = count !== null ? `${count} makes` : '91 prints';
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                       <div class="absolute bottom-4 left-4 text-white">
                         <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
@@ -463,7 +374,7 @@
                   const countText = count !== null ? `${count} pieces` : '24 pieces';
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 flex flex-col justify-end p-md bg-gradient-to-t from-primary/40 to-transparent">
                         <h3 class="font-title-serif text-title-serif text-white">${slot.displayName}</h3>
                         <p class="font-data-price text-[11px] text-white/80">${countText}</p>
@@ -474,7 +385,7 @@
                 } else if (slot.type === 'skincare-badge') {
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                       <div class="absolute top-4 left-4">
                         <div class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -486,7 +397,7 @@
                 } else if (slot.type === 'woodcraft-center') {
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
                         <h3 class="font-title-serif text-title-serif text-white border-y border-white/30 py-2 px-4">${slot.displayName}</h3>
                       </div>
@@ -497,7 +408,7 @@
                   const countText = count !== null ? `${count} makes` : '84 makes';
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant ${slot.bg || 'bg-secondary-container/10'} cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                       <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
                         <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
@@ -518,7 +429,7 @@
 
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-secondary-container/10 cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://placehold.co/400x400/f4ede3/516447?text=Handcrafted" alt="${displayName}">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://placehold.co/400x400/f4ede3/516447?text=Handcrafted" alt="${displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                       <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
                         <h3 class="font-title-serif text-title-serif">${displayName}</h3>
@@ -542,10 +453,6 @@
             document.getElementById('retry-categories')?.addEventListener('click', loadCategories);
           }
         }
-
-
-
-
 
         window.addEventListener('DOMContentLoaded', async () => {
             initSearchOverlay();

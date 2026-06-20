@@ -1,121 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
     <script src="/src/components/ReportWidget.js" defer></script>
     <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Followers & Following | Tohfa</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "secondary": "#49663f",
-                      "on-surface": "#211b11",
-                      "surface-dim": "#e5d8c8",
-                      "secondary-fixed": "#caecbb",
-                      "primary-fixed": "#bceecb",
-                      "outline": "#717972",
-                      "surface-container": "#f9ecdc",
-                      "on-background": "#211b11",
-                      "tertiary-container": "#7B5EA7",
-                      "secondary-container": "#8FAF82",
-                      "on-tertiary-fixed-variant": "#54387e",
-                      "on-tertiary-container": "#e8d6ff",
-                      "surface": "#FFFFFF",
-                      "inverse-primary": "#a0d2b0",
-                      "background": "#ffffff",
-                      "inverse-on-surface": "#fcefde",
-                      "surface-bright": "#FFFFFF",
-                      "surface-container-high": "#f3e6d6",
-                      "on-tertiary-fixed": "#270550",
-                      "on-primary-fixed": "#002110",
-                      "tertiary": "#7B5EA7",
-                      "tertiary-fixed": "#ecdcff",
-                      "outline-variant": "#F7F3EC",
-                      "tertiary-fixed-dim": "#d6baff",
-                      "surface-tint": "#3a684c",
-                      "surface-container-highest": "#F7F3EC",
-                      "surface-variant": "#F7F3EC",
-                      "on-primary-fixed-variant": "#214f36",
-                      "on-error-container": "#3D6B4F",
-                      "primary-fixed-dim": "#a0d2b0",
-                      "on-error": "#ffffff",
-                      "secondary-fixed-dim": "#afd0a0",
-                      "on-primary": "#ffffff",
-                      "primary-container": "#3d6b4f",
-                      "on-primary-container": "#b7e9c6",
-                      "inverse-surface": "#362f25",
-                      "primary": "#3D6B4F",
-                      "on-tertiary": "#ffffff",
-                      "on-surface-variant": "#414942",
-                      "on-secondary-fixed-variant": "#324e29",
-                      "on-secondary": "#ffffff",
-                      "on-secondary-container": "#4d6a43",
-                      "on-secondary-fixed": "#062103",
-                      "surface-container-low": "#fff2e1",
-                      "surface-container-lowest": "#ffffff",
-                      "error-container": "#F7F3EC",
-                      "error": "#3D6B4F",
-                      "ivory": "#F7F3EC",
-                      "sage": "#8FAF82",
-                      "gold-brand": "#C8973A",
-                      "violet-brand": "#7B5EA7",
-                      "terracotta": "#C87A53",
-                      "gold-custom": "#C8973A"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "16px",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "unit": "4px",
-                      "margin-desktop": "64px",
-                      "xl": "40px",
-                      "gutter": "16px",
-                      "sm": "8px",
-                      "md": "16px",
-                      "lg": "24px",
-                      "xs": "4px",
-                      "margin-mobile": "20px"
-              },
-              "fontFamily": {
-                      "headline-lg-mobile": ["Playfair Display"],
-                      "body-lg": ["DM Sans"],
-                      "body-sm": ["DM Sans"],
-                      "headline-lg": ["Playfair Display"],
-                      "title-md": ["DM Sans"],
-                      "label-caps": ["DM Sans"],
-                      "display-lg": ["Playfair Display"],
-                      "title-serif": ["Playfair Display"],
-                      "body-md": ["DM Sans"],
-                      "data-price": ["DM Sans"]
-              },
-              "fontSize": {
-                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
-                      "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
-                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
-                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}],
-                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
-                      "display-hero": ["56px", {"lineHeight": "64px", "fontWeight": "700"}],
-                      "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                      "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}]
-              }
-            }
-          }
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
         /* Custom skeleton animation */
         @keyframes pulse-light {
             0%, 100% { opacity: 0.6; }
@@ -132,7 +29,7 @@
 <header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo (Task 59) -->
   <div class="flex items-center flex-1">
-    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./home.html">
       Tohfa<span class="text-[#C8973A]">.</span>
     </a>
   </div>
@@ -140,22 +37,22 @@
   <!-- Navigation Links -->
   <nav class="hidden md:flex items-center justify-center gap-xl h-full">
     <!-- Home -->
-    <a href="./buyer-home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
     <!-- Category -->
-    <a href="./buyer-categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
     <!-- Reels -->
-    <a href="./buyer-reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
     <!-- Profile -->
-    <a href="./buyer-profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -163,18 +60,18 @@
   
   <!-- Right side items -->
   <div class="flex items-center justify-end flex-1 gap-lg">
-    <a href="./buyer-search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+    <a href="./search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
       <span class="material-symbols-outlined">search</span>
     </a>
-    <a href="./buyer-saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="./saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
       <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="./buyer-cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="./cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">shopping_cart</span>
       <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
     </a>
-    <a href="./buyer-notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="./notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">notifications</span>
       <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
       <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
@@ -187,7 +84,7 @@
 <main class="flex-grow pt-12 pb-xl max-w-2xl mx-auto w-full px-margin-mobile md:px-0 relative">
   <!-- Back navigation and Header -->
   <header class="mb-lg select-none">
-    <a href="./buyer-profile.html" class="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
+    <a href="./profile.html" class="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition-all font-semibold text-sm mb-4">
       <span class="material-symbols-outlined text-base">arrow_back</span>
       <span>Back to Profile</span>
     </a>
@@ -240,7 +137,7 @@
     <!-- Empty State -->
     <div class="hidden flex flex-col items-center justify-center py-20 text-center" id="empty-state">
       <div class="relative mb-lg">
-        <img class="w-32 h-32 object-contain mx-auto" alt="Sleeping cat illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy7Dkw6YcOzNwI8rYZLTx1KA5-p6EP7biAJDNFZocYDhEPbjlNYORfHIO5W_4idkTjhTScxi_zqKueNEJVLw-ue2oq4BHxeccIsEuiKLTkjJvIGWmsnRLIz3JXVUADuu4omQhl_APy8jTNO915RkbxVEBumzeBVN-3oWVDBo25IcJKc_bntpF7m2jZylB5a-4q7gohkwhTbxxWEb5IvVWUwYvK0AVgPYjKFGhTI1LYJdsDA8jmTcQtR4sUhcdFQPwbrqPxCLzkmec">
+        <img class="w-32 h-32 object-contain mx-auto" alt="Sleeping cat illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy7Dkw6YcOzNwI8rYZLTx1KA5-p6EP7biAJDNFZocYDhEPbjlNYORfHIO5W_4idkTjhTScxi_zqKueNEJVLw-ue2oq4BHxeccIsEuiKLTkjJvIGWmsnRLIz3JXVUADuu4omQhl_APy8jTNO915RkbxVEBumzeBVN-3oWVDBo25IcJKc_bntpF7m2jZylB5a-4q7gohkwhTbxxWEb5IvVWUwYvK0AVgPYjKFGhTI1LYJdsDA8jmTcQtR4sUhcdFQPwbrqPxCLzkmec" loading="lazy">
         <div class="absolute -right-4 bottom-2 text-secondary opacity-60">
           <span class="material-symbols-outlined text-4xl text-primary">nest_eco_leaf</span>
         </div>
@@ -271,9 +168,9 @@
     function getTohfaToken() {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token') || null;
         } catch(e) {
-            return getTohfaToken();
+            return sessionStorage.getItem('tohfa_access_token') || null;
         }
     }
 
@@ -450,13 +347,13 @@
             
             // Name link details
             const isSeller = item.role === 'seller';
-            const profileLink = isSeller ? `./buyer-seller-profile.html?id=${item.id}` : '#';
+            const profileLink = isSeller ? `./seller-profile.html?id=${item.id}` : '#';
             const nameClickableClass = isSeller ? 'hover:text-primary hover:underline cursor-pointer' : 'cursor-default';
 
             // Avatar fallback details
             const initial = (item.display_name || 'T').charAt(0).toUpperCase();
             const avatarHtml = item.avatar_url 
-                ? `<img src="${item.avatar_url}" alt="${item.display_name}" class="w-12 h-12 rounded-full object-cover border border-[#8FAF82]/40" />`
+                ? `<img src="${item.avatar_url}" alt="${item.display_name}" class="w-12 h-12 rounded-full object-cover border border-[#8FAF82]/40" loading="lazy" />`
                 : `<div class="w-12 h-12 rounded-full bg-primary-fixed/30 text-primary flex items-center justify-center font-bold text-lg border border-[#8FAF82]/20">${initial}</div>`;
 
             // Badges
@@ -703,10 +600,10 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
-                        <a href="./buyer-profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                        <a href="./profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
                             ${initial}
                         </a>
                     `;
@@ -728,7 +625,7 @@
                     </div>
                 `;
             }
-            window.location.href = '/auth/login.html?redirect=./buyer-followers.html';
+            window.location.href = '/auth/login.html?redirect=./followers.html';
         }
     }
 

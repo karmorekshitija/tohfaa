@@ -41,18 +41,30 @@
       align-items: center;
       padding-top: 10px;
       padding-bottom: 10px;
-      color: #6B6B6B;
+      color: #3D6B4F !important;
+      opacity: 0.7;
       font-weight: 500;
-      transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease;
+      outline: none;
     }
     .sidebar-link:hover {
       background-color: rgba(143, 175, 130, 0.15) !important;
-      color: #1A1A1A !important;
+      color: #3D6B4F !important;
+      opacity: 1 !important;
+    }
+    .sidebar-link:focus {
+      background-color: rgba(143, 175, 130, 0.25) !important;
+      box-shadow: 0 0 0 2px #8FAF82 !important;
+      opacity: 1 !important;
+    }
+    .sidebar-link:active {
+      transform: scale(0.95) !important;
     }
     .sidebar-link-active {
       background-color: #3D6B4F !important;
       color: #FFFFFF !important;
       font-weight: 700 !important;
+      opacity: 1 !important;
     }
     .sidebar-link-active span {
       color: #FFFFFF !important;
@@ -153,77 +165,73 @@
 class SellerSidebar extends HTMLElement {
   connectedCallback() {
     const activeTab = this.getAttribute('active-tab') || '';
+    const isMobilePath = window.location.pathname.includes('/mobile-seller/');
+    const prefix = isMobilePath ? '/mobile-seller' : '/seller';
     
     this.innerHTML = `
-      <aside class="w-[130px] h-screen fixed left-0 top-0 bg-[#F7F3EC] border-r border-[#E8E2D9] shadow-sm flex flex-col py-8 z-50 overflow-y-auto custom-scrollbar font-['DM_Sans'] text-[#6B6B6B]">
+      <aside class="w-[130px] h-screen fixed left-0 top-0 bg-[#F7F3EC] border-r border-[#8FAF82] shadow-sm flex flex-col py-8 z-50 overflow-y-auto custom-scrollbar font-['DM_Sans'] text-[#3D6B4F]">
         <!-- Brand Logo Header -->
         <div class="px-4 mb-8 flex flex-col items-center">
-          <img alt="TOFA Logo" class="w-12 h-12 mb-3 rounded-full border border-[#E8E2D9]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjQjmSoJKqFl-kRbAH85_u94nMS-Ok8oPnG2PAsYIPao9rA7dhGe8UxdJrc2ZZAzrwZNabbn59QVEgS7BBnW9tgfg43AOgPPepQuKoNu9Y8LnAgELFnunu7fN4ziKFD3utWMnD1wUchu7IL5DN5S8YIbb4t6eImmC8IYIbyaXgktzANbK3Bp9S-uJUoxNyfKN0-3CdY6CCeB0ICMb4og8ToBCMSoIyIF4u5UejdhA3mwODAny-lA6K9JdMJHT5Qhp3buD-BTaEM0">
-          <h1 class="font-['Playfair_Display'] font-bold text-[14px] text-center leading-tight text-[#1A1A1A]">Tohfa Studio</h1>
+          <img loading="lazy" alt="TOFA Logo" class="w-12 h-12 mb-3 rounded-full border border-[#8FAF82]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjQjmSoJKqFl-kRbAH85_u94nMS-Ok8oPnG2PAsYIPao9rA7dhGe8UxdJrc2ZZAzrwZNabbn59QVEgS7BBnW9tgfg43AOgPPepQuKoNu9Y8LnAgELFnunu7fN4ziKFD3utWMnD1wUchu7IL5DN5S8YIbb4t6eImmC8IYIbyaXgktzANbK3Bp9S-uJUoxNyfKN0-3CdY6CCeB0ICMb4og8ToBCMSoIyIF4u5UejdhA3mwODAny-lA6K9JdMJHT5Qhp3buD-BTaEM0">
+          <h1 class="font-['Playfair_Display'] font-bold text-[14px] text-center leading-tight text-[#3D6B4F] italic">Tohfa Studio</h1>
         </div>
         
-        <!-- Navigation Links (Inventory removed completely) -->
+        <!-- Navigation Links (Inventory and Reels removed completely) -->
         <nav class="flex-1 space-y-1">
-          <!-- Home (Dashboard) -->
-          <a class="sidebar-link \${activeTab === 'home' ? 'sidebar-link-active' : ''}" href="/seller/dashboard.html" id="sidebar-home" title="Home">
+          <!-- Dashboard -->
+          <a class="sidebar-link ${activeTab === 'home' || activeTab === 'dashboard' ? 'sidebar-link-active' : ''}" href="${prefix}/dashboard.html" id="sidebar-home" title="Dashboard">
             <span class="material-symbols-outlined mb-1 text-2xl">home</span>
-            <span class="text-[9px] uppercase tracking-widest text-center">Home</span>
+            <span class="text-[9px] uppercase tracking-widest text-center">Dashboard</span>
           </a>
           <!-- Catalog -->
-          <a class="sidebar-link \${activeTab === 'catalog' ? 'sidebar-link-active' : ''}" href="/seller/catalog.html" id="sidebar-catalog" title="Catalog">
+          <a class="sidebar-link ${activeTab === 'catalog' ? 'sidebar-link-active' : ''}" href="${prefix}/catalog.html" id="sidebar-catalog" title="Catalog">
             <span class="material-symbols-outlined mb-1 text-2xl">library_books</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Catalog</span>
           </a>
           <!-- Orders -->
-          <a class="sidebar-link \${activeTab === 'orders' ? 'sidebar-link-active' : ''}" href="/seller/orders.html" id="sidebar-orders" title="Orders">
+          <a class="sidebar-link ${activeTab === 'orders' ? 'sidebar-link-active' : ''}" href="${prefix}/orders.html" id="sidebar-orders" title="Orders">
             <span class="material-symbols-outlined mb-1 text-2xl">shopping_basket</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Orders</span>
           </a>
-
           <!-- Overflow -->
-          <a class="sidebar-link \${activeTab === 'overflow' ? 'sidebar-link-active' : ''} relative" href="/seller/overflow-requests.html" id="sidebar-overflow" title="Overflow Requests">
+          <a class="sidebar-link ${activeTab === 'overflow' ? 'sidebar-link-active' : ''} relative" href="${prefix}/overflow-requests.html" id="sidebar-overflow" title="Overflow Requests">
             <span class="material-symbols-outlined mb-1 text-2xl">event_busy</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Overflow</span>
             <span id="sidebar-overflow-badge" class="hidden absolute top-1 right-3 bg-[#3D6B4F] text-white font-bold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">0</span>
           </a>
-          <!-- Payments (Payouts) -->
-          <a class="sidebar-link \${activeTab === 'payments' ? 'sidebar-link-active' : ''}" href="/seller/payouts.html" id="sidebar-payments" title="Payments">
+          <!-- Payments -->
+          <a class="sidebar-link ${activeTab === 'payments' ? 'sidebar-link-active' : ''}" href="${prefix}/payouts.html" id="sidebar-payments" title="Payments">
             <span class="material-symbols-outlined mb-1 text-2xl">payments</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Payments</span>
           </a>
           <!-- Analytics -->
-          <a class="sidebar-link \${activeTab === 'analytics' ? 'sidebar-link-active' : ''}" href="/seller/analytics.html" id="sidebar-analytics" title="Analytics">
+          <a class="sidebar-link ${activeTab === 'analytics' ? 'sidebar-link-active' : ''}" href="${prefix}/analytics.html" id="sidebar-analytics" title="Analytics">
             <span class="material-symbols-outlined mb-1 text-2xl">insights</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Analytics</span>
           </a>
           <!-- Messages -->
-          <a class="sidebar-link \${activeTab === 'messages' ? 'sidebar-link-active' : ''}" href="/seller/messages.html" id="sidebar-messages" title="Messages">
+          <a class="sidebar-link ${activeTab === 'messages' ? 'sidebar-link-active' : ''}" href="${prefix}/messages.html" id="sidebar-messages" title="Messages">
             <span class="material-symbols-outlined mb-1 text-2xl">chat_bubble</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Messages</span>
           </a>
           <!-- Reviews -->
-          <a class="sidebar-link \${activeTab === 'reviews' ? 'sidebar-link-active' : ''}" href="/seller/reviews.html" id="sidebar-reviews" title="Reviews">
+          <a class="sidebar-link ${activeTab === 'reviews' ? 'sidebar-link-active' : ''}" href="${prefix}/reviews.html" id="sidebar-reviews" title="Reviews">
             <span class="material-symbols-outlined mb-1 text-2xl">reviews</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Reviews</span>
           </a>
-          <!-- Reels -->
-          <a class="sidebar-link \${activeTab === 'reels' ? 'sidebar-link-active' : ''}" href="/seller/upload-reel.html" id="sidebar-reels" title="Reels">
-            <span class="material-symbols-outlined mb-1 text-2xl">movie</span>
-            <span class="text-[9px] uppercase tracking-widest text-center">Reels</span>
-          </a>
-          <!-- Profile -->
-          <a class="sidebar-link \${activeTab === 'profile' ? 'sidebar-link-active' : ''}" href="/seller/profile.html" id="sidebar-profile" title="Profile">
+          <!-- Profile and settings -->
+          <a class="sidebar-link ${activeTab === 'profile' || activeTab === 'settings' ? 'sidebar-link-active' : ''}" href="${prefix}/profile-settings.html" id="sidebar-profile" title="Profile and settings">
             <span class="material-symbols-outlined mb-1 text-2xl">account_circle</span>
-            <span class="text-[9px] uppercase tracking-widest text-center">Profile</span>
+            <span class="text-[9px] uppercase tracking-widest text-center">Profile and settings</span>
           </a>
         </nav>
         
         <!-- Footer actions -->
         <div class="px-3 mt-auto pt-6 space-y-2 w-full">
-          <button id="view-store-btn" class="w-full py-2 bg-[#C8973A] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 transition-all shadow-sm">
+          <button id="view-store-btn" class="w-full py-2 bg-[#C8973A] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#8FAF82] transition-all shadow-sm">
             View Store
           </button>
-          <button id="logout-btn" class="w-full py-2 bg-[#3D6B4F] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 transition-all shadow-sm">
+          <button id="logout-btn" class="w-full py-2 bg-[#3D6B4F] text-white rounded-lg font-['DM_Sans'] font-medium text-[10px] uppercase tracking-tight hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#8FAF82] transition-all shadow-sm">
             Logout
           </button>
         </div>
@@ -249,8 +257,7 @@ class SellerSidebar extends HTMLElement {
         })
         .catch(err => {
           console.error('Error viewing store:', err);
-                    // Display a user-friendly error message (e.g., using a toast notification)
-                    alert('Could not load store profile. Please try again later.');
+          alert('Could not load store profile. Please try again later.');
         });
       });
     }
@@ -300,32 +307,38 @@ class SellerSidebar extends HTMLElement {
   }
 }
 
+
 class SellerTopBar extends HTMLElement {
   connectedCallback() {
+    const isMobilePath = window.location.pathname.includes('/mobile-seller/');
+    const prefix = isMobilePath ? '/mobile-seller' : '/seller';
+
     this.innerHTML = `
-      <header class="seller-topbar-header font-['DM_Sans']">
+      <header class="seller-topbar-header font-['DM_Sans'] flex items-center justify-between">
         <!-- Left Side: Tohfa branding -->
         <div class="flex items-center gap-3">
-          <button id="seller-hamburger-btn" class="lg:hidden text-[#3D6B4F] flex items-center justify-center p-2 rounded-full hover:bg-[#8FAF82]/20 focus:outline-none border-none bg-transparent mr-1" style="cursor:pointer;">
-            <span class="material-symbols-outlined text-[24px]">menu</span>
-          </button>
-          <a href="/seller/dashboard.html" class="flex items-center gap-2">
+          <a href="${prefix}/dashboard.html" class="flex items-center gap-2">
             <span class="font-['Playfair_Display'] text-[20px] font-bold italic text-[#3D6B4F]">Tohfa</span>
-            <span class="font-['DM_Sans'] text-xs uppercase tracking-widest text-[#6B6B6B] border-l border-[#E8E2D9] pl-3 py-1">Seller Studio</span>
+            <span class="font-['DM_Sans'] text-xs uppercase tracking-widest text-[#6B6B6B] border-l border-[#E8E2D9] pl-3 py-1 hidden lg:inline-block">Seller Studio</span>
           </a>
         </div>
         
-        <!-- Right Side: User Name + Avatar -->
+        <!-- Right Side: User Name + Avatar (Desktop only) and Hamburger Button (Mobile only) -->
         <div class="flex items-center gap-6">
-          <div class="flex items-center gap-3">
+          <!-- Desktop User Info: hidden on mobile (< 1024px) -->
+          <div class="hidden lg:flex items-center gap-3">
             <div class="text-right">
               <p class="text-xs font-bold text-[#1A1A1A] line-clamp-1" id="topbar-seller-name">Loading...</p>
               <p class="text-[9px] text-[#6B6B6B] uppercase tracking-wider">Artisan Partner</p>
             </div>
             <div class="w-9 h-9 rounded-full overflow-hidden border border-[#E8E2D9] flex-shrink-0 bg-gray-50">
-              <img id="sidebar-avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Seller" alt="Avatar"/>
+              <img loading="lazy" id="sidebar-avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Seller" alt="Avatar"/>
             </div>
           </div>
+          <!-- Hamburger Button: visible only on mobile/tablet (< 1024px) -->
+          <button id="seller-hamburger-btn" class="lg:hidden text-[#3D6B4F] flex items-center justify-center p-2 rounded-full hover:bg-[#8FAF82]/20 focus:outline-none border-none bg-transparent" style="cursor:pointer;">
+            <span class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
         </div>
       </header>
     `;
@@ -370,6 +383,7 @@ class SellerTopBar extends HTMLElement {
     }
   }
 }
+
 
 class SellerLayout extends HTMLElement {
   connectedCallback() {

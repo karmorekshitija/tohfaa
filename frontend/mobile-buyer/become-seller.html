@@ -1,74 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Become a Seller | Tohfa</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Be+Vietnam+Pro:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-    tailwind.config = {
-        darkMode: "class",
-        theme: { extend: {
-            "colors": {
-                "surface-container-lowest": "#ffffff",
-                "on-tertiary": "#ffffff",
-                "error-container": "#F7F3EC",
-                "inverse-on-surface": "#f7f0e6",
-                "error": "#3D6B4F",
-                "on-secondary-container": "#745a78",
-                "on-background": "#1e1b15",
-                "surface-container-high": "#efe7dd",
-                "surface-variant": "#e9e1d8",
-                "on-primary-container": "#3c4628",
-                "on-primary": "#ffffff",
-                "on-tertiary-fixed": "#1d1c16",
-                "outline": "#76786e",
-                "surface-dim": "#e0d9cf",
-                "on-surface-variant": "#45483f",
-                "tertiary-fixed-dim": "#cac6be",
-                "outline-variant": "#c6c7bb",
-                "primary": "#576242",
-                "on-tertiary-fixed-variant": "#494740",
-                "surface-tint": "#576242",
-                "inverse-primary": "#bfcba4",
-                "secondary": "#705673",
-                "secondary-container": "#f7d5f8",
-                "background": "#FFFFFF",
-                "surface": "#FFFFFF",
-                "on-error": "#ffffff",
-                "secondary-fixed": "#fad8fb",
-                "tertiary-fixed": "#e7e2d9",
-                "tertiary-container": "#b3afa7",
-                "on-secondary-fixed-variant": "#573e5b",
-                "tertiary": "#615e57",
-                "surface-bright": "#FFFFFF",
-                "primary-container": "#a8b48e",
-                "on-primary-fixed-variant": "#404a2c",
-                "primary-fixed-dim": "#bfcba4",
-                "surface-container-highest": "#e9e1d8",
-                "secondary-fixed-dim": "#ddbcdf",
-                "on-surface": "#1e1b15",
-                "on-secondary-fixed": "#28132d",
-                "primary-fixed": "#dbe8bf",
-                "inverse-surface": "#33302a",
-                "on-secondary": "#ffffff",
-                "surface-container": "#f4ede3",
-                "on-primary-fixed": "#151e05",
-                "surface-container-low": "#faf2e9",
-                "on-tertiary-container": "#44423c",
-                "on-error-container": "#3D6B4F",
-                "parchment": "#F7F3EC", "forest": "#3D6B4F", "sage": "#8FAF82", "violet": "#7B5EA7", "gold": "#C8973A"
-            },
-            "spacing": { "margin-mobile":"20px","margin-desktop":"80px","container-max":"1200px" },
-            "fontFamily": { "headline-md":["EB Garamond","serif"],"headline-lg":["EB Garamond","serif"] }
-        }}
-    }
-</script>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
     body { font-family:'Be Vietnam Pro',sans-serif; background-color:#FFFFFF; color:#1e1b15; }
     h1,h2,h3 { font-family:'EB Garamond',serif; }
     .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
@@ -134,7 +78,7 @@
 <!-- Nav -->
 <nav class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 px-margin-mobile md:px-margin-desktop py-4 flex justify-between items-center">
     <div class="flex items-center gap-4">
-        <a href="./buyer-profile.html" class="p-2 hover:bg-surface-container rounded-full transition-colors">
+        <a href="./profile.html" class="p-2 hover:bg-surface-container rounded-full transition-colors">
             <span class="material-symbols-outlined text-on-surface text-2xl">arrow_back</span>
         </a>
         <span class="text-2xl" style="font-family:'Playfair Display',serif;font-style:italic;">Tohfa<span style="color:#C8973A;">.</span></span>
@@ -220,9 +164,9 @@
     function getTohfaToken() {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token') || null;
         } catch(e) {
-            return getTohfaToken();
+            return sessionStorage.getItem('tohfa_access_token') || null;
         }
     }
 

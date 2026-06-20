@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 
 <html lang="en"><head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Tohfa Seller Studio - Catalog</title>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
 <script>
 
     function getTohfaToken() {
@@ -20,7 +23,6 @@
             return null;
         }
     }
-    
 
     (async function verifySellerRole() {
         const token = getTohfaToken();
@@ -36,13 +38,12 @@
             const profile = await res.json();
             const user = profile.data || profile;
             if (user.role !== 'seller') {
-                window.location.href = './buyer-home.html';
+                window.location.href = '/mobile-buyer/profile.html';
             }
         } catch (e) {
             window.location.href = '/auth/login.html';
         }
     })();
-    
 
     tailwind.config = {
       theme: {
@@ -136,51 +137,51 @@
 <!-- BEGIN: Side Panel (Desktop Sidebar / Mobile Drawer) -->
 <aside class="fixed lg:sticky top-0 left-0 h-screen w-72 bg-white lg:bg-transparent border-r border-sage/10 z-[60] transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out sidebar-scroll overflow-y-auto" id="sidePanel">
 <div class="p-6">
-<h1 class="hidden lg:block font-serif text-3xl font-bold text-forest mb-10">Tohfa</h1>
+<h1 class="hidden lg:block font-serif text-3xl font-bold text-[#3D6B4F] mb-10">Tohfa</h1>
 <div class="flex flex-col gap-1">
 <nav class="space-y-1" data-purpose="primary-navigation">
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/dashboard.html">
 <span class="w-5 h-5 flex items-center justify-center">📊</span> Dashboard
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-forest text-white font-medium" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#3D6B4F] text-white font-medium transition-all" href="/mobile-seller/catalog.html">
 <span class="w-5 h-5 flex items-center justify-center">📁</span> Catalog
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/orders.html">
 <span class="w-5 h-5 flex items-center justify-center">📦</span> Orders
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/overflow-requests.html">
 <span class="w-5 h-5 flex items-center justify-center">🔄</span> Overflow
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/payouts.html">
 <span class="w-5 h-5 flex items-center justify-center">💳</span> Payments
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/analytics.html">
 <span class="w-5 h-5 flex items-center justify-center">📈</span> Analytics
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors relative" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all relative" href="/mobile-seller/messages.html">
 <span class="w-5 h-5 flex items-center justify-center">✉️</span> Messages
-            <span class="absolute right-4 bg-violet text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span>
+            <span class="absolute right-4 bg-[#7B5EA7] text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/reviews.html">
 <span class="w-5 h-5 flex items-center justify-center">⭐</span> Reviews
           </a>
 </nav>
-<div class="my-6 border-t border-sage/10"></div>
+<div class="my-6 border-t border-[#8FAF82]/10"></div>
 <nav class="space-y-1" data-purpose="secondary-navigation">
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] opacity-70 hover:opacity-100 hover:bg-[#8FAF82]/10 transition-all" href="/mobile-seller/profile-settings.html">
 <span class="w-5 h-5 flex items-center justify-center">👤</span> Profile &amp; Settings
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-forest font-semibold hover:bg-sage/10 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#3D6B4F] font-semibold hover:bg-[#8FAF82]/10 transition-all" href="/buyer/seller-profile.html">
 <span class="w-5 h-5 flex items-center justify-center">🌐</span> View store
           </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors" href="javascript:void(0)">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all" href="/auth/login.html">
 <span class="w-5 h-5 flex items-center justify-center">🚪</span> Log out
           </a>
 </nav>
 </div>
 </div>
 <!-- Mobile close button -->
-<button class="lg:hidden absolute top-4 right-4 touch-target text-gray-400" id="menuClose">
+<button class="lg:hidden absolute top-4 right-4 touch-target text-[#3D6B4F]/70 hover:text-[#3D6B4F]" id="menuClose">
 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
@@ -274,7 +275,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Golden Fern" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+<img alt="Golden Fern" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Golden Fern Study No. 4</h3>
@@ -324,7 +325,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Seeds" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+<img alt="Seeds" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Archival Wildflower Seeds</h3>
@@ -367,7 +368,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Bowl" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+<img alt="Bowl" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Forest Floor Ceramic Bowl</h3>
@@ -410,7 +411,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Apron" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ"/>
+<img alt="Apron" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Linen Studio Apron</h3>

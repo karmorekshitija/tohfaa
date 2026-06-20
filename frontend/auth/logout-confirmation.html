@@ -5,118 +5,12 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Logout | Tohfa</title>
     <!-- External Resources -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Lora:ital,wght@0,400;0,500;1,400&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                "on-secondary": "#ffffff",
-                "inverse-on-surface": "#f0f1ed",
-                "on-tertiary-fixed-variant": "#6b373d",
-                "highlight-gold": "#C8973A",
-                "surface-bright": "#FFFFFF",
-                "outline": "#717972",
-                "text-default": "#3A3328",
-                "surface-container-highest": "#e2e3df",
-                "surface-container-low": "#f3f4f0",
-                "on-secondary-fixed": "#062103",
-                "on-surface-variant": "#414942",
-                "secondary-fixed": "#caecbb",
-                "on-background": "#1a1c1a",
-                "surface-container": "#edeeea",
-                "primary-container": "#3d6b4f",
-                "on-secondary-fixed-variant": "#324e29",
-                "secondary-fixed-dim": "#afd0a0",
-                "text-muted": "#6E6453",
-                "primary-fixed": "#bceecb",
-                "on-primary": "#ffffff",
-                "text-faint": "#9A8F7A",
-                "error": "#3D6B4F",
-                "on-secondary-container": "#4d6a43",
-                "tertiary-container": "#8a5157",
-                "primary": "#3D6B4F",
-                "error-container": "#F7F3EC",
-                "on-primary-fixed": "#002110",
-                "inverse-surface": "#2e312e",
-                "secondary": "#49663f",
-                "gold-soft": "#C8973A",
-                "on-tertiary-fixed": "#360d14",
-                "primary-fixed-dim": "#a0d2b0",
-                "surface-variant": "#e2e3df",
-                "bg-cream-deep": "#F7F3EC",
-                "surface-tint": "#3a684c",
-                "on-primary-container": "#b7e9c6",
-                "violet-soft": "#D8CBE9",
-                "inverse-primary": "#a0d2b0",
-                "accent-violet": "#7B5EA7",
-                "bg-primary": "#FFFFFF",
-                "surface-dim": "#d9dad6",
-                "secondary-container": "#8FAF82",
-                "tertiary": "#6e3a40",
-                "sage-soft": "#8FAF82",
-                "on-error-container": "#3D6B4F",
-                "on-tertiary": "#ffffff",
-                "on-error": "#ffffff",
-                "on-tertiary-container": "#ffd2d5",
-                "surface-ivory": "#F7F3EC",
-                "on-primary-fixed-variant": "#214f36",
-                "on-surface": "#1a1c1a",
-                "danger-terracotta": "#3D6B4F",
-                "surface-container-lowest": "#ffffff",
-                "primary-deep": "#3D6B4F",
-                "background": "#FFFFFF",
-                "tertiary-fixed": "#ffdadc",
-                "surface": "#FFFFFF",
-                "surface-container-high": "#e7e9e4",
-                "outline-variant": "#F7F3EC",
-                "tertiary-fixed-dim": "#fcb4ba"
-            },
-            "borderRadius": {
-                "DEFAULT": "4px",
-                "lg": "8px",
-                "xl": "12px",
-                "full": "9999px"
-            },
-            "spacing": {
-                "stack-sm": "8px",
-                "stack-md": "16px",
-                "container-padding": "20px",
-                "gutter": "16px",
-                "section-gap": "48px"
-            },
-            "fontFamily": {
-                "data-price": ["Space Mono"],
-                "section-heading": ["Playfair Display"],
-                "card-title": ["Lora"],
-                "data-meta": ["Space Mono"],
-                "product-title": ["Playfair Display"],
-                "label-ui": ["DM Sans"],
-                "artisan-name": ["Lora"],
-                "hero-title": ["Playfair Display"],
-                "body-main": ["DM Sans"],
-                "eyebrow-caps": ["Cinzel"]
-            },
-            "fontSize": {
-                "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                "section-heading": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                "card-title": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
-                "data-meta": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                "product-title": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-                "label-ui": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                "eyebrow-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                "artisan-name": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                "hero-title": ["40px", {"lineHeight": "48px", "fontWeight": "300"}],
-                "body-main": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
-            }
-          },
-        },
-      }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
       .ink-wash {
         background: radial-gradient(circle at top right, rgba(197, 214, 188, 0.15), transparent 70%);
       }
@@ -158,7 +52,7 @@
                 <div class="p-10 flex flex-col items-center text-center border-b border-[#F7F3EC]">
                     <div class="relative group">
                         <div class="w-[72px] h-[72px] rounded-full border-2 border-sage-soft p-1 transition-transform duration-500 group-hover:scale-105 overflow-hidden">
-                            <img alt="User Profile" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVef4BIN7WHe29SLV-tyiP8kX74R9Fcrn4z3apz2LsE4yatChaCzk5HzkS2jphXFI8Djfb0sGuWJmQWk17Z1Jv9m5sBM-ekVQamJ9rNqF1ZmjbjcpPPWMWIXC7epxkaqvc8uu2i5ZG24l1pRXmKPeJ9Gt3UD0gF2rQgpSVlOvltad37tk1D1lNsIdcQL6RJQ-po1Lw07tmrY5Yztb0hC0FXjCDhk5seoxWf62LIMApA1AuWHK207HJigrTSNQ6IMTXL6rZX5TqMTLv">
+                            <img alt="User Profile" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVef4BIN7WHe29SLV-tyiP8kX74R9Fcrn4z3apz2LsE4yatChaCzk5HzkS2jphXFI8Djfb0sGuWJmQWk17Z1Jv9m5sBM-ekVQamJ9rNqF1ZmjbjcpPPWMWIXC7epxkaqvc8uu2i5ZG24l1pRXmKPeJ9Gt3UD0gF2rQgpSVlOvltad37tk1D1lNsIdcQL6RJQ-po1Lw07tmrY5Yztb0hC0FXjCDhk5seoxWf62LIMApA1AuWHK207HJigrTSNQ6IMTXL6rZX5TqMTLv" loading="lazy">
                         </div>
                         <div class="absolute bottom-0 right-0 bg-[#C8973A] text-white p-1 rounded-full border-2 border-[#F7F3EC] cursor-pointer hover:bg-[#3D6B4F] transition-colors">
                             <span class="material-symbols-outlined text-[14px]">edit</span>
@@ -226,7 +120,7 @@
             <!-- Decorative accent -->
             <div class="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-gold-soft/20 rounded-full blur-2xl"></div>
             <div class="flex flex-col items-center text-center relative z-10">
-                <img alt="Goodbye character" class="w-24 h-24 mb-6" src="https://lh3.googleusercontent.com/aida/ADBb0uiS5vM2Du_Wncr4ulOtLHPICCtP_6wctIe60bpGv6-YjU4gvLrVmz0y_52Lqzht7NrTsBa2y0nTcwsWfFc2rHan3bbeH1NlLbUV3vczNcIa4tPa2pqcowXCCaSitJ0_T6jjQiFX__nL5L5454US38zak9thP7rvO1pr0eGVtoriM4DBCybreUWVqvDAviRLRdtiHicsWbjbhT1a_ci7o5PAtspPK0enb2oE-Cai-htG8lc9Lh-w08vPALya">
+                <img alt="Goodbye character" class="w-24 h-24 mb-6" src="https://lh3.googleusercontent.com/aida/ADBb0uiS5vM2Du_Wncr4ulOtLHPICCtP_6wctIe60bpGv6-YjU4gvLrVmz0y_52Lqzht7NrTsBa2y0nTcwsWfFc2rHan3bbeH1NlLbUV3vczNcIa4tPa2pqcowXCCaSitJ0_T6jjQiFX__nL5L5454US38zak9thP7rvO1pr0eGVtoriM4DBCybreUWVqvDAviRLRdtiHicsWbjbhT1a_ci7o5PAtspPK0enb2oE-Cai-htG8lc9Lh-w08vPALya" loading="lazy">
                 <h2 class="font-serif italic text-2xl text-[#3D6B4F] mb-2">Leaving so soon?</h2>
                 <p class="font-serif italic text-sm text-[#6B6B6B] mb-8">You can always come back ✦</p>
                 <div class="flex flex-col gap-3 w-full">

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Birthday Reminders | Tohfa Artisan Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&amp;family=Cinzel:wght@700&amp;family=Playfair+Display:ital,wght@0,400;1,400;1,700&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Lora:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
         }
@@ -27,106 +30,11 @@
             scrollbar-width: none;
         }
     </style>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-container-high": "#f3e6d6",
-                        "on-secondary": "#ffffff",
-                        "surface-dim": "#e5d8c8",
-                        "secondary": "#49663f",
-                        "on-error": "#ffffff",
-                        "error": "#ba1a1a",
-                        "tertiary-container": "#70539b",
-                        "inverse-on-surface": "#fcefde",
-                        "on-primary-container": "#b7e9c6",
-                        "primary-fixed": "#bceecb",
-                        "secondary-fixed": "#caecbb",
-                        "inverse-primary": "#a0d2b0",
-                        "on-error-container": "#93000a",
-                        "surface-tint": "#3a684c",
-                        "on-primary-fixed-variant": "#214f36",
-                        "surface": "#fff8f3",
-                        "on-secondary-container": "#4d6a43",
-                        "primary-fixed-dim": "#a0d2b0",
-                        "surface-container-highest": "#ede1d1",
-                        "primary-container": "#3d6b4f",
-                        "primary": "#255338",
-                        "on-tertiary-container": "#e8d6ff",
-                        "on-primary": "#ffffff",
-                        "secondary-fixed-dim": "#afd0a0",
-                        "tertiary": "#573b81",
-                        "outline": "#717972",
-                        "on-tertiary-fixed-variant": "#54387e",
-                        "on-secondary-fixed-variant": "#324e29",
-                        "surface-bright": "#fff8f3",
-                        "on-primary-fixed": "#002110",
-                        "on-secondary-fixed": "#062103",
-                        "tertiary-fixed-dim": "#d6baff",
-                        "on-tertiary-fixed": "#270550",
-                        "background": "#ffffff",
-                        "surface-container-lowest": "#ffffff",
-                        "on-surface": "#211b11",
-                        "inverse-surface": "#362f25",
-                        "on-tertiary": "#ffffff",
-                        "on-background": "#211b11",
-                        "surface-container-low": "#fff2e1",
-                        "surface-container": "#f9ecdc",
-                        "surface-variant": "#ede1d1",
-                        "tertiary-fixed": "#ecdcff",
-                        "secondary-container": "#c8e9b8",
-                        "error-container": "#ffdad6",
-                        "on-surface-variant": "#414942",
-                        "outline-variant": "#c1c9c0",
-                        "ivory": "#FCFAF5",
-                        "sage": "#717972",
-                        "gold": "#A68942"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xl": "40px",
-                        "margin-desktop": "64px",
-                        "sm": "8px",
-                        "gutter": "16px",
-                        "lg": "24px",
-                        "margin-mobile": "20px",
-                        "xs": "4px",
-                        "unit": "4px",
-                        "md": "16px"
-                    },
-                    "fontFamily": {
-                        "title-serif": ["Merriweather"],
-                        "label-caps": ["Cinzel"],
-                        "headline-lg": ["Playfair Display"],
-                        "display-hero": ["Playfair Display"],
-                        "data-price": ["Space Mono"],
-                        "body-md": ["DM Sans"],
-                        "headline-lg-mobile": ["Playfair Display"]
-                    },
-                    "fontSize": {
-                        "title-serif": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                        "display-hero": ["48px", {"lineHeight": "56px", "fontWeight": "300"}],
-                        "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}]
-                    }
-                },
-            },
-        }
-    </script>
+
 </head>
 <body class="bg-background text-on-background min-h-screen font-body-md overflow-x-hidden">
 <!-- Top Navigation Bar -->
-<header class="fixed top-0 left-0 right-0 h-[60px] bg-white border-b border-outline-variant z-50 flex items-center justify-between px-margin-desktop">
+<header class="fixed top-0 left-0 right-0 h-[60px] bg-[#F7F3EC] border-b border-[#8FAF82] z-50 flex items-center justify-between px-margin-desktop">
 <div class="flex items-center">
 <span class="font-headline-lg italic text-[22px] text-primary tracking-tight">Tofha<span class="text-gold">.</span></span>
 </div>
@@ -156,7 +64,7 @@
 </div>
 <!-- Watermark -->
 <div class="absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.08] pointer-events-none">
-<img alt="Artisan sketch cake" class="w-40 grayscale" data-alt="A subtle, hand-drawn ink sketch of a multi-tiered birthday cake decorated with delicate ribbons and botanical sprigs. The illustration is minimalist and refined, rendered in a soft ink-style aesthetic with fine lines, designed to look like a watermark on a white paper background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqvv8OdUaows9IXCdj5vepDu3MgM3db-8LWwPDNaJWF5hwCqY-mHLJD7Kb5V94V8h2qjZQjEIWSGojVWMKhtHAKZekGjRyqz88ArxvdA6fu5jNiWXuGvhw649k4nX6EF7oMViqz_DpxLizj8yzOBzAop4i2QDFxvesI01hrTRROkzXGu44vj03K2EvOxc7T_KyWsCmr5U1Rofp_yScDupwtbXQGQPvcau8xvM_4D9U227D4s-cCO76qsuK4pmiGtWRi5Cf6T3DmL4"/>
+<img alt="Artisan sketch cake" class="w-40 grayscale" data-alt="A subtle, hand-drawn ink sketch of a multi-tiered birthday cake decorated with delicate ribbons and botanical sprigs. The illustration is minimalist and refined, rendered in a soft ink-style aesthetic with fine lines, designed to look like a watermark on a white paper background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqvv8OdUaows9IXCdj5vepDu3MgM3db-8LWwPDNaJWF5hwCqY-mHLJD7Kb5V94V8h2qjZQjEIWSGojVWMKhtHAKZekGjRyqz88ArxvdA6fu5jNiWXuGvhw649k4nX6EF7oMViqz_DpxLizj8yzOBzAop4i2QDFxvesI01hrTRROkzXGu44vj03K2EvOxc7T_KyWsCmr5U1Rofp_yScDupwtbXQGQPvcau8xvM_4D9U227D4s-cCO76qsuK4pmiGtWRi5Cf6T3DmL4" loading="lazy" />
 </div>
 </section>
 <!-- Section 2: Hero Strip -->
@@ -166,7 +74,7 @@
 <p class="font-body-md text-[13px] text-on-surface-variant">You have 2 birthdays in the next 30 days.</p>
 </div>
 <div class="flex items-center relative">
-<img alt="Cake illustration" class="w-12 h-12 object-contain" data-alt="A small, stylized artisan sketch of a birthday cake with a single candle, rendered in fine brown ink. The style is whimsical and tactile, mimicking a hand-drawn illustration in a sketchbook. The colors are muted and earthy to match the studio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVKIW3GQ0BJ9xRhQpMSYXH-2tClu8_gG7C3nVlg68LJqH2AwRf-9lQL1i3i5WfolJCCUhLSox2ihScaFs_4IldMP5FpGnkrLZXCXMOXJ6nXGX_V2_eyPwoseIP2QQEr-psh6yzPhxyJFjD3IZDRPdAeWdWWwg1DJQgVPSsULz58gch1T0Q6pBrd8rvVUjwJFegaotrKIZ5f-py2t71ym6kGQl6QxLP0K3372RXHVoPJDmR0h0vs0jdb7EHuwDibDivUHSbXlIL5JM"/>
+<img alt="Cake illustration" class="w-12 h-12 object-contain" data-alt="A small, stylized artisan sketch of a birthday cake with a single candle, rendered in fine brown ink. The style is whimsical and tactile, mimicking a hand-drawn illustration in a sketchbook. The colors are muted and earthy to match the studio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVKIW3GQ0BJ9xRhQpMSYXH-2tClu8_gG7C3nVlg68LJqH2AwRf-9lQL1i3i5WfolJCCUhLSox2ihScaFs_4IldMP5FpGnkrLZXCXMOXJ6nXGX_V2_eyPwoseIP2QQEr-psh6yzPhxyJFjD3IZDRPdAeWdWWwg1DJQgVPSsULz58gch1T0Q6pBrd8rvVUjwJFegaotrKIZ5f-py2t71ym6kGQl6QxLP0K3372RXHVoPJDmR0h0vs0jdb7EHuwDibDivUHSbXlIL5JM" loading="lazy" />
 <!-- Scattered Watermarks -->
 <div class="absolute -left-20 top-0 opacity-[0.07] rotate-12">
 <span class="material-symbols-outlined text-3xl">psychology_alt</span>
@@ -186,7 +94,7 @@
 <!-- Chip 1 -->
 <div class="flex-shrink-0 w-[80px] h-[96px] bg-ivory border border-sage rounded-[14px] flex flex-col items-center justify-center shadow-[4px_4px_10px_rgba(58,51,40,0.08)]">
 <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs mb-1 overflow-hidden">
-<img alt="Riya" data-alt="A warm, soft-focus portrait of a young woman with a kind smile, used for a user profile avatar. The lighting is natural and golden-hour inspired, creating a cozy and personal feel consistent with a handmade brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-RlBrElEmAe_7nOI5MBJlkmaIYkE8KHoRI0fJiJ7G7tozJS_mMQHepWpRAL_N1n4jANfATfLe-otjb6Yea8HL6mqm246a-NlPZRYBFryFXWrKL7SSZHk5Po7egdrxcTpBN3m8blXftv_vV75nGS1p-MVG_thAwTavGOJ0VN8dFbpRZLXTMSMr1gyStYwX7zXpJlB8WD6oR5up1SyOx2bNvmRvlTYmisHbZLPDbmupRJDD__gdfKc5XnyPxendPROZ06Rq5_0rPSs"/>
+<img alt="Riya" data-alt="A warm, soft-focus portrait of a young woman with a kind smile, used for a user profile avatar. The lighting is natural and golden-hour inspired, creating a cozy and personal feel consistent with a handmade brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-RlBrElEmAe_7nOI5MBJlkmaIYkE8KHoRI0fJiJ7G7tozJS_mMQHepWpRAL_N1n4jANfATfLe-otjb6Yea8HL6mqm246a-NlPZRYBFryFXWrKL7SSZHk5Po7egdrxcTpBN3m8blXftv_vV75nGS1p-MVG_thAwTavGOJ0VN8dFbpRZLXTMSMr1gyStYwX7zXpJlB8WD6oR5up1SyOx2bNvmRvlTYmisHbZLPDbmupRJDD__gdfKc5XnyPxendPROZ06Rq5_0rPSs" loading="lazy" />
 </div>
 <span class="font-title-serif text-[13px] text-on-surface">Riya</span>
 <span class="font-data-price text-[11px] text-gold mb-1">15 Aug</span>
@@ -238,7 +146,7 @@
 <div class="flex justify-between items-start mb-sm">
 <div class="flex gap-md">
 <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
-<img alt="Riya" data-alt="Portrait of a woman used for contact identification. The style is warm, authentic, and naturally lit, reflecting the personal and human-centric values of the Tohfa brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMirHrVJL4jncWBzc6sQoRRfunhcr_OZ7xqTu1xPNxTQ6bjpxnv6u9Ay15MbS58k22kigEJl_cSyUCGYElPSBaQ9vg85S4i-bOGO1J1C7Qu4isZRxvzo_aKFP0BgQgJ7wgl__5JhofM7Sctce3oe7sk1uExm3CGnY9oqfnW8D-lC5QcJc1cQtqZ2KtRLHCAFd3bgbdYgE3nwen6fm1XNjZHxuWJgTbOck9ki0aeCln0RhcrGaGY4TSqJ_txm7H9WW52C8IPmvDkEA"/>
+<img alt="Riya" data-alt="Portrait of a woman used for contact identification. The style is warm, authentic, and naturally lit, reflecting the personal and human-centric values of the Tohfa brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMirHrVJL4jncWBzc6sQoRRfunhcr_OZ7xqTu1xPNxTQ6bjpxnv6u9Ay15MbS58k22kigEJl_cSyUCGYElPSBaQ9vg85S4i-bOGO1J1C7Qu4isZRxvzo_aKFP0BgQgJ7wgl__5JhofM7Sctce3oe7sk1uExm3CGnY9oqfnW8D-lC5QcJc1cQtqZ2KtRLHCAFd3bgbdYgE3nwen6fm1XNjZHxuWJgTbOck9ki0aeCln0RhcrGaGY4TSqJ_txm7H9WW52C8IPmvDkEA" loading="lazy" />
 </div>
 <div>
 <h3 class="font-title-serif text-lg text-on-surface">Riya</h3>
@@ -380,9 +288,9 @@
     function getTohfaToken() {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token') || null;
         } catch(e) {
-            return getTohfaToken();
+            return sessionStorage.getItem('tohfa_access_token') || null;
         }
     }
 

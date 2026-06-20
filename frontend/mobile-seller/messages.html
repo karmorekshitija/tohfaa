@@ -1,38 +1,20 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Artisan Studio | Messages</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
 <script src="/components/seller-components.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          "primary": "#3D6B4F",
-          "gold": "#C8973A",
-          "surface-variant": "#F7F3EC",
-          "sage": "#8FAF82",
-          "on-surface": "#211b11",
-          "outline-variant": "#E8E2D5"
-        },
-        fontFamily: {
-          display: ["Playfair Display", "serif"],
-          body: ["DM Sans", "sans-serif"],
-          mono: ["Space Mono", "monospace"],
-          eyebrow: ["Cinzel", "serif"]
-        }
-      }
-    }
-  }
-</script>
-<style>
+  <style>
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
@@ -419,7 +401,7 @@
               <p id="accepted-order-amount" class="text-xs text-gold font-bold font-mono"></p>
             </div>
           </div>
-          <a class="block text-center text-[10px] font-eyebrow text-primary hover:underline pt-2 border-t border-outline-variant font-bold uppercase tracking-widest" href="/seller/orders.html">View Studio Orders →</a>
+          <a class="block text-center text-[10px] font-eyebrow text-primary hover:underline pt-2 border-t border-outline-variant font-bold uppercase tracking-widest" href="/mobile-seller/orders.html">View Studio Orders →</a>
         </div>
       </div>
     </div>
@@ -438,5 +420,827 @@
 
 <!-- Image Lightbox Overlay -->
 <div id="lightbox-overlay" onclick="closeLightbox()" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-  <img id="lightbox-img" class="max-w-[90%] max-h-[90%] object-contain rounded-lg" src="">
+  <img id="lightbox-img" class="max-w-[90%] max-h-[90%] object-contain rounded-lg" src="" loading="lazy">
 </div>
+
+<script>
+window.goBackToInbox = function() {
+    activeConversationId = null;
+    const url = new URL(window.location);
+    url.searchParams.delete('conversationId');
+    window.history.pushState({}, '', url);
+    
+    document.getElementById('chat-area').classList.add('hidden');
+    document.getElementById('chat-area-empty').classList.remove('hidden');
+    renderSidebarList();
+  };
+
+  const API_BASE = window.location.origin;
+  let activeConversationId = null;
+  let conversations = [];
+  let currentMessages = [];
+  let sidebarFilter = 'all';
+  let activePollingInterval = null;
+  let sidebarPollingInterval = null;
+  let selectedFiles = [];
+  let countdownIntervals = [];
+
+  function getAuthToken() {
+    return localStorage.getItem('token') || sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+  }
+
+  // Set default min date for form
+  const dateInput = document.getElementById('form-delivery-date');
+  if (dateInput) {
+    const today = new Date();
+    const minDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+  }
+
+  function triggerToastError(msg) {
+    const toast = document.getElementById('error-toast');
+    const msgContainer = document.getElementById('error-toast-msg');
+    msgContainer.textContent = msg;
+    toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(dismissErrorToast, 5000);
+  }
+
+  function dismissErrorToast() {
+    const toast = document.getElementById('error-toast');
+    toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.remove('translate-y-0', 'opacity-100');
+  }
+
+  function openLightbox(url) {
+    const overlay = document.getElementById('lightbox-overlay');
+    const img = document.getElementById('lightbox-img');
+    img.src = url;
+    overlay.classList.remove('pointer-events-none', 'opacity-0');
+    overlay.classList.add('opacity-100');
+  }
+
+  function closeLightbox() {
+    const overlay = document.getElementById('lightbox-overlay');
+    overlay.classList.add('pointer-events-none', 'opacity-0');
+    overlay.classList.remove('opacity-100');
+  }
+
+  function toggleRightPanel() {
+    const panel = document.getElementById('right-panel');
+    const backdrop = document.getElementById('right-panel-backdrop');
+    const isOpen = panel.classList.contains('translate-x-0');
+
+    if (isOpen) {
+      panel.classList.remove('translate-x-0');
+      panel.classList.add('translate-x-full');
+      panel.classList.add('hidden');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+      backdrop.classList.remove('opacity-100');
+    } else {
+      panel.classList.remove('hidden');
+      panel.offsetHeight;
+      panel.classList.remove('translate-x-full');
+      panel.classList.add('translate-x-0');
+      backdrop.classList.remove('pointer-events-none', 'opacity-0');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
+    }
+  }
+
+  function openCustomOrderPanel(isEdit = false, pendingOffer = null) {
+    const panel = document.getElementById('right-panel');
+    if (panel.classList.contains('translate-x-full') || panel.classList.contains('hidden')) {
+      toggleRightPanel();
+    }
+    
+    const title = document.getElementById('panel-title');
+    const submitBtn = document.getElementById('btn-send-offer');
+    
+    if (isEdit) {
+      title.textContent = "Edit Custom Offer";
+      submitBtn.textContent = "Update Offer";
+      
+      const offer = pendingOffer || (currentMessages.find(m => m.type === 'offer' && m.offer)?.offer) || {};
+      document.getElementById('form-offer-id').value = offer.id || '';
+      document.getElementById('form-product-name').value = offer.product_name || '';
+      document.getElementById('form-price').value = offer.price || '';
+      document.getElementById('form-quantity').value = offer.quantity || 1;
+      document.getElementById('form-delivery-date').value = offer.delivery_date || '';
+      const notesField = document.getElementById('form-custom-notes');
+      notesField.value = offer.custom_notes || '';
+      updateCharCounter(notesField);
+      document.getElementById('form-expiry').value = offer.expiry_hours || 48;
+    } else {
+      title.textContent = "Send Custom Offer";
+      submitBtn.textContent = "Send Offer";
+      document.getElementById('custom-order-form').reset();
+      document.getElementById('form-offer-id').value = '';
+      updateCharCounter(document.getElementById('form-custom-notes'));
+    }
+  }
+
+  function updateCharCounter(el) {
+    const counter = document.getElementById('char-counter');
+    counter.textContent = `${el.value.length}/300`;
+  }
+
+  async function loadConversations(isSilent = false) {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = '/auth/login.html';
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/api/conversations`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to load inbox conversations.");
+      conversations = await res.json();
+      renderSidebarList();
+    } catch (e) {
+      if (!isSilent) triggerToastError(e.message);
+    }
+  }
+
+  function setSidebarFilter(filter) {
+    sidebarFilter = filter;
+    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+      btn.classList.remove('border-primary', 'text-primary');
+      btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    const activeBtn = document.getElementById(`tab-${filter}`);
+    activeBtn.classList.remove('border-transparent', 'text-gray-500');
+    activeBtn.classList.add('border-primary', 'text-primary');
+    renderSidebarList();
+  }
+
+  function renderSidebarList() {
+    const listContainer = document.getElementById('conversation-list');
+    const searchQuery = document.getElementById('sidebar-search').value.toLowerCase().trim();
+    
+    // Hide conversations in 'intake_in_progress' from the seller
+    let filtered = conversations.filter(c => c.status !== 'intake_in_progress');
+    
+    if (sidebarFilter !== 'all') {
+      if (sidebarFilter === 'custom') {
+        filtered = filtered.filter(c => c.product_type_tag !== 'overflow');
+      } else {
+        filtered = filtered.filter(c => c.product_type_tag === sidebarFilter);
+      }
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(c => c.other_party_name.toLowerCase().includes(searchQuery) || c.product_name.toLowerCase().includes(searchQuery));
+    }
+    
+    if (filtered.length === 0) {
+      listContainer.innerHTML = `<p class="p-6 text-center text-xs text-gray-400 italic">No conversations found.</p>`;
+      return;
+    }
+
+    listContainer.innerHTML = filtered.map(c => {
+      const isActive = c.conversation_id === activeConversationId;
+      const activeClass = isActive ? 'bg-parchment border-l-4 border-primary' : 'hover:bg-gray-50';
+      const initials = c.other_party_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const lastMsgText = c.last_message_preview || "No messages yet";
+      const timestamp = c.last_message_at ? formatRelativeTime(c.last_message_at) : '';
+      const unreadDot = c.unread_count > 0 ? `<span class="w-2.5 h-2.5 bg-primary rounded-full shrink-0"></span>` : '';
+      const tagBadge = c.product_type_tag === 'overflow' 
+        ? `<span class="text-[9px] font-eyebrow font-bold bg-sage/20 text-primary px-2 py-0.5 rounded">OVERFLOW</span>`
+        : `<span class="text-[9px] font-eyebrow font-bold bg-gold/20 text-gold px-2 py-0.5 rounded">CUSTOM</span>`;
+
+      return `
+        <div onclick="selectConversation(${c.conversation_id})" class="p-4 cursor-pointer flex gap-3 ${activeClass} transition-colors">
+          <div class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-display text-sm font-bold shadow-inner shrink-0">${initials}</div>
+          <div class="flex-grow min-w-0">
+            <div class="flex justify-between items-start">
+              <h4 class="text-xs font-bold text-primary truncate">${c.other_party_name}</h4>
+              <span class="text-[9px] text-gray-400 font-mono">${timestamp}</span>
+            </div>
+            <p class="text-xs text-gray-500 truncate mt-0.5">${lastMsgText}</p>
+            <div class="flex items-center justify-between mt-2">
+              ${tagBadge}
+              ${unreadDot}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectConversation(id) {
+    activeConversationId = id;
+    renderSidebarList();
+    
+    const url = new URL(window.location);
+    url.searchParams.set('conversationId', id);
+    window.history.pushState({}, '', url);
+
+    document.getElementById('chat-area-empty').classList.add('hidden');
+    document.getElementById('chat-area').classList.remove('hidden');
+
+    loadConversation(id);
+  }
+
+  async function loadConversation(id) {
+    if (activePollingInterval) clearInterval(activePollingInterval);
+    
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to load conversation details.");
+      const data = await res.json();
+      
+      document.getElementById('chat-name').textContent = data.other_party.name;
+      const initials = data.other_party.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('chat-avatar').textContent = initials;
+      
+      const badgesContainer = document.getElementById('chat-context-badges');
+      const typeLabel = data.status === 'completed' ? 'ACCEPTED' : data.status.toUpperCase();
+      const typeBadgeClass = data.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
+      
+      badgesContainer.innerHTML = `
+        <span class="text-[9px] font-eyebrow font-bold ${typeBadgeClass} px-2.5 py-0.5 rounded">${typeLabel}</span>
+        <span class="text-[9px] font-mono text-gray-400">#${data.listing.product_name || 'custom'}</span>
+      `;
+
+      const banner = document.getElementById('pending-offer-banner');
+      if (data.active_offer) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      const orderForm = document.getElementById('custom-order-form');
+      const orderCard = document.getElementById('accepted-order-card');
+      const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
+      
+      if (data.order_details) {
+        orderForm.classList.add('hidden');
+        orderCard.classList.remove('hidden');
+        document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
+        document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
+        document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
+        document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
+        
+        toggleBtnText.textContent = "Order Details";
+      } else {
+        orderForm.classList.remove('hidden');
+        orderCard.classList.add('hidden');
+        toggleBtnText.textContent = "Custom Order";
+        
+        if (data.active_offer) {
+          document.getElementById('form-offer-id').value = data.active_offer.id;
+          document.getElementById('form-product-name').value = data.active_offer.product_name || '';
+          document.getElementById('form-price').value = data.active_offer.price || '';
+          document.getElementById('form-quantity').value = data.active_offer.quantity || 1;
+          document.getElementById('form-delivery-date').value = data.active_offer.delivery_date || '';
+          document.getElementById('form-custom-notes').value = data.active_offer.custom_notes || '';
+          document.getElementById('form-expiry').value = data.active_offer.expiry_hours || 48;
+          updateCharCounter(document.getElementById('form-custom-notes'));
+        }
+      }
+
+      currentMessages = data.messages || [];
+      renderMessagesList(data.active_offer);
+      
+      const container = document.getElementById('messages-container');
+      container.scrollTop = container.scrollHeight;
+
+    } catch (e) {
+      triggerToastError(e.message);
+    }
+
+    activePollingInterval = setInterval(() => {
+      pollMessages(id);
+    }, 5000);
+  }
+
+  async function pollMessages(id) {
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        
+        const banner = document.getElementById('pending-offer-banner');
+        if (data.active_offer) {
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+        }
+
+        const container = document.getElementById('messages-container');
+        const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 120;
+        
+        currentMessages = data.messages || [];
+        renderMessagesList(data.active_offer);
+
+        if (isNearBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+
+        const orderForm = document.getElementById('custom-order-form');
+        const orderCard = document.getElementById('accepted-order-card');
+        const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
+        
+        if (data.order_details) {
+          orderForm.classList.add('hidden');
+          orderCard.classList.remove('hidden');
+          document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
+          document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
+          document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
+          document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
+          toggleBtnText.textContent = "Order Details";
+        }
+      }
+    } catch(e) {}
+  }
+
+  function renderMessagesList(activeOffer) {
+    const container = document.getElementById('messages-container');
+    container.innerHTML = '';
+    
+    let lastDate = null;
+    
+    currentMessages.forEach(msg => {
+      const date = new Date(msg.sent_at);
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+      if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        const separator = document.createElement('div');
+        separator.className = "flex justify-center my-4";
+        separator.innerHTML = `<span class="bg-[#E8E2D5] px-3 py-1 rounded-full text-[10px] font-eyebrow font-bold text-[#9C8E82] tracking-wider uppercase">${dateStr}</span>`;
+        container.appendChild(separator);
+      }
+
+      if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
+        const offerDiv = document.createElement('div');
+        offerDiv.className = "flex justify-start w-full";
+        offerDiv.innerHTML = renderOfferCardHtml(msg.offer);
+        container.appendChild(offerDiv);
+        return;
+      }
+
+      if (msg.type === 'product_inquiry') {
+        let inquiry = {};
+        try {
+          inquiry = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+        } catch(e) {
+          console.error("Failed to parse product_inquiry content:", e);
+        }
+        
+        const product_id = inquiry.product_id || '';
+        const product_name = inquiry.product_name || 'Product';
+        const quantity = inquiry.quantity || 1;
+        const base_price = inquiry.base_price || 0;
+        const product_type_tag = inquiry.product_type_tag || '';
+        
+        const isCustom = product_type_tag === 'custom';
+        const tagColor = isCustom ? '#3D6B4F' : '#C8973A';
+        const tagLabel = isCustom ? 'Custom Order Request' : 'Overflow Order Request';
+        
+        const imgSrc = msg.image_url ? (msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE}${msg.image_url}`) : '/placeholder.jpg';
+        
+        const isOutgoing = msg.sender_role === 'seller';
+        const div = document.createElement('div');
+        
+        const cardHtml = `
+          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='/mobile-buyer/product.html?id=${product_id}'">
+            <div class="flex items-center">
+              <span class="font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold text-white" style="background-color: ${tagColor};">
+                ${tagLabel}
+              </span>
+            </div>
+            <div class="flex gap-3 items-start">
+              <img class="w-16 h-16 object-cover rounded-lg border border-[#E8E2D5] shrink-0" src="${imgSrc}" alt="${product_name}" loading="lazy">
+              <div class="flex flex-col min-w-0 flex-1">
+                <h4 class="font-display text-sm font-bold text-on-surface truncate leading-snug mb-1">
+                  ${product_name}
+                </h4>
+                <div class="font-body text-xs text-gray-500 space-y-0.5">
+                  <p>Qty: <span class="font-semibold text-gray-700">${quantity}</span></p>
+                  <p>Price: <span class="font-semibold text-gray-700">₹${(base_price / 100).toFixed(2)}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        if (isOutgoing) {
+          div.className = "flex justify-end w-full";
+          div.innerHTML = `
+            <div class="flex flex-col items-end gap-1 max-w-[80%]">
+              ${cardHtml}
+              <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
+            </div>
+          `;
+        } else {
+          div.className = "flex justify-start w-full";
+          div.innerHTML = `
+            <div class="flex items-start gap-3 max-w-[80%]">
+              <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">BY</div>
+              <div class="flex flex-col gap-1">
+                ${cardHtml}
+                <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
+              </div>
+            </div>
+          `;
+        }
+        container.appendChild(div);
+        return;
+      }
+
+      if (msg.sender_role === 'bot') {
+        const botDiv = document.createElement('div');
+        botDiv.className = "flex justify-start w-full";
+        botDiv.innerHTML = `
+          <div class="flex flex-col gap-1 max-w-[80%]">
+            <div class="bg-surface-variant p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+              <p class="text-xs text-primary font-bold mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">smart_toy</span> BOT ASSISTANT</p>
+              <p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>
+            </div>
+            <span class="text-[9px] text-gray-400 font-mono mt-1">${formatTime(msg.sent_at)}</span>
+          </div>
+        `;
+        container.appendChild(botDiv);
+        return;
+      }
+
+      const isOutgoing = msg.sender_role === 'seller';
+      const div = document.createElement('div');
+      
+      if (isOutgoing) {
+        div.className = "flex justify-end w-full";
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${msg.content}</p>` : '';
+        if (msg.image_url) {
+          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}" loading="lazy">`;
+        }
+        div.innerHTML = `
+          <div class="flex flex-col items-end gap-1 max-w-[80%]">
+            <div class="bg-primary p-4 rounded-xl rounded-tr-none shadow-sm border border-primary/20">
+              ${contentHtml}
+            </div>
+            <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
+          </div>
+        `;
+      } else {
+        div.className = "flex justify-start w-full";
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>` : '';
+        if (msg.image_url) {
+          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}" loading="lazy">`;
+        }
+        div.innerHTML = `
+          <div class="flex items-start gap-3 max-w-[80%]">
+            <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">BY</div>
+            <div class="flex flex-col gap-1">
+              <div class="bg-[#FFFDFB] p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+                ${contentHtml}
+              </div>
+              <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
+            </div>
+          </div>
+        `;
+      }
+      container.appendChild(div);
+    });
+
+    initCountdownTimers();
+  }
+
+  function renderOfferCardHtml(offer) {
+    if (!offer) return `<div class="p-4 bg-white border border-outline-variant rounded-xl text-xs text-gray-400 italic">Offer record missing.</div>`;
+    
+    let statusBadgeColor = 'bg-amber-100 text-amber-800';
+    let statusLabel = 'PENDING';
+    if (offer.status === 'accepted') {
+      statusBadgeColor = 'bg-green-100 text-green-800';
+      statusLabel = 'ACCEPTED';
+    } else if (offer.status === 'declined') {
+      statusBadgeColor = 'bg-red-100 text-red-800';
+      statusLabel = 'DECLINED';
+    } else if (offer.status === 'expired') {
+      statusBadgeColor = 'bg-gray-100 text-gray-800';
+      statusLabel = 'EXPIRED';
+    }
+
+    const isPending = offer.status === 'pending';
+    const cleanOfferJson = JSON.stringify(offer).replace(/"/g, '&quot;');
+    const editBtn = isPending ? `<button onclick="openCustomOrderPanel(true)" class="text-gold hover:text-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-sm">edit</span></button>` : '';
+
+    return `
+      <div class="max-w-[380px] w-full bg-[#FFFDFB] border-2 border-gold rounded-xl overflow-hidden shadow-lg relative my-2 interactive-hover">
+        <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
+          ${statusLabel}
+        </div>
+        <div class="p-5 space-y-3">
+          <header class="flex justify-between items-center pr-16">
+            <p class="font-eyebrow text-[9px] text-gray-400 tracking-wider uppercase font-bold">CUSTOM OFFER FROM YOU</p>
+            ${editBtn}
+          </header>
+          <hr class="border-outline-variant"/>
+          <div class="space-y-2 font-body text-xs text-on-surface">
+            <div class="flex justify-between">
+              <span class="text-gray-400">Product</span>
+              <span class="font-bold text-primary">${offer.product_name || 'Custom item'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Notes</span>
+              <span class="font-medium text-primary text-right truncate max-w-[200px]">${offer.custom_notes || '—'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Delivery Date</span>
+              <span class="font-medium text-primary">${formatReadableDate(offer.delivery_date)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Quantity</span>
+              <span class="font-medium text-primary">${offer.quantity || 1}</span>
+            </div>
+            <div class="flex justify-between items-center pt-2">
+              <span class="text-gray-400 text-xs font-bold">Amount</span>
+              <span class="font-mono text-base text-gold font-bold">₹${offer.price}</span>
+            </div>
+          </div>
+          <hr class="border-outline-variant"/>
+          <footer class="flex items-center justify-between pt-1 text-[10px] text-gray-400">
+            <div class="flex items-center gap-1 seller-countdown-timer" data-expiry="${offer.expires_at}" data-status="${offer.status}">
+              <span class="material-symbols-outlined text-[13px]">schedule</span>
+              <span>—</span>
+            </div>
+            <div class="flex items-center gap-0.5">
+              <span class="material-symbols-outlined text-[13px]">verified_user</span>
+              <span>Tohfa Secure</span>
+            </div>
+          </footer>
+        </div>
+      </div>
+    `;
+  }
+
+  function initCountdownTimers() {
+    countdownIntervals.forEach(clearInterval);
+    countdownIntervals = [];
+
+    document.querySelectorAll('.seller-countdown-timer').forEach(el => {
+      const expiresAt = el.getAttribute('data-expiry');
+      const status = el.getAttribute('data-status');
+      if (!expiresAt) return;
+
+      const updateTimer = () => {
+        if (status !== 'pending') {
+          el.querySelector('span:last-child').textContent = "Closed";
+          return;
+        }
+        const diff = new Date(expiresAt).getTime() - Date.now();
+        if (diff <= 0) {
+          el.querySelector('span:last-child').textContent = "Expired";
+          return;
+        }
+        const hours = Math.floor(diff / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        el.querySelector('span:last-child').textContent = `Expires in ${hours}:${String(mins).padStart(2, '0')} hrs`;
+      };
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 60000);
+      countdownIntervals.push(interval);
+    });
+  }
+
+  // File Selection and Thumbnails
+  function triggerFilePicker() {
+    document.getElementById('file-picker').click();
+  }
+
+  function handleFileSelection(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      if (selectedFiles.some(f => f.name === file.name && f.size === file.size)) return;
+      selectedFiles.push(file);
+    });
+    renderAttachmentStrip();
+  }
+
+  function removeSelectedFile(index) {
+    selectedFiles.splice(index, 1);
+    renderAttachmentStrip();
+  }
+
+  function renderAttachmentStrip() {
+    const strip = document.getElementById('attachment-preview-strip');
+    const container = document.getElementById('preview-thumbnails');
+    
+    if (selectedFiles.length === 0) {
+      strip.classList.add('hidden');
+      return;
+    }
+    
+    strip.classList.remove('hidden');
+    container.innerHTML = selectedFiles.map((file, idx) => {
+      const url = URL.createObjectURL(file);
+      return `
+        <div class="relative w-16 h-12 rounded-lg border border-outline-variant overflow-hidden shrink-0 shadow-sm">
+          <img class="w-full h-full object-cover" src="${url}" loading="lazy">
+          <button onclick="removeSelectedFile(${idx})" class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors focus:outline-none">
+            <span class="material-symbols-outlined text-[10px]">close</span>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function submitMessage() {
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+    if (!content && selectedFiles.length === 0) return;
+
+    const token = getAuthToken();
+    const sendBtn = document.getElementById('send-msg-btn');
+    sendBtn.disabled = true;
+
+    try {
+      // 1. Upload files first
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append('photo', file);
+        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to upload attachment image.");
+        }
+      }
+
+      // 2. Upload text content if present
+      if (content) {
+        const formData = new FormData();
+        formData.append('content', content);
+        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to send text message.");
+        }
+      }
+
+      input.value = '';
+      input.style.height = 'auto';
+      selectedFiles = [];
+      renderAttachmentStrip();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  function handleInputKeydown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitMessage();
+    }
+  }
+
+  // Custom offer submit (Post / Put)
+  async function handleOfferSubmit(e) {
+    e.preventDefault();
+    const token = getAuthToken();
+    const offerId = document.getElementById('form-offer-id').value;
+    
+    const price = parseInt(document.getElementById('form-price').value, 10);
+    const quantity = parseInt(document.getElementById('form-quantity').value, 10) || 1;
+    const delivery_date = document.getElementById('form-delivery-date').value;
+    const custom_notes = document.getElementById('form-custom-notes').value;
+    const expiry_hours = parseInt(document.getElementById('form-expiry').value, 10);
+    const product_name = document.getElementById('form-product-name').value;
+
+    const payload = {
+      price,
+      quantity,
+      delivery_date,
+      custom_notes,
+      expiry_hours,
+      product_name
+    };
+
+    const submitBtn = document.getElementById('btn-send-offer');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+
+    try {
+      let res;
+      if (offerId) {
+        // Edit mode (PUT)
+        res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer/${offerId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        // Create mode (POST)
+        res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to process custom offer.");
+      }
+
+      // Success
+      toggleRightPanel();
+      document.getElementById('custom-order-form').reset();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = offerId ? "Update Offer" : "Send Offer";
+    }
+  }
+
+  // Formatting utilities
+  function formatRelativeTime(isoString) {
+    const date = new Date(isoString);
+    const now = new Date();
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function formatTime(isoString) {
+    return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  function formatReadableDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = '/auth/login.html';
+      return;
+    }
+    
+    // Check if initial conversation selected in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialConvId = urlParams.get('conversationId');
+    if (initialConvId) {
+      activeConversationId = parseInt(initialConvId, 10);
+      document.getElementById('chat-area-empty').classList.add('hidden');
+      document.getElementById('chat-area').classList.remove('hidden');
+    }
+
+    await loadConversations();
+    if (activeConversationId) {
+      await loadConversation(activeConversationId);
+    }
+
+    // Polling inbox list every 30s
+    sidebarPollingInterval = setInterval(() => {
+      loadConversations(true);
+    }, 30000);
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (activePollingInterval) clearInterval(activePollingInterval);
+    if (sidebarPollingInterval) clearInterval(sidebarPollingInterval);
+    countdownIntervals.forEach(clearInterval);
+  });
+</script>
+</body>
+</html>

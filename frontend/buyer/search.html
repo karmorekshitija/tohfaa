@@ -1,102 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Search Handcrafted Goods</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=DM+Sans:wght@400;500;700&family=Cinzel:wght@700&family=Space+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "surface-tint": "#3a684c",
-                        "surface-container-lowest": "#ffffff",
-                        "primary-fixed": "#bceecb",
-                        "primary": "#3D6B4F",
-                        "surface-dim": "#e5d8c8",
-                        "on-secondary-fixed": "#062103",
-                        "surface-variant": "#F7F3EC",
-                        "on-surface": "#211b11",
-                        "tertiary-fixed": "#ecdcff",
-                        "on-tertiary-fixed": "#270550",
-                        "secondary-container": "#8FAF82",
-                        "on-tertiary-fixed-variant": "#54387e",
-                        "on-tertiary": "#ffffff",
-                        "secondary-fixed-dim": "#afd0a0",
-                        "on-secondary-fixed-variant": "#324e29",
-                        "surface": "#FFFFFF",
-                        "primary-fixed-dim": "#a0d2b0",
-                        "surface-container-low": "#fff2e1",
-                        "background": "#FFFFFF",
-                        "primary-container": "#3d6b4f",
-                        "error": "#3D6B4F",
-                        "tertiary-container": "#7B5EA7",
-                        "inverse-primary": "#a0d2b0",
-                        "secondary": "#49663f",
-                        "on-primary": "#ffffff",
-                        "secondary-fixed": "#caecbb",
-                        "tertiary": "#7B5EA7",
-                        "outline-variant": "#F7F3EC",
-                        "on-error-container": "#3D6B4F",
-                        "outline": "#717972",
-                        "on-tertiary-container": "#e8d6ff",
-                        "inverse-surface": "#362f25",
-                        "surface-container-highest": "#F7F3EC",
-                        "surface-container": "#f9ecdc",
-                        "tertiary-fixed-dim": "#d6baff",
-                        "on-surface-variant": "#414942",
-                        "on-secondary-container": "#4d6a43",
-                        "inverse-on-surface": "#fcefde",
-                        "on-secondary": "#ffffff",
-                        "on-error": "#ffffff",
-                        "on-primary-container": "#b7e9c6",
-                        "surface-container-high": "#f3e6d6",
-                        "surface-bright": "#FFFFFF",
-                        "on-background": "#211b11",
-                        "error-container": "#F7F3EC",
-                        "on-primary-fixed-variant": "#214f36",
-                        "on-primary-fixed": "#002110",
-                        "gold": "#C8973A",
-                        "sage": "#717972",
-                        "ivory": "#F7F3EC",
-                        "ink": "#3A3328"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    spacing: {
-                        "xs": "4px",
-                        "margin-desktop": "64px",
-                        "unit": "4px",
-                        "gutter": "16px",
-                        "md": "16px",
-                        "margin-mobile": "20px",
-                        "lg": "24px",
-                        "sm": "8px",
-                        "xl": "40px"
-                    },
-                    fontFamily: {
-                        "label-caps": ["Cinzel"],
-                        "data-price": ["Space Mono"],
-                        "title-serif": ["Merriweather"],
-                        "headline-lg-mobile": ["Playfair Display"],
-                        "display-hero": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "headline-lg": ["Playfair Display"]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
@@ -294,7 +210,7 @@
             <!-- Mascot Greeting Block -->
             <section class="flex items-center justify-center gap-xl my-lg">
                 <div class="relative w-[180px] h-[180px] flex-shrink-0">
-                    <img alt="Tohfa Mascot Greeting" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY"/>
+                    <img alt="Tohfa Mascot Greeting" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY" loading="lazy" />
                 </div>
                 <div class="speech-bubble relative bg-ivory border border-sage p-lg rounded-xl max-w-md">
                     <h1 class="font-title-serif italic text-[22px] text-ink mb-2 leading-tight">
@@ -626,7 +542,7 @@
             if (sellers.length > 0) {
                 sellersSection.classList.remove('hidden');
                 sellersList.innerHTML = sellers.map(s => {
-                    const avatar = s.avatar_url ? `<img src="${s.avatar_url}" alt="${s.shop_name}" class="w-[28px] h-[28px] rounded-full object-cover"/>` : `<div class="w-[28px] h-[28px] rounded-full bg-primary-container flex items-center justify-center text-[10px] text-white font-bold uppercase">${s.shop_name.substring(0,2)}</div>`;
+                    const avatar = s.avatar_url ? `<img src="${s.avatar_url}" alt="${s.shop_name}" class="w-[28px] h-[28px] rounded-full object-cover" loading="lazy" />` : `<div class="w-[28px] h-[28px] rounded-full bg-primary-container flex items-center justify-center text-[10px] text-white font-bold uppercase">${s.shop_name.substring(0,2)}</div>`;
                     return `
                         <div class="seller-chip flex-shrink-0 flex items-center gap-sm bg-surface px-3 py-1.5 rounded-full border border-outline-variant shadow-sm hover:border-primary transition-all cursor-pointer" data-query="${s.shop_name}">
                             ${avatar}
@@ -862,7 +778,7 @@
                         <div>
                             <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                                 ${ribbonHtml}
-                                <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${img}" alt="${p.name}">
+                                <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${img}" alt="${p.name}" loading="lazy">
                                 <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                                     <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                                 </button>
@@ -964,7 +880,7 @@
                                 <div>
                                     <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                                         ${ribbonHtml}
-                                        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${img}" alt="${p.name}">
+                                        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${img}" alt="${p.name}" loading="lazy">
                                         <button class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                                             <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                                         </button>
@@ -1181,7 +1097,7 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 
 <html lang="en"><head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Tohfa - Craft New Listing Preview</title>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind CSS CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
 <script>
 
     function getTohfaToken() {
@@ -18,7 +23,6 @@
             return null;
         }
     }
-    
 
     (async function verifySellerRole() {
         const token = getTohfaToken();
@@ -34,13 +38,12 @@
             const profile = await res.json();
             const user = profile.data || profile;
             if (user.role !== 'seller') {
-                window.location.href = './buyer-home.html';
+                window.location.href = '/mobile-buyer/profile.html';
             }
         } catch (e) {
             window.location.href = '/auth/login.html';
         }
     })();
-    
 
     tailwind.config = {
       theme: {
@@ -229,7 +232,7 @@
 <!-- Main Image Preview -->
 <div class="flex-1 aspect-[4/5] bg-white rounded-2xl border border-sage/20 relative p-4 flex flex-col shadow-sm">
 <div class="flex-1 flex items-center justify-center text-sage/40 font-playfair italic">
-<img alt="Preview" class="hidden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKJV1zp8kLbo8hhgRcK17hXjtlbORJSW5aGUis8ds-WDqQl1vSp2KUJwKDDRwow_SJlZm8UPq9sK11-Yxwu1mnCq0VCQJd2ut_xDL2FDYh2QyVojswSJ2Kum7E9YudlEppkvcx04i4LJj2wrgMe9l4c_lAGzWRWnMAQ-qXv5ZqEQwgpoSNKE6dI1Z3e5MI7sP58xMt6JASfF6jGMjrR3kUQftCrNJmeoudKxAE6Ba6lhIpHH2nj7MonsaKcwQJxM_o-8tWR3mieA"/> <!-- Ref for structure -->
+<img alt="Preview" class="hidden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKJV1zp8kLbo8hhgRcK17hXjtlbORJSW5aGUis8ds-WDqQl1vSp2KUJwKDDRwow_SJlZm8UPq9sK11-Yxwu1mnCq0VCQJd2ut_xDL2FDYh2QyVojswSJ2Kum7E9YudlEppkvcx04i4LJj2wrgMe9l4c_lAGzWRWnMAQ-qXv5ZqEQwgpoSNKE6dI1Z3e5MI7sP58xMt6JASfF6jGMjrR3kUQftCrNJmeoudKxAE6Ba6lhIpHH2nj7MonsaKcwQJxM_o-8tWR3mieA" loading="lazy" /> <!-- Ref for structure -->
               [Preview Image Placeholder]
             </div>
 <div class="absolute bottom-4 right-4">

@@ -1,260 +1,358 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Payment Failed - Tohfa Artisan Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;family=Merriweather:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "secondary-fixed": "#caecbb",
-                    "surface-container-low": "#fff2e1",
-                    "inverse-primary": "#a0d2b0",
-                    "surface-variant": "#ede1d1",
-                    "surface-bright": "#fff8f3",
-                    "on-secondary": "#ffffff",
-                    "on-primary-fixed-variant": "#214f36",
-                    "tertiary-container": "#70539b",
-                    "primary-fixed": "#bceecb",
-                    "primary": "#255338",
-                    "on-tertiary-fixed-variant": "#54387e",
-                    "inverse-surface": "#362f25",
-                    "surface-container-lowest": "#ffffff",
-                    "error-container": "#ffdad6",
-                    "primary-container": "#3d6b4f",
-                    "surface-tint": "#3a684c",
-                    "surface-container-highest": "#ede1d1",
-                    "on-error-container": "#93000a",
-                    "secondary": "#49663f",
-                    "surface-dim": "#e5d8c8",
-                    "surface": "#fff8f3",
-                    "on-error": "#ffffff",
-                    "surface-container": "#f9ecdc",
-                    "on-surface-variant": "#414942",
-                    "inverse-on-surface": "#fcefde",
-                    "outline-variant": "#c1c9c0",
-                    "on-tertiary": "#ffffff",
-                    "secondary-container": "#c8e9b8",
-                    "on-background": "#211b11",
-                    "on-secondary-fixed": "#062103",
-                    "on-primary-container": "#b7e9c6",
-                    "tertiary": "#573b81",
-                    "outline": "#717972",
-                    "on-surface": "#211b11",
-                    "on-primary": "#ffffff",
-                    "primary-fixed-dim": "#a0d2b0",
-                    "on-tertiary-container": "#e8d6ff",
-                    "on-primary-fixed": "#002110",
-                    "background": "#fff8f3",
-                    "secondary-fixed-dim": "#afd0a0",
-                    "tertiary-fixed": "#ecdcff",
-                    "on-tertiary-fixed": "#270550",
-                    "error": "#ba1a1a",
-                    "surface-container-high": "#f3e6d6",
-                    "on-secondary-fixed-variant": "#324e29",
-                    "tertiary-fixed-dim": "#d6baff",
-                    "on-secondary-container": "#4d6a43",
-                    "terracotta": "#b14b3e",
-                    "sage": "#717972",
-                    "ivory": "#FCFAF5",
-                    "gold": "#967b4c"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "margin-desktop": "64px",
-                    "gutter": "16px",
-                    "xs": "4px",
-                    "unit": "4px",
-                    "margin-mobile": "20px",
-                    "md": "16px",
-                    "lg": "24px",
-                    "xl": "40px",
-                    "sm": "8px"
-            },
-            "fontFamily": {
-                    "body-md": ["DM Sans"],
-                    "label-caps": ["Cinzel"],
-                    "title-serif": ["Merriweather"],
-                    "headline-lg-mobile": ["Playfair Display"],
-                    "headline-lg": ["Playfair Display"],
-                    "display-hero": ["Playfair Display"],
-                    "data-price": ["Space Mono"]
-            },
-            "fontSize": {
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                    "title-serif": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                    "display-hero": ["48px", {"lineHeight": "56px", "fontWeight": "300"}],
-                    "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
-            }
-          },
-        },
-      }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+<html class="light" lang="en">
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="/src/components/DeviceRedirect.js"></script>
+    <script src="/src/components/ReportWidget.js" defer></script>
+    <script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <title>Tohfa | My Profile</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
+        .ink-wash-gradient {
+            background: linear-gradient(135deg, #8FAF82 0%, #8FAF82 50%, #F7F3EC 100%);
         }
-        .ink-splat {
-            background-image: radial-gradient(circle, rgba(177,75,62,0.1) 0%, transparent 70%);
+        .artisan-card-hover {
+            transition: all 0.2s ease;
         }
-        .sketch-overlay {
-            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.05;
-        }
-        .terracotta-glow {
-            box-shadow: 0 0 30px rgba(177,75,62,0.15);
-        }
-        .warm-card-shadow {
-            box-shadow: 0 10px 30px -5px rgba(58, 51, 40, 0.08);
-        }
-        @keyframes gentle-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        .mascot-float {
-            animation: gentle-float 4s ease-in-out infinite;
+        .artisan-card-hover:active {
+            transform: scale(0.97);
         }
     </style>
 </head>
-<body class="bg-[#FFFFFF] text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col font-body-md">
-<!-- TopNavBar -->
-<header class="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
-<div class="flex flex-col md:flex-row items-center justify-between px-margin-mobile md:px-margin-desktop py-md max-w-full mx-auto">
-<div class="flex items-center gap-md">
-<span class="font-display-hero text-headline-lg italic text-primary">Tohfa<span class="text-[#967b4c]">.</span></span>
-</div>
-<nav class="hidden md:flex items-center gap-xl">
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Home</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Category</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Reels</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Profile</a>
-</nav>
-<div class="flex items-center gap-lg">
-<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity">shopping_bag</button>
-</div>
-</div>
+<body class="bg-background text-on-surface font-dm-sans min-h-screen pb-24">
+
+<!-- Mobile Header Bar -->
+<header class="flex justify-between items-center px-4 h-16 w-full z-50 bg-[#F7F3EC] border-b border-[#8FAF82] sticky top-0">
+    <button class="p-2 -ml-2 text-primary flex items-center justify-center min-h-[44px] min-w-[44px]" onclick="window.location.href='home.html'">
+        <span class="material-symbols-outlined text-2xl">arrow_back</span>
+    </button>
+    <h1 class="font-playfair text-xl font-bold text-primary">My Profile</h1>
+    <a href="notifications.html" class="p-2 text-primary flex items-center justify-center min-h-[44px] min-w-[44px] relative">
+        <span class="material-symbols-outlined text-2xl">notifications</span>
+        <span id="nav-notif-badge" class="absolute top-2 right-2 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
 </header>
-<!-- Main Content -->
-<main class="flex-grow flex items-center justify-center py-xl px-margin-mobile">
-<div class="max-w-2xl w-full flex flex-col items-center text-center space-y-lg">
-<!-- Failure Icon -->
-<div class="relative">
-<div class="absolute inset-0 terracotta-glow rounded-full scale-150"></div>
-<div class="w-20 h-20 rounded-full bg-error-container flex items-center justify-center z-10 relative">
-<span class="material-symbols-outlined text-terracotta text-4xl font-bold">close</span>
-</div>
-</div>
-<!-- Header Text -->
-<div class="space-y-sm">
-<h1 class="font-headline-lg text-[26px] italic text-primary leading-tight">Payment unsuccessful</h1>
-<p class="font-body-md text-[14px] text-on-surface-variant">We couldn't process your payment. No amount was deducted.</p>
-<p class="font-data-price text-[12px] text-outline tracking-wider uppercase">ERROR CODE: PAYMENT_FAILED · ORDER NOT PLACED</p>
-</div>
-<!-- Details Section with Mascot -->
-<div class="w-full flex flex-col md:flex-row items-center md:items-end justify-center gap-lg mt-md">
-<!-- Details Card -->
-<div class="relative bg-ivory border border-outline-variant rounded-xl p-lg warm-card-shadow text-left max-w-sm w-full overflow-hidden">
-<!-- Subtle Ink Sketch Texture Overlay -->
-<div class="absolute inset-0 opacity-[0.07] pointer-events-none flex items-center justify-center">
-<span class="material-symbols-outlined text-9xl">heart_broken</span>
-</div>
-<div class="relative z-10">
-<h2 class="font-label-caps text-[10px] text-gold mb-md">WHAT HAPPENED?</h2>
-<ul class="space-y-sm text-[13px] text-on-surface-variant list-none">
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Bank declined the transaction
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Session timed out
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Incorrect card details
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Network issue during payment
-                            </li>
-</ul>
-</div>
-</div>
-<!-- Mascot -->
-<div class="mascot-float hidden md:block">
-<img class="w-32 h-32 object-contain" data-alt="A charming Chibi-style artisan girl mascot for a boutique studio, wearing a sage green apron over a cream dress. She holds a small notepad and pencil with a sympathetic, kind expression. The illustration is in a soft watercolor style with hand-drawn ink outlines on an ivory background, reflecting a warm and intentional artisan brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPGmN2TlohJ2Cfae5kWQhuUAWKjyMiQvhjsjN8HlrMPR7TQ3NhmbQtsIRIlr2dmsauBQwrA7pzk3XXdSEI3-Kl2xsMWTI2eVhsGdfqeo-N4Qhx-wQ-BUpUYhktqMIVyJijCCxZT69RGMQ5P14E0o2Wwpgr9B3Rr-ybI0RZ_tXj5jf-KlnIR5-L32-DnGnj9wqzcWzzc8mcHdqdPlrvlRbfJdA8N-J3IO7xoz3xmhTOgMg01wym-hcXeWQYzp5ycobpang2SBsl-QU"/>
-</div>
-</div>
-<!-- Actions -->
-<div class="flex flex-col gap-md w-full max-w-xs mt-xl">
-<button class="h-12 bg-primary text-white font-body-md rounded-lg active:scale-95 transition-all hover:opacity-90">
-                    Try again
-                </button>
-<button class="h-12 bg-white border border-outline text-primary font-body-md rounded-lg active:scale-95 transition-all hover:bg-surface">
-                    Try a different method
-                </button>
-<a class="text-tertiary font-body-md text-sm mt-sm hover:underline flex items-center justify-center gap-xs" href="#">
-                    Contact support <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
-</div>
-</div>
+
+<main class="px-4 py-6 space-y-6 max-w-md mx-auto">
+    <!-- Ink Wash Banner & Profile Overlay -->
+    <div class="relative w-full rounded-xl overflow-hidden shadow-sm bg-white border border-[#8FAF82]/20 pb-6">
+        <div class="w-full h-28 ink-wash-gradient opacity-60"></div>
+        <div class="flex flex-col items-center -mt-12 relative z-10">
+            <div class="relative w-24 h-24 rounded-full border-[3px] border-primary overflow-hidden bg-surface-variant shadow-md">
+                <img id="profile-avatar-img" class="w-full h-full object-cover" src="https://placehold.co/150x150/f4ede3/516447?text=Artisan" alt="Profile Avatar" loading="lazy">
+            </div>
+            <h2 id="profile-name" class="mt-3 font-playfair text-2xl font-bold text-on-surface">Loading User...</h2>
+            <p id="profile-email" class="text-xs text-secondary mt-0.5">loading...</p>
+            
+            <button onclick="window.location.href='edit-profile.html'" class="mt-4 px-6 py-2 border-2 border-primary/20 text-primary font-semibold text-xs tracking-wider uppercase rounded-full hover:bg-primary/5 transition-all active:scale-95">
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Activity Hub Section -->
+    <section class="space-y-3">
+        <h3 class="font-playfair text-lg font-bold text-primary px-1">Activity Hub</h3>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <a href="orders.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-primary text-2xl">package_2</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">My Orders</p>
+                    <p id="hub-orders-count" class="text-[10px] text-secondary mt-0.5">0 active shipments</p>
+                </div>
+            </a>
+            
+            <a href="saved-reels.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-[#C8973A] text-2xl">video_library</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Saved Reels</p>
+                    <p id="hub-reels-count" class="text-[10px] text-secondary mt-0.5">0 saved reels</p>
+                </div>
+            </a>
+            
+            <a href="addresses.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-tertiary text-2xl">location_on</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Addresses</p>
+                    <p id="hub-addresses-count" class="text-[10px] text-secondary mt-0.5">0 saved locations</p>
+                </div>
+            </a>
+            
+            <a href="occasions.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-red-400 text-2xl">celebration</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Occasions</p>
+                    <p id="hub-occasions-count" class="text-[10px] text-secondary mt-0.5">0 occasions saved</p>
+                </div>
+            </a>
+
+            <a href="followers.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover col-span-2">
+                <div class="flex justify-between items-center w-full">
+                    <span class="material-symbols-outlined text-blue-500 text-2xl">group</span>
+                    <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+                </div>
+                <div>
+                    <p id="hub-followers-title" class="font-playfair text-sm font-bold text-on-surface">Artisans You Follow</p>
+                    <p id="hub-followers-count" class="text-[10px] text-secondary mt-0.5">0 followed artisans</p>
+                </div>
+            </a>
+
+            <a href="chat.html" class="p-4 bg-gradient-to-br from-[#7B5EA7]/20 to-[#8FAF82]/20 rounded-xl border border-[#7B5EA7]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover col-span-2">
+                <div class="flex justify-between items-center w-full">
+                    <span class="material-symbols-outlined text-tertiary text-2xl">chat</span>
+                    <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+                </div>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Custom Orders Chat</p>
+                    <p id="chat-card-subtitle" class="text-[10px] text-secondary mt-0.5">0 conversations</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Shipping & Payment Cards -->
+    <section class="space-y-3">
+        <h3 class="font-playfair text-lg font-bold text-primary px-1">Shipping & Payment</h3>
+        
+        <div class="p-4 border border-[#8FAF82]/20 rounded-xl bg-white shadow-sm space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-space-mono text-[10px] text-secondary uppercase tracking-wider">Default Shipping Address</span>
+                <a href="addresses.html" class="text-primary hover:underline text-xs font-bold">Edit</a>
+            </div>
+            <div id="shipping-address-container" class="text-sm text-on-surface space-y-0.5">
+                <p id="shipping-line1" class="font-semibold text-on-surface">No shipping address</p>
+                <p id="shipping-line2" class="text-secondary text-xs">Please add an address in settings.</p>
+                <p id="shipping-country" class="text-secondary text-xs"></p>
+            </div>
+        </div>
+
+        <div class="p-4 border border-[#8FAF82]/20 rounded-xl bg-white shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">credit_card</span>
+                <div>
+                    <p class="font-space-mono text-sm text-on-surface">•••• •••• •••• 4291</p>
+                    <p class="text-[10px] text-secondary">Expires 09/27</p>
+                </div>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">settings</span>
+        </div>
+    </section>
+
+    <!-- Join Studio Card -->
+    <div id="join-studio-card" class="hidden relative p-5 bg-tertiary rounded-xl overflow-hidden shadow-sm text-white flex flex-col justify-between min-h-[120px]">
+        <div class="relative z-10">
+            <p class="font-playfair text-lg font-bold">Join the Studio</p>
+            <p class="text-xs text-white/80 mt-1">Become a certified Tohfa Artisan and share your craft with the world.</p>
+        </div>
+        <button onclick="window.location.href='become-seller.html'" class="mt-4 bg-white text-tertiary font-bold text-xs px-4 py-2 rounded-full self-start active:scale-95 transition-transform">
+            Apply Now
+        </button>
+        <div class="absolute -right-4 -bottom-4 opacity-10">
+            <span class="material-symbols-outlined text-[100px]">palette</span>
+        </div>
+    </div>
+
+    <!-- Preferences & Account Actions -->
+    <section class="bg-white border border-[#8FAF82]/20 rounded-xl shadow-sm overflow-hidden">
+        <a href="notifications.html" class="flex justify-between items-center p-4 border-b border-surface-variant hover:bg-primary/5 active:bg-primary/5 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">notifications_active</span>
+                <span class="text-sm font-semibold text-on-surface">Notifications</span>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+        </a>
+        <a href="saved-makes.html" class="flex justify-between items-center p-4 border-b border-surface-variant hover:bg-primary/5 active:bg-primary/5 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                <span class="text-sm font-semibold text-on-surface">Wishlist</span>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+        </a>
+        <a href="#" class="flex justify-between items-center p-4 border-b border-surface-variant hover:bg-primary/5 active:bg-primary/5 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">help_center</span>
+                <span class="text-sm font-semibold text-on-surface">Help & Support</span>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+        </a>
+        <button id="profile-logout-btn" class="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-50 active:bg-red-50 transition-colors text-left border-none bg-transparent">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="text-sm font-bold">Log out</span>
+        </button>
+    </section>
 </main>
-<!-- Footer -->
-<footer class="w-full relative bg-surface-container border-t border-outline-variant mt-xl">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-xl px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto">
-<div class="space-y-md">
-<span class="font-display-hero text-headline-lg text-primary">Tohfa</span>
-<p class="font-body-md text-on-surface-variant">© 2024 TOFA Artisan Studio. Handcrafted with intention.</p>
+
+<!-- Bottom Navigation Bar -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#F7F3EC] border-t border-[#8FAF82] h-16 flex items-center justify-around z-50">
+    <a href="home.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">home</span>
+        <span class="text-[10px] font-medium">Home</span>
+    </a>
+    <a href="categories.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">category</span>
+        <span class="text-[10px] font-medium">Category</span>
+    </a>
+    <a href="reels.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">movie</span>
+        <span class="text-[10px] font-medium">Reels</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center gap-0.5 text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
+        <span class="text-[10px] font-bold">Profile</span>
+    </a>
 </div>
-<div class="flex flex-col gap-sm">
-<h4 class="font-label-caps text-label-caps text-primary">Studio Journal</h4>
-<nav class="flex flex-col gap-xs">
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Our Story</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Studio Journal</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Artisan Partners</a>
-</nav>
-</div>
-<div class="flex flex-col gap-sm">
-<h4 class="font-label-caps text-label-caps text-primary">Support</h4>
-<nav class="flex flex-col gap-xs">
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping &amp; Returns</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Help Center</a>
-</nav>
-</div>
-</div>
-</footer>
-<script>
-    function getTohfaToken() {
+
+<script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
+    let profileData = null;
+
+    async function init() {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+
+        await fetchProfile();
+        await fetchDefaultAddress();
+        await fetchOccasionsCount();
+        await checkCustomOrders();
+        await updateCartBadge();
+    }
+
+    async function fetchProfile() {
         try {
-            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
-        } catch(e) {
-            return getTohfaToken();
+            const res = await apiClient.get('/profile/me');
+            if (res.data && res.data.success) {
+                profileData = res.data.data;
+                updateProfileUI(profileData);
+            }
+        } catch (err) {
+            console.error("Failed to load profile details:", err);
         }
     }
 
-        // Micro-interaction for buttons
-        document.querySelectorAll('button').forEach(button => {
-            button.addEventListener('mousedown', () => {
-                button.style.transform = 'scale(0.98)';
-            });
-            button.addEventListener('mouseup', () => {
-                button.style.transform = 'scale(1)';
-            });
-            button.addEventListener('mouseleave', () => {
-                button.style.transform = 'scale(1)';
-            });
+    function updateProfileUI(profile) {
+        // Name & Email
+        document.getElementById('profile-name').innerText = profile.display_name || profile.full_name || 'Artisan';
+        document.getElementById('profile-email').innerText = profile.email || '';
+
+        // Avatar
+        const avatarImg = document.getElementById('profile-avatar-img');
+        if (avatarImg && profile.avatar_url) {
+            avatarImg.src = profile.avatar_url;
+        }
+
+        // Activity Hub counts
+        document.getElementById('hub-orders-count').innerText = `${profile.active_orders_count || 0} active shipments`;
+        document.getElementById('hub-reels-count').innerText = `${profile.saved_reels_count || 0} saved reels`;
+        document.getElementById('hub-addresses-count').innerText = `${profile.address_count || 0} saved locations`;
+
+        // Follower counts based on role
+        const followersCountEl = document.getElementById('hub-followers-count');
+        const followersTitleEl = document.getElementById('hub-followers-title');
+        if (profile.role === 'buyer') {
+            if (followersTitleEl) followersTitleEl.innerText = "Artisans You Follow";
+            if (followersCountEl) {
+                followersCountEl.innerText = `${profile.following_count || 0} followed artisan${profile.following_count !== 1 ? 's' : ''}`;
+            }
+        } else {
+            if (followersTitleEl) followersTitleEl.innerText = "Followers & Following";
+            if (followersCountEl) {
+                followersCountEl.innerText = `${profile.followers_count || 0} follower${profile.followers_count !== 1 ? 's' : ''} • ${profile.following_count || 0} following`;
+            }
+        }
+
+        // Join studio card (hide for sellers)
+        const joinCard = document.getElementById('join-studio-card');
+        if (joinCard) {
+            if (profile.role === 'buyer') {
+                joinCard.classList.remove('hidden');
+            } else {
+                joinCard.classList.add('hidden');
+            }
+        }
+    }
+
+    async function fetchDefaultAddress() {
+        try {
+            const addRes = await apiClient.get('/addresses');
+            if (addRes.data && addRes.data.success && addRes.data.data.addresses.length > 0) {
+                const addresses = addRes.data.data.addresses;
+                const defaultAddr = addresses.find(a => a.is_default === 1) || addresses[0];
+                document.getElementById('shipping-line1').innerText = defaultAddr.full_name || defaultAddr.line1;
+                document.getElementById('shipping-line2').innerText = defaultAddr.line1 + (defaultAddr.line2 ? `, ${defaultAddr.line2}` : '');
+                document.getElementById('shipping-country').innerText = `${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.pincode}`;
+            }
+        } catch (e) {
+            console.error("Failed to fetch address:", e);
+        }
+    }
+
+    async function fetchOccasionsCount() {
+        try {
+            const occRes = await apiClient.get('/occasions');
+            if (occRes.data && occRes.data.success) {
+                const count = occRes.data.data.total || 0;
+                const occEl = document.getElementById('hub-occasions-count');
+                if (occEl) {
+                    occEl.innerText = count === 1 ? '1 occasion saved' : `${count} occasions saved`;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to fetch occasions:", e);
+        }
+    }
+
+    async function checkCustomOrders() {
+        try {
+            const res = await apiClient.get('/conversations');
+            if (res.data && res.data.conversations) {
+                const count = res.data.conversations.length;
+                const subtitle = document.getElementById('chat-card-subtitle');
+                if (subtitle) {
+                    subtitle.textContent = `${count} conversation${count !== 1 ? 's' : ''}`;
+                }
+            }
+        } catch (_) {
+            const subtitle = document.getElementById('chat-card-subtitle');
+            if (subtitle) subtitle.textContent = '0 conversations';
+        }
+    }
+
+    async function updateCartBadge() {
+        try {
+            const res = await apiClient.get('/cart');
+            if (res.data && res.data.success) {
+                const count = res.data.data.item_count;
+                const notifBadge = document.getElementById('nav-notif-badge');
+                if (notifBadge && count > 0) {
+                    notifBadge.classList.remove('hidden');
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Handle logout click
+    const logoutBtn = document.getElementById('profile-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.clear();
+            window.location.href = '/auth/login.html';
         });
-    </script>
-</body></html>
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

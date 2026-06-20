@@ -372,7 +372,7 @@ class SearchOverlay {
       sellersSection.classList.remove('hidden');
       sellersList.innerHTML = sellers.map(s => `
         <a href="/buyer/seller-profile.html?id=${s.id}" class="flex flex-col items-center flex-shrink-0 w-20 text-center hover:scale-105 transition-transform duration-200">
-          <img src="${s.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuA1MlCvGNVC5kb3_0adXisBIXKR2kO5rDi5REC7Ws_jdqAl-d9k85WtM1zhT8kPt7miefUL2zB7ZWlht6gOBoOFf_yaM44xEDS_XDmP2CC3-O2XtWEbyNWU5d0aYrxHES2zAVOb4to55ZXc0JuEuYUxljiCZtgqH9k3hGJLepqGwKKZZmnmigxFXREVk5a9jUDkeBzDkZX8Z9jT_im_tJi4_Y8YVc3tbxMsxYFYLwpSOJOXUuN4y3YO7VUkGCQmkVDabJ6ip82gLbE'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
+          <img loading="lazy" src="${s.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuA1MlCvGNVC5kb3_0adXisBIXKR2kO5rDi5REC7Ws_jdqAl-d9k85WtM1zhT8kPt7miefUL2zB7ZWlht6gOBoOFf_yaM44xEDS_XDmP2CC3-O2XtWEbyNWU5d0aYrxHES2zAVOb4to55ZXc0JuEuYUxljiCZtgqH9k3hGJLepqGwKKZZmnmigxFXREVk5a9jUDkeBzDkZX8Z9jT_im_tJi4_Y8YVc3tbxMsxYFYLwpSOJOXUuN4y3YO7VUkGCQmkVDabJ6ip82gLbE'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
           <p class="text-[11px] text-[#1f1b15] font-semibold truncate w-full mt-1">${s.shop_name || s.username}</p>
         </a>
       `).join('');
@@ -429,7 +429,7 @@ class SearchOverlay {
           resultsGrid.classList.remove('hidden');
           resultsGrid.innerHTML = products.map(p => `
             <a href="/buyer/product.html?id=${p.id}" class="flex gap-3 p-2 border border-[#8FAF82]/30 rounded-xl hover:bg-[#255338]/5 hover:border-[#255338]/50 transition-all duration-200">
-              <img src="${p.image_url || 'https://placehold.co/100x100?text=Item'}" class="w-16 h-16 rounded-lg object-cover bg-white border border-[#8FAF82]/20 flex-shrink-0">
+              <img loading="lazy" src="${p.image_url || 'https://placehold.co/100x100?text=Item'}" class="w-16 h-16 rounded-lg object-cover bg-white border border-[#8FAF82]/20 flex-shrink-0">
               <div class="flex-1 min-w-0 flex flex-col justify-center">
                 <h4 class="text-xs font-semibold text-[#255338] truncate leading-tight">${p.name}</h4>
                 <p class="text-[10px] text-[#74786f] truncate mt-0.5">By ${p.seller_name || 'Artisan'}</p>

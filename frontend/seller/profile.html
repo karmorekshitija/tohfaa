@@ -1,52 +1,19 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Profile & Settings | Seller Studio | Tohfa</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
 <script src="/components/seller-components.js"></script>
-<script id="tailwind-config">
-          "outline-variant": "#c6c7bb",
-          "primary": "#576242",
-          "on-primary": "#ffffff",
-          "primary-fixed": "#dbe8bf",
-          "primary-fixed-dim": "#bfcba4",
-          "on-primary-fixed": "#151e05",
-          "on-primary-container": "#3c4628",
-          "primary-container": "#a8b48e",
-          "custom-primary": "#a8b48e",
-          "error": "#3D6B4F",
-          "error-container": "#F7F3EC",
-          "on-error-container": "#3D6B4F",
-          "background": "#FFFFFF",
-          "on-background": "#1e1b15",
-          "inverse-surface": "#33302a",
-          "inverse-on-surface": "#f7f0e6",
-          "inverse-primary": "#bfcba4",
-          "tertiary": "#615e57",
-          "tertiary-container": "#b3afa7",
-        },
-        fontFamily: {
-          "headline": ["EB Garamond", "serif"],
-          "body": ["Be Vietnam Pro", "sans-serif"],
-        },
-        borderRadius: {
-          DEFAULT: "0.25rem",
-          lg: "0.5rem",
-          xl: "0.75rem",
-          "2xl": "1rem",
-          full: "9999px",
-        }
-      }
-    }
-  }
-</script>
+
 <style>
   body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #FFFFFF; color: #1e1b15; }
   h1, h2, h3, .font-headline { font-family: 'EB Garamond', serif; }
@@ -355,7 +322,7 @@
       <div class="flex-shrink-0">
         <div class="relative group cursor-pointer w-24 h-24" onclick="document.getElementById('input-avatar').click()" title="Change profile photo">
           <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-high shadow-sm bg-surface-container">
-            <img id="profile-avatar" alt="Profile photo" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Seller&background=a8b48e&color=fff"/>
+            <img id="profile-avatar" alt="Profile photo" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Seller&background=a8b48e&color=fff" loading="lazy" />
           </div>
           <div class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings:'FILL' 1">photo_camera</span>
@@ -410,7 +377,7 @@
             <p class="text-xs text-on-surface-variant/70 mt-1">or click to browse · JPG, PNG · max 5 MB</p>
           </div>
           <div id="banner-preview-wrap" class="hidden">
-            <img id="banner-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="Banner preview"/>
+            <img id="banner-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="Banner preview" loading="lazy" />
             <p class="text-xs text-on-surface-variant mt-2 text-center">Click to change</p>
           </div>
         </div>
@@ -476,7 +443,7 @@
             <p class="text-xs text-on-surface-variant/70 mt-1">or click to browse · JPG, PNG · max 5 MB</p>
           </div>
           <div id="about-image-preview-wrap" class="hidden">
-            <img id="about-image-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="About preview"/>
+            <img id="about-image-preview-img" class="max-h-48 mx-auto rounded-lg object-contain" alt="About preview" loading="lazy" />
             <p class="text-xs text-on-surface-variant mt-2 text-center">Click to change</p>
           </div>
         </div>

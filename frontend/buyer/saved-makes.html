@@ -1,118 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Wishlist | Tohfa</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&family=EB+Garamond:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#3D6B4F",
-                        "primary-container": "#8FAF82",
-                        "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#F7F3EC",
-                        "inverse-primary": "#8FAF82",
-                        "on-surface": "#1f1b15",
-                        "on-tertiary-fixed-variant": "#593d5d",
-                        "on-secondary-fixed-variant": "#484740",
-                        "on-tertiary": "#ffffff",
-                        "primary": "#3D6B4F",
-                        "surface-tint": "#3D6B4F",
-                        "tertiary-fixed": "#7B5EA7",
-                        "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3D6B4F",
-                        "on-tertiary-container": "#452b4a",
-                        "inverse-on-surface": "#f8efe5",
-                        "on-secondary": "#ffffff",
-                        "surface-variant": "#F7F3EC",
-                        "tertiary": "#7B5EA7",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#F7F3EC",
-                        "on-error": "#ffffff",
-                        "on-surface-variant": "#444840",
-                        "outline": "#74786f",
-                        "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#3D6B4F",
-                        "secondary-container": "#F7F3EC",
-                        "secondary-fixed": "#F7F3EC",
-                        "primary-fixed-dim": "#8FAF82",
-                        "secondary": "#605e57",
-                        "on-secondary-fixed": "#1c1c16",
-                        "background": "#FFFFFF",
-                        "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#8FAF82",
-                        "outline-variant": "#F7F3EC",
-                        "on-primary": "#ffffff",
-                        "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#FFFFFF",
-                        "on-primary-fixed": "#101f09",
-                        "on-background": "#1f1b15",
-                        "on-secondary-container": "#66645d",
-                        "surface-container": "#f6ece3",
-                        "on-primary-container": "#283920",
-                        "surface": "#FFFFFF",
-                        "surface-container-highest": "#F7F3EC",
-                        "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#2a122f",
-                        "gold-custom": "#C8973A",
-                        "ivory-card": "#FFFDFB",
-                        "sage": "#8FAF82",
-                        "sage-soft": "#F0F5EE",
-                        "terracotta": "#C87A53"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "margin-desktop": "64px",
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "container-max": "1280px",
-                        "gutter": "24px",
-                        "xs": "4px",
-                        "sm": "8px",
-                        "md": "16px",
-                        "lg": "24px",
-                        "xl": "40px"
-                    },
-                    "fontFamily": {
-                        "headline-lg-mobile": ["Playfair Display"],
-                        "body-lg": ["DM Sans"],
-                        "body-sm": ["DM Sans"],
-                        "headline-lg": ["Playfair Display"],
-                        "title-serif": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "data-price": ["DM Sans"],
-                        "label-caps": ["DM Sans"],
-                        "display-hero": ["Playfair Display"],
-                        "lora": ["Lora", "serif"]
-                    },
-                    "fontSize": {
-                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
-                        "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
-                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-                        "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
-</head>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      </head>
 <body class="bg-white text-on-background min-h-screen flex flex-col selection:bg-secondary-container">
 
 <!-- Standardised Top Navigation Bar -->
@@ -176,7 +76,7 @@
   <section class="relative pt-xl pb-lg px-margin-desktop max-w-[1440px] mx-auto overflow-hidden">
     <!-- Dried Bouquet Watermark -->
     <div class="absolute right-0 top-0 opacity-[0.09] pointer-events-none transform translate-x-1/4 -translate-y-1/4">
-      <img class="w-96 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFzy6Bk7lLfRfZkQLEHDhCi6P35UKR0jPZKGhebJtK4xHxoUu8JshgQiOLaAaacLPOGWoynaOqAkU3hq6ERTgjT2ndbqXVB6euDVW30ZxlIaag4woHRRu7TXmngVuLZ8JperE0DR7Gmm4NyYdcaY7kKkFdhAUQfcv1EpBeN1BfgIqGWrzR8g0FpV-VZWPQSdUlBjooGDx0yiWY-_fyVq8kfWmbtzDu-zq9xu9y_BV6t5COk24R7I7eYVkWHTmkX8JfCHxqhcbo3qE" alt="watermark">
+      <img class="w-96 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFzy6Bk7lLfRfZkQLEHDhCi6P35UKR0jPZKGhebJtK4xHxoUu8JshgQiOLaAaacLPOGWoynaOqAkU3hq6ERTgjT2ndbqXVB6euDVW30ZxlIaag4woHRRu7TXmngVuLZ8JperE0DR7Gmm4NyYdcaY7kKkFdhAUQfcv1EpBeN1BfgIqGWrzR8g0FpV-VZWPQSdUlBjooGDx0yiWY-_fyVq8kfWmbtzDu-zq9xu9y_BV6t5COk24R7I7eYVkWHTmkX8JfCHxqhcbo3qE" alt="watermark" loading="lazy">
     </div>
     <div class="relative z-10">
       <p class="font-label-caps text-label-caps text-secondary mb-xs">YOUR COLLECTION ✦</p>
@@ -282,7 +182,7 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
@@ -370,7 +270,7 @@
                         <div class="bg-[#F7F3EC] p-lg rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='/buyer/product.html?id=${item.product_id}'">
                             <div>
                                 <div class="relative aspect-square overflow-hidden rounded-lg mb-md">
-                                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${imgUrl}" alt="${item.name}">
+                                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${imgUrl}" alt="${item.name}" loading="lazy">
                                     <button class="absolute top-sm right-sm w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-primary hover:scale-110 transition-transform remove-wishlist-btn" data-id="${item.product_id}">
                                         <span class="material-symbols-outlined active-heart text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                     </button>

@@ -1,76 +1,62 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <script src="/src/components/DeviceRedirect.js"></script>
+
   <script src="/src/components/ReportWidget.js" defer></script>
   <script src="/src/components/ProtectedRoute.js"></script>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Store Configuration | TOFA Seller Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: "#3D6B4F",
-            secondary: "#49663f",
-            background: "#FFFFFF",
-            surface: "#FFFFFF",
-            "surface-container": "#edeeea"
-          },
-          fontFamily: {
-            body: ["DM Sans"],
-            heading: ["Playfair Display"]
-          }
-        }
-      }
-    }
-  </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  
 </head>
-<body class="bg-white text-slate-800 font-body p-4 min-h-screen">
+<body class="bg-white text-[#1A1A1A] font-body p-4 min-h-screen">
   <!-- Header Navigation -->
   <header class="flex items-center gap-4 mb-6">
-    <a href="/mobile-seller/dashboard.html" class="p-2 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center">
+    <a href="/mobile-seller/dashboard.html" class="p-2 hover:bg-[#8FAF82]/10 rounded-full transition-colors flex items-center justify-center">
       <span class="material-symbols-outlined text-primary text-3xl">arrow_back</span>
     </a>
     <div>
       <h1 class="text-2xl font-heading font-bold text-primary">Store Settings</h1>
-      <p class="text-xs text-slate-500">Configure delivery rules, vacation controls, and policies.</p>
+      <p class="text-xs text-[#717972]">Configure delivery rules, vacation controls, and policies.</p>
     </div>
   </header>
 
   <!-- Content Sections -->
   <div class="space-y-6">
     <!-- Delivery Settings -->
-    <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 shadow-sm space-y-4">
+    <div class="bg-[#F7F3EC]/30 border border-[#8FAF82]/20 rounded-xl p-5 shadow-sm space-y-4">
       <h2 class="text-lg font-heading font-bold text-primary flex items-center gap-2">
         <span class="material-symbols-outlined text-xl">local_shipping</span> Delivery Options
       </h2>
-      <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-100">
+      <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-[#8FAF82]/10">
         <div>
           <span class="font-bold text-sm block">Accept Orders</span>
-          <span class="text-xs text-slate-500">Enable or disable new order intakes</span>
+          <span class="text-xs text-[#717972]">Enable or disable new order intakes</span>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
           <input id="accept-orders-toggle" checked class="sr-only peer" type="checkbox">
-          <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          <div class="w-11 h-6 bg-[#8FAF82]/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#8FAF82]/40 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
         </label>
       </div>
       <div>
-        <label class="block text-xs font-bold text-slate-600 mb-1">Flat Shipping Fee (₹)</label>
-        <input id="flat-shipping-fee" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary font-mono text-sm" type="number" value="150">
+        <label class="block text-xs font-bold text-[#414942] mb-1">Flat Shipping Fee (₹)</label>
+        <input id="flat-shipping-fee" class="w-full px-3 py-2 border border-[#8FAF82]/20 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary font-mono text-sm" type="number" value="150">
       </div>
       <button id="save-delivery-btn" class="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-bold shadow-md shadow-primary/10">Save Delivery Options</button>
     </div>
 
     <!-- Store Policies -->
-    <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 shadow-sm space-y-4">
+    <div class="bg-[#F7F3EC]/30 border border-[#8FAF82]/20 rounded-xl p-5 shadow-sm space-y-4">
       <h2 class="text-lg font-heading font-bold text-primary flex items-center gap-2">
         <span class="material-symbols-outlined text-xl">description</span> Return Policy
       </h2>
-      <textarea id="policies-returns" class="w-full h-32 p-3 bg-white border border-slate-200 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary text-sm leading-relaxed" placeholder="Specify your store's return and refund terms here..."></textarea>
+      <textarea id="policies-returns" class="w-full h-32 p-3 bg-white border border-[#8FAF82]/20 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary text-sm leading-relaxed" placeholder="Specify your store's return and refund terms here..."></textarea>
       <button id="save-policies-btn" class="w-full bg-primary text-white py-2.5 rounded-lg text-sm font-bold shadow-md shadow-primary/10">Save Policies</button>
     </div>
   </div>

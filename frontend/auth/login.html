@@ -5,103 +5,15 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Login | Tohfa</title>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500&amp;family=EB+Garamond:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <!-- Material Symbols -->
+
 <!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "surface-container-lowest": "#ffffff",
-                    "on-secondary-fixed": "#28132d",
-                    "surface-container": "#f4ede3",
-                    "outline": "#76786e",
-                    "on-tertiary-fixed": "#1d1c16",
-                    "on-secondary-fixed-variant": "#573e5b",
-                    "on-primary-fixed-variant": "#404a2c",
-                    "error-container": "#F7F3EC",
-                    "tertiary-fixed": "#e7e2d9",
-                    "surface-tint": "#576242",
-                    "secondary": "#705673",
-                    "on-error-container": "#3D6B4F",
-                    "on-primary-fixed": "#151e05",
-                    "on-tertiary-fixed-variant": "#494740",
-                    "on-error": "#ffffff",
-                    "tertiary-container": "#b3afa7",
-                    "tertiary-fixed-dim": "#cac6be",
-                    "on-surface-variant": "#45483f",
-                    "on-primary-container": "#3c4628",
-                    "surface-variant": "#e9e1d8",
-                    "secondary-fixed-dim": "#ddbcdf",
-                    "secondary-fixed": "#fad8fb",
-                    "primary-container": "#a8b48e",
-                    "secondary-container": "#f7d5f8",
-                    "surface-container-highest": "#e9e1d8",
-                    "on-primary": "#ffffff",
-                    "on-surface": "#1e1b15",
-                    "primary-fixed": "#dbe8bf",
-                    "on-secondary": "#ffffff",
-                    "background": "#FFFFFF",
-                    "surface-bright": "#FFFFFF",
-                    "inverse-primary": "#bfcba4",
-                    "tertiary": "#615e57",
-                    "surface": "#FFFFFF",
-                    "outline-variant": "#c6c7bb",
-                    "surface-dim": "#e0d9cf",
-                    "surface-container-low": "#faf2e9",
-                    "primary": "#576242",
-                    "on-background": "#1e1b15",
-                    "on-tertiary-container": "#44423c",
-                    "error": "#3D6B4F",
-                    "on-tertiary": "#ffffff",
-                    "inverse-on-surface": "#f7f0e6",
-                    "primary-fixed-dim": "#bfcba4",
-                    "inverse-surface": "#33302a",
-                    "surface-container-high": "#efe7dd",
-                    "on-secondary-container": "#745a78"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
-            },
-            "spacing": {
-                    "unit": "8px",
-                    "gutter": "24px",
-                    "margin-mobile": "20px",
-                    "margin-desktop": "80px",
-                    "container-max": "1200px"
-            },
-            "fontFamily": {
-                    "headline-md": ["EB Garamond"],
-                    "body-md": ["Be Vietnam Pro"],
-                    "headline-lg": ["EB Garamond"],
-                    "display-lg": ["EB Garamond"],
-                    "headline-lg-mobile": ["EB Garamond"],
-                    "body-lg": ["Be Vietnam Pro"],
-                    "label-sm": ["Be Vietnam Pro"]
-            },
-            "fontSize": {
-                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
-                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "300"}],
-                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "400"}],
-                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
-                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "400"}],
-                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "300"}],
-                    "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.1em", "fontWeight": "500"}]
-            }
-          },
-        },
-      }
-    </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
@@ -203,7 +115,7 @@
         </footer>
         <!-- Cozy Cat Illustration -->
         <div class="w-32 md:w-36 pointer-events-none drop-shadow-sm mt-6 flex justify-center">
-            <img alt="Curled sleeping cat illustration" class="w-full h-auto object-contain max-h-[120px]" src="https://lh3.googleusercontent.com/aida/ADBb0uguL628U-zz3tGpzegERPAMsrnAPYOBSCfxEaw1TqKdEbn5rxGmPytFgXj6JwfQX_MO-7DOXQBXBOJodYciMHF3sQVz58CfMgL53mE7rgEoSSOdGVMEd3N-_MQuYiIvbOX7Yj_1PawgpcXr59jivk-uzSimXee9IxwpDapu1mVdxof-OPqc8se15_5vWFIBZiOjQQpFj8lYfLlS4S33T03fqOP3tT_ZuMWxCuE00uiXapAr7HwnpEVSJowe"/>
+            <img alt="Curled sleeping cat illustration" class="w-full h-auto object-contain max-h-[120px]" src="https://lh3.googleusercontent.com/aida/ADBb0uguL628U-zz3tGpzegERPAMsrnAPYOBSCfxEaw1TqKdEbn5rxGmPytFgXj6JwfQX_MO-7DOXQBXBOJodYciMHF3sQVz58CfMgL53mE7rgEoSSOdGVMEd3N-_MQuYiIvbOX7Yj_1PawgpcXr59jivk-uzSimXee9IxwpDapu1mVdxof-OPqc8se15_5vWFIBZiOjQQpFj8lYfLlS4S33T03fqOP3tT_ZuMWxCuE00uiXapAr7HwnpEVSJowe" loading="lazy" />
         </div>
     </div>
     <!-- Back to Explore Button -->

@@ -1,113 +1,20 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <script src="/src/components/DeviceRedirect.js"></script>
+
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Upload Reel | TOFA Seller Studio</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
   <script src="/components/seller-components.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@400;600;700;800&amp;family=Space+Mono:wght@400;700&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;family=Cinzel:wght@400;700&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-variant": "#e2e3df",
-            "on-secondary-fixed-variant": "#324e29",
-            "surface": "#FFFFFF",
-            "on-primary-container": "#b7e9c6",
-            "primary-fixed": "#bceecb",
-            "on-tertiary-fixed-variant": "#54387e",
-            "surface-container": "#edeeea",
-            "primary-container": "#3d6b4f",
-            "on-tertiary-container": "#e8d6ff",
-            "on-secondary": "#ffffff",
-            "on-background": "#1a1c1a",
-            "on-secondary-container": "#4d6a43",
-            "tertiary": "#7B5EA7",
-            "secondary": "#49663f",
-            "on-error-container": "#3D6B4F",
-            "inverse-on-surface": "#f0f1ed",
-            "surface-container-high": "#e7e9e4",
-            "surface-container-highest": "#e2e3df",
-            "on-primary": "#ffffff",
-            "tertiary-fixed": "#ecdcff",
-            "tertiary-fixed-dim": "#d6baff",
-            "outline-variant": "#F7F3EC",
-            "inverse-primary": "#a0d2b0",
-            "on-error": "#ffffff",
-            "secondary-container": "#8FAF82",
-            "outline": "#717972",
-            "inverse-surface": "#2e312e",
-            "primary-fixed-dim": "#a0d2b0",
-            "on-tertiary-fixed": "#270550",
-            "surface-container-low": "#f3f4f0",
-            "on-surface-variant": "#414942",
-            "secondary-fixed": "#caecbb",
-            "secondary-fixed-dim": "#afd0a0",
-            "on-surface": "#1a1c1a",
-            "error-container": "#F7F3EC",
-            "surface-bright": "#FFFFFF",
-            "surface-tint": "#3a684c",
-            "surface-container-lowest": "#ffffff",
-            "on-tertiary": "#ffffff",
-            "surface-dim": "#d9dad6",
-            "error": "#3D6B4F",
-            "on-primary-fixed": "#002110",
-            "on-secondary-fixed": "#062103",
-            "background": "#FFFFFF",
-            "primary": "#3D6B4F",
-            "tertiary-container": "#7B5EA7",
-            "on-primary-fixed-variant": "#214f36",
-            "parchment": "#F7F3EC",
-            "sage": "#8FAF82",
-            "forest": "#3D6B4F",
-            "gold": "#C8973A",
-            "violet": "#8B5CF6"
-          },
-          borderRadius: {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
-            "full": "9999px"
-          },
-          spacing: {
-            "margin-mobile": "20px",
-            "gutter": "24px",
-            "container-max-width": "1280px",
-            "margin-desktop": "64px",
-            "unit": "8px"
-          },
-          fontFamily: {
-            "body-md": ["DM Sans"],
-            "body-sm": ["DM Sans"],
-            "data-mono": ["Space Mono"],
-            "headline-md": ["Playfair Display"],
-            "label-caps": ["Playfair Display"],
-            "display-lg": ["Playfair Display"],
-            "body-lg": ["DM Sans"],
-            "headline-sm": ["Playfair Display"],
-            "cinzel": ["Cinzel"],
-            "lora": ["Lora"]
-          },
-          fontSize: {
-            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-            "data-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
-            "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-            "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "700"}],
-            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
-            "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
-          }
-        },
-      },
-    }
-  </script>
-  <style>
+    <style>
     body {
       background-color: #F7F3EC;
       color: #1a1c1a;
@@ -222,7 +129,6 @@
     }
   }
 </style>
-
 
 </head>
 <body class="bg-white text-on-surface font-body-md selection:bg-secondary-container/50 min-h-screen flex flex-col">
@@ -345,7 +251,7 @@
 
                           <!-- Post-Upload Preview (Hidden) -->
                           <div class="relative min-h-[400px] rounded-xl overflow-hidden group hidden" id="preview-state">
-                              <video id="video-preview" class="w-full max-h-[450px] object-contain bg-black rounded-lg" src="" controls></video>
+                              <video id="video-preview" class="w-full max-h-[450px] object-contain bg-black rounded-lg" src="" controls preload="metadata"></video>
                               <div class="absolute bottom-0 left-0 right-0 p-md bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center z-10">
                                   <span class="font-data-mono text-white text-xs" id="video-duration">0:00</span>
                                   <button class="text-primary-fixed-dim bg-white/20 hover:bg-white/40 px-3 py-1 rounded-full text-xs font-bold transition-all" id="replace-video-btn">Replace</button>
@@ -361,7 +267,7 @@
                                   Thumbnail Preview
                               </h3>
                               <div class="aspect-[9/16] bg-black rounded-lg w-40 mx-auto overflow-hidden relative shadow-md group">
-                                  <img id="thumbnail-img" alt="Reel Placeholder" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5VM4lUKEDHK5fa01g-G79ESVIQTcf3VUKlM9aBj-1LySkBCs-idXjV5Lsjae779XlW2AXejrn2ebhy_uR_fQ8Xj8TJTPEMjk5zJLjoqVuqY_2gPO84qvJmTjwuZMg1Lyo1TYDW4KqogHSaQoKdg0x2EchUlO9yeWoKMa_HA_qxFeqm_6scpRNxuMEfl7bmlQWQFmPp-83DKyD6SXpq8mpa_oDtZff-ixY07uzh5w4aDZ4FOkuHV0HD0NiHsXvl1-hx4XaJwm3Mg0">
+                                  <img id="thumbnail-img" alt="Reel Placeholder" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5VM4lUKEDHK5fa01g-G79ESVIQTcf3VUKlM9aBj-1LySkBCs-idXjV5Lsjae779XlW2AXejrn2ebhy_uR_fQ8Xj8TJTPEMjk5zJLjoqVuqY_2gPO84qvJmTjwuZMg1Lyo1TYDW4KqogHSaQoKdg0x2EchUlO9yeWoKMa_HA_qxFeqm_6scpRNxuMEfl7bmlQWQFmPp-83DKyD6SXpq8mpa_oDtZff-ixY07uzh5w4aDZ4FOkuHV0HD0NiHsXvl1-hx4XaJwm3Mg0" loading="lazy">
                                   <div class="absolute inset-0 flex items-center justify-center">
                                       <button id="choose-cover-btn" class="bg-white/90 text-primary px-3 py-1.5 rounded-full text-[12px] font-bold shadow-lg hover:bg-white transition-all transform group-hover:scale-105">Choose Cover Frame</button>
                                   </div>
@@ -504,7 +410,7 @@
     <div class="absolute -top-12 right-0 bg-white border border-sage/40 rounded-xl p-2 text-[11px] shadow-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
         Ready to grow?
     </div>
-    <img alt="Studio Bunny" class="w-16 h-16 object-contain filter drop-shadow-md" data-alt="A cute, stylized white rabbit sitting among small green sprouts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8w06fgLhUKmdgMAX8_88ENb8rDlo0BBb8JaCM9oMaJA8xgsY-H9JdjlaT1xQvGC_zPmOk_pxjEGDVsbxtVXS_p98zaYT8wnXPg5r83y6-2Z4KoDdszZeBqUxi5uRoloxxl4dLRKvAduUy85PVDpLAcGLkKq0-G6N_yTdw2kS_5RDhmx5H3-6YUYMivGHZk4hrXr8EKQ-yc_7-25OQmbqz_Vref96wI9n7ewlEz0CWU_CITQmEZ0OP71zjgUXwLkZKP1-7FoK18c0">
+    <img alt="Studio Bunny" class="w-16 h-16 object-contain filter drop-shadow-md" data-alt="A cute, stylized white rabbit sitting among small green sprouts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8w06fgLhUKmdgMAX8_88ENb8rDlo0BBb8JaCM9oMaJA8xgsY-H9JdjlaT1xQvGC_zPmOk_pxjEGDVsbxtVXS_p98zaYT8wnXPg5r83y6-2Z4KoDdszZeBqUxi5uRoloxxl4dLRKvAduUy85PVDpLAcGLkKq0-G6N_yTdw2kS_5RDhmx5H3-6YUYMivGHZk4hrXr8EKQ-yc_7-25OQmbqz_Vref96wI9n7ewlEz0CWU_CITQmEZ0OP71zjgUXwLkZKP1-7FoK18c0" loading="lazy">
 </div>
 
 <script>
@@ -578,7 +484,7 @@
         .then(data => {
           const profileData = data.data || data;
           if (profileData && (profileData.user_id || profileData.seller_id || profileData.id)) {
-            window.location.href = `/buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
+            window.location.href = `/mobile-buyer/seller-profile.html?id=${profileData.user_id || profileData.seller_id || profileData.id}`;
           } else {
             window.location.href = '/';
           }
@@ -686,7 +592,7 @@
         div.dataset.title = l.title;
 
         div.innerHTML = `
-          <img class="w-12 h-12 rounded object-cover" src="${l.cover_photo_url || 'https://ui-avatars.com/api/?name=Product'}" alt="${l.title}">
+          <img class="w-12 h-12 rounded object-cover" src="${l.cover_photo_url || 'https://ui-avatars.com/api/?name=Product'}" alt="${l.title}" loading="lazy">
           <div class="ml-2 flex-grow">
             <p class="text-body-sm font-bold text-primary">${l.title}</p>
             <p class="font-data-mono text-[12px] text-gold">₹${price}</p>
@@ -1038,9 +944,9 @@
         
         let mediaHtml = '';
         if (reel.thumbnail_url) {
-          mediaHtml = `<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src="${reel.thumbnail_url}" alt="${reel.title}">`;
+          mediaHtml = `<img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src="${reel.thumbnail_url}" alt="${reel.title}" loading="lazy">`;
         } else if (reel.video_url) {
-          mediaHtml = `<video class="w-full h-full object-cover" src="${reel.video_url}" muted></video>`;
+          mediaHtml = `<video class="w-full h-full object-cover" src="${reel.video_url}" muted preload="metadata"></video>`;
         } else {
           mediaHtml = `<div class="w-full h-full flex items-center justify-center text-sage"><span class="material-symbols-outlined text-4xl">movie</span></div>`;
         }
@@ -1246,6 +1152,7 @@
           formData.append('reel_type', reelTypeVal);
           formData.append('seasonal_tag', seasonalTagVal);
           formData.append('tagged_listing_ids', JSON.stringify(Array.from(selectedListings)));
+          formData.append('linked_listing_ids', JSON.stringify(Array.from(selectedListings)));
           formData.append('share_to_feed', 'true');
           formData.append('share_to_profile', 'true');
 

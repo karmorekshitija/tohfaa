@@ -1,112 +1,18 @@
 <!DOCTYPE html>
 <html class="light scroll-smooth" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Our Story | Tohfa</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#3D6B4F",
-                        "primary": "#3D6B4F",
-                        "on-surface": "#1f1b15",
-                        "on-surface-variant": "#444840",
-                        "outline": "#74786f",
-                        "outline-variant": "#F7F3EC",
-                        "background": "#FFFFFF",
-                        "gold-custom": "#C8973A",
-                        "ivory-card": "#FFFDFB",
-                        "sage": "#8FAF82",
-                        "sage-soft": "#F0F5EE",
-                        "terracotta": "#C87A53",
-                        "secondary-fixed": "#ffdbc9",
-                        "surface-variant": "#e4e2e1",
-                        "on-secondary": "#ffffff",
-                        "on-secondary-fixed": "#331200",
-                        "tertiary-fixed-dim": "#cfc5b8",
-                        "tertiary": "#332d24",
-                        "surface-container": "#f0eded",
-                        "surface-dim": "#dcd9d9",
-                        "secondary": "#8f4d23",
-                        "primary-container": "#2d4a35",
-                        "secondary-container": "#fda775",
-                        "on-primary-fixed": "#03210f",
-                        "on-tertiary-container": "#b9afa3",
-                        "surface-tint": "#47654e",
-                        "on-primary": "#ffffff",
-                        "error-container": "#F7F3EC",
-                        "inverse-surface": "#303030",
-                        "inverse-primary": "#aecfb3",
-                        "surface-container-highest": "#e4e2e1",
-                        "on-error-container": "#3D6B4F",
-                        "on-background": "#1b1c1c",
-                        "on-primary-fixed-variant": "#304d38",
-                        "inverse-on-surface": "#f3f0f0",
-                        "on-secondary-container": "#773a11",
-                        "surface-container-low": "#f6f3f2",
-                        "surface-container-lowest": "#ffffff",
-                        "tertiary-container": "#494339",
-                        "on-error": "#ffffff",
-                        "on-primary-container": "#98b99e",
-                        "on-secondary-fixed-variant": "#71360d",
-                        "primary-fixed-dim": "#aecfb3",
-                        "on-tertiary-fixed-variant": "#4c463c",
-                        "surface-container-high": "#eae8e7",
-                        "surface": "#fbf9f8",
-                        "secondary-fixed-dim": "#ffb68d",
-                        "on-tertiary-fixed": "#201b13",
-                        "on-tertiary": "#ffffff",
-                        "brand-cream": "#F7F3EC",
-                        "brand-forest": "#2D4A35",
-                        "brand-sand": "#E8DDD0",
-                        "brand-terracotta": "#C4784A"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "margin-mobile": "20px",
-                        "container-max": "1440px",
-                        "margin-desktop": "80px",
-                        "unit": "4px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "headline-md": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "headline-lg-mobile": ["Playfair Display"],
-                        "display-lg-mobile": ["Playfair Display"],
-                        "body-lg": ["DM Sans"],
-                        "headline-lg": ["Playfair Display"],
-                        "display-lg": ["Playfair Display"],
-                        "label-md": ["DM Sans"]
-                    },
-                    "fontSize": {
-                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "500"}],
-                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
-                        "display-lg-mobile": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
-                        "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
-                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
         body { background-color: #F7F3EC; color: #173320; }
         .linen-texture {
             background-image: url("https://www.transparenttextures.com/patterns/linen.png");
@@ -194,7 +100,7 @@
     <!-- USP Banner / Hero Section -->
     <section class="linen-texture py-24 md:py-32 flex flex-col md:flex-row items-stretch gap-12 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop fade-up visible" id="usp-banner">
         <div class="w-full md:w-[45%] rounded-xl overflow-hidden aspect-[4/5] shadow-2xl">
-            <img alt="Potter hands molding clay" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoYDucXjaBiXiW69rEdxrHHFpZCIJLQCg4wla2YyndECsmiQv6FBtufolt_ihuQ-klYOHNKW13tKjoirRgkMPje9nPb3aNghgnuI7eO0RtfSgt9QsV-5IJZKnVrAcj9kDZKOV0W27GNPUJEOfBkEmpQwbuBGospmWoOlc25Eu9iMXbzMwJ_miQGasn6IPPZVSXKfCxXyU1kqgPsiD1yWgZ-94houfaHvG4MI3IdqSGbqDLqNN6QYEJurrW_SP22KtPeDRJzgsO4Cg">
+            <img alt="Potter hands molding clay" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoYDucXjaBiXiW69rEdxrHHFpZCIJLQCg4wla2YyndECsmiQv6FBtufolt_ihuQ-klYOHNKW13tKjoirRgkMPje9nPb3aNghgnuI7eO0RtfSgt9QsV-5IJZKnVrAcj9kDZKOV0W27GNPUJEOfBkEmpQwbuBGospmWoOlc25Eu9iMXbzMwJ_miQGasn6IPPZVSXKfCxXyU1kqgPsiD1yWgZ-94houfaHvG4MI3IdqSGbqDLqNN6QYEJurrW_SP22KtPeDRJzgsO4Cg" loading="lazy">
         </div>
         <div class="w-full md:w-[55%] flex flex-col justify-center border-l-4 border-brand-terracotta pl-8 md:pl-12">
             <span class="font-label-md text-label-md text-brand-forest tracking-[0.2em] mb-4">OUR PHILOSOPHY</span>
@@ -231,7 +137,7 @@
     <!-- Join Community Section -->
     <section class="relative h-[600px] flex items-center justify-center overflow-hidden fade-up visible">
         <div class="absolute inset-0 z-0">
-            <img alt="Craftsman workshop detail" class="w-full h-full object-cover scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPBbWxLAv5lfCUHG4_fhQ1toL95dmzT8hxfu2LIxyf4vaYfZzic9KSiF7BrmOLC01KGXVdC_cYylkAWe_RzrhHjoW3bK-YncfK6C6UjzlN9jli2ON6BmGAsk-WZ0wFI64oNRNXTyIYO2JDDhnjT6XxkSpEIPXlOv5GhshNIymEe2rfajdE3xYXucUSiSaoIKLlNBXyaJmlVod5c67e6Jjbas9l4FYfnu7soYZFWUqu_rTe90Q9wQN2AtfP5v_4Ilew6k3uTjmLth8">
+            <img alt="Craftsman workshop detail" class="w-full h-full object-cover scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPBbWxLAv5lfCUHG4_fhQ1toL95dmzT8hxfu2LIxyf4vaYfZzic9KSiF7BrmOLC01KGXVdC_cYylkAWe_RzrhHjoW3bK-YncfK6C6UjzlN9jli2ON6BmGAsk-WZ0wFI64oNRNXTyIYO2JDDhnjT6XxkSpEIPXlOv5GhshNIymEe2rfajdE3xYXucUSiSaoIKLlNBXyaJmlVod5c67e6Jjbas9l4FYfnu7soYZFWUqu_rTe90Q9wQN2AtfP5v_4Ilew6k3uTjmLth8" loading="lazy">
             <div class="absolute inset-0 bg-[#3D6B4F]/60 backdrop-blur-[2px]"></div>
         </div>
         <div class="relative z-10 text-center px-margin-mobile">
@@ -338,7 +244,7 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
@@ -475,7 +381,7 @@
                             return `
                             <div class="${style.bg} p-8 pt-20 rounded-2xl relative group transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
                                 <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-32 h-32 organic-mask-${(index % 3) + 1} overflow-hidden shadow-lg border-2 ${style.border}">
-                                    <img alt="${artisan.user?.name}" class="w-full h-full object-cover" src="${artisan.coverImageUrl || 'https://via.placeholder.com/150'}">
+                                    <img alt="${artisan.user?.name}" class="w-full h-full object-cover" src="${artisan.coverImageUrl || 'https://via.placeholder.com/150'}" loading="lazy">
                                 </div>
                                 <div class="mt-4 text-center">
                                     <span class="inline-block ${style.tag} px-3 py-1 text-[10px] tracking-widest uppercase mb-4">${artisan.craft || 'Craft'} · ${artisan.location || 'Unknown'}</span>
@@ -488,7 +394,7 @@
                                     
                                     <div class="grid grid-cols-4 gap-2 mt-auto">
                                         ${(artisan.products || []).slice(0, 4).map(p => `
-                                            <div class="aspect-square bg-current/10 rounded overflow-hidden hover-zoom"><img class="w-full h-full object-cover transition-transform" alt="Product" src="${p.imageUrl}"></div>
+                                            <div class="aspect-square bg-current/10 rounded overflow-hidden hover-zoom"><img class="w-full h-full object-cover transition-transform" alt="Product" src="${p.imageUrl}" loading="lazy"></div>
                                         `).join('')}
                                     </div>
                                 </div>

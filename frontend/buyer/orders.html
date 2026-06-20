@@ -1,123 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Your Orders | Tohfa</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#3D6B4F",
-                        "primary-container": "#8FAF82",
-                        "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#F7F3EC",
-                        "inverse-primary": "#8FAF82",
-                        "on-surface": "#1f1b15",
-                        "on-tertiary-fixed-variant": "#593d5d",
-                        "on-secondary-fixed-variant": "#484740",
-                        "on-tertiary": "#ffffff",
-                        "primary": "#516447",
-                        "surface-tint": "#516447",
-                        "tertiary-fixed": "#7B5EA7",
-                        "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3D6B4F",
-                        "on-tertiary-container": "#452b4a",
-                        "inverse-on-surface": "#f8efe5",
-                        "on-secondary": "#ffffff",
-                        "surface-variant": "#F7F3EC",
-                        "tertiary": "#7B5EA7",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#F7F3EC",
-                        "on-error": "#ffffff",
-                        "on-surface-variant": "#444840",
-                        "outline": "#74786f",
-                        "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#3D6B4F",
-                        "secondary-container": "#F7F3EC",
-                        "secondary-fixed": "#F7F3EC",
-                        "primary-fixed-dim": "#8FAF82",
-                        "secondary": "#605e57",
-                        "on-secondary-fixed": "#1c1c16",
-                        "background": "#FFFFFF",
-                        "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#8FAF82",
-                        "outline-variant": "#F7F3EC",
-                        "on-primary": "#ffffff",
-                        "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#FFFFFF",
-                        "on-primary-fixed": "#101f09",
-                        "on-background": "#1f1b15",
-                        "on-secondary-container": "#66645d",
-                        "surface-container": "#f6ece3",
-                        "on-primary-container": "#283920",
-                        "surface": "#FFFFFF",
-                        "surface-container-highest": "#F7F3EC",
-                        "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#2a122f",
-                        "gold-custom": "#C8973A",
-                        "ivory-card": "#FFFDFB",
-                        "sage": "#8FAF82",
-                        "sage-soft": "#F0F5EE",
-                        "terracotta": "#C87A53",
-                        "ivory": "#FFFDFB",
-                        "gold": "#C8973A"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px",
-                        "card": "16px"
-                    },
-                    "spacing": {
-                        "xs": "4px",
-                        "sm": "8px",
-                        "md": "16px",
-                        "lg": "24px",
-                        "xl": "40px",
-                        "margin-desktop": "64px",
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "container-max": "1280px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "headline-lg-mobile": ["EB Garamond"],
-                        "body-lg": ["Work Sans"],
-                        "body-sm": ["Work Sans"],
-                        "headline-lg": ["EB Garamond"],
-                        "title-md": ["Work Sans"],
-                        "label-caps": ["Work Sans"],
-                        "display-lg": ["EB Garamond"],
-                        "body-md": ["Work Sans"],
-                        "data-price": ["Work Sans"],
-                        "title-serif": ["EB Garamond"],
-                        "lora": ["Lora", "serif"],
-                        "display-hero": ["Playfair Display", "serif"]
-                    },
-                    "fontSize": {
-                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
-                        "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
-                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}],
-                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
-                        "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "500"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
         .paper-texture {
             background-color: #FFFFFF;
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8)
@@ -252,7 +147,7 @@
                 const res = await apiClient.get('/profile/me');
                 if (res.data && res.data.success && res.data.data.avatar_url) {
                     if (avatarEl) {
-                        avatarEl.innerHTML = `<img src="${res.data.data.avatar_url}" alt="Avatar" class="w-full h-full object-cover"/>`;
+                        avatarEl.innerHTML = `<img src="${res.data.data.avatar_url}" alt="Avatar" class="w-full h-full object-cover" loading="lazy" />`;
                     }
                 }
             } catch (err) {
@@ -396,7 +291,7 @@
             const actionIcon = isCancelled ? 'close' : 'chevron_right';
 
             imagesHtml = `<div class="flex -space-x-6 ${imagesOpacityClass}">` + urls.map(url => `
-                <img class="w-12 h-12 rounded-lg object-cover border-2 border-ivory shadow-sm flex-shrink-0" src="${url || 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted'}" alt="${o.item_preview}">
+                <img class="w-12 h-12 rounded-lg object-cover border-2 border-ivory shadow-sm flex-shrink-0" src="${url || 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted'}" alt="${o.item_preview}" loading="lazy">
             `).join('') + `</div>`;
 
             return `
@@ -412,7 +307,7 @@
                                 <span class="font-data-price text-label-caps text-on-surface-variant opacity-60">${formattedDate}</span>
                             </div>
                             <h3 class="font-lora text-title-serif text-on-surface mb-sm font-semibold">${o.item_preview}</h3>
-                            <span class="font-['Cinzel'] text-[12px] font-bold tracking-[0.1em] rounded-full px-3 py-1 border ${getStatusBadgeClass(o.status)}">${o.status}</span>
+                            <span class="font-sans text-[12px] font-bold tracking-[0.1em] rounded-full px-3 py-1 border ${getStatusBadgeClass(o.status)}">${o.status}</span>
                         </div>
                     </div>
                     <div class="text-right">
@@ -478,7 +373,7 @@
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">

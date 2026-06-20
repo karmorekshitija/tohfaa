@@ -1,109 +1,24 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Artisan Studio Profile</title>
     <meta name="description" content="Explore artisan creations, custom works, reels, reviews, and stories."/>
     
     <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <!-- Google Fonts: EB Garamond & Hanken Grotesk -->
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+      <!-- Google Fonts: EB Garamond & Hanken Grotesk -->
     
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#3D6B4F",
-                        "on-primary": "#ffffff",
-                        "primary-container": "#1b3022",
-                        "on-primary-container": "#819986",
-                        "inverse-primary": "#b4cdb8",
-                        "secondary": "#6b5c4c",
-                        "on-secondary": "#ffffff",
-                        "secondary-container": "#f4dfcb",
-                        "on-secondary-container": "#716252",
-                        "tertiary": "#171815",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-container": "#2b2c29",
-                        "on-tertiary-container": "#94938f",
-                        "background": "#fcf9f8",
-                        "on-background": "#1b1c1c",
-                        "surface": "#fcf9f8",
-                        "on-surface": "#1b1c1c",
-                        "surface-variant": "#e4e2e1",
-                        "on-surface-variant": "#434843",
-                        "outline": "#737973",
-                        "outline-variant": "#c3c8c1",
-                        "error": "#3D6B4F",
-                        "on-error": "#ffffff",
-                        "error-container": "#F7F3EC",
-                        "on-error-container": "#3D6B4F",
-                        "primary-fixed": "#d0e9d4",
-                        "primary-fixed-dim": "#b4cdb8",
-                        "on-primary-fixed": "#0b2013",
-                        "on-primary-fixed-variant": "#364c3c",
-                        "secondary-fixed": "#f4dfcb",
-                        "secondary-fixed-dim": "#d7c3b0",
-                        "on-secondary-fixed": "#241a0e",
-                        "on-secondary-fixed-variant": "#524436",
-                        "tertiary-fixed": "#e4e2dd",
-                        "tertiary-fixed-dim": "#c8c6c2",
-                        "on-tertiary-fixed": "#1b1c19",
-                        "on-tertiary-fixed-variant": "#474744",
-                        "surface-bright": "#fcf9f8",
-                        "surface-dim": "#dcd9d9",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#f6f3f2",
-                        "surface-container": "#f0eded",
-                        "surface-container-high": "#eae7e7",
-                        "surface-container-highest": "#e4e2e1"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.5rem",
-                        "lg": "1rem",
-                        "xl": "1.5rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "margin-desktop": "64px",
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "container-max": "1280px",
-                        "stack-sm": "12px",
-                        "stack-md": "24px",
-                        "stack-lg": "48px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "display-lg": ["EB Garamond", "serif"],
-                        "headline-md": ["EB Garamond", "serif"],
-                        "headline-sm": ["EB Garamond", "serif"],
-                        "body-lg": ["Hanken Grotesk", "sans-serif"],
-                        "body-md": ["Hanken Grotesk", "sans-serif"],
-                        "label-md": ["Hanken Grotesk", "sans-serif"],
-                        "label-sm": ["Hanken Grotesk", "sans-serif"]
-                    },
-                    "fontSize": {
-                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500" }],
-                        "headline-md": ["32px", { "lineHeight": "1.3", "fontWeight": "500" }],
-                        "headline-sm": ["24px", { "lineHeight": "1.4", "fontWeight": "500" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600" }],
-                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }]
-                    }
-                }
-            }
-        };
-    </script>
+    <!-- Tailwind CSS -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+
     <style>
         .font-display-lg { font-family: 'EB Garamond', serif; }
         .font-headline-md { font-family: 'EB Garamond', serif; }
@@ -257,7 +172,7 @@
         
         <!-- Cover Photo / Banner -->
         <div class="w-full h-48 md:h-64 rounded-xl overflow-hidden relative shadow-sm mb-8 bg-gradient-to-r from-secondary-container to-primary-container flex items-center justify-center">
-            <img id="seller-cover" class="w-full h-full object-cover hidden" src="" alt="Artisan Banner">
+            <img id="seller-cover" class="w-full h-full object-cover hidden" src="" alt="Artisan Banner" loading="lazy">
             <!-- Cozy fallback decor if no cover image -->
             <div id="cover-fallback" class="absolute inset-0 bg-cover bg-center opacity-35" style="background-image: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1470&auto=format&fit=crop');"></div>
             <div id="cover-overlay" class="absolute inset-0 bg-[#3D6B4F]/15"></div>
@@ -458,7 +373,7 @@
                     </div>
                     <div class="lg:col-span-5 relative mt-6 lg:mt-0">
                         <div class="rounded-xl overflow-hidden shadow-2xl rotate-3 image-reveal-hover">
-                            <img id="about-story-img" class="w-full h-80 lg:h-[450px] object-cover rounded-xl" src="https://images.unsplash.com/photo-1565192647048-f997ded879f0?q=80&w=600&auto=format&fit=crop" alt="Working on potter's wheel">
+                            <img id="about-story-img" class="w-full h-80 lg:h-[450px] object-cover rounded-xl" src="https://images.unsplash.com/photo-1565192647048-f997ded879f0?q=80&w=600&auto=format&fit=crop" alt="Working on potter's wheel" loading="lazy">
                         </div>
                     </div>
                 </section>
@@ -530,7 +445,7 @@
                             </div>
                         </div>
                         <div class="relative h-[250px] md:h-[350px] rounded-xl overflow-hidden shadow-2xl">
-                            <img class="w-full h-full object-cover rounded-xl" src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600" alt="Eco wrapping">
+                            <img class="w-full h-full object-cover rounded-xl" src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600" alt="Eco wrapping" loading="lazy">
                         </div>
                     </div>
                 </section>
@@ -826,7 +741,7 @@
                     
                     if (authContainer) {
                         if (avatarUrl) {
-                            authContainer.innerHTML = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer hover:opacity-85 duration-200" onclick="window.location.href='profile.html'"/>`;
+                            authContainer.innerHTML = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer hover:opacity-85 duration-200" onclick="window.location.href='profile.html'" loading="lazy" />`;
                         } else {
                             authContainer.innerHTML = `
                                 <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer hover:bg-opacity-90 duration-200">
@@ -880,7 +795,7 @@
             // Set Avatar
             const avatarEl = document.getElementById('seller-avatar');
             if (profile.avatar_url) {
-                avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="${profile.shop_name}" class="w-full h-full object-cover rounded-full"/>`;
+                avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="${profile.shop_name}" class="w-full h-full object-cover rounded-full" loading="lazy" />`;
                 avatarEl.classList.remove('bg-[#3D6B4F]', 'text-white');
             } else {
                 avatarEl.innerText = (profile.shop_name || 'A').charAt(0).toUpperCase();
@@ -940,7 +855,7 @@
                         index === 0 ? 'col-span-2 md:col-span-1 md:aspect-[4/5]' : 'aspect-square'
                     }`;
                     cell.innerHTML = `
-                        <img src="${item.photo_url}" alt="${item.caption || 'Workspace photo'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <img src="${item.photo_url}" alt="${item.caption || 'Workspace photo'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                         ${item.caption ? `
                             <div class="absolute inset-x-0 bottom-0 bg-black/60 p-3 text-white text-[10px] font-label-md uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 ${item.caption}
@@ -1151,7 +1066,7 @@
                     <div>
                         <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                             ${ribbonHtml}
-                            <img src="${p.image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Creation'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl"/>
+                            <img src="${p.image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Creation'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" loading="lazy" />
                             <button onclick="toggleWishlist(event, ${p.id})" class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10">
                                 <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" id="wishlist-icon-${p.id}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                             </button>
@@ -1327,7 +1242,7 @@
                         <div>
                             <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                                 ${ribbonHtml}
-                                <img src="${c.cover_image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Custom'}" alt="${c.product_name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl"/>
+                                <img src="${c.cover_image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Custom'}" alt="${c.product_name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" loading="lazy" />
                             </div>
                             <div class="flex flex-col mb-4">
                                 <span class="font-bold text-lg text-[#C8973A] mb-1">${priceFormatted}</span>
@@ -1373,7 +1288,7 @@
                     card.onclick = () => window.location.href = `/buyer/reels.html?id=${r.id}`;
                     
                     card.innerHTML = `
-                        <img src="${r.thumbnail_url || 'https://placehold.co/360x640/2b2c29/ffffff?text=Reel'}" alt="${r.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                        <img src="${r.thumbnail_url || 'https://placehold.co/360x640/2b2c29/ffffff?text=Reel'}" alt="${r.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 text-white">
                             <h4 class="font-headline-sm text-sm text-white font-bold mb-1 line-clamp-1">${r.title || 'Artisan Reel'}</h4>
                             <div class="flex items-center gap-3 text-[10px] opacity-90 font-label-sm">
@@ -1470,7 +1385,7 @@
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container flex items-center justify-center font-bold text-sm shrink-0 border border-outline-variant/30">
                                     ${r.buyer_avatar_url 
-                                        ? `<img src="${r.buyer_avatar_url}" alt="${r.buyer_name}" class="w-full h-full object-cover"/>`
+                                        ? `<img src="${r.buyer_avatar_url}" alt="${r.buyer_name}" class="w-full h-full object-cover" loading="lazy" />`
                                         : (r.buyer_name || 'A').charAt(0).toUpperCase()
                                     }
                                 </div>
@@ -1490,7 +1405,7 @@
                         <!-- Product Info Card -->
                         <div class="flex items-center gap-4 p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/30 mb-6 cursor-pointer" onclick="window.location.href='/buyer/product.html?id=${r.product.id}'">
                             <div class="w-14 h-14 rounded overflow-hidden shrink-0 border border-outline-variant/20">
-                                <img src="${r.product.image_url || 'https://placehold.co/100x100/f6f3f2/061b0e?text=Product'}" alt="${r.product.name}" class="w-full h-full object-cover"/>
+                                <img src="${r.product.image_url || 'https://placehold.co/100x100/f6f3f2/061b0e?text=Product'}" alt="${r.product.name}" class="w-full h-full object-cover" loading="lazy" />
                             </div>
                             <div>
                                 <p class="text-[10px] font-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">Purchased item</p>
@@ -1892,7 +1807,7 @@
             const avatarImg = document.querySelector('#auth-buttons-container img');
             const userAvatarIntake = msg.querySelector('#user-avatar-intake');
             if (avatarImg && userAvatarIntake) {
-                userAvatarIntake.innerHTML = `<img src="${avatarImg.src}" class="w-full h-full object-cover rounded-full"/>`;
+                userAvatarIntake.innerHTML = `<img src="${avatarImg.src}" class="w-full h-full object-cover rounded-full" loading="lazy" />`;
             } else {
                 userAvatarIntake.innerText = sessionStorage.getItem('tohfa_user_initials') || 'U';
             }
@@ -1969,7 +1884,7 @@
             
             const shareAvatar = document.getElementById('share-modal-avatar');
             if (sellerProfile.avatar_url) {
-                shareAvatar.innerHTML = `<img src="${sellerProfile.avatar_url}" alt="${sellerProfile.shop_name}" class="w-full h-full object-cover"/>`;
+                shareAvatar.innerHTML = `<img src="${sellerProfile.avatar_url}" alt="${sellerProfile.shop_name}" class="w-full h-full object-cover" loading="lazy" />`;
             } else {
                 shareAvatar.innerHTML = `
                     <div class="w-full h-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold select-none text-xl">

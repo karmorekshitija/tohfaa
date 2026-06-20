@@ -1,260 +1,382 @@
 <!DOCTYPE html>
 
 <html lang="en"><head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Payment Failed - Tohfa Artisan Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&amp;family=Merriweather:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "secondary-fixed": "#caecbb",
-                    "surface-container-low": "#fff2e1",
-                    "inverse-primary": "#a0d2b0",
-                    "surface-variant": "#ede1d1",
-                    "surface-bright": "#fff8f3",
-                    "on-secondary": "#ffffff",
-                    "on-primary-fixed-variant": "#214f36",
-                    "tertiary-container": "#70539b",
-                    "primary-fixed": "#bceecb",
-                    "primary": "#255338",
-                    "on-tertiary-fixed-variant": "#54387e",
-                    "inverse-surface": "#362f25",
-                    "surface-container-lowest": "#ffffff",
-                    "error-container": "#ffdad6",
-                    "primary-container": "#3d6b4f",
-                    "surface-tint": "#3a684c",
-                    "surface-container-highest": "#ede1d1",
-                    "on-error-container": "#93000a",
-                    "secondary": "#49663f",
-                    "surface-dim": "#e5d8c8",
-                    "surface": "#fff8f3",
-                    "on-error": "#ffffff",
-                    "surface-container": "#f9ecdc",
-                    "on-surface-variant": "#414942",
-                    "inverse-on-surface": "#fcefde",
-                    "outline-variant": "#c1c9c0",
-                    "on-tertiary": "#ffffff",
-                    "secondary-container": "#c8e9b8",
-                    "on-background": "#211b11",
-                    "on-secondary-fixed": "#062103",
-                    "on-primary-container": "#b7e9c6",
-                    "tertiary": "#573b81",
-                    "outline": "#717972",
-                    "on-surface": "#211b11",
-                    "on-primary": "#ffffff",
-                    "primary-fixed-dim": "#a0d2b0",
-                    "on-tertiary-container": "#e8d6ff",
-                    "on-primary-fixed": "#002110",
-                    "background": "#fff8f3",
-                    "secondary-fixed-dim": "#afd0a0",
-                    "tertiary-fixed": "#ecdcff",
-                    "on-tertiary-fixed": "#270550",
-                    "error": "#ba1a1a",
-                    "surface-container-high": "#f3e6d6",
-                    "on-secondary-fixed-variant": "#324e29",
-                    "tertiary-fixed-dim": "#d6baff",
-                    "on-secondary-container": "#4d6a43",
-                    "terracotta": "#b14b3e",
-                    "sage": "#717972",
-                    "ivory": "#FCFAF5",
-                    "gold": "#967b4c"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "margin-desktop": "64px",
-                    "gutter": "16px",
-                    "xs": "4px",
-                    "unit": "4px",
-                    "margin-mobile": "20px",
-                    "md": "16px",
-                    "lg": "24px",
-                    "xl": "40px",
-                    "sm": "8px"
-            },
-            "fontFamily": {
-                    "body-md": ["DM Sans"],
-                    "label-caps": ["Cinzel"],
-                    "title-serif": ["Merriweather"],
-                    "headline-lg-mobile": ["Playfair Display"],
-                    "headline-lg": ["Playfair Display"],
-                    "display-hero": ["Playfair Display"],
-                    "data-price": ["Space Mono"]
-            },
-            "fontSize": {
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                    "title-serif": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                    "display-hero": ["48px", {"lineHeight": "56px", "fontWeight": "300"}],
-                    "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+<title>Seller Dashboard - Complete Order | Tohfa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3D6B4F', // Forest
+                        secondary: '#F7F3EC', // Parchment
+                        sage: '#8FAF82',
+                        violet: '#7B5EA7',
+                        gold: '#C8973A',
+                        background: '#FDF9F2',
+                        'surface-ivory': '#F7F3EC',
+                        'on-surface': '#414942',
+                        'on-surface-variant': '#5C635D',
+                    },
+                    fontFamily: {
+                        'playfair': ['Playfair Display', 'serif'],
+                        'dm-sans': ['DM Sans', 'sans-serif'],
+                        'space-mono': ['Space Mono', 'monospace'],
+                    },
+                }
             }
-          },
-        },
-      }
+        }
     </script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        .sidebar-active {
+            background-color: #8FAF8220;
+            border-right: 3px solid #3D6B4F;
+            color: #3D6B4F;
         }
-        .ink-splat {
-            background-image: radial-gradient(circle, rgba(177,75,62,0.1) 0%, transparent 70%);
-        }
-        .sketch-overlay {
+        .ink-splatter {
             background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-            opacity: 0.05;
         }
-        .terracotta-glow {
-            box-shadow: 0 0 30px rgba(177,75,62,0.15);
+        .transition-active:active {
+            transform: scale(0.98);
         }
-        .warm-card-shadow {
-            box-shadow: 0 10px 30px -5px rgba(58, 51, 40, 0.08);
-        }
-        @keyframes gentle-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        .mascot-float {
-            animation: gentle-float 4s ease-in-out infinite;
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
-<body class="bg-[#FFFFFF] text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col font-body-md">
-<!-- TopNavBar -->
-<header class="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
-<div class="flex flex-col md:flex-row items-center justify-between px-margin-mobile md:px-margin-desktop py-md max-w-full mx-auto">
-<div class="flex items-center gap-md">
-<span class="font-display-hero text-headline-lg italic text-primary">Tohfa<span class="text-[#967b4c]">.</span></span>
+<body class="bg-background font-dm-sans text-on-surface">
+<!-- Mobile Header -->
+<header class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#F7F3EC] border-b border-[#8FAF82] flex items-center justify-between px-4 z-50">
+<div class="flex items-center gap-4">
+<button class="p-2 -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center" id="mobile-menu-btn">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<a class="font-playfair text-2xl italic text-primary select-none" href="#">
+                Tohfa<span class="text-gold">.</span>
+</a>
 </div>
-<nav class="hidden md:flex items-center gap-xl">
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Home</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Category</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Reels</a>
-<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Profile</a>
-</nav>
-<div class="flex items-center gap-lg">
-<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity">shopping_bag</button>
-</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notifications</span>
 </div>
 </header>
-<!-- Main Content -->
-<main class="flex-grow flex items-center justify-center py-xl px-margin-mobile">
-<div class="max-w-2xl w-full flex flex-col items-center text-center space-y-lg">
-<!-- Failure Icon -->
-<div class="relative">
-<div class="absolute inset-0 terracotta-glow rounded-full scale-150"></div>
-<div class="w-20 h-20 rounded-full bg-error-container flex items-center justify-center z-10 relative">
-<span class="material-symbols-outlined text-terracotta text-4xl font-bold">close</span>
-</div>
-</div>
-<!-- Header Text -->
-<div class="space-y-sm">
-<h1 class="font-headline-lg text-[26px] italic text-primary leading-tight">Payment unsuccessful</h1>
-<p class="font-body-md text-[14px] text-on-surface-variant">We couldn't process your payment. No amount was deducted.</p>
-<p class="font-data-price text-[12px] text-outline tracking-wider uppercase">ERROR CODE: PAYMENT_FAILED · ORDER NOT PLACED</p>
-</div>
-<!-- Details Section with Mascot -->
-<div class="w-full flex flex-col md:flex-row items-center md:items-end justify-center gap-lg mt-md">
-<!-- Details Card -->
-<div class="relative bg-ivory border border-outline-variant rounded-xl p-lg warm-card-shadow text-left max-w-sm w-full overflow-hidden">
-<!-- Subtle Ink Sketch Texture Overlay -->
-<div class="absolute inset-0 opacity-[0.07] pointer-events-none flex items-center justify-center">
-<span class="material-symbols-outlined text-9xl">heart_broken</span>
-</div>
-<div class="relative z-10">
-<h2 class="font-label-caps text-[10px] text-gold mb-md">WHAT HAPPENED?</h2>
-<ul class="space-y-sm text-[13px] text-on-surface-variant list-none">
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Bank declined the transaction
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Session timed out
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Incorrect card details
-                            </li>
-<li class="flex items-start gap-sm">
-<span class="text-gold mt-1">◈</span> Network issue during payment
-                            </li>
-</ul>
-</div>
-</div>
-<!-- Mascot -->
-<div class="mascot-float hidden md:block">
-<img class="w-32 h-32 object-contain" data-alt="A charming Chibi-style artisan girl mascot for a boutique studio, wearing a sage green apron over a cream dress. She holds a small notepad and pencil with a sympathetic, kind expression. The illustration is in a soft watercolor style with hand-drawn ink outlines on an ivory background, reflecting a warm and intentional artisan brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPGmN2TlohJ2Cfae5kWQhuUAWKjyMiQvhjsjN8HlrMPR7TQ3NhmbQtsIRIlr2dmsauBQwrA7pzk3XXdSEI3-Kl2xsMWTI2eVhsGdfqeo-N4Qhx-wQ-BUpUYhktqMIVyJijCCxZT69RGMQ5P14E0o2Wwpgr9B3Rr-ybI0RZ_tXj5jf-KlnIR5-L32-DnGnj9wqzcWzzc8mcHdqdPlrvlRbfJdA8N-J3IO7xoz3xmhTOgMg01wym-hcXeWQYzp5ycobpang2SBsl-QU"/>
-</div>
-</div>
-<!-- Actions -->
-<div class="flex flex-col gap-md w-full max-w-xs mt-xl">
-<button class="h-12 bg-primary text-white font-body-md rounded-lg active:scale-95 transition-all hover:opacity-90">
-                    Try again
-                </button>
-<button class="h-12 bg-white border border-outline text-primary font-body-md rounded-lg active:scale-95 transition-all hover:bg-surface">
-                    Try a different method
-                </button>
-<a class="text-tertiary font-body-md text-sm mt-sm hover:underline flex items-center justify-center gap-xs" href="#">
-                    Contact support <span class="material-symbols-outlined text-sm">arrow_forward</span>
+<div class="flex min-h-screen pt-16 md:pt-0">
+<!-- Sidebar Navigation -->
+<aside class="fixed inset-y-0 left-0 w-64 bg-[#F7F3EC] border-r border-[#8FAF82] z-[60] flex flex-col md:relative md:translate-x-0" id="sidebar">
+<div class="p-6 hidden md:block">
+<a class="font-playfair text-[32px] italic text-primary select-none" href="#">
+                    Tohfa<span class="text-gold">.</span>
 </a>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-medium">Catalog</span>
+</a>
+<a class="sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold min-h-[44px]" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-medium">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">layers</span>
+<span class="font-medium">Overflow</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-medium">Messages</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">star</span>
+<span class="font-medium">Reviews</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-sage/10 transition-colors min-h-[44px]" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-medium">Profile</span>
+</a>
+</nav>
+<div class="p-4 border-t border-[#8FAF82]/20 bg-[#F7F3EC]/50">
+<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-primary hover:bg-sage/10 transition-colors min-h-[44px] mb-1">
+<span class="material-symbols-outlined">store</span>
+<span class="font-medium">View store</span>
+</button>
+<button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-700 hover:bg-red-50 transition-colors min-h-[44px]">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium">Log out</span>
+</button>
+</div>
+</aside>
+<!-- Overlay for mobile sidebar -->
+<div class="fixed inset-0 bg-black/20 z-[55] hidden md:hidden" id="sidebar-overlay"></div>
+<!-- Main Content Area -->
+<main class="flex-1 relative overflow-x-hidden">
+<!-- Header inside content -->
+<header class="flex flex-col md:flex-row justify-between items-center w-full px-6 md:px-12 py-6 bg-background">
+<div class="mb-4 md:mb-0">
+<h1 class="font-playfair text-3xl md:text-4xl text-on-surface font-semibold">Complete your order</h1>
+</div>
+<div class="flex items-center">
+<button class="flex items-center text-on-surface-variant hover:text-primary transition-colors min-h-[44px] px-2">
+<span class="material-symbols-outlined mr-2">arrow_back</span>
+<span class="font-medium">Back to dashboard</span>
+</button>
+</div>
+</header>
+<div class="relative flex flex-col items-center justify-start min-h-[calc(100vh-120px)] py-8 px-4 md:px-12 overflow-hidden">
+<!-- Ink Splatter Background Effect -->
+<div class="absolute inset-0 ink-splatter opacity-[0.04] pointer-events-none"></div>
+<!-- Central Content Grid -->
+<div class="w-full max-w-[600px] relative z-10 flex flex-col">
+<!-- Summary Card -->
+<section class="bg-[#F7F3EC] border border-[#8FAF82]/20 rounded-xl p-6 md:p-8 shadow-sm relative overflow-hidden mb-8">
+<div class="mb-6">
+<p class="font-space-mono text-on-surface-variant tracking-widest text-xs uppercase font-bold" id="order-ref-el">Loading order details...</p>
+</div>
+<div class="space-y-4 mb-8" id="order-items-container">
+<div class="animate-pulse space-y-2">
+<div class="h-6 bg-sage/10 rounded w-2/3"></div>
+<div class="h-6 bg-sage/10 rounded w-1/2"></div>
+</div>
+</div>
+<div class="border-t border-sage/30 pt-6 flex justify-between items-center">
+<span class="font-playfair text-on-surface text-xl font-bold">Total Amount</span>
+<span class="font-space-mono text-gold text-2xl font-bold" id="total-amount-el">₹0.00</span>
+</div>
+</section>
+<!-- Payment Method Section -->
+<section class="space-y-4">
+<h2 class="font-space-mono text-on-surface-variant text-[11px] px-2 font-bold uppercase tracking-widest">Paying With</h2>
+<div class="bg-white border border-[#F7F3EC] rounded-lg p-4 flex items-center shadow-sm min-h-[64px]">
+<div class="bg-[#F7F3EC] rounded-md px-3 py-1 mr-4 border border-[#8FAF82]/20">
+<span class="text-primary font-bold text-sm tracking-tighter uppercase font-space-mono">Razorpay</span>
+</div>
+<p class="font-dm-sans text-on-surface-variant text-sm">Secured by Razorpay</p>
+<span class="material-symbols-outlined ml-auto text-primary opacity-60">verified_user</span>
+</div>
+</section>
+<!-- Action Button -->
+<div class="mt-10 space-y-4">
+<button class="w-full h-[56px] bg-primary text-white font-dm-sans font-bold rounded-lg shadow-md hover:bg-primary/90 transition-all transition-active flex items-center justify-center text-lg" id="pay-button" disabled>
+                            Loading...
+                        </button>
+<p class="text-center font-dm-sans text-on-surface-variant text-[13px] opacity-70 px-8">
+                            You'll only be charged once. Your card details never touch our server.
+                        </p>
+<div class="pt-4 text-center">
+<a class="font-dm-sans text-gold underline decoration-gold/30 underline-offset-4 hover:text-primary transition-colors min-h-[44px] inline-flex items-center cursor-pointer" id="pay-later-btn">
+                                Pay later
+                            </a>
+</div>
+</div>
+</div>
+<!-- Mascot (Desktop Only Position) -->
+<div class="hidden lg:block absolute bottom-12 right-12 w-48 artisan-mascot pointer-events-none">
+<img alt="Artisan Mascot" class="w-full h-auto drop-shadow-lg animate-bounce" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUdgUi9zNpemquNYOynHRU5OmTazfPivR4pIq-CSEmr5O30OHcbjOpuIJHuRhNDeqI1xTrIlIgCgcyl7dzbHe2m6vDF11N3L_z2-OnqJba-qKyQqZYt05uspfDGDtbLJQuRaI8PqgXViAPXqAZPb2CJUQt6-Ub_WuZBXEnESew_Husm6UouVhChIn8z7XZkeqdhv83NuPY6nVT4vp89HQjms9N03mbSqJL7k2AP12fR-p1ThtIIdj7jcXz3i-55CGAJKY-SgFcPPE" style="animation-duration: 3s;" loading="lazy" />
+</div>
+</div>
+<!-- Background Decoration Textures -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-[0.03] z-0 overflow-hidden">
+<div class="absolute top-20 left-10 transform -rotate-12">
+<img alt="" class="grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA06FpOjuqcPxHMAhJnj6_SyrbSo717-KZTM9limYKxaBjVX6pEoVxKvZY5vKLyYouA9sAYUr0c0IkC7LbjR9rwxcjipjTwLTaoY2g_AsCy5SOYoIdlSZ_hwog2FZuuRBWVgM90lWqVHPYvpq6z6bbA8fAd4JS4mV80C8y3NowoWyVU8FjLawimqQCCplN0VklAbONpT1yV-nC26LFI-v1VjyAkJZ4czZEupMzAKh979EjEkvGluTM6t9HShvvRCzrX3rUu5yBlfQU" loading="lazy" />
+</div>
+<div class="absolute bottom-40 right-10 transform rotate-45">
+<img alt="" class="grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj-1OvRv6x179AzFX6AU0o51soCP8QWobQbW1P-YrsF3T1Odgu5VZ8vlsw_wddJxoYU-mrV-LT1SWpJfpKy1HLeopqDb9vOwWpD2O6_-ZVZGKgjNY0SwYt0L2H1XkPM71Rudvc6pRPc9qlBPMNhgw0-LsUg-m82QUldbq9kDh1G74c6aiKYiuZT_FVcq--jnxxop1QLHdIRbjxQmdMHBtBgDn4wX8gh89Gk9rWboQHIdfVNhN8N-51xZp4If_m_cS_tmmv02iatek" loading="lazy" />
 </div>
 </div>
 </main>
-<!-- Footer -->
-<footer class="w-full relative bg-surface-container border-t border-outline-variant mt-xl">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-xl px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto">
-<div class="space-y-md">
-<span class="font-display-hero text-headline-lg text-primary">Tohfa</span>
-<p class="font-body-md text-on-surface-variant">© 2024 TOFA Artisan Studio. Handcrafted with intention.</p>
 </div>
-<div class="flex flex-col gap-sm">
-<h4 class="font-label-caps text-label-caps text-primary">Studio Journal</h4>
-<nav class="flex flex-col gap-xs">
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Our Story</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Studio Journal</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Artisan Partners</a>
-</nav>
-</div>
-<div class="flex flex-col gap-sm">
-<h4 class="font-label-caps text-label-caps text-primary">Support</h4>
-<nav class="flex flex-col gap-xs">
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping &amp; Returns</a>
-<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Help Center</a>
-</nav>
-</div>
-</div>
-</footer>
-<script>
-    function getTohfaToken() {
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { formatPaise } from '/src/utils/currency.js';
+
+    let orderData = null;
+    let orderId = null;
+
+    async function initPaymentHandoff() {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        orderId = urlParams.get('order_id');
+        if (!orderId) {
+            alert("Order ID is missing in URL.");
+            window.location.href = '/mobile-buyer/home.html';
+            return;
+        }
+
+        // Set up simple go-back functionality
+        const backBtns = document.querySelectorAll('button:has(span:contains("Back")), button:has(span:contains("back"))');
+        backBtns.forEach(btn => {
+            btn.addEventListener('click', () => window.history.back());
+        });
+
+        // Set up pay later link
+        const payLaterBtn = document.getElementById('pay-later-btn');
+        if (payLaterBtn) {
+            payLaterBtn.href = `/mobile-buyer/order-detail.html?id=${orderId}`;
+        }
+
+        await fetchOrderDetails();
+    }
+
+    async function fetchOrderDetails() {
         try {
-            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
-        } catch(e) {
-            return getTohfaToken();
+            const res = await apiClient.get(`/orders/${orderId}`);
+            if (res.data && res.data.success) {
+                orderData = res.data.data;
+                renderOrder(orderData);
+            } else {
+                alert("Failed to load order details.");
+            }
+        } catch (err) {
+            console.error("Error loading order details:", err);
+            alert("Error loading order. Redirecting to home.");
+            window.location.href = '/mobile-buyer/home.html';
         }
     }
 
-        // Micro-interaction for buttons
-        document.querySelectorAll('button').forEach(button => {
-            button.addEventListener('mousedown', () => {
-                button.style.transform = 'scale(0.98)';
-            });
-            button.addEventListener('mouseup', () => {
-                button.style.transform = 'scale(1)';
-            });
-            button.addEventListener('mouseleave', () => {
-                button.style.transform = 'scale(1)';
-            });
-        });
-    </script>
+    function renderOrder(order) {
+        document.getElementById('order-ref-el').innerText = `ORDER #${order.order_ref}`;
+        
+        const itemsContainer = document.getElementById('order-items-container');
+        if (itemsContainer) {
+            let itemsHtml = order.items.map(item => `
+                <div class="flex justify-between items-start">
+                    <span class="font-playfair text-on-surface text-lg">${item.product_name} (x${item.quantity})</span>
+                    <span class="font-space-mono text-on-surface text-md font-bold">${formatPaise(item.unit_price_paise * item.quantity)}</span>
+                </div>
+            `).join('');
+            
+            // Append shipping
+            itemsHtml += `
+                <div class="flex justify-between items-start border-t border-sage/30 pt-4 mt-4">
+                    <span class="font-playfair text-on-surface-variant italic">Shipping & Hand-crafted Packing</span>
+                    <span class="font-space-mono text-on-surface text-md font-bold">${formatPaise(order.shipping_paise)}</span>
+                </div>
+            `;
+            
+            itemsContainer.innerHTML = itemsHtml;
+        }
+
+        document.getElementById('total-amount-el').innerText = formatPaise(order.total_paise);
+        
+        const payBtn = document.getElementById('pay-button');
+        if (payBtn) {
+            payBtn.innerText = `Pay ${formatPaise(order.total_paise)}`;
+            payBtn.disabled = false;
+        }
+    }
+
+    async function handlePayment() {
+        const payBtn = document.getElementById('pay-button');
+        if (!payBtn || !orderId || !orderData) return;
+
+        payBtn.innerHTML = '<span class="flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Securely Redirecting...</span>';
+        payBtn.classList.add('opacity-80');
+        payBtn.disabled = true;
+
+        try {
+            const initRes = await apiClient.post('/payments/initiate', { order_id: orderId });
+            if (initRes.data && initRes.data.success) {
+                const payData = initRes.data.data;
+                
+                const options = {
+                    key: payData.key_id,
+                    amount: payData.amount_paise,
+                    currency: payData.currency,
+                    order_id: payData.razorpay_order_id,
+                    name: "Tohfa Artisan Studio",
+                    description: `Order Ref: ${orderData.order_ref}`,
+                    prefill: payData.prefill,
+                    handler: async function (response) {
+                        try {
+                            const verifyRes = await apiClient.post('/payments/verify', {
+                                order_id: orderId,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            });
+                            if (verifyRes.data && verifyRes.data.success) {
+                                window.location.href = `payment-success.html?order_ref=${orderData.order_ref}&order_id=${orderId}`;
+                            } else {
+                                window.location.href = `payment-failure.html?order_ref=${orderData.order_ref}`;
+                            }
+                        } catch (verifyErr) {
+                            console.error("Verify payment error:", verifyErr);
+                            window.location.href = `payment-failure.html?order_ref=${orderData.order_ref}`;
+                        }
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            payBtn.disabled = false;
+                            payBtn.innerText = `Pay ${formatPaise(orderData.total_paise)}`;
+                            payBtn.classList.remove('opacity-80');
+                        }
+                    }
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.on('payment.failed', function (resp) {
+                    console.error("Payment failed:", resp.error);
+                    window.location.href = `payment-failure.html?order_ref=${orderData.order_ref}`;
+                });
+                rzp.open();
+            }
+        } catch (err) {
+            console.error("Payment initiation failed:", err);
+            payBtn.disabled = false;
+            payBtn.innerText = `Pay ${formatPaise(orderData.total_paise)}`;
+            payBtn.classList.remove('opacity-80');
+            alert(err.response?.data?.message || "Failed to initiate payment.");
+        }
+    }
+
+    // Mobile Menu Logic
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    const toggleMenu = () => {
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        }
+    };
+
+    if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
+    if (overlay) overlay.addEventListener('click', toggleMenu);
+
+    document.getElementById('pay-button')?.addEventListener('click', handlePayment);
+
+    window.addEventListener('DOMContentLoaded', initPaymentHandoff);
+</script>
 </body></html>

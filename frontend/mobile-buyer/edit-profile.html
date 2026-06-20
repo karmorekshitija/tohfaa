@@ -1,106 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Tohfa | Edit Profile</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#3D6B4F",
-                        "primary-container": "#8FAF82",
-                        "inverse-surface": "#343029",
-                        "secondary-fixed-dim": "#F7F3EC",
-                        "inverse-primary": "#8FAF82",
-                        "on-surface": "#1f1b15",
-                        "on-tertiary-fixed-variant": "#593d5d",
-                        "on-secondary-fixed-variant": "#484740",
-                        "on-tertiary": "#ffffff",
-                        "primary": "#3D6B4F",
-                        "surface-tint": "#3D6B4F",
-                        "tertiary-fixed": "#7B5EA7",
-                        "tertiary-container": "#b492b7",
-                        "on-primary-fixed-variant": "#3D6B4F",
-                        "on-tertiary-container": "#452b4a",
-                        "inverse-on-surface": "#f8efe5",
-                        "on-secondary": "#ffffff",
-                        "surface-variant": "#F7F3EC",
-                        "tertiary": "#7B5EA7",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#F7F3EC",
-                        "on-error": "#ffffff",
-                        "on-surface-variant": "#444840",
-                        "outline": "#74786f",
-                        "tertiary-fixed-dim": "#dfbbe2",
-                        "on-error-container": "#3D6B4F",
-                        "secondary-container": "#F7F3EC",
-                        "secondary-fixed": "#F7F3EC",
-                        "primary-fixed-dim": "#8FAF82",
-                        "secondary": "#605e57",
-                        "on-secondary-fixed": "#1c1c16",
-                        "background": "#FFFFFF",
-                        "surface-dim": "#e1d9cf",
-                        "primary-fixed": "#8FAF82",
-                        "outline-variant": "#F7F3EC",
-                        "on-primary": "#ffffff",
-                        "surface-container-high": "#f0e7dd",
-                        "surface-bright": "#FFFFFF",
-                        "on-primary-fixed": "#101f09",
-                        "on-background": "#1f1b15",
-                        "on-secondary-container": "#66645d",
-                        "surface-container": "#f6ece3",
-                        "on-primary-container": "#283920",
-                        "surface": "#FFFFFF",
-                        "surface-container-highest": "#F7F3EC",
-                        "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#2a122f"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xs": "4px",
-                        "sm": "8px",
-                        "md": "16px",
-                        "lg": "24px",
-                        "xl": "40px",
-                        "margin-desktop": "64px",
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "container-max": "1280px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Playfair Display"],
-                        "title-serif": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "data-price": ["DM Sans"],
-                        "label-caps": ["DM Sans"],
-                        "display-hero": ["Playfair Display"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-                        "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
         .scrim-active {
             background-color: rgba(229, 216, 200, 0.45);
             backdrop-filter: blur(3px);
@@ -212,26 +124,26 @@
 <header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
   <!-- Brand Logo -->
   <div class="flex items-center flex-1">
-    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./buyer-home.html">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./home.html">
       Tohfa<span class="text-[#C8973A]">.</span>
     </a>
   </div>
 
   <!-- Navigation Links -->
   <nav class="hidden md:flex items-center justify-center gap-xl h-full">
-    <a href="./buyer-home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">home</span>
       <span>Home</span>
     </a>
-    <a href="./buyer-categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <a href="./buyer-reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">movie</span>
       <span>Reels</span>
     </a>
-    <a href="./buyer-profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+    <a href="./profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
       <span class="material-symbols-outlined text-[20px]">person</span>
       <span>Profile</span>
     </a>
@@ -239,13 +151,13 @@
 
   <!-- Right side items -->
   <div class="flex items-center justify-end flex-1 gap-lg">
-    <a href="./buyer-categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+    <a href="./categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
       <span class="material-symbols-outlined">search</span>
     </a>
-    <a href="./buyer-saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="./saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
     </a>
-    <a href="./buyer-cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+    <a href="./cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
       <span class="material-symbols-outlined">shopping_cart</span>
     </a>
     <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
@@ -258,7 +170,7 @@
     <div class="relative group">
       <img id="bg-user-avatar" alt="Profile"
            class="w-32 h-32 rounded-full border-2 border-outline-variant object-cover opacity-60"
-           src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face"/>
+           src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face" loading="lazy" />
     </div>
     <div class="text-center">
       <h1 id="bg-user-name" class="font-headline-lg text-on-surface opacity-60">Loading...</h1>
@@ -297,7 +209,7 @@
         <div class="relative w-28 h-28 rounded-full overflow-hidden border-2 border-outline group cursor-pointer shadow-md" onclick="document.getElementById('input-avatar-file').click()">
           <img id="avatar-preview" alt="Avatar Preview"
                class="w-full h-full object-cover"
-               src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face"/>
+               src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face" loading="lazy" />
           <div class="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-all flex flex-col items-center justify-center text-white p-2">
             <span class="material-symbols-outlined text-[24px] mb-1">photo_camera</span>
             <span class="text-[10px] font-['DM_Sans'] font-medium text-center leading-tight">Upload photo</span>
@@ -380,9 +292,9 @@
     function getTohfaToken() {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
-            return user.token || user.accessToken || user.access_token || getTohfaToken();
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token') || null;
         } catch(e) {
-            return getTohfaToken();
+            return sessionStorage.getItem('tohfa_access_token') || null;
         }
     }
 
@@ -472,7 +384,6 @@
             const response = await apiClient.patch('/profile/me', payload);
 
             if (response.data && response.data.success) {
-
 
                 // Update sessionStorage
                 const userStr = sessionStorage.getItem('tohfa_user');
@@ -577,7 +488,6 @@
             }
         });
 
-
     });
 
     /* ── Close on scrim click ── */
@@ -606,8 +516,8 @@
                 } catch (_) {}
 
                 const avatarHtml = avatarUrl
-                    ? `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='./buyer-profile.html'"/>`
-                    : `<a href="./buyer-profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm">${initial}</a>`;
+                    ? `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='./profile.html'" loading="lazy" />`
+                    : `<a href="./profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm">${initial}</a>`;
 
                 authContainer.innerHTML = '';
             } catch (_) {}

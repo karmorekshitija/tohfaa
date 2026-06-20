@@ -1,113 +1,22 @@
 <!DOCTYPE html>
 
 <html class="light" lang="en"><head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Become a Seller | TOFA Marketplace</title>
 <!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <!-- Material Symbols -->
+
 <!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary-fixed-dim": "#a0d2b0",
-                        "error": "#3D6B4F",
-                        "on-primary-fixed": "#002110",
-                        "background": "#FFFFFF",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-highest": "#e2e3df",
-                        "surface-bright": "#FFFFFF",
-                        "on-primary-fixed-variant": "#214f36",
-                        "surface-container-low": "#f3f4f0",
-                        "tertiary-fixed-dim": "#d6baff",
-                        "secondary-container": "#8FAF82",
-                        "secondary": "#49663f",
-                        "on-tertiary-container": "#e8d6ff",
-                        "on-tertiary-fixed-variant": "#54387e",
-                        "primary-fixed": "#bceecb",
-                        "on-surface": "#1a1c1a",
-                        "on-secondary-container": "#4d6a43",
-                        "on-primary-container": "#b7e9c6",
-                        "on-primary": "#ffffff",
-                        "error-container": "#F7F3EC",
-                        "secondary-fixed": "#caecbb",
-                        "outline": "#717972",
-                        "on-secondary-fixed": "#062103",
-                        "inverse-primary": "#a0d2b0",
-                        "tertiary-fixed": "#ecdcff",
-                        "on-error-container": "#3D6B4F",
-                        "surface-variant": "#e2e3df",
-                        "tertiary": "#7B5EA7",
-                        "surface-container-high": "#e7e9e4",
-                        "on-secondary-fixed-variant": "#324e29",
-                        "surface-tint": "#3a684c",
-                        "surface": "#FFFFFF",
-                        "on-error": "#ffffff",
-                        "surface-container": "#edeeea",
-                        "on-background": "#1a1c1a",
-                        "secondary-fixed-dim": "#afd0a0",
-                        "inverse-on-surface": "#f0f1ed",
-                        "tertiary-container": "#7B5EA7",
-                        "on-secondary": "#ffffff",
-                        "primary-container": "#3d6b4f",
-                        "on-tertiary-fixed": "#270550",
-                        "on-surface-variant": "#414942",
-                        "inverse-surface": "#2e312e",
-                        "surface-dim": "#d9dad6",
-                        "surface-container-lowest": "#ffffff",
-                        "primary": "#3D6B4F",
-                        "outline-variant": "#F7F3EC"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "unit": "8px",
-                        "margin-mobile": "20px",
-                        "margin-desktop": "64px",
-                        "container-max-width": "1280px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "body-sm": ["DM Sans"],
-                        "headline-md": ["Playfair Display"],
-                        "headline-sm": ["Playfair Display"],
-                        "body-md": ["DM Sans"],
-                        "body-lg": ["DM Sans"],
-                        "display-lg-mobile": ["Playfair Display"],
-                        "label-caps": ["Playfair Display"],
-                        "data-mono": ["Space Mono"],
-                        "display-lg": ["Playfair Display"]
-                    },
-                    "fontSize": {
-                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "700"}],
-                        "data-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "400"}]
-                    }
-                },
-            },
-        }
-    </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -158,7 +67,7 @@
 <div class="md:col-span-6 relative group">
 <!-- Anime Cel Shaded Hero Image -->
 <div class="relative rounded-2xl overflow-hidden shadow-[20px_20px_0px_0px_rgba(143,175,130,0.2)] aspect-[4/5] bg-surface-container-low border border-secondary/20">
-<img class="w-full h-full object-cover" data-alt="A warm, cel-shaded anime illustration of a female artisan working at a moonlit wooden craft table. She is meticulously pressing glowing flowers into a leather-bound journal. The scene is filled with magical dust motes, floating glowing leaf motifs, and soft indigo moonlight filtering through an open window. The color palette features deep forest greens, soft sage, and warm parchment cream tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYDN0MzDYOSGgnYpMnHFsbaS5Z2qRDQJBzJ2YVuCkKV3H-j_6SubkURamieMoGtkGa9B2hLoumNcFn7Pcq_TUJDP_kWHTzUopopwEfWAuvj5nthRJ5g2SbKpjllxPi6-PQvwxIogqnqrPqXQ0qGHa-APm3qIZXcljXm38_nvdcr0YilfRwkcXj2bKEJQkD6XIafabCwA5BKXnXriBKpkf9erENu9_LOAWckSsmgeULHmwnihz8ZIrg4-J7J9JM21kJL4aiLPVChkU"/>
+<img class="w-full h-full object-cover" data-alt="A warm, cel-shaded anime illustration of a female artisan working at a moonlit wooden craft table. She is meticulously pressing glowing flowers into a leather-bound journal. The scene is filled with magical dust motes, floating glowing leaf motifs, and soft indigo moonlight filtering through an open window. The color palette features deep forest greens, soft sage, and warm parchment cream tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYDN0MzDYOSGgnYpMnHFsbaS5Z2qRDQJBzJ2YVuCkKV3H-j_6SubkURamieMoGtkGa9B2hLoumNcFn7Pcq_TUJDP_kWHTzUopopwEfWAuvj5nthRJ5g2SbKpjllxPi6-PQvwxIogqnqrPqXQ0qGHa-APm3qIZXcljXm38_nvdcr0YilfRwkcXj2bKEJQkD6XIafabCwA5BKXnXriBKpkf9erENu9_LOAWckSsmgeULHmwnihz8ZIrg4-J7J9JM21kJL4aiLPVChkU" loading="lazy" />
 <!-- Floating Butterfly Decorative Element -->
 <div class="absolute -top-4 -right-4 p-4 bg-background border border-outline-variant rounded-full shadow-lg animate-bounce duration-[3000ms]">
 <span class="material-symbols-outlined text-tertiary">pest_control_rodent</span> <!-- Placeholder for butterfly/insect motif -->
@@ -220,7 +129,7 @@
                     </p>
 <div class="flex items-center gap-4">
 <div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden border border-secondary/20">
-<img class="w-full h-full object-cover" data-alt="A portrait of a serene artisan with a warm smile, wearing a linen apron, in a sun-drenched studio filled with dried flowers and vintage apothecary jars. Soft lighting, high-end aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmzbvIOCFtJUf_DpluhMa5PKzwLrVW979TPpt1jgVv6QgK_xw0tpoUnrDLriK4grnBxXhZbbtWA5zvkho8InVSetYaDgoYy6wqkw3ItxRQjlm7w8zRxXrE1owc9OcgegQIIrgeIj8AXNrIAOCWtlNoup572VSDMcgXZmL7FJckG38yN0UJImzAVwnJPJJDKPgtO4o7RbnerCWFQcVemfpFJaFyCjITCZs75Tj2NJi7iJVBdx9xrdhU4ppj1wcL07K4ptOj9-vSUb8"/>
+<img class="w-full h-full object-cover" data-alt="A portrait of a serene artisan with a warm smile, wearing a linen apron, in a sun-drenched studio filled with dried flowers and vintage apothecary jars. Soft lighting, high-end aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmzbvIOCFtJUf_DpluhMa5PKzwLrVW979TPpt1jgVv6QgK_xw0tpoUnrDLriK4grnBxXhZbbtWA5zvkho8InVSetYaDgoYy6wqkw3ItxRQjlm7w8zRxXrE1owc9OcgegQIIrgeIj8AXNrIAOCWtlNoup572VSDMcgXZmL7FJckG38yN0UJImzAVwnJPJJDKPgtO4o7RbnerCWFQcVemfpFJaFyCjITCZs75Tj2NJi7iJVBdx9xrdhU4ppj1wcL07K4ptOj9-vSUb8" loading="lazy" />
 </div>
 <div class="font-body-sm text-body-sm text-on-surface font-bold">Elara Thorne, Lead Curator</div>
 </div>

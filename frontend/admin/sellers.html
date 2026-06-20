@@ -7,113 +7,12 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Tohfa Admin - Sellers</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@400;700&amp;family=Lora:ital,wght@0,400..700;1,400..700&amp;family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "error": "#3D6B4F",
-                        "tertiary-fixed": "#ffdadc",
-                        "on-secondary-fixed-variant": "#324e29",
-                        "inverse-surface": "#2e312e",
-                        "bg-cream-deep": "#F7F3EC",
-                        "violet-soft": "#D8CBE9",
-                        "bg-primary": "#FFFFFF",
-                        "accent-violet": "#7B5EA7",
-                        "surface-bright": "#FFFFFF",
-                        "on-secondary-container": "#4d6a43",
-                        "primary-fixed-dim": "#a0d2b0",
-                        "surface-dim": "#d9dad6",
-                        "outline-variant": "#F7F3EC",
-                        "secondary-container": "#8FAF82",
-                        "surface-container-lowest": "#ffffff",
-                        "sage-soft": "#8FAF82",
-                        "primary-container": "#3d6b4f",
-                        "surface-container": "#edeeea",
-                        "tertiary-fixed-dim": "#fcb4ba",
-                        "surface": "#FFFFFF",
-                        "on-secondary-fixed": "#062103",
-                        "on-error": "#ffffff",
-                        "secondary": "#49663f",
-                        "on-error-container": "#3D6B4F",
-                        "inverse-primary": "#a0d2b0",
-                        "error-container": "#F7F3EC",
-                        "on-tertiary-fixed": "#360d14",
-                        "text-faint": "#9A8F7A",
-                        "surface-container-low": "#f3f4f0",
-                        "primary-fixed": "#bceecb",
-                        "on-tertiary-container": "#ffd2d5",
-                        "on-surface-variant": "#414942",
-                        "highlight-gold": "#C8973A",
-                        "primary-deep": "#3D6B4F",
-                        "on-primary-container": "#b7e9c6",
-                        "outline": "#717972",
-                        "secondary-fixed": "#caecbb",
-                        "surface-container-high": "#e7e9e4",
-                        "on-tertiary-fixed-variant": "#6b373d",
-                        "surface-tint": "#3a684c",
-                        "text-default": "#3A3328",
-                        "on-background": "#1a1c1a",
-                        "on-primary": "#ffffff",
-                        "on-secondary": "#ffffff",
-                        "on-primary-fixed-variant": "#214f36",
-                        "inverse-on-surface": "#f0f1ed",
-                        "on-surface": "#1a1c1a",
-                        "tertiary-container": "#8a5157",
-                        "surface-ivory": "#F7F3EC",
-                        "surface-container-highest": "#e2e3df",
-                        "primary": "#3D6B4F",
-                        "on-primary-fixed": "#002110",
-                        "gold-soft": "#C8973A",
-                        "background": "#FFFFFF",
-                        "text-muted": "#6E6453",
-                        "surface-variant": "#e2e3df",
-                        "on-tertiary": "#ffffff",
-                        "secondary-fixed-dim": "#afd0a0",
-                        "danger-terracotta": "#3D6B4F",
-                        "tertiary": "#6e3a40",
-                        "sage-border": "#8FAF82",
-                        "ink-soft": "#5A4A38",
-                        "ink-deep": "#2C2416",
-                        "parchment": "#F7F3EC"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    spacing: {
-                        "stack-sm": "8px",
-                        "gutter-md": "16px",
-                        "container-margin": "20px",
-                        "stack-md": "12px",
-                        "section-gap": "40px"
-                    },
-                    fontFamily: {
-                        "display-hero": ["Playfair Display"],
-                        "data-meta": ["Space Mono"],
-                        "serif-ui-md": ["lora"],
-                        "label-btn": ["DM Sans"],
-                        "serif-ui-sm": ["lora"],
-                        "data-price": ["Space Mono"],
-                        "headline-md": ["Playfair Display"],
-                        "headline-lg": ["Playfair Display"],
-                        "body-sm": ["DM Sans"],
-                        "body-md": ["DM Sans"],
-                        "accent-caps": ["cinzel"],
-                        "italic-display": ["Cormorant Garamond"]
-                    }
-                }
-            }
-        }
-    </script>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
         .watermark-overlay {
             position: fixed;
             top: 0;
@@ -146,10 +45,10 @@
 <div class="watermark-overlay"></div>
 <!-- Subtle Sketch Watermarks -->
 <div class="sketch-watermark top-10 right-10 w-64 h-64 rotate-12">
-<img class="w-full grayscale brightness-0 opacity-10" data-alt="A delicate, hand-drawn sketch of a sewing needle and a spool of thread on textured paper. The style is botanical and vintage, with fine ink lines in a soft olive green tone, maintaining the artisan studio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC0_rV83Q7Ns3pHc4yf2_TSWwV9LZGQWyHveP1Lo4eRnInEYoRyi9OLpEbDj-DObr_BY6aDLutEG9dmcF8hFLbX0eqPKgYax_SUsaWZHAXH3q9X-ORyHDEV8vTPoR8THk673tvmHzBZaHhD_AErA8-UpYdL0sgDvfCqxtfHa0s8LK8m1VL6xawthHD4JKzHuVe1qmaSZfkV6PimkYN1HeccKfqOxBkWv7A3ll_NOuafIIYmYaB7lRzo1-HdYgnXrdtjbetOYyOWw"/>
+<img class="w-full grayscale brightness-0 opacity-10" data-alt="A delicate, hand-drawn sketch of a sewing needle and a spool of thread on textured paper. The style is botanical and vintage, with fine ink lines in a soft olive green tone, maintaining the artisan studio aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC0_rV83Q7Ns3pHc4yf2_TSWwV9LZGQWyHveP1Lo4eRnInEYoRyi9OLpEbDj-DObr_BY6aDLutEG9dmcF8hFLbX0eqPKgYax_SUsaWZHAXH3q9X-ORyHDEV8vTPoR8THk673tvmHzBZaHhD_AErA8-UpYdL0sgDvfCqxtfHa0s8LK8m1VL6xawthHD4JKzHuVe1qmaSZfkV6PimkYN1HeccKfqOxBkWv7A3ll_NOuafIIYmYaB7lRzo1-HdYgnXrdtjbetOYyOWw" loading="lazy" />
 </div>
 <div class="sketch-watermark bottom-20 left-[300px] w-48 h-48 -rotate-6">
-<img class="w-full grayscale brightness-0 opacity-10" data-alt="Elegant hand-drawn ink line art of fern leaves and eucalyptus branches, spread across a textured white canvas. The lighting is bright and airy, reflecting a morning light in an artist's studio, with warm-toned shadows and a tactile, handmade feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1by2vLC389E_biHj796mpPqwDr5lv7r4elfaKvncEylUI9XeOp6iJDxCyJ_u92-grXU8HBYRSIp2IrFDa0EglcmyQVHPP8k2YRCIoHjGhQPNPrZXkhNJkFJXpshISeE7kjAT1WSMmTmsJUC9LjR_SdbHhQMCJoJTdpglIriLGyZoEOH269dOY3vQpBDC2WtuMWSYdnquyB03hcyJKmHTLoBnBtNC345rvCFotk2ueiYiwt1LSxElGVf_LS-sZCXmexIn8fyMOrg"/>
+<img class="w-full grayscale brightness-0 opacity-10" data-alt="Elegant hand-drawn ink line art of fern leaves and eucalyptus branches, spread across a textured white canvas. The lighting is bright and airy, reflecting a morning light in an artist's studio, with warm-toned shadows and a tactile, handmade feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1by2vLC389E_biHj796mpPqwDr5lv7r4elfaKvncEylUI9XeOp6iJDxCyJ_u92-grXU8HBYRSIp2IrFDa0EglcmyQVHPP8k2YRCIoHjGhQPNPrZXkhNJkFJXpshISeE7kjAT1WSMmTmsJUC9LjR_SdbHhQMCJoJTdpglIriLGyZoEOH269dOY3vQpBDC2WtuMWSYdnquyB03hcyJKmHTLoBnBtNC345rvCFotk2ueiYiwt1LSxElGVf_LS-sZCXmexIn8fyMOrg" loading="lazy" />
 </div>
 <!-- SideNavBar (JSON Component) -->
 <aside class="flex flex-col h-screen fixed left-0 top-0 py-10 px-6 z-50 w-64 border-r border-outline-variant/30 bg-[#F7F3EC]">
@@ -204,7 +103,7 @@
 <span class="material-symbols-outlined text-[20px]">notifications</span>
 </button>
 <button id="logout-btn" class="text-on-surface-variant hover:text-primary transition-colors text-[14px] font-label-btn">Logout</button>
-<img alt="Admin Profile" class="w-8 h-8 rounded-full border border-sage-border object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_b_T4p5aqNt720WEW3q8y4NFA8YEbiF-Lw6M-AA1tuRZsvgetSefNNbtx1l3vx-gRN6lfiBxGpd1GLlx_eIig1IX6_X2tufKsgoRlIjYOIn1AiXVnjVaypwAIuEVEHbFRYIl0PKcqM-M4AweTMrNCdXRCsBxtk7pMthKQpIxPOHVuF7JNAUGq7L1stVIA90d87w-qQQ-ji4GKbQzXc3lIK7T2GzUz9C4r5E4frc6LcGAin26fp_peKAHGEq_WeFtWmZx4yse0BA"/>
+<img alt="Admin Profile" class="w-8 h-8 rounded-full border border-sage-border object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_b_T4p5aqNt720WEW3q8y4NFA8YEbiF-Lw6M-AA1tuRZsvgetSefNNbtx1l3vx-gRN6lfiBxGpd1GLlx_eIig1IX6_X2tufKsgoRlIjYOIn1AiXVnjVaypwAIuEVEHbFRYIl0PKcqM-M4AweTMrNCdXRCsBxtk7pMthKQpIxPOHVuF7JNAUGq7L1stVIA90d87w-qQQ-ji4GKbQzXc3lIK7T2GzUz9C4r5E4frc6LcGAin26fp_peKAHGEq_WeFtWmZx4yse0BA" loading="lazy" />
 </div>
 </header>
 <!-- Main Content Canvas -->

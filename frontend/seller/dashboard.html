@@ -1,113 +1,23 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TOFA Seller Studio | Home Dashboard</title>
 <!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Merriweather:wght@400;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Material Symbols -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/components/seller-components.js"></script>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        "colors": {
-                "on-error-container": "#3D6B4F",
-                "surface-tint": "#3a684c",
-                "primary-fixed-dim": "#a0d2b0",
-                "on-tertiary-container": "#e8d6ff",
-                "error": "#3D6B4F",
-                "on-surface": "#211b11",
-                "on-primary": "#ffffff",
-                "surface-container-high": "#f3e6d6",
-                "on-secondary-container": "#4d6a43",
-                "on-primary-fixed-variant": "#214f36",
-                "surface-variant": "#F7F3EC",
-                "surface-container-low": "#fff2e1",
-                "inverse-surface": "#362f25",
-                "secondary-container": "#8FAF82",
-                "on-secondary": "#ffffff",
-                "on-error": "#ffffff",
-                "on-secondary-fixed": "#062103",
-                "tertiary-fixed": "#ecdcff",
-                "surface-dim": "#e5d8c8",
-                "surface-bright": "#FFFFFF",
-                "surface-container-highest": "#F7F3EC",
-                "on-tertiary": "#ffffff",
-                "on-secondary-fixed-variant": "#324e29",
-                "inverse-on-surface": "#fcefde",
-                "on-surface-variant": "#414942",
-                "primary-container": "#3d6b4f",
-                "outline-variant": "#F7F3EC",
-                "surface": "#FFFFFF",
-                "surface-container": "#f9ecdc",
-                "on-tertiary-fixed": "#270550",
-                "error-container": "#F7F3EC",
-                "on-primary-fixed": "#002110",
-                "background": "#FFFFFF",
-                "primary-fixed": "#bceecb",
-                "surface-container-lowest": "#ffffff",
-                "tertiary-container": "#7B5EA7",
-                "secondary-fixed-dim": "#afd0a0",
-                "on-background": "#211b11",
-                "tertiary": "#7B5EA7",
-                "inverse-primary": "#a0d2b0",
-                "tertiary-fixed-dim": "#d6baff",
-                "primary": "#3D6B4F",
-                "secondary": "#49663f",
-                "outline": "#717972",
-                "on-tertiary-fixed-variant": "#54387e",
-                "secondary-fixed": "#caecbb",
-                "on-primary-container": "#b7e9c6"
-        },
-        "borderRadius": {
-                "DEFAULT": "0.25rem",
-                "lg": "0.5rem",
-                "xl": "0.75rem",
-                "full": "9999px"
-        },
-        "spacing": {
-                "md": "16px",
-                "xl": "40px",
-                "lg": "24px",
-                "sm": "8px",
-                "unit": "4px",
-                "xs": "4px",
-                "margin-desktop": "64px",
-                "margin-mobile": "20px",
-                "gutter": "16px"
-        },
-        "fontFamily": {
-                "headline-lg-mobile": ["Playfair Display"],
-                "body-md": ["DM Sans"],
-                "headline-lg": ["Playfair Display"],
-                "label-caps": ["Cinzel"],
-                "display-hero": ["Playfair Display"],
-                "title-serif": ["Merriweather"],
-                "data-price": ["Space Mono"]
-        },
-        "fontSize": {
-                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
-                "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                "display-hero": ["48px", {"lineHeight": "56px", "fontWeight": "300"}],
-                "title-serif": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
-                "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
-        }
-      },
-    },
-  }
-</script>
+
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -151,8 +61,6 @@
       <button class="px-5 py-1.5 rounded-full bg-surface border border-outline-variant/30 text-on-surface-variant font-label-caps text-[10px] font-bold tracking-widest hover:bg-surface-container transition-colors" data-period="30d">30 DAYS</button>
       <button class="px-5 py-1.5 rounded-full bg-surface border border-outline-variant/30 text-on-surface-variant font-label-caps text-[10px] font-bold tracking-widest hover:bg-surface-container transition-colors" data-period="90d">90 DAYS</button>
   </div>
-
-
 
   <!-- Loading Screen overlay inside main content -->
   <div id="loading-overlay" class="py-24 text-center font-serif italic text-primary">
@@ -393,8 +301,6 @@
         return `↓${Math.round(Math.abs(pct))}%`;
     }
 
-
-
     let performanceChartInstance = null;
     function renderPerformanceChart(chartsData) {
         const ctx = document.getElementById('performance-chart').getContext('2d');
@@ -534,8 +440,6 @@
         const convPct = convRate != null ? (convRate * 100).toFixed(1) : '0';
         document.getElementById('kpi-conversion').textContent = `${convPct}%`;
 
-
-
         // Low Stock / Pending Actions list
         const lowStockList = document.getElementById('low-stock-list');
         const lowStockEmpty = document.getElementById('low-stock-empty');
@@ -577,7 +481,7 @@
                     <td class="px-lg py-md">
                         <div class="flex items-center gap-md">
                             <div class="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant/30">
-                                <img class="w-full h-full object-cover" src="${order.item_image || 'https://ui-avatars.com/api/?name=Product'}" alt="${order.item_title}"/>
+                                <img class="w-full h-full object-cover" src="${order.item_image || 'https://ui-avatars.com/api/?name=Product'}" alt="${order.item_title}" loading="lazy" />
                             </div>
                             <span class="font-title-serif text-sm">${order.item_title || '—'}</span>
                         </div>
@@ -598,7 +502,6 @@
             table.classList.add('hidden');
             ordersEmpty.classList.remove('hidden');
         }
-
 
     }
 
@@ -683,8 +586,6 @@
             renderDashboard(data);
             renderPerformanceChart(chartsData);
 
-
-
             // Load pending overflow requests count
             try {
                 const reqRes = await fetch(`${API_BASE_URL}/api/seller/overflow-requests`, {
@@ -753,8 +654,6 @@
                 await loadDashboard();
             });
         });
-
-
 
         // Set Cutoff Date button click listener
         const cutoffBtn = document.getElementById('set-cutoff-btn');

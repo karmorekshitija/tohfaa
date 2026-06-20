@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script>
     function getTohfaToken() {
         try {
@@ -10,30 +12,17 @@
             return sessionStorage.getItem('tohfa_access_token');
         }
     }
-
-  (function() {
-    function checkAndRedirect() {
-      if (window.innerWidth > 768) {
-        window.location.replace('/buyer/categories.html' + window.location.search);
-      }
-    }
-    checkAndRedirect();
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(checkAndRedirect, 200);
-    });
-  })();
 </script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Tohfa | Explore Crafts</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
@@ -44,19 +33,19 @@
   <div class="flex-grow flex flex-col w-full bg-white pb-24">
     <!-- Top Bar -->
     <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 sticky top-0 bg-[#F7F3EC] z-30 border-b border-[#8FAF82]">
-      <span onclick="window.location.href='./buyer-home.html'" class="text-[26px] italic select-none font-bold cursor-pointer text-[#3D6B4F]" style="font-family: 'Playfair Display', serif;">
+      <span onclick="window.location.href='./home.html'" class="text-[26px] italic select-none font-bold cursor-pointer text-[#3D6B4F]" style="font-family: 'Playfair Display', serif;">
         Tohfa<span style="color: #C8973A">.</span>
       </span>
       <div class="flex items-center gap-1">
-        <button onclick="window.location.href='./buyer-saved-makes.html'" class="relative p-2 rounded-full hover:bg-[#8FAF82]/20 transition-colors active:scale-95">
+        <button onclick="window.location.href='./saved-makes.html'" class="relative p-2 rounded-full hover:bg-[#8FAF82]/20 transition-colors active:scale-95">
           <span class="material-symbols-outlined text-[#3D6B4F] text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
           <span id="nav-wishlist-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
         </button>
-        <button onclick="window.location.href='./buyer-cart.html'" class="relative p-2 rounded-full hover:bg-[#8FAF82]/20 transition-colors active:scale-95">
+        <button onclick="window.location.href='./cart.html'" class="relative p-2 rounded-full hover:bg-[#8FAF82]/20 transition-colors active:scale-95">
           <span class="material-symbols-outlined text-[#3D6B4F] text-[20px]">shopping_cart</span>
           <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
         </button>
-        <button onclick="window.location.href='./buyer-notifications.html'" class="relative p-2 rounded-full hover:bg-[#8FAF82]/20 transition-colors active:scale-95">
+        <button onclick="window.location.href='./notifications.html'" class="relative p-2 rounded-full hover:bg-[#8FAF82]/20 transition-colors active:scale-95">
           <span class="material-symbols-outlined text-[#3D6B4F] text-[20px]">notifications</span>
           <span id="nav-notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
         </button>
@@ -108,22 +97,22 @@
   </div>
 
   <!-- Bottom Nav -->
-  <div class="fixed bottom-0 left-0 right-0 z-40 bg-[#F7F3EC] border-t border-[#D8D3CC] pb-5">
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-[#F7F3EC] border-t border-[#8FAF82] pb-5">
     <div class="flex items-center justify-around pt-2">
-      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#74786f]" onclick="window.location.href='./buyer-home.html'">
+      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#414942]" onclick="window.location.href='./home.html'">
         <span class="material-symbols-outlined text-[22px]">home</span>
         <span class="text-[10px] font-medium">Home</span>
       </button>
-      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#3D6B4F]" onclick="window.location.href='./buyer-categories.html'">
+      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#3D6B4F]" onclick="window.location.href='./categories.html'">
         <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">grid_3x3</span>
         <span class="text-[10px] font-medium">Category</span>
         <div class="w-1 h-1 rounded-full bg-[#3D6B4F]"></div>
       </button>
-      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#74786f]" onclick="window.location.href='./buyer-reels.html'">
+      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#414942]" onclick="window.location.href='./reels.html'">
         <span class="material-symbols-outlined text-[22px]">play_circle</span>
         <span class="text-[10px] font-medium">Reels</span>
       </button>
-      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#74786f]" onclick="window.location.href='./buyer-profile.html'">
+      <button class="flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all active:scale-90 text-[#414942]" onclick="window.location.href='./profile.html'">
         <span class="material-symbols-outlined text-[22px]">person</span>
         <span class="text-[10px] font-medium">Profile</span>
       </button>
@@ -203,9 +192,9 @@
         const matched = GRID_SLOTS.find(slot => slot.slugs.includes(cat.slug));
         const image = matched ? matched.image : 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
         return `
-          <div onclick="window.location.href='./buyer-category.html?slug=${cat.slug}'" class="flex flex-col items-center cursor-pointer transition-transform duration-200 active:scale-95">
+          <div onclick="window.location.href='./category.html?slug=${cat.slug}'" class="flex flex-col items-center cursor-pointer transition-transform duration-200 active:scale-95">
             <div class="w-full rounded-xl overflow-hidden shadow-sm bg-[#F7F3EC] aspect-square">
-              <img src="${image}" alt="${displayName}" class="w-full h-full object-cover">
+              <img src="${image}" alt="${displayName}" class="w-full h-full object-cover" loading="lazy">
             </div>
             <span class="mt-1.5 text-center text-[11px] font-medium leading-snug text-[#3D6B4F]">
               ${displayName}

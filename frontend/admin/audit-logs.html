@@ -7,108 +7,12 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Audit Logs | Tohfa Artisan Studio</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Lora:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&amp;family=Playfair+Display:wght@100..900&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "secondary-container": "#8FAF82",
-                    "on-primary-fixed-variant": "#214f36",
-                    "surface-container-low": "#f3f4f0",
-                    "outline-variant": "#F7F3EC",
-                    "danger-terracotta": "#3D6B4F",
-                    "outline": "#717972",
-                    "on-primary-fixed": "#002110",
-                    "violet-soft": "#D8CBE9",
-                    "on-surface-variant": "#414942",
-                    "on-tertiary": "#ffffff",
-                    "on-secondary": "#ffffff",
-                    "secondary": "#49663f",
-                    "on-secondary-container": "#4d6a43",
-                    "surface-ivory": "#F7F3EC",
-                    "on-background": "#1a1c1a",
-                    "on-error": "#ffffff",
-                    "bg-cream-deep": "#F7F3EC",
-                    "on-error-container": "#3D6B4F",
-                    "text-muted": "#6E6453",
-                    "surface-bright": "#FFFFFF",
-                    "sage-soft": "#8FAF82",
-                    "primary-container": "#3d6b4f",
-                    "tertiary-container": "#8a5157",
-                    "primary": "#3D6B4F",
-                    "on-tertiary-fixed": "#360d14",
-                    "surface-variant": "#e2e3df",
-                    "gold-soft": "#C8973A",
-                    "highlight-gold": "#C8973A",
-                    "inverse-surface": "#2e312e",
-                    "secondary-fixed-dim": "#afd0a0",
-                    "surface-container-highest": "#e2e3df",
-                    "text-faint": "#9A8F7A",
-                    "error": "#3D6B4F",
-                    "on-tertiary-fixed-variant": "#6b373d",
-                    "inverse-primary": "#a0d2b0",
-                    "surface-dim": "#d9dad6",
-                    "tertiary-fixed": "#ffdadc",
-                    "on-tertiary-container": "#ffd2d5",
-                    "on-surface": "#1a1c1a",
-                    "on-secondary-fixed": "#062103",
-                    "on-primary-container": "#b7e9c6",
-                    "text-default": "#3A3328",
-                    "surface-tint": "#3a684c",
-                    "error-container": "#F7F3EC",
-                    "primary-fixed": "#bceecb",
-                    "background": "#FFFFFF",
-                    "accent-violet": "#7B5EA7",
-                    "on-secondary-fixed-variant": "#324e29",
-                    "on-primary": "#ffffff",
-                    "surface-container": "#edeeea",
-                    "surface": "#FFFFFF",
-                    "tertiary": "#6e3a40",
-                    "tertiary-fixed-dim": "#fcb4ba",
-                    "primary-fixed-dim": "#a0d2b0",
-                    "inverse-on-surface": "#f0f1ed",
-                    "bg-primary": "#FFFFFF",
-                    "surface-container-high": "#e7e9e4",
-                    "secondary-fixed": "#caecbb",
-                    "surface-container-lowest": "#ffffff",
-                    "primary-deep": "#3D6B4F"
-            },
-            "fontFamily": {
-                    "headline-md": ["Playfair Display"],
-                    "label-btn": ["DM Sans"],
-                    "serif-ui-sm": ["lora"],
-                    "data-meta": ["Space Mono"],
-                    "body-md": ["DM Sans"],
-                    "accent-caps": ["cinzel"],
-                    "headline-lg": ["Playfair Display"],
-                    "serif-ui-md": ["lora"],
-                    "body-sm": ["DM Sans"],
-                    "display-hero": ["Playfair Display"],
-                    "data-price": ["Space Mono"]
-            },
-            "fontSize": {
-                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "400"}],
-                    "label-btn": ["14px", {"lineHeight": "16px", "fontWeight": "700"}],
-                    "serif-ui-sm": ["16px", {"lineHeight": "22px", "fontWeight": "400"}],
-                    "data-meta": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "400"}],
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "accent-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "400"}],
-                    "serif-ui-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
-                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                    "display-hero": ["36px", {"lineHeight": "44px", "fontWeight": "300"}],
-                    "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}]
-            }
-          },
-        },
-      }
-    </script>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -262,7 +166,7 @@
 </div>
 <!-- Atmospheric Art Watermark -->
 <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.04] pointer-events-none select-none z-0">
-<img class="w-[400px]" data-alt="A large, soft-focus charcoal and watercolor illustration of a weaver's loom." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh3XWghMZ2e6go2eogjOlIP8kyTiQCWzhfmmOiIE8QxhG3zWbckypuekXzRTEHaoR_Oq_DjQ7lzQtEWL7je08n5gfgHspCt8JqnMISLR05cHkby_RBX6fkeKjkfHazm4a8s8f47wnUP0ZgHp4dqsBtFK8e5enhHxeKIAdp282AvqyZFoAVZUeYw-CvUCNXRl2mot_lxQ9cc-jOCgjTyAbnv0v69FGLbNm4BUQyn8YoIxC-2nFQ4tOIax7f7aPUrsNpJ27IMKFSow"/>
+<img class="w-[400px]" data-alt="A large, soft-focus charcoal and watercolor illustration of a weaver's loom." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh3XWghMZ2e6go2eogjOlIP8kyTiQCWzhfmmOiIE8QxhG3zWbckypuekXzRTEHaoR_Oq_DjQ7lzQtEWL7je08n5gfgHspCt8JqnMISLR05cHkby_RBX6fkeKjkfHazm4a8s8f47wnUP0ZgHp4dqsBtFK8e5enhHxeKIAdp282AvqyZFoAVZUeYw-CvUCNXRl2mot_lxQ9cc-jOCgjTyAbnv0v69FGLbNm4BUQyn8YoIxC-2nFQ4tOIax7f7aPUrsNpJ27IMKFSow" loading="lazy" />
 </div>
 </main>
 <script type="module">

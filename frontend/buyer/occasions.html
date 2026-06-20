@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ReportWidget.js" defer></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>My Occasions | Tohfa</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   }
@@ -40,104 +43,7 @@
   .badge-far   { background:#F7F3EC; color:#414942; }
   .badge-past  { background:#F7F3EC; color:#3D6B4F; }
 </style>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        "colors": {
-          "surface-container-high": "#f3e6d6",
-          "on-secondary": "#ffffff",
-          "surface-dim": "#e5d8c8",
-          "secondary": "#49663f",
-          "on-error": "#ffffff",
-          "error": "#3D6B4F",
-          "tertiary-container": "#7B5EA7",
-          "inverse-on-surface": "#fcefde",
-          "on-primary-container": "#b7e9c6",
-          "primary-fixed": "#bceecb",
-          "secondary-fixed": "#caecbb",
-          "inverse-primary": "#a0d2b0",
-          "on-error-container": "#3D6B4F",
-          "surface-tint": "#3a684c",
-          "on-primary-fixed-variant": "#214f36",
-          "surface": "#FFFFFF",
-          "on-secondary-container": "#4d6a43",
-          "primary-fixed-dim": "#a0d2b0",
-          "surface-container-highest": "#F7F3EC",
-          "primary-container": "#3d6b4f",
-          "primary": "#3D6B4F",
-          "on-tertiary-container": "#e8d6ff",
-          "on-primary": "#ffffff",
-          "secondary-fixed-dim": "#afd0a0",
-          "tertiary": "#7B5EA7",
-          "outline": "#717972",
-          "on-tertiary-fixed-variant": "#54387e",
-          "on-secondary-fixed-variant": "#324e29",
-          "surface-bright": "#FFFFFF",
-          "on-primary-fixed": "#002110",
-          "on-secondary-fixed": "#062103",
-          "tertiary-fixed-dim": "#d6baff",
-          "on-tertiary-fixed": "#270550",
-          "background": "#ffffff",
-          "surface-container-lowest": "#ffffff",
-          "on-surface": "#211b11",
-          "inverse-surface": "#362f25",
-          "on-tertiary": "#ffffff",
-          "on-background": "#211b11",
-          "surface-container-low": "#fff2e1",
-          "surface-container": "#f9ecdc",
-          "surface-variant": "#F7F3EC",
-          "tertiary-fixed": "#ecdcff",
-          "secondary-container": "#8FAF82",
-          "error-container": "#F7F3EC",
-          "on-surface-variant": "#414942",
-          "outline-variant": "#F7F3EC",
-          "ivory": "#F7F3EC",
-          "sage": "#717972",
-          "gold": "#A68942",
-          "gold-brand": "#C8973A"
-        },
-        "borderRadius": {
-          "DEFAULT": "0.25rem",
-          "lg": "0.5rem",
-          "xl": "0.75rem",
-          "full": "9999px"
-        },
-        "spacing": {
-          "xl": "40px", "margin-desktop": "64px", "sm": "8px",
-          "gutter": "16px", "lg": "24px", "margin-mobile": "20px",
-          "xs": "4px", "unit": "4px", "md": "16px"
-        },
-        "fontFamily": {
-          "headline-lg-mobile": ["Playfair Display"],
-          "body-lg": ["DM Sans"],
-          "body-sm": ["DM Sans"],
-          "headline-lg": ["Playfair Display"],
-          "title-md": ["DM Sans"],
-          "label-caps": ["DM Sans"],
-          "display-lg": ["Playfair Display"],
-          "title-serif": ["Playfair Display"],
-          "body-md": ["DM Sans"],
-          "data-price": ["DM Sans"]
-        },
-        "fontSize": {
-          "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
-          "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
-          "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-          "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
-          "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
-          "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}],
-          "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
-          "display-hero": ["56px", {"lineHeight": "64px", "fontWeight": "700"}],
-          "title-serif": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
-          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-          "data-price": ["18px", {"lineHeight": "24px", "fontWeight": "700"}]
-        }
-      }
-    }
-  }
-</script>
+
 </head>
 <body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">
 
@@ -785,7 +691,7 @@ document.addEventListener('mouseover', (e) => {
                 
                 let avatarHtml = '';
                 if (avatarUrl) {
-                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'"/>`;
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">

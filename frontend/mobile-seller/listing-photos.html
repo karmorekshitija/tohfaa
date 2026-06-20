@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 
 <html lang="en"><head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Craft New Listing - Visual Documentation</title>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
 <script>
 
     function getTohfaToken() {
@@ -18,7 +23,6 @@
             return null;
         }
     }
-    
 
     (async function verifySellerRole() {
         const token = getTohfaToken();
@@ -34,13 +38,12 @@
             const profile = await res.json();
             const user = profile.data || profile;
             if (user.role !== 'seller') {
-                window.location.href = './buyer-home.html';
+                window.location.href = '/mobile-buyer/profile.html';
             }
         } catch (e) {
             window.location.href = '/auth/login.html';
         }
     })();
-    
 
     tailwind.config = {
       theme: {
@@ -209,7 +212,7 @@
 <!-- Individual Slots -->
 <!-- Slot 1: Cover Image -->
 <div class="relative rounded-2xl overflow-hidden aspect-square border-2 border-forest ring-4 ring-forest/10">
-<img alt="Cover Image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxh-50-lOwPd4bjP0-KxgZgvLSDpBBsClQo-tL6LKLWhVd5Ewe_bR1ltUd6Su0oNaR-OEJJvci7vxf5YqowF2TTanydd95-GkrgD2uJeP_vvm0PFUAD4gnwCnxflBpu4PjcZn6SbCdIS9Z6N7VNr8-M-jkZE9lxMxE4zbp-cTxD1O5G8i8Q4txO5ic7buneCFnxgpyf6-ou2J9tJBU8HKLh9OyDm3qvklsA_lcp5itAra-9Q7gcLKmD-Sp7U6xs0-jeHWbJZ8nPQ"/>
+<img alt="Cover Image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxh-50-lOwPd4bjP0-KxgZgvLSDpBBsClQo-tL6LKLWhVd5Ewe_bR1ltUd6Su0oNaR-OEJJvci7vxf5YqowF2TTanydd95-GkrgD2uJeP_vvm0PFUAD4gnwCnxflBpu4PjcZn6SbCdIS9Z6N7VNr8-M-jkZE9lxMxE4zbp-cTxD1O5G8i8Q4txO5ic7buneCFnxgpyf6-ou2J9tJBU8HKLh9OyDm3qvklsA_lcp5itAra-9Q7gcLKmD-Sp7U6xs0-jeHWbJZ8nPQ" loading="lazy" />
 <div class="absolute inset-x-0 bottom-0 bg-black/40 p-2 flex items-center gap-1">
 <span class="text-[8px] font-mono font-bold text-white uppercase tracking-widest">Cover ★</span>
 </div>
