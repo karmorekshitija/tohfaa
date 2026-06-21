@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa Seller Studio - Listing Live!</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Space+Mono&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#3D6B4F',
+            parchment: '#F7F3EC',
+            sage: '#8FAF82',
+            violet: '#7B5EA7',
+            gold: '#C8973A',
+            offWhite: '#FAF9F6',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+<style data-purpose="layout-and-scroll">
+    body {
+      background-color: #FAF9F6;
+      overflow-x: hidden;
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+  </style>
+<style data-purpose="mobile-navigation">
+    #mobile-menu {
+      transition: transform 0.3s ease-in-out;
+      z-index: 100;
+    }
+    .menu-closed {
+      transform: translateX(100%);
+    }
+    .menu-open {
+      transform: translateX(0);
+    }
+  </style>
+</head>
+<body class="font-sans text-gray-800">
+<!-- BEGIN: Navigation -->
+<nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50 px-4 py-3 md:px-8">
+<div class="max-w-7xl mx-auto flex justify-between items-center">
+<!-- Logo Area -->
+<div class="flex items-center gap-2">
+<span class="font-serif italic text-2xl text-forest font-bold">Tohfa</span>
+<span class="hidden md:block text-[10px] uppercase tracking-widest text-gray-400 font-mono mt-1">Seller Studio</span>
+</div>
+<!-- Desktop Nav Buttons -->
+<div class="hidden md:flex items-center gap-4">
+<button class="px-6 py-2 border border-forest text-forest rounded-full text-sm font-medium hover:bg-forest hover:text-white transition-colors">Catalog</button>
+<button class="px-6 py-2 bg-forest text-white rounded-md text-sm font-medium hover:opacity-90 transition-opacity">Dashboard</button>
+</div>
+<!-- Mobile Hamburger -->
+<button aria-label="Open Menu" class="md:hidden p-2 focus:outline-none" id="menu-toggle">
+<svg class="h-6 w-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</nav>
+<!-- END: Navigation -->
+<!-- BEGIN: Slide-in Mobile Menu -->
+<div class="fixed inset-y-0 right-0 w-64 bg-white shadow-2xl menu-closed flex flex-col md:hidden overflow-y-auto" id="mobile-menu">
+<div class="p-4 border-b border-gray-100 flex justify-between items-center">
+<span class="font-serif italic text-xl text-forest">Menu</span>
+<button class="p-2" id="menu-close">
+<svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<div class="flex-grow py-4 px-6 space-y-4">
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Dashboard</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Catalog</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Orders</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Overflow</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Payments</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Analytics</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Messages</a>
+<a class="block text-gray-700 hover:text-forest font-medium" href="#">Reviews</a>
+<a class="block text-gray-700 hover:text-forest font-medium border-t pt-4 mt-4" href="#">Profile and settings</a>
+</div>
+<div class="p-6 space-y-3 bg-parchment/30">
+<button class="w-full py-3 bg-forest text-white rounded-md font-medium">View store</button>
+<button class="w-full py-3 border border-gray-300 text-gray-600 rounded-md font-medium">Log out</button>
+</div>
+</div>
+<!-- END: Slide-in Mobile Menu -->
+<main class="pt-20 md:pt-24 pb-12 min-h-screen">
+<!-- BEGIN: Progress Stepper -->
+<section class="max-w-4xl mx-auto px-4 mb-12">
+<div class="flex items-center justify-between overflow-x-auto no-scrollbar py-4 gap-4 md:gap-0">
+<!-- Step Item -->
+<div class="flex flex-col items-center flex-shrink-0 min-w-[70px]">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center mb-2">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[9px] font-mono tracking-widest text-gray-400 uppercase">Photos</span>
+</div>
+<div class="hidden md:block h-[1px] bg-gray-200 flex-grow mx-4"></div>
+<div class="flex flex-col items-center flex-shrink-0 min-w-[70px]">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center mb-2">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[9px] font-mono tracking-widest text-gray-400 uppercase">Details</span>
+</div>
+<div class="hidden md:block h-[1px] bg-gray-200 flex-grow mx-4"></div>
+<div class="flex flex-col items-center flex-shrink-0 min-w-[70px]">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center mb-2">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[9px] font-mono tracking-widest text-gray-400 uppercase">Pricing</span>
+</div>
+<div class="hidden md:block h-[1px] bg-gray-200 flex-grow mx-4"></div>
+<div class="flex flex-col items-center flex-shrink-0 min-w-[70px]">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center mb-2">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[9px] font-mono tracking-widest text-gray-400 uppercase">Shipping</span>
+</div>
+<div class="hidden md:block h-[1px] bg-gray-200 flex-grow mx-4"></div>
+<div class="flex flex-col items-center flex-shrink-0 min-w-[70px]">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center mb-2">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[9px] font-mono tracking-widest text-gray-400 uppercase">Preview</span>
+</div>
+<div class="hidden md:block h-[1px] bg-gray-200 flex-grow mx-4"></div>
+<div class="flex flex-col items-center flex-shrink-0 min-w-[70px]">
+<div class="w-8 h-8 rounded-full bg-forest flex items-center justify-center mb-2 shadow-lg shadow-forest/20">
+<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="text-[9px] font-mono tracking-widest text-forest font-bold uppercase border-b-2 border-forest pb-1">Publish</span>
+</div>
+</div>
+</section>
+<!-- END: Progress Stepper -->
+<!-- BEGIN: Listing Live Success Card -->
+<div class="max-w-2xl mx-auto px-4">
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12 text-center" data-purpose="success-card">
+<!-- Success Icon Animation Container -->
+<div class="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full border-[1.5px] border-forest relative">
+<div class="w-full h-full rounded-full border-forest animate-ping absolute opacity-20"></div>
+<!-- Decorative leaf/plant icons often seen in the brand -->
+<svg class="w-10 h-10 text-forest" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h1 class="font-serif text-3xl md:text-4xl text-forest font-bold mb-4 flex items-center justify-center gap-2">
+          Your listing is live! <span class="text-gold">✦</span>
+</h1>
+<p class="text-gray-600 text-lg md:text-xl mb-12 max-w-md mx-auto leading-relaxed">
+          Midnight Jasmine Resin Study is now visible to buyers.
+        </p>
+<!-- Action Buttons Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Share Post -->
+<button class="flex flex-col items-center justify-center gap-2 bg-violet text-white p-5 rounded-2xl hover:brightness-110 transition-all min-h-[110px]" data-purpose="share-btn">
+<div class="bg-white/20 p-2 rounded-lg">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase font-bold">Share Post</span>
+</button>
+<!-- Add Reel -->
+<button class="flex flex-col items-center justify-center gap-2 bg-forest text-white p-5 rounded-2xl hover:brightness-110 transition-all min-h-[110px]" data-purpose="reel-btn">
+<div class="bg-white/20 p-2 rounded-lg">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase font-bold">Add Reel</span>
+</button>
+<!-- View Catalog -->
+<button class="flex flex-col items-center justify-center gap-2 bg-parchment text-forest p-5 rounded-2xl hover:bg-[#efeadf] transition-all border border-forest/10 min-h-[110px]" data-purpose="catalog-btn">
+<div class="bg-forest/10 p-2 rounded-lg">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="text-[10px] font-mono tracking-widest uppercase font-bold">View Catalog</span>
+</button>
+</div>
+</div>
+</div>
+<!-- END: Listing Live Success Card -->
+<!-- Mobile Indicator -->
+<div class="md:hidden mt-12 flex justify-center">
+<div class="w-16 h-1.5 bg-gray-300 rounded-full"></div>
+</div>
+</main>
+<!-- BEGIN: Interactive Logic -->
+<script data-purpose="mobile-menu-handlers">
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuClose = document.getElementById('menu-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    function toggleMenu() {
+      if (mobileMenu.classList.contains('menu-closed')) {
+        mobileMenu.classList.remove('menu-closed');
+        mobileMenu.classList.add('menu-open');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when menu open
+      } else {
+        mobileMenu.classList.remove('menu-open');
+        mobileMenu.classList.add('menu-closed');
+        document.body.style.overflow = '';
+      }
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    menuClose.addEventListener('click', toggleMenu);
+
+    // Close menu on resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && mobileMenu.classList.contains('menu-open')) {
+        toggleMenu();
+      }
+    });
+  </script>
+<!-- END: Interactive Logic -->
+</body></html>

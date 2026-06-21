@@ -131,33 +131,61 @@
 
   function renderCartItems(items) {
     const container = document.getElementById('cart-items-container');
-    container.innerHTML = items.map(ci => {
+    const hasUnavailable = items.some(i => !i.available);
+
+    container.innerHTML = (hasUnavailable ? `
+      <div class="flex items-start gap-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl mb-3">
+        <span class="material-symbols-outlined text-amber-600 text-base mt-0.5" style="font-variation-settings:'FILL' 1;">warning</span>
+        <p class="text-xs text-amber-800">Some items are <strong>unavailable</strong> and excluded from the total. Remove them or come back later.</p>
+      </div>
+    ` : '') + items.map(ci => {
       const imgUrl = ci.image_url ? ci.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
+      const isUnavailable = !ci.available;
+      const cardBg = isUnavailable ? 'bg-gray-50 border-gray-200 opacity-70' : 'bg-white border-[#c3c8c1]/40';
+
+      let unavailBanner = '';
+      if (ci.unavailable_reason === 'paused') {
+        const resumeStr = ci.resume_estimate_date
+          ? ` Back: ${new Date(ci.resume_estimate_date).toLocaleDateString('en-IN', { day:'numeric', month:'short' })}`
+          : '';
+        unavailBanner = `<div class="flex items-center gap-1 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-700">⏸️ Paused by artisan.${resumeStr}</div>`;
+      } else if (ci.unavailable_reason === 'out_of_stock') {
+        unavailBanner = `<div class="flex items-center gap-1 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">Out of stock — remove from basket</div>`;
+      }
+
+      const qtyControls = isUnavailable
+        ? `<div class="flex items-center border border-gray-200 rounded-lg bg-gray-100 h-8 overflow-hidden pointer-events-none opacity-50">
+            <span class="px-2.5 h-full flex items-center text-gray-400 font-bold">−</span>
+            <span class="px-2 text-xs font-bold text-gray-400 min-w-[20px] text-center">${ci.quantity}</span>
+            <span class="px-2.5 h-full flex items-center text-gray-400 font-bold">+</span>
+           </div>`
+        : `<div class="flex items-center border border-[#c3c8c1]/60 rounded-lg bg-[#F0EDE6] h-8 overflow-hidden">
+            <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="px-2.5 h-full flex items-center justify-center text-stone-600 hover:text-[#3D6B4F] font-bold active:bg-[#c3c8c1]/20 transition-all">−</button>
+            <span class="px-2 text-xs font-bold text-[#3D6B4F] min-w-[20px] text-center">${ci.quantity}</span>
+            <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="px-2.5 h-full flex items-center justify-center text-stone-600 hover:text-[#3D6B4F] font-bold active:bg-[#c3c8c1]/20 transition-all">+</button>
+           </div>`;
+
+      const priceDisplay = isUnavailable
+        ? `<p class="text-md font-bold text-gray-400 line-through">${formatPaise(ci.price_paise * ci.quantity)}</p>`
+        : `<p class="text-md font-bold text-[#3D6B4F]">${formatPaise(ci.price_paise * ci.quantity)}</p>`;
+
       return `
-        <article class="bg-white border border-[#c3c8c1]/40 rounded-xl p-4 shadow-sm relative flex flex-col gap-3" data-purpose="basket-item">
+        <article class="${cardBg} border rounded-xl p-4 shadow-sm relative flex flex-col gap-3" data-purpose="basket-item">
           <div class="flex gap-4">
             <div class="w-20 h-20 bg-[#F7F3EC] border border-[#c3c8c1]/20 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">
               <img alt="${ci.name}" class="w-full h-full object-cover" src="${imgUrl}" loading="lazy" />
             </div>
             <div class="flex-grow pr-8">
-              <h3 class="font-['Playfair_Display'] font-bold text-md text-[#3D6B4F] leading-tight cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">${ci.name}</h3>
+              <h3 class="font-['Playfair_Display'] font-bold text-md ${isUnavailable ? 'text-gray-500' : 'text-[#3D6B4F]'} leading-tight cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">${ci.name}</h3>
               <p class="text-xs text-[#74786f] mt-1 cursor-pointer" onclick="window.location.href='/mobile-buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
-              <p class="text-xs font-semibold text-[#C8973A] mt-1">${formatPaise(ci.price_paise)}</p>
+              <p class="text-xs font-semibold ${isUnavailable ? 'text-gray-400' : 'text-[#C8973A]'} mt-1">${formatPaise(ci.price_paise)}</p>
             </div>
           </div>
-          
+          ${unavailBanner}
           <div class="flex justify-between items-center border-t border-[#c3c8c1]/20 pt-3 mt-1">
-            <div class="flex items-center border border-[#c3c8c1]/60 rounded-lg bg-[#F0EDE6] h-8 overflow-hidden">
-              <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="px-2.5 h-full flex items-center justify-center text-stone-600 hover:text-[#3D6B4F] font-bold active:bg-[#c3c8c1]/20 transition-all">−</button>
-              <span class="px-2 text-xs font-bold text-[#3D6B4F] min-w-[20px] text-center">${ci.quantity}</span>
-              <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="px-2.5 h-full flex items-center justify-center text-stone-600 hover:text-[#3D6B4F] font-bold active:bg-[#c3c8c1]/20 transition-all">+</button>
-            </div>
-            <div class="text-right">
-              <p class="text-md font-bold text-[#3D6B4F]">${formatPaise(ci.price_paise * ci.quantity)}</p>
-            </div>
+            ${qtyControls}
+            <div class="text-right">${priceDisplay}</div>
           </div>
-          
-          <!-- Delete button placed perfectly at the top right -->
           <button onclick="removeItem('${ci.id}')" aria-label="Remove item" class="absolute top-2 right-2 p-1.5 text-stone-400 hover:text-red-500 rounded-full hover:bg-stone-100 transition-all flex items-center justify-center">
             <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
@@ -165,6 +193,7 @@
       `;
     }).join('');
   }
+
 
   async function updateQty(id, newQty) {
     if (newQty <= 0) {

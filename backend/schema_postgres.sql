@@ -29,7 +29,7 @@ CREATE TABLE seller_profiles (
       is_approved INTEGER DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    , display_name TEXT, handle TEXT, bio TEXT, location TEXT, website TEXT, artisan_story TEXT, avatar_url TEXT, store_slug TEXT, platform_fee_pct INTEGER DEFAULT 8, is_accepting_orders INTEGER DEFAULT 1, zai_mode_enabled INTEGER DEFAULT 0, default_language TEXT DEFAULT 'en', store_currency TEXT DEFAULT 'INR', onboarding_step INTEGER DEFAULT 0, seller_rank TEXT, total_reviews INTEGER DEFAULT 0, avg_rating REAL DEFAULT 0.0, total_sales INTEGER DEFAULT 0, weekly_production_capacity INTEGER DEFAULT NULL, daily_order_limit INTEGER DEFAULT NULL);
+    , display_name TEXT, handle TEXT, bio TEXT, location TEXT, website TEXT, artisan_story TEXT, avatar_url TEXT, store_slug TEXT, platform_fee_pct INTEGER DEFAULT 8, is_accepting_orders INTEGER DEFAULT 1, zai_mode_enabled INTEGER DEFAULT 0, default_language TEXT DEFAULT 'en', store_currency TEXT DEFAULT 'INR', onboarding_step INTEGER DEFAULT 0, seller_rank TEXT, total_reviews INTEGER DEFAULT 0, avg_rating REAL DEFAULT 0.0, total_sales INTEGER DEFAULT 0, weekly_production_capacity INTEGER DEFAULT NULL, daily_order_limit INTEGER DEFAULT NULL, whatsapp_number TEXT UNIQUE, whatsapp_verified_at TIMESTAMP WITH TIME ZONE, whatsapp_otp TEXT, whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE, whatsapp_otp_count INTEGER DEFAULT 0, whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE, whatsapp_pending_number TEXT, whatsapp_pending_action TEXT);
 
 CREATE TABLE password_reset_tokens (
       id SERIAL PRIMARY KEY,
@@ -570,8 +570,14 @@ CREATE TABLE conversations (
       intake_complete INTEGER NOT NULL DEFAULT 0,
       intake_summary TEXT DEFAULT NULL,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    , product_type_tag TEXT);
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      product_type_tag TEXT,
+      request_type TEXT DEFAULT 'customization',
+      collected_fields JSONB DEFAULT '{}',
+      quoted_price INTEGER DEFAULT NULL,
+      razorpay_order_id TEXT DEFAULT NULL,
+      order_id INTEGER REFERENCES orders(id) DEFAULT NULL
+    );
 
 CREATE TABLE intake_question_templates (
       id SERIAL PRIMARY KEY,
@@ -619,7 +625,10 @@ CREATE TABLE conversation_messages (
       content TEXT,
       image_url TEXT DEFAULT NULL,
       sent_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      is_read INTEGER DEFAULT 0
+      is_read INTEGER DEFAULT 0,
+      type TEXT DEFAULT 'text',
+      offer_id INTEGER,
+      metadata JSONB DEFAULT NULL
     );
 
 CREATE TABLE sellers (
@@ -637,7 +646,15 @@ CREATE TABLE sellers (
       working_on_label    TEXT    DEFAULT NULL,
       badges              TEXT    DEFAULT NULL,
       created_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP,
-      deleted_at TIMESTAMP WITH TIME ZONE    DEFAULT NULL
+      deleted_at TIMESTAMP WITH TIME ZONE    DEFAULT NULL,
+      whatsapp_number TEXT UNIQUE,
+      whatsapp_verified_at TIMESTAMP WITH TIME ZONE,
+      whatsapp_otp TEXT,
+      whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE,
+      whatsapp_otp_count INTEGER DEFAULT 0,
+      whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE,
+      whatsapp_pending_number TEXT,
+      whatsapp_pending_action TEXT
     );
 
 CREATE TABLE seller_addresses (

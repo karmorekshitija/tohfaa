@@ -157,7 +157,26 @@
                             Today's daily fulfillment limit for this product has been reached. Chat with the seller to arrange your order.
                         </p>
                     </div>
+                    </div>
+
+                    <!-- Phase 4: Contention pending overlay (hidden by default) -->
+                    <div id="contention-overlay" class="hidden mt-4 p-4 border-2 border-purple-200 bg-purple-50 rounded-2xl text-center">
+                        <div class="flex items-center justify-center gap-3 mb-2">
+                            <span id="contention-spinner" style="display:inline-block;width:20px;height:20px;border:2.5px solid #c4b5fd;border-top-color:#7c3aed;border-radius:50%;animation:tohfa-spin 0.7s linear infinite;"></span>
+                            <span class="font-semibold text-purple-800 text-sm">High demand! Confirming your spot…</span>
+                        </div>
+                        <p class="text-xs text-purple-600">Please wait — we're checking availability for you.</p>
+                    </div>
+                    <div id="contention-lost" class="hidden mt-4 p-4 border-2 border-red-200 bg-red-50 rounded-2xl">
+                        <p class="font-semibold text-red-800 text-sm text-center mb-2">😔 Someone else just grabbed the last one.</p>
+                        <button id="remake-request-btn" class="hidden w-full mt-2 border border-primary text-primary py-3 rounded-xl font-semibold text-sm transition-all hover:bg-primary hover:text-white">
+                            Request a Custom Remake
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Phase 2: Paused state container (hidden by default) -->
+                <div id="paused-state-container" class="hidden"></div>
             </div>
         </div>
 
@@ -384,6 +403,7 @@
 
                     isCustomized = product.is_customized || product.category?.slug === 'customized-gifts';
                     isSoldOut = !isCustomized && (product.status === 'sold_out' || maxStock === 0);
+                    const isPaused = product.status === 'paused';
 
                     // Populate badges/tags in the tags container
                     const tagsContainer = document.getElementById('product-tags-container');
@@ -559,6 +579,32 @@
                             btnContainer.insertAdjacentElement('afterend', notice);
                         }
                     }
+                    // ── Phase 2: Paused state ──────────────────────────────────────────────
+                    if (isPaused) {
+                        // Hide buy widget, show paused state
+                        document.getElementById('qty-selector-container').style.display = 'none';
+                        document.getElementById('add-to-cart-btn').style.display = 'none';
+                        document.getElementById('overflow-container').classList.add('hidden');
+                        const pausedContainer = document.getElementById('paused-state-container');
+                        pausedContainer.classList.remove('hidden');
+                        // Dynamically import and render the shared unavailable-state module
+                        try {
+                            const { renderUnavailableState } = await import('/src/components/unavailable-state.js');
+                            await renderUnavailableState(pausedContainer, {
+                                mode: 'paused',
+                                message: product.pause_reason
+                                    ? `Temporarily unavailable: ${product.pause_reason}`
+                                    : 'This product is temporarily paused by the artisan.',
+                                resumeEstimate: product.resume_estimate_date,
+                                productId: productId
+                            });
+                        } catch (importErr) {
+                            pausedContainer.innerHTML = '<p class="text-sm text-purple-700 bg-purple-50 border border-purple-200 rounded-xl p-4">⏸️ This product is temporarily paused by the artisan. Please check back soon.</p>';
+                            console.warn('Could not load unavailable-state module:', importErr);
+                        }
+                    }
+                    // ─────────────────────────────────────────────────────────────────────
+
                 } else {
                     showErrorState();
                 }
@@ -917,6 +963,110 @@
             document.getElementById('product-error-container').classList.remove('hidden');
         }
 
+        // ── Phase 4: Contention polling helper ────────────────────────────────────
+        async function pollContention(attemptId) {
+            const overlay = document.getElementById('contention-overlay');
+            const lostBanner = document.getElementById('contention-lost');
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+
+            overlay?.classList.remove('hidden');
+            if (addToCartBtn) {
+                addToCartBtn.disabled = true;
+                addToCartBtn.querySelector('span:last-child').innerText = 'Checking…';
+            }
+
+            const MAX_POLLS = 12; // 12 × 1500ms = 18s max wait
+            let polls = 0;
+
+            const poll = async () => {
+                polls++;
+                try {
+                    const res = await apiClient.get(`/checkout/contention/${attemptId}`);
+                    const { status, remake_eligible } = res.data?.data || {};
+
+                    if (status === 'won') {
+                        overlay?.classList.add('hidden');
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Add to Cart';
+                        }
+                        window.Toast?.show('Great news! The item is yours. Adding to cart…', 'success');
+                        // Add to cart automatically for the winner
+                        try {
+                            await apiClient.post('/cart/items', { product_id: Number(productId), quantity: qty });
+                            window.Toast?.show('Added to cart!', 'success');
+                        } catch (e) {
+                            window.Toast?.show('Could not add to cart. Please try again.', 'error');
+                        }
+                        return;
+                    }
+
+                    if (status === 'lost') {
+                        overlay?.classList.add('hidden');
+                        lostBanner?.classList.remove('hidden');
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Add to Cart';
+                        }
+                        // Show remake button if eligible
+                        if (remake_eligible) {
+                            document.getElementById('remake-request-btn')?.classList.remove('hidden');
+                        }
+                        return;
+                    }
+
+                    // Still pending
+                    if (polls < MAX_POLLS) {
+                        setTimeout(poll, 1500);
+                    } else {
+                        overlay?.classList.add('hidden');
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Add to Cart';
+                        }
+                        window.Toast?.show('Could not confirm availability. Please try again.', 'error');
+                    }
+                } catch (pollErr) {
+                    console.error('[Contention] Poll error:', pollErr);
+                    overlay?.classList.add('hidden');
+                    if (addToCartBtn) {
+                        addToCartBtn.disabled = false;
+                        addToCartBtn.querySelector('span:last-child').innerText = 'Add to Cart';
+                    }
+                }
+            };
+
+            setTimeout(poll, 1500);
+        }
+
+        async function handleRemakeRequest() {
+            if (!isLoggedIn) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+            const btn = document.getElementById('remake-request-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Starting chat…';
+            }
+            try {
+                const res = await apiClient.post('/conversations', {
+                    listing_id: Number(productId),
+                    product_type_tag: 'remake',
+                    bypass_intake: true
+                });
+                const convId = res.data.conversation_id;
+                window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+            } catch (e) {
+                window.Toast?.show('Could not start remake request. Please try again.', 'error');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Request a Custom Remake';
+                }
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────────
+
         window.addEventListener('DOMContentLoaded', async () => {
             await checkAuthState();
             await loadProduct();
@@ -926,6 +1076,14 @@
             document.getElementById('wishlist-toggle-btn')?.addEventListener('click', handleToggleWishlist);
             document.getElementById('add-to-cart-btn')?.addEventListener('click', handleAddToCart);
             document.getElementById('chat-with-seller-btn')?.addEventListener('click', handleChatWithSeller);
+            document.getElementById('remake-request-btn')?.addEventListener('click', handleRemakeRequest);
+
+            // ── Phase 4: Check URL for returned contention attempt_id (e.g. from checkout redirect)
+            const urlParams = new URLSearchParams(window.location.search);
+            const contestAttemptId = urlParams.get('contention_attempt');
+            if (contestAttemptId) {
+                pollContention(parseInt(contestAttemptId));
+            }
         });
     </script>
 </body>

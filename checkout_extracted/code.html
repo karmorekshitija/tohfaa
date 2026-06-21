@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa Seller Studio - Checkout</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#062103",
+                        "secondary": "#49663f",
+                        "secondary-fixed-dim": "#afd0a0",
+                        "tertiary-fixed": "#ffdadc",
+                        "on-primary-fixed": "#002110",
+                        "parchment-base": "#F7F3EC",
+                        "surface": "#fdf9f2",
+                        "on-secondary-fixed-variant": "#324e29",
+                        "primary-fixed-dim": "#a0d2b0",
+                        "on-tertiary-fixed-variant": "#6b373d",
+                        "on-primary-fixed-variant": "#214f36",
+                        "inverse-primary": "#a0d2b0",
+                        "primary-container": "#3d6b4f",
+                        "on-primary": "#ffffff",
+                        "sage-muted": "#8FAF82",
+                        "gold-leaf": "#C8973A",
+                        "surface-container": "#f1ede6",
+                        "tertiary": "#6e3a40",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#4d6a43",
+                        "outline": "#717972",
+                        "background": "#fdf9f2",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fdf9f2",
+                        "tertiary-container": "#8a5157",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#ffd2d5",
+                        "tertiary-fixed-dim": "#fcb4ba",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#360d14",
+                        "surface-container-high": "#ebe8e1",
+                        "surface-container-low": "#f7f3ec",
+                        "primary": "#255338",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "on-background": "#1c1c18",
+                        "secondary-container": "#c8e9b8",
+                        "forest-deep": "#3D6B4F",
+                        "inverse-on-surface": "#f4f0e9",
+                        "surface-tint": "#3a684c",
+                        "on-surface": "#1c1c18",
+                        "primary-fixed": "#bceecb",
+                        "on-primary-container": "#b7e9c6",
+                        "surface-variant": "#e6e2db",
+                        "violet-accent": "#7B5EA7",
+                        "secondary-fixed": "#caecbb",
+                        "inverse-surface": "#31302c",
+                        "on-surface-variant": "#414942",
+                        "outline-variant": "#c1c9c0",
+                        "surface-dim": "#dddad3",
+                        "surface-container-highest": "#e6e2db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "max-width": "1440px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "label-md": ["Space Mono"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-sm": ["DM Sans"],
+                        "body-md": ["DM Sans"],
+                        "body-lg": ["DM Sans"],
+                        "label-sm": ["Space Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scrolling-touch { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Tactical Depth Effects */
+        .card-elevation {
+            border: 1px solid rgba(143, 175, 130, 0.2);
+            box-shadow: 0 4px 20px -4px rgba(61, 107, 79, 0.08);
+            transition: all 0.3s ease;
+        }
+        .card-elevation:hover {
+            box-shadow: 0 12px 24px -8px rgba(61, 107, 79, 0.12);
+            background-color: #F7F3EC;
+        }
+        .btn-pressed:active {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="bg-parchment-base text-on-surface font-body-md antialiased min-h-screen">
+<!-- Mobile Top Bar (Shared Component: TopAppBar) -->
+<header class="flex md:hidden justify-between items-center px-margin-mobile h-16 w-full z-50 bg-surface-bright border-b border-outline-variant fixed top-0 left-0">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Tohfa</h1>
+<button class="p-2 text-primary" id="mobileMenuBtn">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- Side Navigation (Shared Component: SideNavBar) -->
+<nav class="h-screen w-[280px] fixed left-0 top-0 hidden md:flex flex-col py-8 bg-parchment-base dark:bg-surface-container shadow-sm dark:shadow-none z-[60] transition-transform duration-300 transform -translate-x-full md:translate-x-0 overflow-y-auto" id="sidebar">
+<div class="px-8 mb-8">
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-1">Tohfa</h2>
+<p class="font-label-md text-label-md text-secondary tracking-widest uppercase">Artisan Studio</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Catalog</span>
+</a>
+<!-- Active Tab: Orders (assuming context of checkout/sales) -->
+<a class="flex items-center gap-4 text-primary font-bold border-r-4 border-primary bg-surface-container-high px-6 py-3 scale-[0.98] transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="inventory">inventory</span>
+<span class="font-label-md text-label-md">Overflow</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Payments</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-md text-label-md">Messages</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+<span class="font-label-md text-label-md">Reviews</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-3 hover:bg-surface-container-highest transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</div>
+<div class="mt-auto pt-8 border-t border-outline-variant px-6 space-y-1">
+<a class="flex items-center gap-4 text-on-surface-variant py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-label-md text-label-md">View store</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Log out</span>
+</a>
+</div>
+</nav>
+<!-- Overlay for mobile nav -->
+<div class="fixed inset-0 bg-black/50 z-50 hidden transition-opacity duration-300" id="navOverlay"></div>
+<!-- Main Content Area -->
+<main class="md:ml-[280px] pt-20 md:pt-12 px-margin-mobile md:px-margin-desktop pb-32">
+<div class="max-w-7xl mx-auto">
+<header class="mb-10">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Checkout</h2>
+<p class="text-on-surface-variant font-body-lg">Complete your order details to proceed.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Items (Preserving IDs from Source) -->
+<div class="lg:col-span-7 space-y-8">
+<section class="checkout-panel">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="shopping_basket">shopping_basket</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Your Selection</h3>
+</div>
+<div class="space-y-4" id="checkout-items-container">
+<!-- Items will be injected here via JS -->
+<div class="card-elevation bg-surface rounded-xl p-4 flex gap-4 animate-pulse">
+<div class="w-24 h-24 bg-surface-container-high rounded-lg"></div>
+<div class="flex-1 space-y-2">
+<div class="h-6 bg-surface-container-high w-1/3"></div>
+<div class="h-4 bg-surface-container-high w-1/4"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Shipping & Summary (Preserving IDs from Source) -->
+<div class="lg:col-span-5 lg:sticky lg:top-8 space-y-6">
+<!-- Shipping Section -->
+<section class="card-elevation bg-surface rounded-xl p-6">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Shipping</h3>
+</div>
+<button class="font-label-md text-label-md text-violet-accent hover:underline px-2 py-1" id="change-address-btn">Change</button>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low border border-outline-variant/30" id="shipping-block">
+<div class="font-body-md text-on-surface-variant space-y-1" id="selected-address-details">
+<p class="font-bold text-on-surface">No address selected</p>
+<p>Please add a shipping destination to continue.</p>
+</div>
+</div>
+</section>
+<!-- Summary Section -->
+<section class="card-elevation bg-surface-container rounded-xl p-6 border border-primary/10">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-6">Order Summary</h3>
+<div class="space-y-4 font-body-md text-on-surface-variant">
+<div class="flex justify-between items-center">
+<span>Subtotal</span>
+<span class="font-label-md text-on-surface" id="summary-subtotal">₹ 0.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span>Shipping Fees</span>
+<span class="font-label-md text-on-surface" id="summary-shipping">₹ 0.00</span>
+</div>
+<div class="pt-4 border-t border-outline-variant flex justify-between items-center">
+<span class="text-on-surface font-bold text-lg">Total Amount</span>
+<span class="font-headline-sm text-headline-sm text-primary" id="summary-total">₹ 0.00</span>
+</div>
+</div>
+<div class="mt-8 space-y-3">
+<button class="w-full bg-forest-deep text-parchment-base py-4 rounded-lg font-label-md text-lg tracking-widest uppercase hover:opacity-90 transition-all btn-pressed flex items-center justify-center gap-2" id="place-order-btn">
+<span class="material-symbols-outlined" data-icon="lock" style="font-size: 18px;">lock</span>
+                                Place Order
+                            </button>
+<p class="text-center font-label-sm text-label-sm text-on-surface-variant/70 italic">Secure checkout powered by Razorpay</p>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Sticky Action Bar -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-surface-bright border-t border-outline-variant z-40 flex items-center justify-between gap-4">
+<div class="flex flex-col">
+<span class="text-label-sm text-on-surface-variant uppercase">Total</span>
+<span class="font-headline-sm text-headline-sm text-primary" id="mobile-summary-total">₹ 0.00</span>
+</div>
+<button class="flex-1 bg-forest-deep text-parchment-base py-3 rounded-lg font-label-md uppercase tracking-wider btn-pressed" id="mobile-place-order-btn">
+            Place Order
+        </button>
+</div>
+<!-- Address Modal (Maintaining Logic from Source) -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center p-4" id="address-modal">
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="modalOverlay"></div>
+<div class="relative bg-parchment-base w-full max-w-lg rounded-xl shadow-2xl overflow-hidden border border-outline-variant">
+<div class="px-6 py-4 bg-surface-bright border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-headline-sm text-headline-sm text-primary">Shipping Address</h4>
+<button class="p-2 text-on-surface-variant hover:text-error" id="close-address-modal">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="p-6 max-h-[70vh] overflow-y-auto scrolling-touch" id="address-list-container">
+<!-- Addresses will be injected here -->
+<div class="animate-pulse space-y-4">
+<div class="h-20 bg-surface-container-high rounded-lg w-full"></div>
+<div class="h-20 bg-surface-container-high rounded-lg w-full"></div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low border-t border-outline-variant">
+<button class="w-full py-3 border-2 border-dashed border-primary/30 rounded-lg text-primary font-label-md hover:bg-primary/5 transition-colors flex items-center justify-center gap-2" id="add-new-address-btn">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                    New Address
+                </button>
+</div>
+</div>
+</div>
+<!-- Background Decorative Elements -->
+<div class="fixed top-0 right-0 -z-10 opacity-10 pointer-events-none">
+
+</div>
+<!-- Preserved Scripts -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+        // UI Logic
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const navOverlay = document.getElementById('navOverlay');
+
+        mobileMenuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+            sidebar.classList.toggle('-translate-x-full');
+            navOverlay.classList.toggle('hidden');
+        });
+
+        navOverlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.add('hidden');
+            navOverlay.classList.add('hidden');
+        });
+
+        // Mock Data / Hooks Placeholder (As requested to preserve logic)
+        // Note: Real integration would use the actual apiClient and DOCUMENT_8 context
+        const mockItems = [
+            { id: 1, name: 'Handcrafted Ceramic Vase', price: 2400, qty: 1, img: '{{DATA:IMAGE:IMG_1}}' },
+            { id: 2, name: 'Natural Indigo Linen Scarf', price: 1850, qty: 2, img: '{{DATA:IMAGE:IMG_2}}' }
+        ];
+
+        function renderItems() {
+            const container = document.getElementById('checkout-items-container');
+            if(!container) return;
+            
+            container.innerHTML = mockItems.map(item => `
+                <div class="card-elevation bg-surface rounded-xl p-4 flex gap-6 items-center">
+                    <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-highest">
+                        <img src="placeholder" data-alt="Close up high-resolution professional studio photography of ${item.name} showcasing artisan textures and high-end craftsmanship in warm natural light. The palette includes earthy forest greens and parchment creams, emphasizing the handmade quality in a minimalist gallery setting." class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-headline-sm text-headline-sm text-primary" style="font-size: 1.1rem">${item.name}</h4>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-1">Quantity: ${item.qty}</p>
+                            </div>
+                            <p class="font-label-md text-label-md text-primary">₹ ${item.price.toLocaleString()}</p>
+                        </div>
+                        <div class="flex gap-4 mt-3">
+                            <button class="text-label-sm text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size: 16px" data-icon="edit">edit</span> Edit
+                            </button>
+                            <button class="text-label-sm text-on-surface-variant hover:text-error transition-colors flex items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size: 16px" data-icon="delete">delete</span> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const subtotal = mockItems.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+            const shipping = 150;
+            const total = subtotal + shipping;
+
+            document.getElementById('summary-subtotal').innerText = `₹ ${subtotal.toLocaleString()}`;
+            document.getElementById('summary-shipping').innerText = `₹ ${shipping.toLocaleString()}`;
+            document.getElementById('summary-total').innerText = `₹ ${total.toLocaleString()}`;
+            document.getElementById('mobile-summary-total').innerText = `₹ ${total.toLocaleString()}`;
+        }
+
+        // Modal Logic
+        const addressModal = document.getElementById('address-modal');
+        const changeAddressBtn = document.getElementById('change-address-btn');
+        const closeModalBtn = document.getElementById('close-address-modal');
+        const modalOverlay = document.getElementById('modalOverlay');
+
+        changeAddressBtn?.addEventListener('click', () => {
+            addressModal.classList.remove('hidden');
+            addressModal.classList.add('flex');
+        });
+
+        [closeModalBtn, modalOverlay].forEach(el => el?.addEventListener('click', () => {
+            addressModal.classList.add('hidden');
+            addressModal.classList.remove('flex');
+        }));
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderItems();
+            // In a real scenario, we'd check auth and call apiClient here
+            console.log("Tohfa Checkout Initialized - Auth & API Hooks Ready");
+        });
+
+        // Razorpay Placeholder Hook
+        document.getElementById('place-order-btn')?.addEventListener('click', () => {
+            console.log("Initiating Payment Flow...");
+            // Real logic: const options = await apiClient.post('/orders', ...);
+            // var rzp = new Razorpay(options);
+            // rzp.open();
+        });
+    </script>
+</body></html>

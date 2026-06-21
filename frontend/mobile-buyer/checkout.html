@@ -403,11 +403,92 @@
             }
         });
 
+        // ── Phase 4: Contention helpers ───────────────────────────────────────
+        function showContentionSpinner() {
+            let el = document.getElementById('checkout-contention-banner');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'checkout-contention-banner';
+                el.className = 'fixed inset-0 z-[300] flex items-center justify-center bg-black/50 backdrop-blur-sm';
+                el.innerHTML = `
+                    <div class="bg-white rounded-2xl p-6 max-w-xs mx-4 text-center shadow-2xl">
+                        <div class="animate-spin w-8 h-8 border-4 border-amber-200 border-t-amber-600 rounded-full mx-auto mb-3"></div>
+                        <p class="font-semibold text-amber-800 text-sm">Almost there — confirming your item…</p>
+                        <p class="text-xs text-amber-600 mt-1">Only 1 left. We're securing it for you.</p>
+                    </div>`;
+                document.body.appendChild(el);
+            }
+            el.classList.remove('hidden');
+        }
+
+        function showContentionLost() {
+            const banner = document.getElementById('checkout-contention-banner');
+            if (banner) {
+                banner.innerHTML = `
+                    <div class="bg-white rounded-2xl p-6 max-w-xs mx-4 text-center shadow-2xl">
+                        <span class="text-3xl">😔</span>
+                        <p class="font-semibold text-red-800 text-sm mt-2">Someone else grabbed the last one.</p>
+                        <p class="text-xs text-red-600 mt-1 mb-4">You were just a split second late.</p>
+                        <button onclick="window.history.back()" class="w-full py-2.5 bg-primary text-white rounded-xl text-sm font-semibold active:scale-95 transition-all">
+                            Back to Shopping
+                        </button>
+                    </div>`;
+            }
+            btns.forEach(btn => { if (btn) { btn.disabled = false; btn.innerHTML = 'Place Order'; } });
+        }
+
+        async function pollContention(attemptId, orderId, orderRef) {
+            showContentionSpinner();
+            let polls = 0;
+            const MAX_POLLS = 12;
+            return new Promise(resolve => {
+                const pollId = setInterval(async () => {
+                    polls++;
+                    try {
+                        const pollRes = await apiClient.get(`/checkout/contention/${attemptId}`);
+                        const pData = pollRes.data?.data || pollRes.data;
+                        if (pData?.status === 'won') {
+                            clearInterval(pollId);
+                            document.getElementById('checkout-contention-banner')?.classList.add('hidden');
+                            resolve({ won: true, order_id: pData.order_id || orderId, order_ref: orderRef });
+                            return;
+                        }
+                        if (pData?.status === 'lost') {
+                            clearInterval(pollId);
+                            showContentionLost();
+                            resolve({ won: false });
+                            return;
+                        }
+                    } catch (_) { /* continue */ }
+                    if (polls >= MAX_POLLS) {
+                        clearInterval(pollId);
+                        document.getElementById('checkout-contention-banner')?.classList.add('hidden');
+                        resolve({ won: false, timeout: true });
+                    }
+                }, 1500);
+            });
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         try {
             const res = await apiClient.post('/orders', { address_id: selectedAddressId });
             if (res.data && res.data.success) {
-                const order = res.data.data;
-                const orderId = order.order_id;
+                let order = res.data.data;
+                let orderId = order.order_id;
+
+                // ── Phase 4: Handle contention ────────────────────────────────
+                if (res.data.status === 'contention_pending' && res.data.attempt_id) {
+                    const result = await pollContention(res.data.attempt_id, orderId, order.order_ref);
+                    if (!result.won) {
+                        if (result.timeout) {
+                            alert('Could not confirm item availability. Please try again.');
+                            btns.forEach(btn => { if (btn) { btn.disabled = false; btn.innerHTML = 'Place Order'; } });
+                        }
+                        return;
+                    }
+                    orderId = result.order_id || orderId;
+                }
+                // ─────────────────────────────────────────────────────────────
                 
                 const initRes = await apiClient.post('/payments/initiate', { order_id: orderId });
                 if (initRes.data && initRes.data.success) {
@@ -470,6 +551,7 @@
             alert(err.response?.data?.message || "Failed to place order.");
         }
     }
+
 
     // Modal UI Handlers
     const changeAddressBtn = document.getElementById('change-address-btn');

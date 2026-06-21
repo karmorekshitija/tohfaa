@@ -71,7 +71,7 @@ function translateSql(sql) {
   if (isInsert && !cleanSql.toUpperCase().includes('RETURNING')) {
     if (cleanSql.toLowerCase().includes('store_config')) {
       cleanSql = cleanSql.trim() + ' RETURNING seller_id';
-    } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('reel_listing_links') || cleanSql.toLowerCase().includes('reel_product_links')) {
+    } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('reel_listing_links') || cleanSql.toLowerCase().includes('reel_product_links') || cleanSql.toLowerCase().includes('daily_order_tracking')) {
       // No single auto-increment id column
     } else {
       cleanSql = cleanSql.trim() + ' RETURNING id';
@@ -324,6 +324,88 @@ async function initDb() {
 
     // Add bank_name to seller_payout_accounts if not exists
     await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
+
+    // Add whatsapp fields to sellers table if not exists
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp TEXT');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_count INTEGER DEFAULT 0');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_pending_number TEXT');
+    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_pending_action TEXT');
+
+    // Add whatsapp fields to seller_profiles table if not exists
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp TEXT');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_count INTEGER DEFAULT 0');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_pending_number TEXT');
+    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_pending_action TEXT');
+
+    // Create chat_logs table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chat_logs (
+        id SERIAL PRIMARY KEY,
+        buyer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        session_id TEXT NOT NULL,
+        message TEXT NOT NULL,
+        intent TEXT NOT NULL,
+        response TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create problem_reports table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS problem_reports (
+        id SERIAL PRIMARY KEY,
+        buyer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        session_id TEXT NOT NULL,
+        category TEXT,
+        description TEXT NOT NULL,
+        related_order_id TEXT,
+        related_product_id TEXT,
+        status TEXT NOT NULL DEFAULT 'open',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // ─── Phase 2: Pause/Resume fields on products ──────────────────────────────
+    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS pause_reason TEXT');
+    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS resume_estimate_date DATE');
+    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS remake_eligible BOOLEAN DEFAULT FALSE');
+
+    // ─── Phase 2: remake_eligible on listings ──────────────────────────────────
+    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS remake_eligible BOOLEAN DEFAULT FALSE');
+    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
+    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS pause_reason TEXT');
+    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS resume_estimate_date DATE');
+
+    // ─── Phase 1: Index for similar-products query ────────────────────────────
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_products_cat_status_stock ON products(category_id, status, stock_qty)');
+
+    // ─── Phase 4: checkout_contention_attempts table ──────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS checkout_contention_attempts (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        quantity INTEGER NOT NULL DEFAULT 1,
+        status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','won','lost')),
+        requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP WITH TIME ZONE
+      )
+    `);
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_product_status ON checkout_contention_attempts(product_id, status)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_buyer ON checkout_contention_attempts(buyer_id)');
+
+    // ─── Phase 4: Index on orders(buyer_id, status) for tiebreak query ────────
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_buyer_status ON orders(buyer_id, status)');
+
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);
   }

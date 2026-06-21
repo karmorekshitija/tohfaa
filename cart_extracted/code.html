@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Your Basket - Tohfa Seller Studio</title>
+<!-- Google Fonts: Playfair Display and DM Sans -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#3D6B4F',
+            parchment: '#F7F3EC',
+            sage: '#8FAF82',
+            gold: '#C8973A',
+            surface: '#fdf9f2',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"DM Sans"', 'sans-serif'],
+          },
+          borderRadius: {
+            'custom': '8px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-transitions">
+    /* Sidebar Animation */
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+    #sidebar.closed {
+      transform: translateX(-100%);
+    }
+    #sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+    #sidebar-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    /* Fixed Button Shadow */
+    .sticky-footer-shadow {
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body class="bg-surface font-sans text-stone-800 min-h-screen flex flex-col">
+<!-- BEGIN: Navigation -->
+<nav class="bg-surface border-b border-sage/30 sticky top-0 z-40 px-4 py-3 flex justify-between items-center" data-purpose="main-navigation">
+<div class="flex items-center">
+<span class="font-serif italic text-2xl font-bold text-forest tracking-tight">Tohfa.</span>
+</div>
+<button aria-label="Open Menu" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-forest" id="menu-toggle">
+<svg class="h-8 w-8" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</nav>
+<!-- BEGIN: Sidebar Menu -->
+<div class="fixed inset-0 bg-black/50 z-50 hidden" data-purpose="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="fixed top-0 left-0 h-full w-64 bg-surface z-[60] closed border-r border-sage/30 overflow-y-auto" data-purpose="sidebar-menu" id="sidebar">
+<div class="p-6 border-b border-sage/20 flex justify-between items-center">
+<span class="font-serif italic text-xl font-bold text-forest">Tohfa Seller</span>
+<button aria-label="Close Menu" class="text-forest p-1 min-w-[44px] min-h-[44px]" id="menu-close">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<nav class="py-4 px-2" data-purpose="sidebar-links">
+<ul class="space-y-1">
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Dashboard</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Catalog</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Orders</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Overflow</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Payments</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Analytics</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Messages</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">Reviews</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium border-t border-sage/10 mt-4 pt-4" href="#">Profile</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-forest font-medium" href="#">View Store</a></li>
+<li><a class="block px-4 py-3 rounded-custom hover:bg-parchment text-red-700 font-medium mt-4" href="#">Log out</a></li>
+</ul>
+</nav>
+</aside>
+<!-- END: Sidebar Menu -->
+<!-- END: Navigation -->
+<!-- BEGIN: Main Content -->
+<main class="flex-grow p-4 md:p-8 max-w-2xl mx-auto w-full pb-32">
+<!-- BEGIN: Header Section -->
+<header class="flex items-center gap-3 mb-8" data-purpose="basket-header">
+<a class="p-2 -ml-2 text-forest min-w-[44px] min-h-[44px] flex items-center justify-center" href="#">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</a>
+<h1 class="text-3xl font-serif text-forest">Your basket</h1>
+<span class="ml-auto bg-parchment border border-sage/30 px-3 py-1 rounded-full text-xs font-bold text-gold uppercase tracking-wider">
+        4 ITEMS
+      </span>
+</header>
+<!-- END: Header Section -->
+<!-- BEGIN: Product List -->
+<div class="space-y-4" data-purpose="basket-items-list">
+<!-- Item 1 -->
+<article class="bg-white border border-sage/20 rounded-custom p-4 shadow-sm relative" data-purpose="basket-item">
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-parchment rounded-custom overflow-hidden flex-shrink-0">
+<img alt="Botany Project Display Board Lav" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQJqsu9eHeKLkIN93HNEHY-d1WMb0ZP7d5gffkst9fwNTwx0J-SAzzu_CXKtp89Ipvew9S9XSnKMEIWbDoxHXCcDvZveCSEjq_vRHB6_bjuhdRnPyWCJi84JLNTzV-mo0SEGEktx-8dkEuoXThjh6LMyHMyLq-YA_Bfvtk7AP3ewVkxIkk9ag2yk-qXyNunyvb3tXAM6y48m-3Sn4Oor-zh0GcX3t6E0mhDJT91RZ_Exh6natWQtADBCi-Teo8wQmC4EzzcxGdMWZC"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-serif text-lg text-forest leading-tight">Botany Project Display Board Lav</h3>
+<p class="text-xs text-stone-500 mb-2">Ink &amp; Quill Stationers</p>
+<p class="text-sm font-bold text-gold">₹1,099.00</p>
+</div>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center border border-sage/30 rounded-custom bg-parchment h-10 overflow-hidden">
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600 hover:text-forest transition-colors">−</button>
+<span class="px-2 font-medium text-forest min-w-[20px] text-center">1</span>
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600 hover:text-forest transition-colors">+</button>
+</div>
+<div class="text-right">
+<p class="text-lg font-bold text-forest">₹1,099.00</p>
+</div>
+</div>
+<button aria-label="Remove item" class="absolute top-2 right-2 p-2 text-stone-400 hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</article>
+<!-- Item 2 -->
+<article class="bg-white border border-sage/20 rounded-custom p-4 shadow-sm relative" data-purpose="basket-item">
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-parchment rounded-custom overflow-hidden flex-shrink-0">
+<img alt="Handmade Earrings" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6kvxUBQaEpsL1SP8nm_k5o8KQ0e1nRMsOe0pReLN52PMQchDUCqOZvjdrlwZqQ1e237mMW9aA4V9Bzw_tL3vaFM_PlJ3Xo-e8l3hvfr3Qj0ZZiu-uAahLkx7l-MNxy5eE68WFSpIxogYwtwqR0YuNk_k4wa162jmmo2b07blYlLmUbXNHujhOBvIYrFNpcD9ZtyV-HyXIb1S0lqDv1OoESJC6WS0mm8hFR0wMef56LU6gE0V6yBp4iDV5VFn_t5dOVXp5lNJXhynP"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-serif text-lg text-forest leading-tight">Handmade Earrings With Jade Leaves</h3>
+<p class="text-xs text-stone-500 mb-2">Kavya Handcrafted Crafts</p>
+<p class="text-sm font-bold text-gold">₹599.00</p>
+</div>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center border border-sage/30 rounded-custom bg-parchment h-10 overflow-hidden">
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600">−</button>
+<span class="px-2 font-medium text-forest min-w-[20px] text-center">1</span>
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600">+</button>
+</div>
+<div class="text-right">
+<p class="text-lg font-bold text-forest">₹599.00</p>
+</div>
+</div>
+<button class="absolute top-2 right-2 p-2 text-stone-400 min-w-[44px] min-h-[44px] flex items-center justify-center">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</article>
+<!-- Item 3 -->
+<article class="bg-white border border-sage/20 rounded-custom p-4 shadow-sm relative" data-purpose="basket-item">
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-parchment rounded-custom overflow-hidden flex-shrink-0">
+<img alt="Artisan Bowl" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBw2GzSIK-UfguE0ieE1feUb_oXnUkUuXsEqEUv7GDVSX1xs6bQQQYRbal9GeLZ3kdgecEjPXo0KFCWRL0fhZD8jddNzGcGDcfgZeSUvc3XUMwxDSvCZdE5_6aYCT2woGK2eNEnCkckdOUlDVbj0dR32MNgjYnMAmG3kUJwBvdJdVsG0vx7rbWCMWOWhmHHO4SJgTzhuZjwVmrYexfTsgCem_Xd-fnhnqu4vUzQM-9IXnwyaI4bln2vLh9e-RTKHLCzY9HauhNosG8"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-serif text-lg text-forest leading-tight">Updated Artisan Bowl</h3>
+<p class="text-xs text-stone-500 mb-2">Kavya Handcrafted Crafts</p>
+<p class="text-sm font-bold text-gold">₹1,250.00</p>
+</div>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center border border-sage/30 rounded-custom bg-parchment h-10 overflow-hidden">
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600">−</button>
+<span class="px-2 font-medium text-forest min-w-[20px] text-center">1</span>
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600">+</button>
+</div>
+<div class="text-right">
+<p class="text-lg font-bold text-forest">₹1,250.00</p>
+</div>
+</div>
+<button class="absolute top-2 right-2 p-2 text-stone-400 min-w-[44px] min-h-[44px] flex items-center justify-center">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</article>
+<!-- Item 4 -->
+<article class="bg-white border border-sage/20 rounded-custom p-4 shadow-sm relative" data-purpose="basket-item">
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-parchment rounded-custom overflow-hidden flex-shrink-0">
+<img alt="Luggage Tags" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCudi5iN6XwmVv-6xwYHYAJMKgqA4RxKgtrN5evE6vqoWQMFtDj_KxqDzrXJt3MjZzLySD9csIoKW1Up1JxWGekHKY_Pdg1YtbkbKvXxX03s8dPWcSBQS_KA1tfV0cuVt-t4POXMREjrgbS66qBfZBRU_yScsLuaxO5wC5aNxwybU2jG34O1KE_eX0Q36_ldktMXkjhOR9RtW5HiaFTiZdqVCWFfIK4MvAc8ewSik1mdVqHEzS2YTxzuk08_NyHaRt3X7EVrjAbkA8g"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-serif text-lg text-forest leading-tight">Lilac Leather Luggage Tags Tied</h3>
+<p class="text-xs text-stone-500 mb-2">Clay &amp; Co.</p>
+<p class="text-sm font-bold text-gold">₹2,299.00</p>
+</div>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center border border-sage/30 rounded-custom bg-parchment h-10 overflow-hidden">
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600">−</button>
+<span class="px-2 font-medium text-forest min-w-[20px] text-center">1</span>
+<button class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600">+</button>
+</div>
+<div class="text-right">
+<p class="text-lg font-bold text-forest">₹2,299.00</p>
+</div>
+</div>
+<button class="absolute top-2 right-2 p-2 text-stone-400 min-w-[44px] min-h-[44px] flex items-center justify-center">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</article>
+</div>
+<!-- END: Product List -->
+</main>
+<!-- END: Main Content -->
+<!-- BEGIN: Summary/Footer Action -->
+<footer class="fixed bottom-0 left-0 right-0 p-4 bg-surface/90 backdrop-blur-md sticky-footer-shadow border-t border-sage/20 z-40" data-purpose="checkout-bar">
+<div class="max-w-2xl mx-auto flex items-center gap-4">
+<button class="flex-grow bg-forest text-white font-bold py-4 px-6 rounded-custom flex justify-between items-center min-h-[56px] active:scale-[0.98] transition-transform">
+<span class="uppercase tracking-widest text-sm">Place Order &amp; Pay</span>
+<span class="text-parchment/80 font-medium border-l border-white/20 pl-4">₹5,247.00</span>
+</button>
+</div>
+<!-- Small handle for mobile indicating it's a sheet/tray -->
+<div class="w-12 h-1 bg-sage/40 rounded-full mx-auto mt-3"></div>
+</footer>
+<!-- END: Summary/Footer Action -->
+<!-- BEGIN: Report Floating Button -->
+<div class="fixed bottom-24 right-4 z-30">
+<button class="flex items-center gap-2 bg-forest text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium hover:bg-forest/90 active:scale-95 transition-all">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+      Report a Problem
+    </button>
+</div>
+<!-- END: Report Floating Button -->
+<script data-purpose="sidebar-logic">
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuClose = document.getElementById('menu-close');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function toggleMenu() {
+      sidebar.classList.toggle('closed');
+      overlay.classList.toggle('hidden');
+      document.body.classList.toggle('overflow-hidden');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    menuClose.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+  </script>
+</body></html>

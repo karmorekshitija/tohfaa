@@ -328,59 +328,95 @@
 
     function renderCartItems(items) {
         const container = document.getElementById('cart-items-container');
-        container.innerHTML = items.map(ci => {
+
+        // Show unavailable banner if any items can't be purchased
+        const hasUnavailable = items.some(i => !i.available);
+
+        container.innerHTML = (hasUnavailable ? `
+            <div class="flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-2xl mb-3">
+                <span class="material-symbols-outlined text-amber-600 text-lg" style="font-variation-settings:'FILL' 1;">warning</span>
+                <p class="text-sm text-amber-800">Some items in your basket are <strong>unavailable</strong> and have been excluded from the total. Remove them or come back later.</p>
+            </div>
+        ` : '') + items.map(ci => {
             const imgUrl = ci.image_url ? ci.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
-            const warningHtml = ci.quantity_warning 
+            const isUnavailable = !ci.available;
+
+            // Unavailability reason label
+            let unavailLabel = '';
+            if (ci.unavailable_reason === 'paused') {
+                const resumeStr = ci.resume_estimate_date
+                    ? ` Expected back: ${new Date(ci.resume_estimate_date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}`
+                    : '';
+                unavailLabel = `<div class="flex items-center gap-xs px-2 py-1 bg-purple-50 border border-purple-200 rounded-lg mt-1">
+                    <span class="text-[12px] font-body-md text-purple-700">⏸️ Temporarily paused by artisan.${resumeStr}</span>
+                </div>`;
+            } else if (ci.unavailable_reason === 'out_of_stock') {
+                unavailLabel = `<div class="flex items-center gap-xs px-2 py-1 bg-error-container/20 rounded-lg mt-1">
+                    <span class="material-symbols-outlined text-terracotta text-sm" style="font-variation-settings: 'FILL' 1;">error</span>
+                    <span class="text-[12px] font-body-md text-terracotta">Out of stock — remove from basket</span>
+                </div>`;
+            }
+
+            const warningHtml = (!isUnavailable && ci.quantity_warning)
                 ? `<div class="flex items-center gap-xs px-2 py-1 bg-error-container/20 rounded-lg">
                     <span class="material-symbols-outlined text-terracotta text-sm" style="font-variation-settings: 'FILL' 1;">error</span>
                     <span class="text-[12px] font-body-md text-terracotta">Only ${ci.stock_qty} left — adjust quantity</span>
                    </div>`
                 : '';
 
+            const qtyControls = isUnavailable
+                ? `<div class="flex items-center bg-gray-100 border border-gray-200 rounded-full px-2 py-0.5 opacity-40 pointer-events-none">
+                    <button class="w-6 h-6 flex items-center justify-center text-gray-400 font-bold" disabled>-</button>
+                    <span class="px-2 font-data-price text-xs font-semibold text-gray-400">${ci.quantity}</span>
+                    <button class="w-6 h-6 flex items-center justify-center text-gray-400 font-bold" disabled>+</button>
+                   </div>`
+                : `<div class="flex items-center bg-ivory-card border border-sage/40 rounded-full px-2 py-0.5">
+                    <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="w-6 h-6 flex items-center justify-center text-sage hover:text-primary font-bold transition-colors">-</button>
+                    <span class="px-2 font-data-price text-xs font-semibold">${ci.quantity}</span>
+                    <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="w-6 h-6 flex items-center justify-center text-sage hover:text-primary font-bold transition-colors">+</button>
+                   </div>`;
+
+            const priceDisplay = isUnavailable
+                ? `<span class="font-data-price text-gray-400 font-semibold line-through">${formatPaise(ci.price_paise * ci.quantity)}</span>`
+                : `<span class="font-data-price text-on-surface font-semibold">${formatPaise(ci.price_paise * ci.quantity)}</span>`;
+
+            const opacityClass = isUnavailable ? 'opacity-50' : '';
+            const borderClass = isUnavailable ? 'border-gray-200 bg-gray-50' : 'border-sage/30 bg-ivory-card';
+
             const innerContent = `
-                <img class="w-[60px] h-[60px] rounded-[10px] object-cover flex-shrink-0 cursor-pointer" 
+                <img class="w-[60px] h-[60px] rounded-[10px] object-cover flex-shrink-0 cursor-pointer ${opacityClass}" 
                      onclick="window.location.href='product.html?id=${ci.product_id}'" 
                      src="${imgUrl}" 
                      alt="${ci.name}" loading="lazy">
-                <div class="flex-grow">
+                <div class="flex-grow ${opacityClass}">
                     <h3 class="font-title-serif text-[14px] leading-tight text-on-surface hover:text-primary cursor-pointer font-semibold"
                         onclick="window.location.href='product.html?id=${ci.product_id}'">
                         ${ci.name}
                     </h3>
                     <p class="text-xs text-on-surface-variant mt-xs hover:underline cursor-pointer" onclick="window.location.href='/buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
-                    <p class="font-data-price text-[13px] text-[#C8973A] mt-xs font-semibold">${formatPaise(ci.price_paise)}</p>
+                    <p class="font-data-price text-[13px] ${isUnavailable ? 'text-gray-400' : 'text-[#C8973A]'} mt-xs font-semibold">${formatPaise(ci.price_paise)}</p>
                 </div>
                 <div class="flex flex-col items-end gap-sm">
-                    <div class="flex items-center bg-ivory-card border border-sage/40 rounded-full px-2 py-0.5">
-                        <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="w-6 h-6 flex items-center justify-center text-sage hover:text-primary font-bold transition-colors">-</button>
-                        <span class="px-2 font-data-price text-xs font-semibold">${ci.quantity}</span>
-                        <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="w-6 h-6 flex items-center justify-center text-sage hover:text-primary font-bold transition-colors">+</button>
-                    </div>
+                    ${qtyControls}
                     <div class="flex items-center gap-sm">
-                        <span class="font-data-price text-on-surface font-semibold">${formatPaise(ci.price_paise * ci.quantity)}</span>
+                        ${priceDisplay}
                         <button onclick="removeItem('${ci.id}')" class="material-symbols-outlined text-sm text-outline hover:text-error transition-colors">close</button>
                     </div>
                 </div>
             `;
 
-            if (ci.quantity_warning) {
-                return `
-                    <div class="bg-ivory-card border border-sage/30 rounded-2xl p-md flex flex-col gap-sm relative group" data-cart-item-id="${ci.id}">
-                        <div class="flex items-center gap-md">
-                            ${innerContent}
-                        </div>
-                        ${warningHtml}
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="bg-ivory-card border border-sage/30 rounded-2xl p-md flex items-center gap-md relative overflow-hidden group" data-cart-item-id="${ci.id}">
+            return `
+                <div class="${borderClass} border rounded-2xl p-md flex flex-col gap-sm relative group" data-cart-item-id="${ci.id}">
+                    <div class="flex items-center gap-md">
                         ${innerContent}
                     </div>
-                `;
-            }
+                    ${unavailLabel}
+                    ${warningHtml}
+                </div>
+            `;
         }).join('');
     }
+
 
     async function updateQty(id, newQty) {
         if (newQty <= 0) {

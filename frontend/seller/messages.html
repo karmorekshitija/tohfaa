@@ -145,6 +145,22 @@
       <button onclick="openCustomOrderPanel(true)" class="text-gold hover:underline font-bold transition-all">Edit Offer</button>
     </div>
 
+    <!-- Intake Summary Card (for Seller to see collected fields at a glance) -->
+    <div id="intake-summary-banner" class="bg-[#F7F3EC] border-b border-[#3D6B4F]/20 px-6 py-3 hidden">
+      <div class="flex flex-col gap-2 bg-white border border-[#E8E2D5] rounded-xl p-4 shadow-sm text-xs font-body text-[#211b11]">
+        <div class="flex justify-between items-center border-b border-[#E8E2D5] pb-2 mb-1">
+          <span class="font-display font-bold text-[#3D6B4F] text-sm flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">assignment</span>
+            Buyer Intake Summary
+          </span>
+          <span class="text-[9px] font-mono bg-[#8FAF82]/20 text-[#3D6B4F] px-2 py-0.5 rounded font-bold uppercase" id="intake-summary-type">CUSTOMIZATION</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2" id="intake-summary-fields">
+          <!-- Fields will be dynamically injected here -->
+        </div>
+      </div>
+    </div>
+
     <!-- Messages Container -->
     <div id="messages-container" class="flex-grow overflow-y-auto p-6 space-y-6 bg-surface-variant/20 custom-scrollbar flex flex-col">
       <!-- Injected dynamically -->
@@ -382,6 +398,53 @@
     counter.textContent = `${el.value.length}/300`;
   }
 
+  function updateIntakeSummaryBanner(data) {
+    const banner = document.getElementById('intake-summary-banner');
+    if (!banner) return;
+
+    const fields = data.collected_fields || {};
+    const hasFields = Object.keys(fields).length > 0;
+
+    if (hasFields) {
+      banner.classList.remove('hidden');
+      document.getElementById('intake-summary-type').textContent = (data.request_type || 'customization').toUpperCase();
+
+      const fieldsContainer = document.getElementById('intake-summary-fields');
+      fieldsContainer.innerHTML = Object.entries(fields).map(([key, val]) => {
+        let label = key.replace(/_/g, ' ');
+        label = label.charAt(0).toUpperCase() + label.slice(1);
+
+        let displayVal = val;
+        if (Array.isArray(val)) {
+          displayVal = val.join(', ');
+        }
+        return `
+          <div class="flex flex-col">
+            <span class="text-[10px] text-gray-400 font-medium">${label}</span>
+            <span class="text-xs font-semibold text-[#3D6B4F]">${displayVal}</span>
+          </div>
+        `;
+      }).join('');
+    } else {
+      banner.classList.add('hidden');
+    }
+  }
+
+  function getDecodedToken() {
+    const token = getAuthToken();
+    if (!token) return null;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
   async function loadConversations(isSilent = false) {
     const token = getAuthToken();
     if (!token) {
@@ -389,11 +452,16 @@
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/conversations`, {
+      const decoded = getDecodedToken();
+      const sellerId = decoded ? decoded.user_id : null;
+      const url = sellerId ? `${API_BASE}/api/requests?seller_id=${sellerId}` : `${API_BASE}/api/requests`;
+
+      const res = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to load inbox conversations.");
-      conversations = await res.json();
+      const data = await res.json();
+      conversations = Array.isArray(data) ? data : (data.conversations || []);
       renderSidebarList();
     } catch (e) {
       if (!isSilent) triggerToastError(e.message);
@@ -416,8 +484,8 @@
     const listContainer = document.getElementById('conversation-list');
     const searchQuery = document.getElementById('sidebar-search').value.toLowerCase().trim();
     
-    // Hide conversations in 'intake_in_progress' from the seller
-    let filtered = conversations.filter(c => c.status !== 'intake_in_progress');
+    // Hide conversations in 'intake_in_progress' or 'bot_collecting' from the seller
+    let filtered = conversations.filter(c => c.status !== 'intake_in_progress' && c.status !== 'bot_collecting');
     
     if (sidebarFilter !== 'all') {
       if (sidebarFilter === 'custom') {
@@ -485,7 +553,7 @@
     
     const token = getAuthToken();
     try {
-      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+      const res = await fetch(`${API_BASE}/api/requests/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to load conversation details.");
@@ -496,13 +564,16 @@
       document.getElementById('chat-avatar').textContent = initials;
       
       const badgesContainer = document.getElementById('chat-context-badges');
-      const typeLabel = data.status === 'completed' ? 'ACCEPTED' : data.status.toUpperCase();
-      const typeBadgeClass = data.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
+      const isAccepted = data.status === 'completed' || data.status === 'accepted_paid';
+      const typeLabel = isAccepted ? 'ACCEPTED & PAID' : data.status.replace(/_/g, ' ').toUpperCase();
+      const typeBadgeClass = isAccepted ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
       
       badgesContainer.innerHTML = `
         <span class="text-[9px] font-eyebrow font-bold ${typeBadgeClass} px-2.5 py-0.5 rounded">${typeLabel}</span>
         <span class="text-[9px] font-mono text-gray-400">#${data.listing.product_name || 'custom'}</span>
       `;
+
+      updateIntakeSummaryBanner(data);
 
       const banner = document.getElementById('pending-offer-banner');
       if (data.active_offer) {
@@ -559,7 +630,7 @@
   async function pollMessages(id) {
     const token = getAuthToken();
     try {
-      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+      const res = await fetch(`${API_BASE}/api/requests/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -571,6 +642,8 @@
         } else {
           banner.classList.add('hidden');
         }
+
+        updateIntakeSummaryBanner(data);
 
         const container = document.getElementById('messages-container');
         const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 120;
@@ -905,7 +978,7 @@
       for (const file of selectedFiles) {
         const formData = new FormData();
         formData.append('photo', file);
-        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/messages`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
@@ -920,7 +993,7 @@
       if (content) {
         const formData = new FormData();
         formData.append('content', content);
-        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/messages`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
@@ -967,12 +1040,10 @@
     const product_name = document.getElementById('form-product-name').value;
 
     const payload = {
-      price,
-      quantity,
+      price: price * 100, // convert to paise
       delivery_date,
-      custom_notes,
-      expiry_hours,
-      product_name
+      seller_notes: custom_notes,
+      expiry_hours
     };
 
     const submitBtn = document.getElementById('btn-send-offer');
@@ -980,28 +1051,14 @@
     submitBtn.textContent = "Processing...";
 
     try {
-      let res;
-      if (offerId) {
-        // Edit mode (PUT)
-        res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer/${offerId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        // Create mode (POST)
-        res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-      }
+      const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/quote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
 
       if (!res.ok) {
         const errData = await res.json();
