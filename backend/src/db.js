@@ -400,6 +400,10 @@ async function initDb() {
         resolved_at TIMESTAMP WITH TIME ZONE
       )
     `);
+    await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS address_id INTEGER');
+    await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS razorpay_order_id TEXT');
+    await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL');
+
     await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_product_status ON checkout_contention_attempts(product_id, status)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_buyer ON checkout_contention_attempts(buyer_id)');
 

@@ -202,6 +202,7 @@ async function runTests() {
   } finally {
     console.log("Shutting down test server...");
     server.close();
+    process.exit(process.exitCode || 0);
   }
 }
 

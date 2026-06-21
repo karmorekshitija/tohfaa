@@ -473,12 +473,13 @@
         try {
             const res = await apiClient.post('/orders', { address_id: selectedAddressId });
             if (res.data && res.data.success) {
-                let order = res.data.data;
+                let order = res.data.data || {};
                 let orderId = order.order_id;
+                let orderRef = order.order_ref;
 
                 // ── Phase 4: Handle contention ────────────────────────────────
                 if (res.data.status === 'contention_pending' && res.data.attempt_id) {
-                    const result = await pollContention(res.data.attempt_id, orderId, order.order_ref);
+                    const result = await pollContention(res.data.attempt_id, orderId, orderRef);
                     if (!result.won) {
                         if (result.timeout) {
                             alert('Could not confirm item availability. Please try again.');
@@ -487,6 +488,7 @@
                         return;
                     }
                     orderId = result.order_id || orderId;
+                    orderRef = result.order_ref || orderRef;
                 }
                 // ─────────────────────────────────────────────────────────────
                 
@@ -500,7 +502,7 @@
                         currency: payData.currency,
                         order_id: payData.razorpay_order_id,
                         name: "Tohfa Artisan Studio",
-                        description: `Order Ref: ${order.order_ref}`,
+                        description: `Order Ref: ${orderRef}`,
                         prefill: payData.prefill,
                         handler: async function (response) {
                             try {
@@ -511,13 +513,13 @@
                                     razorpay_signature: response.razorpay_signature
                                 });
                                 if (verifyRes.data && verifyRes.data.success) {
-                                    window.location.href = `payment-success.html?order_ref=${order.order_ref}&order_id=${orderId}`;
+                                    window.location.href = `payment-success.html?order_ref=${orderRef}&order_id=${orderId}`;
                                 } else {
-                                    window.location.href = `payment-failure.html?order_ref=${order.order_ref}`;
+                                    window.location.href = `payment-failure.html?order_ref=${orderRef}`;
                                 }
                             } catch (verifyErr) {
                                 console.error("Verify payment error:", verifyErr);
-                                window.location.href = `payment-failure.html?order_ref=${order.order_ref}`;
+                                window.location.href = `payment-failure.html?order_ref=${orderRef}`;
                             }
                         },
                         modal: {
@@ -535,7 +537,7 @@
                     const rzp = new window.Razorpay(options);
                     rzp.on('payment.failed', function (resp) {
                         console.error("Payment failed:", resp.error);
-                        window.location.href = `payment-failure.html?order_ref=${order.order_ref}`;
+                        window.location.href = `payment-failure.html?order_ref=${orderRef}`;
                     });
                     rzp.open();
                 }

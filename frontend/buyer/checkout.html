@@ -558,6 +558,77 @@
         }
     }
 
+    // ── Phase 4: Contention helpers ───────────────────────────────────────
+    function showContentionSpinner() {
+        let el = document.getElementById('checkout-contention-banner');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'checkout-contention-banner';
+            el.className = 'fixed inset-0 z-[300] flex items-center justify-center bg-black/40 backdrop-blur-sm';
+            el.innerHTML = `
+                <div class="bg-[#F7F3EC] border border-[#F7F3EC] rounded-2xl p-8 max-w-sm text-center shadow-xl">
+                    <div class="animate-spin w-8 h-8 border-4 border-[#8FAF82]/20 border-t-[#3D6B4F] rounded-full mx-auto mb-4"></div>
+                    <p class="font-serif italic text-xl text-[#3D6B4F] mb-2">Securing your handcrafted treasure...</p>
+                    <p class="font-sans text-xs text-[#6B6B6B]">Only one left. We're securing it for you.</p>
+                </div>`;
+            document.body.appendChild(el);
+        }
+        el.classList.remove('hidden');
+    }
+
+    function showContentionLost() {
+        const banner = document.getElementById('checkout-contention-banner');
+        if (banner) {
+            banner.innerHTML = `
+                <div class="bg-[#F7F3EC] border border-[#C8973A]/20 rounded-2xl p-8 max-w-sm text-center shadow-xl">
+                    <span class="text-3xl block mb-3">😔</span>
+                    <p class="font-serif italic text-xl text-[#3D6B4F] mb-2">Someone else grabbed it</p>
+                    <p class="font-sans text-xs text-[#6B6B6B] mb-6">You were just a split second late. The last unit has been purchased.</p>
+                    <button onclick="window.location.href='/buyer/home.html'" class="w-full py-3 bg-[#3D6B4F] hover:bg-[#3D6B4F]/90 text-white rounded-xl text-sm font-semibold transition-all active:scale-[0.98]">
+                        Back to Explore
+                    </button>
+                </div>`;
+        }
+        const btn = document.getElementById('btn-place-order');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<span>Place order</span>`;
+        }
+    }
+
+    async function pollContention(attemptId, orderId, orderRef) {
+        showContentionSpinner();
+        let polls = 0;
+        const MAX_POLLS = 12;
+        return new Promise(resolve => {
+            const pollId = setInterval(async () => {
+                polls++;
+                try {
+                    const pollRes = await apiClient.get(`/checkout/contention/${attemptId}`);
+                    const pData = pollRes.data?.data || pollRes.data;
+                    if (pData?.status === 'won') {
+                        clearInterval(pollId);
+                        document.getElementById('checkout-contention-banner')?.classList.add('hidden');
+                        resolve({ won: true, order_id: pData.order_id || orderId, order_ref: pData.order_ref || orderRef });
+                        return;
+                    }
+                    if (pData?.status === 'lost') {
+                        clearInterval(pollId);
+                        showContentionLost();
+                        resolve({ won: false });
+                        return;
+                    }
+                } catch (_) { /* continue */ }
+                if (polls >= MAX_POLLS) {
+                    clearInterval(pollId);
+                    document.getElementById('checkout-contention-banner')?.classList.add('hidden');
+                    resolve({ won: false, timeout: true });
+                }
+            }, 1500);
+        });
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
     async function placeOrder() {
         if (!selectedAddressId) {
             alert("Please select a shipping address.");
@@ -572,8 +643,25 @@
             // Task 14: Place Order
             const res = await apiClient.post('/orders', { address_id: selectedAddressId });
             if (res.data && res.data.success) {
-                const order = res.data.data;
-                const orderId = order.order_id;
+                let order = res.data.data || {};
+                let orderId = order.order_id;
+                let orderRef = order.order_ref;
+
+                // ── Phase 4: Handle contention ────────────────────────────────
+                if (res.data.status === 'contention_pending' && res.data.attempt_id) {
+                    const result = await pollContention(res.data.attempt_id, orderId, orderRef);
+                    if (!result.won) {
+                        if (result.timeout) {
+                            alert('Could not confirm item availability. Please try again.');
+                            btn.disabled = false;
+                            btn.innerHTML = `<span>Place order</span>`;
+                        }
+                        return;
+                    }
+                    orderId = result.order_id;
+                    orderRef = result.order_ref;
+                }
+                // ─────────────────────────────────────────────────────────────
                 
                 // Task 15: Payment Flow
                 const initRes = await apiClient.post('/payments/initiate', { order_id: orderId });
@@ -586,7 +674,7 @@
                         currency: payData.currency,
                         order_id: payData.razorpay_order_id,
                         name: "Tohfa Artisan Studio",
-                        description: `Order Ref: ${order.order_ref}`,
+                        description: `Order Ref: ${orderRef}`,
                         prefill: payData.prefill,
                         handler: async function (response) {
                             try {
@@ -597,13 +685,13 @@
                                     razorpay_signature: response.razorpay_signature
                                 });
                                 if (verifyRes.data && verifyRes.data.success) {
-                                    window.location.href = `payment-success.html?order_ref=${order.order_ref}&order_id=${orderId}`;
+                                    window.location.href = `payment-success.html?order_ref=${orderRef}&order_id=${orderId}`;
                                 } else {
-                                    window.location.href = `payment-failure.html?order_ref=${order.order_ref}`;
+                                    window.location.href = `payment-failure.html?order_ref=${orderRef}`;
                                 }
                             } catch (verifyErr) {
                                 console.error("Verify payment error:", verifyErr);
-                                window.location.href = `payment-failure.html?order_ref=${order.order_ref}`;
+                                window.location.href = `payment-failure.html?order_ref=${orderRef}`;
                             }
                         },
                         modal: {
@@ -617,7 +705,7 @@
                     const rzp = new window.Razorpay(options);
                     rzp.on('payment.failed', function (resp) {
                         console.error("Payment failed:", resp.error);
-                        window.location.href = `payment-failure.html?order_ref=${order.order_ref}`;
+                        window.location.href = `payment-failure.html?order_ref=${orderRef}`;
                     });
                     rzp.open();
                 }

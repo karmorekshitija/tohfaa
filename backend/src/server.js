@@ -2716,7 +2716,7 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
     // ------------------------------------------------------------------
 
     // 4. Calculate subtotal, shipping (outside txn — read-only maths)
-    const subtotal_paise = cartItems.reduce(async (sum, item) => sum + item.price_paise * item.quantity, 0);
+    const subtotal_paise = cartItems.reduce((sum, item) => sum + item.price_paise * item.quantity, 0);
     const shipping_paise = subtotal_paise >= 50000 ? 0 : 12000;
     const total_paise = subtotal_paise + shipping_paise;
 
@@ -2757,7 +2757,7 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
     // 6, 7, 9. Atomic block: re-check capacity + INSERT order + order_items + clear cart
     let txnResult;
     try {
-      txnResult = db.transaction(async () => {
+      txnResult = await db.transaction(async () => {
         // --- C2 + C1: Re-read capacity inside the transaction ---
         // Iterate per seller so we check the aggregated cart total, not per item.
         for (const [sid, sellerCart] of Object.entries(sellerQuantityMap)) {
@@ -2833,9 +2833,9 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
           if (!liveProduct || liveProduct.stock_qty <= CONTENTION_THRESHOLD) {
             // Insert a contention attempt
             const contestRow = await db.prepare(`
-              INSERT INTO checkout_contention_attempts (product_id, buyer_id, quantity, status, requested_at)
-              VALUES (?, ?, ?, 'pending', CURRENT_TIMESTAMP)
-            `).run(item.product_id, userId, item.quantity);
+              INSERT INTO checkout_contention_attempts (product_id, buyer_id, quantity, status, requested_at, address_id, razorpay_order_id)
+              VALUES (?, ?, ?, 'pending', CURRENT_TIMESTAMP, ?, ?)
+            `).run(item.product_id, userId, item.quantity, address_id, razorpayOrderId);
             // Return a pending sentinel — the resolver will determine winner
             return {
               contention: true,
@@ -2891,40 +2891,99 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
       const { attempt_id, product_id } = txnResult;
       setTimeout(async () => {
         try {
-          // Winner = earliest attempt for this product still in 'pending'
-          const winner = await db.prepare(`
-            SELECT id, buyer_id, quantity FROM checkout_contention_attempts
-            WHERE product_id = ? AND status = 'pending'
-            ORDER BY requested_at ASC, id ASC
-            LIMIT 1
-          `).get(product_id);
+          await db.transaction(async () => {
+            const liveProduct = await db.prepare('SELECT stock_qty, seller_id, name, price_paise FROM products WHERE id = ? FOR UPDATE').get(product_id);
+            if (!liveProduct) return;
 
-          if (!winner) return;
-
-          // Check live stock again
-          const liveProduct = await db.prepare('SELECT stock_qty, status FROM products WHERE id = ?').get(product_id);
-          if (!liveProduct || liveProduct.stock_qty < winner.quantity) {
-            // Mark all pending as lost — nothing to give
-            await db.prepare(`
-              UPDATE checkout_contention_attempts SET status = 'lost', resolved_at = CURRENT_TIMESTAMP
+            const attempts = await db.prepare(`
+              SELECT id, buyer_id, quantity, address_id, razorpay_order_id FROM checkout_contention_attempts
               WHERE product_id = ? AND status = 'pending'
-            `).run(product_id);
-            return;
-          }
+              ORDER BY requested_at ASC, id ASC
+            `).all(product_id);
 
-          // Mark winner as won
-          await db.prepare(`
-            UPDATE checkout_contention_attempts SET status = 'won', resolved_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-          `).run(winner.id);
+            if (attempts.length === 0) return;
 
-          // Mark all other pending attempts as lost
-          await db.prepare(`
-            UPDATE checkout_contention_attempts SET status = 'lost', resolved_at = CURRENT_TIMESTAMP
-            WHERE product_id = ? AND status = 'pending' AND id != ?
-          `).run(product_id, winner.id);
+            // Fetch completed order count (status = 'Delivered') for each buyer
+            for (const attempt of attempts) {
+              const completed = await db.prepare(`
+                SELECT COUNT(*) as count FROM orders
+                WHERE buyer_id = ? AND status = 'Delivered'
+              `).get(attempt.buyer_id);
+              attempt.completed_order_count = completed ? parseInt(completed.count, 10) : 0;
+            }
 
-          console.log(`[Contention] Product ${product_id}: attempt #${winner.id} won.`);
+            // Sort by completed_order_count DESC, then requested_at/id ASC
+            attempts.sort((a, b) => {
+              if (b.completed_order_count !== a.completed_order_count) {
+                return b.completed_order_count - a.completed_order_count;
+              }
+              return a.id - b.id;
+            });
+
+            let remainingStock = liveProduct.stock_qty;
+            const winners = [];
+            const losers = [];
+            for (const attempt of attempts) {
+              if (remainingStock >= attempt.quantity) {
+                winners.push(attempt);
+                remainingStock -= attempt.quantity;
+              } else {
+                losers.push(attempt);
+              }
+            }
+
+            // Process winners
+            const year = new Date().getFullYear();
+            for (const winner of winners) {
+              // Decrement stock
+              await db.prepare('UPDATE products SET stock_qty = stock_qty - ? WHERE id = ?').run(winner.quantity, product_id);
+
+              // Generate order details
+              const order_ref = `TF-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
+              const subtotal_paise = liveProduct.price_paise * winner.quantity;
+              const shipping_paise = subtotal_paise >= 50000 ? 0 : 12000;
+              const total_paise = subtotal_paise + shipping_paise;
+
+              // Insert order
+              const orderInfo = await db.prepare(`
+                INSERT INTO orders (order_ref, buyer_id, seller_id, address_id, status, subtotal_paise, shipping_paise, total_paise, razorpay_order_id)
+                VALUES (?, ?, ?, ?, 'Awaiting Payment', ?, ?, ?, ?)
+              `).run(order_ref, winner.buyer_id, liveProduct.seller_id, winner.address_id, subtotal_paise, shipping_paise, total_paise, winner.razorpay_order_id);
+
+              const oId = orderInfo.lastInsertRowid;
+
+              // Fetch primary image
+              const img = await db.prepare("SELECT url FROM product_images WHERE product_id = ? AND is_primary = 1 LIMIT 1").get(product_id);
+              const image_url = img ? img.url : null;
+
+              // Insert order item
+              await db.prepare(`
+                INSERT INTO order_items (order_id, product_id, product_name, unit_price_paise, quantity, image_url)
+                VALUES (?, ?, ?, ?, ?, ?)
+              `).run(oId, product_id, liveProduct.name, liveProduct.price_paise, winner.quantity, image_url);
+
+              // Clear cart items for this buyer/product
+              await db.prepare(`
+                DELETE FROM cart_items WHERE user_id = ? AND product_id = ?
+              `).run(winner.buyer_id, product_id);
+
+              // Update attempt as won and store order_id
+              await db.prepare(`
+                UPDATE checkout_contention_attempts
+                SET status = 'won', resolved_at = CURRENT_TIMESTAMP, order_id = ?
+                WHERE id = ?
+              `).run(oId, winner.id);
+            }
+
+            // Process losers
+            for (const loser of losers) {
+              await db.prepare(`
+                UPDATE checkout_contention_attempts
+                SET status = 'lost', resolved_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+              `).run(loser.id);
+            }
+          })();
         } catch (resolverErr) {
           console.error('[Contention] Resolver error:', resolverErr);
         }
@@ -3016,7 +3075,7 @@ app.get('/api/orders', rateLimit(60), authenticateToken, async (req, res) => {
     
     for (const o of orders) {
       const items = await db.prepare('SELECT product_name, quantity, image_url FROM order_items WHERE order_id = ?').all(o.id);
-      o.item_count = items.reduce(async (sum, item) => sum + item.quantity, 0);
+      o.item_count = items.reduce((sum, item) => sum + item.quantity, 0);
       o.primary_image_url = items.length > 0 ? items[0].image_url : null;
       o.image_urls = items.map(item => item.image_url).filter(url => url !== null);
       if (items.length > 0) {
@@ -3832,7 +3891,7 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
       `).run(userId, order_id);
 
       // Increment daily_order_tracking on successful orders
-      const totalUnits = items.reduce(async (sum, i) => sum + i.quantity, 0);
+      const totalUnits = items.reduce((sum, i) => sum + i.quantity, 0);
       const todayStr = getLocalDateString();
       const existing = await db.prepare("SELECT total_units_ordered FROM daily_order_tracking WHERE seller_id = ? AND date = ?").get(order.seller_id, todayStr);
       if (existing) {
@@ -6892,7 +6951,7 @@ app.get('/api/checkout/contention/:attempt_id', rateLimit(120), authenticateToke
 
   try {
     const attempt = await db.prepare(`
-      SELECT id, product_id, buyer_id, status, quantity, requested_at, resolved_at
+      SELECT id, product_id, buyer_id, status, quantity, requested_at, resolved_at, order_id
       FROM checkout_contention_attempts
       WHERE id = ?
     `).get(attemptId);
@@ -6906,9 +6965,15 @@ app.get('/api/checkout/contention/:attempt_id', rateLimit(120), authenticateToke
 
     // If won, also return remake_eligible from the product
     let remake_eligible = false;
+    let order_ref = null;
     if (attempt.status === 'lost') {
       const prod = await db.prepare('SELECT remake_eligible FROM products WHERE id = ?').get(attempt.product_id);
       remake_eligible = !!(prod && prod.remake_eligible);
+    } else if (attempt.status === 'won' && attempt.order_id) {
+      const ord = await db.prepare('SELECT order_ref FROM orders WHERE id = ?').get(attempt.order_id);
+      if (ord) {
+        order_ref = ord.order_ref;
+      }
     }
 
     return res.status(200).json({
@@ -6919,6 +6984,8 @@ app.get('/api/checkout/contention/:attempt_id', rateLimit(120), authenticateToke
         status: attempt.status,
         quantity: attempt.quantity,
         resolved_at: attempt.resolved_at,
+        order_id: attempt.order_id || null,
+        order_ref: order_ref,
         remake_eligible: remake_eligible
       }
     });
