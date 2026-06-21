@@ -328,7 +328,10 @@
         </a>
       `;
 
-      document.body.style.paddingBottom = '80px';
+      // Exempt chat page from body padding bottom since it uses its own full height layout
+      if (!window.location.pathname.includes('/chat.html')) {
+        document.body.style.paddingBottom = '80px';
+      }
 
     } else {
       let desktopHeader = document.getElementById('tohfa-desktop-header');

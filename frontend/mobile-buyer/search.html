@@ -128,6 +128,9 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 12px !important;
             }
+            .grid-cols-2-mobile {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
         }
     </style>
 </head>
@@ -209,20 +212,7 @@
         
         <!-- ==================== STATE 1: IDLE VIEW ==================== -->
         <div id="idle-view" class="space-y-xl">
-            <!-- Mascot Greeting Block -->
-            <section class="flex items-center justify-center gap-xl my-lg">
-                <div class="relative w-[180px] h-[180px] flex-shrink-0">
-                    <img alt="Tohfa Mascot Greeting" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY" loading="lazy" />
-                </div>
-                <div class="speech-bubble relative bg-ivory border border-sage p-lg rounded-xl max-w-md">
-                    <h1 class="font-title-serif italic text-[22px] text-ink mb-2 leading-tight">
-                        What would you like to gift today? ✦
-                    </h1>
-                    <p class="font-body-md text-[14px] text-on-surface-variant">
-                        Search by product name, category, description, or seller.
-                    </p>
-                </div>
-            </section>
+
 
             <!-- Trending Searches -->
             <section>
@@ -240,7 +230,7 @@
             <!-- Shop by Occasion -->
             <section>
                 <h2 class="font-label-caps text-[11px] text-gold tracking-widest mb-md uppercase">Shop by Occasion</h2>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-md">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-md grid-cols-2-mobile">
                     <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="gift">
                         <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">cake</span>
                         <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">BIRTHDAY</span>
@@ -794,15 +784,15 @@
                                     <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                                 </button>
                             </div>
-                            <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
-                                <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${price}</span>
-                                <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                            <div class="flex flex-col mb-4 gap-y-1">
+                                <span class="font-bold text-lg text-[#C8973A]">${price}</span>
+                                <div class="flex items-center gap-1 text-xs text-[#605e57]">
                                     <span class="text-[#C8973A] font-bold">★</span>
                                     <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
                                     <span>(${parseInt(p.review_count || 0, 10)})</span>
                                 </div>
-                                <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
-                                <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
+                                <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                                <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
                             </div>
                         </div>
                         <div class="w-full font-['DM_Sans']">
@@ -896,15 +886,15 @@
                                             <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                                         </button>
                                     </div>
-                                    <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
-                                        <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${price}</span>
-                                        <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                                    <div class="flex flex-col mb-4 gap-y-1">
+                                        <span class="font-bold text-lg text-[#C8973A]">${price}</span>
+                                        <div class="flex items-center gap-1 text-xs text-[#605e57]">
                                             <span class="text-[#C8973A] font-bold">★</span>
                                             <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
                                             <span>(${parseInt(p.review_count || 0, 10)})</span>
                                         </div>
-                                        <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
-                                        <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
+                                        <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                                        <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
                                     </div>
                                 </div>
                                 <div class="w-full font-['DM_Sans']">

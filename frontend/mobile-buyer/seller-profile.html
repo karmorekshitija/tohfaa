@@ -259,12 +259,12 @@
         </div>
 
         <!-- Tabbed Navigation Bar -->
-        <div class="mt-12 border-b border-outline-variant flex gap-8 md:gap-12 overflow-x-auto scrollbar-hide select-none">
-            <button id="tab-catalog" onclick="switchTab('catalog')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary">Catalog</button>
-            <button id="tab-customised" onclick="switchTab('customised')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Customised</button>
-            <button id="tab-reels" onclick="switchTab('reels')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Reels</button>
-            <button id="tab-reviews" onclick="switchTab('reviews')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Reviews</button>
-            <button id="tab-about" onclick="switchTab('about')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">About</button>
+        <div class="mt-12 border-b border-outline-variant flex gap-4 md:gap-8 overflow-x-auto scrollbar-hide select-none">
+            <button id="tab-catalog" onclick="switchTab('catalog')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold flex-shrink-0">Catalog</button>
+            <button id="tab-customised" onclick="switchTab('customised')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Customised</button>
+            <button id="tab-reels" onclick="switchTab('reels')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Reels</button>
+            <button id="tab-reviews" onclick="switchTab('reviews')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Reviews</button>
+            <button id="tab-about" onclick="switchTab('about')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">About</button>
         </div>
 
         <!-- Loader Spinner -->
@@ -904,9 +904,9 @@
                 const el = document.getElementById(`tab-${t}`);
                 if (el) {
                     if (t === tabName) {
-                        el.className = "pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold";
+                        el.className = "pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold flex-shrink-0";
                     } else {
-                        el.className = "pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary";
+                        el.className = "pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0";
                     }
                 }
                 
@@ -963,16 +963,16 @@
                     `).join('');
                 }
                 
-                renderCategoryPills(sellerCats);
+                renderCategoryPills(categoriesList);
                 applyCatalogFiltersAndRender();
             }
         }
 
-        function renderCategoryPills(sellerCats) {
+        function renderCategoryPills(catsToShow) {
             const container = document.getElementById('category-pills-container');
             if (!container) return;
             
-            const pills = [{ id: '', name: 'All', display_name: 'All' }, ...sellerCats];
+            const pills = [{ id: '', name: 'All', display_name: 'All' }, ...catsToShow];
             container.innerHTML = pills.map(cat => {
                 const isActive = String(cat.id) === String(activeFilters.category_id);
                 const activeClasses = "bg-primary-container text-white shadow-md font-bold";
@@ -987,7 +987,7 @@
             container.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     activeFilters.category_id = btn.getAttribute('data-id');
-                    renderCategoryPills(sellerCats);
+                    renderCategoryPills(catsToShow);
                     
                     const categorySelect = document.getElementById('filter-category');
                     if (categorySelect) {
@@ -1087,15 +1087,15 @@
                                 </div>
                             ` : ''}
                         </div>
-                        <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
-                            <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${priceFormatted}</span>
-                            <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                        <div class="flex flex-col mb-4 gap-y-1">
+                            <span class="font-bold text-lg text-[#C8973A]">${priceFormatted}</span>
+                            <div class="flex items-center gap-1 text-xs text-[#605e57]">
                                 <span class="text-[#C8973A] font-bold">★</span>
                                 <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
                                 <span>(${parseInt(p.review_count || 0, 10)})</span>
                             </div>
-                            <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
-                            <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id || sellerId}'">By ${sellerProfile.shop_name}</span>
+                            <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                            <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id || sellerId}'">By ${sellerProfile.shop_name}</span>
                         </div>
                     </div>
                     <div class="w-full font-['DM_Sans']">
@@ -1186,9 +1186,7 @@
                         activeFilters.category_id = categorySelect.value;
                     }
                     
-                    const uniqueCatIds = [...new Set(allSellerProducts.map(p => p.category_id))];
-                    const sellerCats = categoriesList.filter(c => uniqueCatIds.includes(c.id));
-                    renderCategoryPills(sellerCats);
+                    renderCategoryPills(categoriesList);
                     
                     closeFilterDrawer();
                     applyCatalogFiltersAndRender();
@@ -1203,9 +1201,7 @@
                     activeFilters.availability = '';
                     activeFilters.category_id = '';
                     
-                    const uniqueCatIds = [...new Set(allSellerProducts.map(p => p.category_id))];
-                    const sellerCats = categoriesList.filter(c => uniqueCatIds.includes(c.id));
-                    renderCategoryPills(sellerCats);
+                    renderCategoryPills(categoriesList);
                     
                     closeFilterDrawer();
                     applyCatalogFiltersAndRender();
