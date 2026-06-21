@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa Seller Studio - Pricing &amp; Stock</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Playfair+Display:wght@400;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+
+    (async function verifySellerRole() {
+        const token = getTohfaToken();
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+        try {
+            const res = await fetch(`${window.location.origin}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Unverified');
+            const profile = await res.json();
+            const user = profile.data || profile;
+            if (user.role !== 'seller') {
+                window.location.href = './buyer-home.html';
+            }
+        } catch (e) {
+            window.location.href = '/auth/login.html';
+        }
+    })();
+    
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#3D6B4F',
+            parchment: '#F7F3EC',
+            sage: '#8FAF82',
+            violet: '#7B5EA7',
+            gold: '#C8973A',
+            offwhite: '#FCFAF7'
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"DM Sans"', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    body {
+      background-color: #F7F3EC;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .step-active { color: #3D6B4F; border-bottom: 2px solid #3D6B4F; }
+    .step-inactive { color: #A0A0A0; }
+    .card { background-color: #FCFAF7; border: 1px solid #E5E1D8; border-radius: 12px; }
+    
+    /* Custom Scrollbar for side panel */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
+
+    /* Touch target minimums */
+    button, input, select, .touch-target { min-height: 44px; }
+    
+    /* Animation for mobile menu */
+    #mobile-menu { transition: transform 0.3s ease-in-out; }
+    .menu-open { transform: translateX(0) !important; }
+  </style>
+</head>
+<body class="text-slate-800">
+<!-- BEGIN: Mobile Top Taskbar -->
+<header class="md:hidden fixed top-0 left-0 right-0 bg-forest text-parchment h-16 flex items-center justify-between px-4 z-50">
+<div class="flex items-center gap-2">
+<span class="font-serif text-xl font-bold tracking-tight">Tohfa</span>
+</div>
+<button aria-label="Open Menu" class="p-2 touch-target" id="menu-toggle">
+<svg class="h-8 w-8" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</header>
+<!-- END: Mobile Top Taskbar -->
+<!-- BEGIN: Navigation Sidebars -->
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 bg-forest text-parchment p-6 z-40">
+<div class="mb-10">
+<h1 class="font-serif text-3xl font-bold tracking-wide">Tohfa</h1>
+<p class="font-mono text-[10px] uppercase tracking-widest opacity-70">Seller Studio</p>
+</div>
+<nav class="flex-grow space-y-2">
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Dashboard</a>
+<a class="block py-2 px-3 rounded bg-white/10 font-bold border-l-4 border-gold" href="#">Catalog</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Orders</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Overflow</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Payments</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Analytics</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Messages</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Reviews</a>
+<a class="block py-2 px-3 rounded hover:bg-white/10 transition-colors" href="#">Settings</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/20 space-y-2">
+<a class="block py-2 px-3 hover:text-gold transition-colors" href="#">View store</a>
+<a class="block py-2 px-3 opacity-70 hover:opacity-100 transition-colors" href="#">Log out</a>
+</div>
+</aside>
+<!-- Mobile Slide-out Menu -->
+<div class="md:hidden fixed inset-0 bg-forest text-parchment z-[60] p-6 -translate-x-full transition-transform duration-300 overflow-y-auto" id="mobile-menu">
+<div class="flex justify-between items-center mb-8">
+<span class="font-serif text-2xl font-bold">Tohfa</span>
+<button class="p-2 touch-target" id="menu-close">
+<svg class="h-8 w-8" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<nav class="space-y-4 text-lg">
+<a class="block py-2" href="#">Dashboard</a>
+<a class="block py-2 font-bold text-gold" href="#">Catalog</a>
+<a class="block py-2" href="#">Orders</a>
+<a class="block py-2" href="#">Overflow</a>
+<a class="block py-2" href="#">Payments</a>
+<a class="block py-2" href="#">Analytics</a>
+<a class="block py-2" href="#">Messages</a>
+<a class="block py-2" href="#">Reviews</a>
+<a class="block py-2" href="#">Settings</a>
+</nav>
+<div class="mt-12 pt-8 border-t border-white/20 space-y-4">
+<a class="block" href="#">View store</a>
+<a class="block text-white/60" href="#">Log out</a>
+</div>
+</div>
+<!-- END: Navigation Sidebars -->
+<!-- BEGIN: Main Content Area -->
+<main class="md:ml-64 pt-20 md:pt-8 pb-32 px-4 md:px-12 max-w-5xl">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full border border-forest/20 flex items-center justify-center hover:bg-forest hover:text-white transition-colors">
+<svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" fill-rule="evenodd"></path>
+</svg>
+</button>
+<h2 class="font-serif text-2xl md:text-3xl text-forest font-bold">Craft New Listing</h2>
+</div>
+<div class="hidden md:flex gap-3">
+<button class="px-6 py-2 rounded-full border border-forest text-forest hover:bg-forest/5 font-medium">Save as Draft</button>
+<button class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium">Continue →</button>
+<button class="px-6 py-2 rounded-full border border-red-200 text-red-500 hover:bg-red-50 font-medium">Discard Draft</button>
+</div>
+</header>
+<!-- Progress Indicator -->
+<div class="flex justify-between items-center mb-10 overflow-x-auto pb-4 no-scrollbar">
+<div class="flex flex-col items-center min-w-[70px] opacity-60">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center text-forest bg-white mb-2">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Photos</span>
+</div>
+<div class="flex-grow h-[1px] bg-forest/30 mx-2 min-w-[20px]"></div>
+<div class="flex flex-col items-center min-w-[70px] opacity-60">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center text-forest bg-white mb-2">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Details</span>
+</div>
+<div class="flex-grow h-[1px] bg-forest/30 mx-2 min-w-[20px]"></div>
+<div class="flex flex-col items-center min-w-[70px]">
+<div class="w-8 h-8 rounded-full bg-forest flex items-center justify-center text-white mb-2 ring-4 ring-forest/10">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase font-bold text-forest">Pricing</span>
+</div>
+<div class="flex-grow h-[1px] bg-slate-300 mx-2 min-w-[20px]"></div>
+<div class="flex flex-col items-center min-w-[70px] opacity-30">
+<div class="w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center mb-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Shipping</span>
+</div>
+<div class="flex-grow h-[1px] bg-slate-300 mx-2 min-w-[20px]"></div>
+<div class="flex flex-col items-center min-w-[70px] opacity-30">
+<div class="w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center mb-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Preview</span>
+</div>
+</div>
+<!-- BEGIN: Pricing & Stock Section -->
+<div class="flex flex-col gap-6" data-purpose="pricing-and-stock">
+<div class="flex justify-between items-center border-b border-forest/10 pb-4">
+<h3 class="font-serif text-xl font-semibold text-slate-700">Pricing &amp; Stock</h3>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-300 bg-white text-xs font-mono uppercase tracking-widest text-slate-500 hover:border-forest hover:text-forest transition-colors">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          Inventory Console
+        </button>
+</div>
+<div class="space-y-6">
+<!-- Retail Price -->
+<div class="space-y-2">
+<label class="block font-serif text-lg">Retail Price</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-serif">₹</span>
+<input class="w-full pl-10 pr-16 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" placeholder="0.00" type="number"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-100 px-2 py-1 rounded text-[10px] font-bold text-slate-500 uppercase tracking-tighter">INR</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Inventory Count -->
+<div class="space-y-2">
+<label class="block font-serif text-lg">Inventory Count</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" type="number" value="1"/>
+</div>
+</div>
+<!-- SKU / Reference -->
+<div class="space-y-2">
+<label class="block font-serif text-lg">SKU / Reference</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest font-mono text-lg uppercase" type="text" value="MJ-AS-001"/>
+</div>
+</div>
+</div>
+<!-- Taxes Toggle -->
+<div class="flex items-center justify-between p-4 card">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+<svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div>
+<p class="font-bold text-forest">Inclusive of all taxes</p>
+<p class="text-xs text-slate-500">Retail price includes GST and regional duties.</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
+</label>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Artisan Variants -->
+<div class="p-6 card">
+<div class="flex justify-between items-center mb-10">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.172-1.172a4 4 0 115.656 5.656L17 13" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<h4 class="font-serif font-semibold">Artisan Variants</h4>
+</div>
+<button class="text-xs font-mono uppercase tracking-widest flex items-center gap-1 text-slate-500 hover:text-forest">
+<span class="w-4 h-4 rounded-full border border-current flex items-center justify-center text-[10px]">+</span>
+                Add Variant
+              </button>
+</div>
+<div class="h-24 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg">
+<p class="text-slate-400 text-sm">No variants added yet</p>
+</div>
+</div>
+<!-- Production Limits -->
+<div class="p-6 card">
+<div class="flex items-center gap-2 mb-4">
+<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<h4 class="font-serif font-semibold">Production Limits &amp; Prebooking</h4>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-4">
+<div class="text-center p-2 rounded-lg border border-slate-200 bg-white">
+<p class="text-[8px] font-mono uppercase tracking-widest text-slate-400 mb-1">Daily Cap</p>
+<p class="text-slate-300">None</p>
+</div>
+<div class="text-center p-2 rounded-lg border border-slate-200 bg-white">
+<p class="text-[8px] font-mono uppercase tracking-widest text-slate-400 mb-1">Weekly Cap</p>
+<p class="text-slate-300">None</p>
+</div>
+<div class="text-center p-2 rounded-lg border border-slate-200 bg-white">
+<p class="text-[8px] font-mono uppercase tracking-widest text-slate-400 mb-1">Monthly Cap</p>
+<p class="text-slate-300">None</p>
+</div>
+</div>
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="w-5 h-5 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
+<span class="text-sm font-bold text-forest">Allow Prebooking</span>
+</label>
+</div>
+</div>
+<!-- Add-on Options -->
+<div class="space-y-4">
+<h4 class="font-serif text-lg">Add-on Options</h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex items-center gap-4 p-4 rounded-xl border-2 border-forest bg-forest/5">
+<input checked="" class="w-6 h-6 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-bold text-forest leading-tight">Gift Wrapping</span>
+<span class="text-xs text-forest/70">+ ₹ 50</span>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 bg-white">
+<input class="w-6 h-6 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-bold text-slate-500 leading-tight">Handwritten Note</span>
+<span class="text-xs text-slate-400 italic">Included</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pricing Strategy Help Card -->
+<div class="mt-8 p-6 rounded-2xl bg-violet/5 border border-violet/20 flex gap-4">
+<div class="w-10 h-10 rounded-full bg-violet/10 flex items-center justify-center shrink-0">
+<svg class="w-5 h-5 text-violet" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div>
+<h5 class="font-mono text-[10px] uppercase tracking-widest text-violet font-bold mb-1">Pricing Strategy</h5>
+<p class="text-xs text-violet/80 leading-relaxed">Securely manage your artisan stock levels and regional pricing strategies to maintain value. Consider seasonal demand.</p>
+</div>
+</div>
+</div>
+<!-- END: Pricing & Stock Section -->
+<!-- Mobile Help / Rabbit Avatar -->
+<div class="fixed bottom-32 right-6 md:bottom-12 md:right-12 z-50 flex flex-col items-end">
+<div class="bg-white px-4 py-2 rounded-t-2xl rounded-bl-2xl shadow-lg border border-parchment mb-2 max-w-[140px]">
+<p class="text-[10px] italic font-medium leading-tight">"Pricing looks good!"</p>
+</div>
+<div class="w-14 h-14 rounded-full border-4 border-white overflow-hidden shadow-xl bg-slate-200">
+<img alt="Assistant" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo_sellSAMOsss3ngsgehlhqBCQWa3Hk2Lp4_Nlk1uB_I3RNVMXkJbI66j8QRaV41AErk9LoShASdY0Fj1cptpG8cE6ondYGIZXBoTjwflTrdSqfB5RaKOKMi2ZEJvx7xReVSaxPTiFiavLwbxqkBysdk96Ifw2MSUc6hO_Qsd69bXL-jzmj_BapLgUb3uGUNh8LI5hIjz6Wk4h_jZmld5kcUmtDdZPk4cg80DKqjOrzYxJuB_CBR52DWXaRTzegt3W5EVSxnp4w"/>
+</div>
+</div>
+<!-- Security Info -->
+<div class="mt-12 p-4 flex items-center justify-center gap-3 opacity-60">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<p class="text-[10px] uppercase tracking-widest text-center font-bold">Price and stock data is encrypted and synced across all your sales channels.</p>
+</div>
+</main>
+<!-- END: Main Content Area -->
+<!-- BEGIN: Fixed Mobile Action Buttons -->
+<footer class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex gap-2 z-50">
+<button class="flex-1 touch-target rounded-lg border border-slate-300 text-sm font-bold text-slate-500 bg-white">Draft</button>
+<button class="flex-[2] touch-target rounded-lg bg-forest text-parchment font-bold shadow-lg shadow-forest/20">Continue →</button>
+<button class="flex-1 touch-target rounded-lg border border-red-100 text-red-500 bg-red-50">
+<svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</footer>
+<!-- END: Fixed Mobile Action Buttons -->
+<script data-purpose="mobile-menu-handlers">
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuClose = document.getElementById('menu-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.add('menu-open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    menuClose.addEventListener('click', () => {
+      mobileMenu.classList.remove('menu-open');
+      document.body.style.overflow = 'auto';
+    });
+  </script>
+</body></html>

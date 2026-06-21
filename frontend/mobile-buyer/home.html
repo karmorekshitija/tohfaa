@@ -147,6 +147,14 @@
                 left: auto !important;
                 position: static !important;
             }
+            /* Protective Grid Carve-outs for 2-Column Mobile Feed */
+            #product-feed-grid,
+            #sponsored-product-grid,
+            #feed-skeletons {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 12px !important;
+            }
         }
     </style>
 </head>

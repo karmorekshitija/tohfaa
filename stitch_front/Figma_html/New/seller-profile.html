@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa Seller Studio - Profile &amp; Settings</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Material+Icons&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+
+    (async function verifySellerRole() {
+        const token = getTohfaToken();
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+        try {
+            const res = await fetch(`${window.location.origin}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Unverified');
+            const profile = await res.json();
+            const user = profile.data || profile;
+            if (user.role !== 'seller') {
+                window.location.href = './buyer-home.html';
+            }
+        } catch (e) {
+            window.location.href = '/auth/login.html';
+        }
+    })();
+    
+
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3D6B4F", // Forest
+                        sage: "#8FAF82",
+                        violet: "#7B5EA7",
+                        gold: "#C8973A",
+                        "background-light": "#F7F3EC", // Parchment
+                        "background-dark": "#1A1C19",
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#242622",
+                    },
+                    fontFamily: {
+                        display: ["Playfair Display", "serif"],
+                        sans: ["DM Sans", "sans-serif"],
+                        mono: ["Space Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        body { font-family: 'DM Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .mono-accent { font-family: 'Space Mono', monospace; font-size: 0.75rem; }#mobile-drawer {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+        #mobile-drawer.open {
+            transform: translateX(0);
+        }
+        #drawer-overlay {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        #drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }.no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .active-tab {
+            background-color: #3D6B4F;
+            color: white;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 transition-colors duration-200">
+<header class="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800">
+<div class="flex items-center gap-2">
+<span class="text-2xl font-display font-bold text-primary italic">Tohfa</span>
+<span class="text-[10px] uppercase tracking-widest text-stone-500 font-mono">Seller Studio</span>
+</div>
+<button class="p-2 text-primary dark:text-sage min-h-[44px] min-w-[44px] flex items-center justify-center" id="menu-toggle">
+<span class="material-icons">menu</span>
+</button>
+</header>
+<aside class="hidden md:flex fixed left-0 top-0 h-screen w-64 flex-col bg-white dark:bg-card-dark border-r border-stone-200 dark:border-stone-800 p-6 z-30">
+<div class="mb-10">
+<span class="text-3xl font-display font-bold text-primary italic">Tohfa</span>
+<p class="text-[10px] uppercase tracking-[0.2em] text-stone-400 mt-1">Artisan Partner</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" href="#">
+<span class="material-icons text-stone-400">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" href="#">
+<span class="material-icons text-stone-400">inventory_2</span>
+<span>Catalog</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" href="#">
+<span class="material-icons text-stone-400">shopping_bag</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" href="#">
+<span class="material-icons text-stone-400">payments</span>
+<span>Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" href="#">
+<span class="material-icons text-stone-400">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors" href="#">
+<span class="material-icons text-stone-400">chat</span>
+<span>Messages</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-stone-100 dark:bg-stone-800 text-primary font-medium rounded-lg" href="#">
+<span class="material-icons">settings</span>
+<span>Profile &amp; Settings</span>
+</a>
+</nav>
+<div class="pt-6 border-t border-stone-200 dark:border-stone-800 mt-auto space-y-2">
+<button class="w-full flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400 hover:text-primary transition-colors">
+<span class="material-icons">visibility</span>
+<span>View store</span>
+</button>
+<button class="w-full flex items-center gap-3 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors">
+<span class="material-icons">logout</span>
+<span>Log out</span>
+</button>
+</div>
+</aside>
+<div class="md:hidden fixed inset-0 bg-stone-900/60 z-40 backdrop-blur-sm" id="drawer-overlay"></div>
+<div class="md:hidden fixed top-0 left-0 h-full w-[280px] bg-background-light dark:bg-background-dark z-50 p-6 flex flex-col shadow-2xl" id="mobile-drawer">
+<div class="flex justify-between items-center mb-10">
+<span class="text-2xl font-display font-bold text-primary italic">Tohfa</span>
+<button class="p-2 text-stone-400" id="close-menu"><span class="material-icons">close</span></button>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800" href="#">
+<span class="material-icons">dashboard</span><span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800" href="#">
+<span class="material-icons">inventory_2</span><span>Catalog</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800" href="#">
+<span class="material-icons">shopping_bag</span><span>Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800" href="#">
+<span class="material-icons">payments</span><span>Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800" href="#">
+<span class="material-icons">analytics</span><span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-lg" href="#">
+<span class="material-icons">settings</span><span>Profile &amp; Settings</span>
+</a>
+</nav>
+<div class="pt-6 border-t border-stone-200 dark:border-stone-800 mt-auto flex flex-col gap-2">
+<button class="w-full flex items-center gap-3 px-4 py-3 text-stone-600 dark:text-stone-400"><span class="material-icons">visibility</span>View Store</button>
+<button class="w-full flex items-center gap-3 px-4 py-3 text-red-600 font-medium"><span class="material-icons">logout</span>Log out</button>
+</div>
+</div>
+<main class="md:ml-64 p-4 md:p-8 lg:p-12 max-w-6xl mx-auto">
+<header class="mb-8">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-3xl md:text-4xl text-primary font-bold mb-2">Profile &amp; Settings</h1>
+<p class="text-stone-500 dark:text-stone-400 text-sm">Manage your profile details, shop policies, and settings</p>
+</div>
+<div class="hidden md:block text-right">
+<p class="font-bold text-primary">Kavya Crafts Display</p>
+<p class="text-[10px] uppercase tracking-widest text-stone-400">Artisan Partner</p>
+</div>
+</div>
+<div class="flex gap-2 mt-8 overflow-x-auto no-scrollbar pb-2">
+<button class="active-tab px-8 py-2.5 rounded-full text-sm font-medium border border-stone-200 dark:border-stone-800 transition-all min-h-[44px]" id="btn-profile" onclick="toggleSection('profile')">Profile</button>
+<button class="px-8 py-2.5 rounded-full text-sm font-medium border border-stone-200 dark:border-stone-800 transition-all min-h-[44px] bg-white dark:bg-card-dark text-stone-600 dark:text-stone-400" id="btn-settings" onclick="toggleSection('settings')">Settings</button>
+</div>
+</header>
+<div class="space-y-6" id="profile-content">
+<section class="bg-white dark:bg-card-dark rounded-2xl p-6 md:p-8 border border-stone-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-icons text-primary">account_circle</span>
+<h2 class="text-2xl text-primary font-bold">Basic Info</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<div class="md:col-span-3 flex flex-col items-center">
+<div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full bg-stone-100 dark:bg-stone-800 border-2 border-dashed border-stone-300 dark:border-stone-700 flex flex-center items-center justify-center overflow-hidden group">
+<span class="text-stone-400 text-sm text-center px-4">Profile photo</span>
+<button class="absolute bottom-2 right-2 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center shadow-lg">
+<span class="material-icons text-sm">photo_camera</span>
+</button>
+</div>
+<p class="text-[10px] text-stone-400 mt-2 font-mono uppercase">JPG or PNG</p>
+</div>
+<div class="md:col-span-9 space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Shop Name</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" type="text" value="Kavya Handcrafted Crafts"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Username / Handle</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 font-mono">@</span>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary pl-8 h-[44px]" type="text" value="craftsbykavya"/>
+</div>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">City / Location</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">location_on</span>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary pl-10 h-[44px]" type="text" value="Bangalore, India"/>
+</div>
+</div>
+<div class="space-y-1.5 relative">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Short Bio <span class="normal-case font-normal">(max 300 chars)</span></label>
+<textarea class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary p-4" rows="4">Creating beautiful handmade crochet items with love.</textarea>
+<div class="absolute bottom-2 right-2 flex items-center gap-1">
+<span class="material-icons text-stone-400 text-xs">edit</span>
+<span class="text-[10px] font-mono text-stone-400">52 / 300</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 space-y-6">
+<div>
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-4">Banner Image</label>
+<div class="w-full h-32 md:h-48 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-2xl flex flex-col items-center justify-center bg-stone-50/50 dark:bg-stone-900/30 group cursor-pointer hover:bg-stone-50 transition-colors">
+<span class="text-stone-600 dark:text-stone-400 font-medium">Banner preview</span>
+<span class="text-xs text-stone-400">Click to change</span>
+</div>
+</div>
+<div>
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-4">Seller Badges</label>
+<div class="flex flex-wrap gap-2 md:gap-3">
+<div class="flex items-center gap-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 px-4 py-2 rounded-full text-xs min-h-[44px]">
+<span class="material-icons text-gold text-sm">stars</span>
+<span>Top Seller</span>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 px-4 py-2 rounded-full text-xs min-h-[44px]">
+<span class="material-icons text-primary text-sm">verified</span>
+<span>Verified Crafts</span>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 px-4 py-2 rounded-full text-xs min-h-[44px]">
+<span class="material-icons text-stone-600 text-sm">local_shipping</span>
+<span>Fast Shipments</span>
+</div>
+<div class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-full text-xs min-h-[44px]">
+<span class="material-icons text-sm">eco</span>
+<span>Eco-friendly</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-10 flex justify-end">
+<button class="bg-primary text-white px-8 py-3 rounded-full flex items-center gap-2 min-h-[44px] hover:shadow-lg transition-shadow active:scale-95">
+<span class="material-icons text-sm">save</span>
+<span>Save Basic Info</span>
+</button>
+</div>
+</section>
+<section class="bg-white dark:bg-card-dark rounded-2xl p-6 md:p-8 border border-stone-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-icons text-primary">menu_book</span>
+<h2 class="text-2xl text-primary font-bold">About Page</h2>
+</div>
+<div class="space-y-6">
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Story Headline</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" type="text" value="My Story of Crochet"/>
+</div>
+<div class="space-y-1.5 relative">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Story Description <span class="normal-case font-normal">(max 1000 chars)</span></label>
+<textarea class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary p-4" rows="6">I started crocheting during my college days...</textarea>
+<div class="absolute bottom-2 right-2 flex items-center gap-1">
+<span class="material-icons text-stone-400 text-xs">edit</span>
+<span class="text-[10px] font-mono text-stone-400">46 / 1000</span>
+</div>
+</div>
+<div>
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-4">About Image</label>
+<div class="w-full h-32 md:h-48 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-2xl flex flex-col items-center justify-center bg-stone-50/50 dark:bg-stone-900/30">
+<span class="text-stone-600 dark:text-stone-400 font-medium">About preview</span>
+<span class="text-xs text-stone-400">Click to change</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Working On Label</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" type="text" value="New winter collection"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Workshop Video / Reel URL</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" type="text" value="https://youtube.com/watch?v=12345"/>
+<p class="text-[10px] text-stone-400 mt-1">Paste a valid YouTube or Instagram Reel URL to see a preview below.</p>
+</div>
+</div>
+</div>
+<div class="mt-10 flex justify-end">
+<button class="bg-primary text-white px-8 py-3 rounded-full flex items-center gap-2 min-h-[44px] hover:shadow-lg transition-shadow active:scale-95">
+<span class="material-icons text-sm">save</span>
+<span>Save About Page</span>
+</button>
+</div>
+</section>
+<section class="bg-white dark:bg-card-dark rounded-2xl p-6 md:p-8 border border-stone-200 dark:border-stone-800 shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div class="flex items-center gap-3">
+<span class="material-icons text-primary">location_on</span>
+<h2 class="text-2xl text-primary font-bold">Addresses</h2>
+</div>
+<button class="bg-primary text-white px-6 py-2.5 rounded-full flex items-center justify-center gap-2 min-h-[44px]">
+<span class="material-icons text-sm">add</span>
+<span>Add New Address</span>
+</button>
+</div>
+<div class="flex flex-col items-center justify-center py-20 text-stone-400 border-2 border-dashed border-stone-100 dark:border-stone-800 rounded-2xl">
+<span class="material-icons text-4xl mb-2 opacity-20">inventory_2</span>
+<p class="text-sm">Could not load addresses. <button class="text-primary underline font-medium">Retry</button></p>
+</div>
+</section>
+</div>
+<div class="space-y-6 hidden" id="settings-content">
+<section class="bg-white dark:bg-card-dark rounded-2xl p-6 md:p-8 border border-stone-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-icons text-primary">shield</span>
+<h2 class="text-2xl text-primary font-bold">Account &amp; Security</h2>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-stone-50 dark:bg-stone-900/50 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-2 border border-stone-100 dark:border-stone-800">
+<div>
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-1">Registered Email</label>
+<div class="flex items-center gap-3">
+<span class="font-medium">kavya@tohfa.in</span>
+<span class="flex items-center gap-1 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                    Verified
+                                </span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-stone-50 dark:bg-stone-900/50 rounded-xl flex items-center justify-between border border-stone-100 dark:border-stone-800">
+<div>
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-1">Account Password</label>
+<span class="mono-accent text-lg">••••••••</span>
+</div>
+<button class="text-primary font-bold text-xs tracking-widest uppercase hover:underline">Reset</button>
+</div>
+<button class="w-full p-4 bg-red-50 dark:bg-red-950/20 rounded-xl flex items-center gap-4 group transition-colors hover:bg-red-100 dark:hover:bg-red-950/40">
+<div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-red-600">
+<span class="material-icons">warning</span>
+</div>
+<div class="text-left flex-1">
+<p class="text-red-700 dark:text-red-400 font-bold text-sm">Close Seller Account</p>
+<p class="text-red-600/70 dark:text-red-400/50 text-xs">Permanently delete your account and all data</p>
+</div>
+<span class="material-icons text-red-300 group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+</div>
+</section>
+<section class="bg-white dark:bg-card-dark rounded-2xl p-6 md:p-8 border border-stone-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-icons text-primary">speed</span>
+<h2 class="text-2xl text-primary font-bold">Selling Limits</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Daily Limit</label>
+<div class="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+<div class="flex items-end justify-between mb-4">
+<span class="text-5xl font-mono font-bold">50</span>
+<div class="flex flex-col">
+<button class="text-stone-400 hover:text-primary"><span class="material-icons text-lg leading-none">expand_less</span></button>
+<button class="text-stone-400 hover:text-primary"><span class="material-icons text-lg leading-none">expand_more</span></button>
+</div>
+<span class="text-[10px] text-stone-500 uppercase leading-tight text-right">Max orders<br/>per day</span>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[10px] font-bold text-stone-400">
+<span>0 / 50 sold today</span>
+<span>0%</span>
+</div>
+<div class="w-full h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-0"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Weekly Limit</label>
+<div class="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+<div class="flex items-end justify-between mb-4">
+<span class="text-5xl font-mono font-bold">200</span>
+<div class="flex flex-col">
+<button class="text-stone-400 hover:text-primary"><span class="material-icons text-lg leading-none">expand_less</span></button>
+<button class="text-stone-400 hover:text-primary"><span class="material-icons text-lg leading-none">expand_more</span></button>
+</div>
+<span class="text-[10px] text-stone-500 uppercase leading-tight text-right">Max orders<br/>per week</span>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[10px] font-bold text-stone-400">
+<span>7 / 200 sold this week</span>
+<span>4%</span>
+</div>
+<div class="w-full h-2 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[4%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p class="flex items-center gap-2 text-[10px] text-stone-400 mt-6">
+<span class="material-icons text-xs">info</span>
+                    Weekly limit must be greater than or equal to the daily limit.
+                </p>
+<div class="mt-10 flex justify-end">
+<button class="bg-primary text-white px-8 py-3 rounded-full flex items-center gap-2 min-h-[44px]">
+<span class="material-icons text-sm">save</span>
+<span>Save Limits</span>
+</button>
+</div>
+</section>
+<section class="bg-white dark:bg-card-dark rounded-2xl p-6 md:p-8 border border-stone-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-icons text-primary">account_balance</span>
+<h2 class="text-2xl text-primary font-bold">Bank Account Details</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Account Holder Name</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" placeholder="e.g. Aarav Sharma" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Bank Name</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" placeholder="e.g. State Bank of India" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Account Number</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" placeholder="e.g. 123456789012" type="text"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">IFSC Code</label>
+<input class="w-full border-none bg-stone-50 dark:bg-stone-900/50 rounded-lg focus:ring-2 focus:ring-primary h-[44px]" placeholder="e.g. SBIN0001234" type="text"/>
+</div>
+</div>
+<div class="mt-10 flex justify-end">
+<button class="bg-primary text-white px-8 py-3 rounded-full flex items-center gap-2 min-h-[44px]">
+<span class="material-icons text-sm">save</span>
+<span>Save Bank Details</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<footer class="md:ml-64 bg-[#FDFBF7] dark:bg-stone-900/40 p-6 md:p-8 mt-12 border-t border-stone-200 dark:border-stone-800">
+<p class="text-center text-[10px] font-mono text-stone-400 uppercase tracking-[0.3em]">
+            © 2026 Tohfa Artisan Studio. All Rights Reserved.
+        </p>
+</footer>
+<button class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center z-40 transition-transform active:scale-90">
+<span class="material-icons">help_outline</span>
+</button>
+<script>
+
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+        } catch(e) {
+            return null;
+        }
+    }
+    
+
+    (async function verifySellerRole() {
+        const token = getTohfaToken();
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+        try {
+            const res = await fetch(`${window.location.origin}/api/profile/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Unverified');
+            const profile = await res.json();
+            const user = profile.data || profile;
+            if (user.role !== 'seller') {
+                window.location.href = './buyer-home.html';
+            }
+        } catch (e) {
+            window.location.href = '/auth/login.html';
+        }
+    })();
+    
+
+        // Tab switching
+        function toggleSection(section) {
+            const profileContent = document.getElementById('profile-content');
+            const settingsContent = document.getElementById('settings-content');
+            const profileBtn = document.getElementById('btn-profile');
+            const settingsBtn = document.getElementById('btn-settings');
+            if (section === 'profile') {
+                profileContent.classList.remove('hidden');
+                settingsContent.classList.add('hidden');
+                profileBtn.classList.add('active-tab');
+                profileBtn.classList.remove('bg-white', 'dark:bg-card-dark', 'text-stone-600', 'dark:text-stone-400');
+                settingsBtn.classList.remove('active-tab');
+                settingsBtn.classList.add('bg-white', 'dark:bg-card-dark', 'text-stone-600', 'dark:text-stone-400');
+            } else {
+                profileContent.classList.add('hidden');
+                settingsContent.classList.remove('hidden');
+                settingsBtn.classList.add('active-tab');
+                settingsBtn.classList.remove('bg-white', 'dark:bg-card-dark', 'text-stone-600', 'dark:text-stone-400');
+                profileBtn.classList.remove('active-tab');
+                profileBtn.classList.add('bg-white', 'dark:bg-card-dark', 'text-stone-600', 'dark:text-stone-400');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // Mobile drawer logic
+        const menuBtn = document.getElementById('menu-toggle');
+        const closeBtn = document.getElementById('close-menu');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        function openDrawer() {
+            drawer.classList.add('open');
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+            drawer.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        menuBtn.addEventListener('click', openDrawer);
+        closeBtn.addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', closeDrawer);
+        // Dark mode preference (optional, based on system settings)
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // document.documentElement.classList.add('dark');
+        }
+    </script>
+
+</body></html>

@@ -1,84 +1,65 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
+<html lang="en" class="light">
+<head>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <script src="/src/components/DeviceRedirect.js"></script>
   <script src="/src/components/ProtectedRoute.js"></script>
-<meta charset="utf-8"/>
-<title>Basket | Tohfa</title>
-<!-- Google Fonts: Playfair Display and DM Sans -->
-  <!-- Tailwind CSS v3 -->
+  <meta charset="utf-8"/>
+  <title>Basket | Tohfa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-
-<style data-purpose="custom-transitions">
-    /* Sidebar Animation */
-    #sidebar {
-      transition: transform 0.3s ease-in-out;
-    }
-    #sidebar.closed {
-      transform: translateX(-100%);
-    }
-    #sidebar-overlay {
-      transition: opacity 0.3s ease-in-out;
-    }
-    #sidebar-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    /* Fixed Button Shadow */
-    .sticky-footer-shadow {
-      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+  <style>
+    body {
+      background-color: #F7F3EC !important;
     }
   </style>
 </head>
-<body class="bg-surface font-sans text-stone-800 min-h-screen flex flex-col">
+<body class="bg-[#F7F3EC] font-['DM_Sans'] text-[#1f1b15] min-h-screen flex flex-col">
 
 <!-- BEGIN: Main Content -->
-<main class="flex-grow p-4 md:p-8 max-w-2xl mx-auto w-full pb-32">
-<!-- BEGIN: Header Section -->
-<header class="flex items-center gap-3 mb-8" data-purpose="basket-header">
-<a class="p-2 -ml-2 text-forest min-w-[44px] min-h-[44px] flex items-center justify-center" href="/mobile-buyer/home.html">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</a>
-<h1 class="text-3xl font-serif text-forest">Your basket</h1>
-<span id="cart-badge-count" class="ml-auto bg-parchment border border-sage/30 px-3 py-1 rounded-full text-xs font-bold text-gold uppercase tracking-wider">
-        0 ITEMS
-      </span>
-</header>
-<!-- END: Header Section -->
-<!-- BEGIN: Product List -->
-<div class="space-y-4" data-purpose="basket-items-list" id="cart-items-container">
-<!-- Loaded dynamically -->
-</div>
-<!-- END: Product List -->
+<main class="flex-grow p-4 max-w-2xl mx-auto w-full pb-48">
+  <!-- BEGIN: Header Section -->
+  <header class="flex items-center justify-between mb-6" data-purpose="basket-header">
+    <div class="flex items-center gap-2">
+      <a class="w-9 h-9 rounded-full bg-[#F0EDE6] border border-[#c3c8c1] text-[#3D6B4F] flex items-center justify-center active:scale-90 transition-all" href="/mobile-buyer/home.html">
+        <span class="material-symbols-outlined text-[20px] font-bold">chevron_left</span>
+      </a>
+      <h1 class="text-2xl font-bold font-['Playfair_Display'] text-[#3D6B4F] ml-1">Your basket</h1>
+    </div>
+    <span id="cart-badge-count" class="font-['Space_Mono'] text-[11px] bg-[#F0EDE6] border border-[#c3c8c1] text-[#444840] px-2 py-0.5 rounded-full font-bold">
+      0 ITEMS
+    </span>
+  </header>
+  <!-- END: Header Section -->
+
+  <!-- BEGIN: Product List -->
+  <div class="space-y-4" data-purpose="basket-items-list" id="cart-items-container">
+    <!-- Loaded dynamically -->
+  </div>
+  <!-- END: Product List -->
 </main>
 <!-- END: Main Content -->
+
 <!-- BEGIN: Summary/Footer Action -->
-<footer class="fixed bottom-0 left-0 right-0 p-4 bg-surface/90 backdrop-blur-md sticky-footer-shadow border-t border-sage/20 z-40" data-purpose="checkout-bar">
-<div class="max-w-2xl mx-auto flex items-center gap-4">
-<button id="btn-checkout" class="flex-grow bg-forest text-white font-bold py-4 px-6 rounded-custom flex justify-between items-center min-h-[56px] active:scale-[0.98] transition-transform">
-<span class="uppercase tracking-widest text-sm">Proceed to Checkout</span>
-<span id="btn-total" class="text-parchment/80 font-medium border-l border-white/20 pl-4">₹0.00</span>
-</button>
-</div>
-<!-- Small handle for mobile indicating it's a sheet/tray -->
-<div class="w-12 h-1 bg-sage/40 rounded-full mx-auto mt-3"></div>
+<footer class="fixed bottom-16 left-0 right-0 p-4 bg-[#F7F3EC]/90 backdrop-blur-md border-t border-[#c3c8c1]/40 z-40" data-purpose="checkout-bar">
+  <div class="max-w-2xl mx-auto">
+    <button id="btn-checkout" class="w-full bg-[#3D6B4F] hover:bg-[#2A4B37] text-white font-bold py-3.5 px-6 rounded-xl flex justify-between items-center transition-all active:scale-[0.98]">
+      <span class="uppercase tracking-wider text-xs font-bold">Proceed to Checkout</span>
+      <span id="btn-total" class="text-white/90 font-semibold border-l border-white/20 pl-4 text-sm">₹0.00</span>
+    </button>
+  </div>
 </footer>
 <!-- END: Summary/Footer Action -->
+
 <!-- BEGIN: Report Floating Button -->
-<div class="fixed bottom-24 right-4 z-30">
-<button class="flex items-center gap-2 bg-forest text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium hover:bg-forest/90 active:scale-95 transition-all">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-      Report a Problem
-    </button>
+<div class="fixed bottom-36 right-4 z-30">
+  <button onclick="window.location.href='/mobile-buyer/report-problem.html'" class="flex items-center gap-2 bg-[#3D6B4F] text-white px-4 py-2 rounded-full shadow-lg text-xs font-medium hover:bg-[#2A4B37] active:scale-95 transition-all">
+    <span class="material-symbols-outlined text-[16px]">flag</span>
+    Report a Problem
+  </button>
 </div>
 <!-- END: Report Floating Button -->
 
@@ -99,9 +80,9 @@
     try {
       const container = document.getElementById('cart-items-container');
       container.innerHTML = `
-        <div class="flex flex-col gap-4 py-8 text-center text-sage">
-          <span class="material-symbols-outlined animate-spin text-[32px] text-forest">sync</span>
-          <p class="font-sans text-stone-500">Loading your basket...</p>
+        <div class="flex flex-col gap-4 py-12 text-center text-[#74786f]">
+          <span class="material-symbols-outlined animate-spin text-[32px] text-[#3D6B4F]">sync</span>
+          <p class="text-sm">Loading your basket...</p>
         </div>
       `;
       
@@ -140,9 +121,9 @@
       console.error("Error fetching cart:", err);
       const container = document.getElementById('cart-items-container');
       container.innerHTML = `
-        <div class="bg-red-50 border border-red-200 rounded-custom p-4 text-center my-4">
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-center my-4">
           <p class="text-red-700 font-bold">Failed to load basket</p>
-          <button onclick="window.location.reload()" class="mt-2 px-4 py-2 bg-forest text-white rounded-custom text-sm font-bold">Retry</button>
+          <button onclick="window.location.reload()" class="mt-2 px-4 py-2 bg-[#3D6B4F] text-white rounded-xl text-sm font-bold">Retry</button>
         </div>
       `;
     }
@@ -153,31 +134,32 @@
     container.innerHTML = items.map(ci => {
       const imgUrl = ci.image_url ? ci.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
       return `
-        <article class="bg-white border border-sage/20 rounded-custom p-4 shadow-sm relative" data-purpose="basket-item">
+        <article class="bg-white border border-[#c3c8c1]/40 rounded-xl p-4 shadow-sm relative flex flex-col gap-3" data-purpose="basket-item">
           <div class="flex gap-4">
-            <div class="w-20 h-20 bg-parchment rounded-custom overflow-hidden flex-shrink-0 cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">
+            <div class="w-20 h-20 bg-[#F7F3EC] border border-[#c3c8c1]/20 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">
               <img alt="${ci.name}" class="w-full h-full object-cover" src="${imgUrl}" loading="lazy" />
             </div>
-            <div class="flex-grow">
-              <h3 class="font-serif text-lg text-forest leading-tight cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">${ci.name}</h3>
-              <p class="text-xs text-stone-500 mb-2 cursor-pointer" onclick="window.location.href='/mobile-buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
-              <p class="text-sm font-bold text-gold">${formatPaise(ci.price_paise)}</p>
+            <div class="flex-grow pr-8">
+              <h3 class="font-['Playfair_Display'] font-bold text-md text-[#3D6B4F] leading-tight cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">${ci.name}</h3>
+              <p class="text-xs text-[#74786f] mt-1 cursor-pointer" onclick="window.location.href='/mobile-buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
+              <p class="text-xs font-semibold text-[#C8973A] mt-1">${formatPaise(ci.price_paise)}</p>
             </div>
           </div>
-          <div class="flex justify-between items-end mt-4">
-            <div class="flex items-center border border-sage/30 rounded-custom bg-parchment h-10 overflow-hidden">
-              <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600 hover:text-forest transition-colors">−</button>
-              <span class="px-2 font-medium text-forest min-w-[20px] text-center">${ci.quantity}</span>
-              <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="px-3 min-w-[44px] h-full flex items-center justify-center text-stone-600 hover:text-forest transition-colors">+</button>
+          
+          <div class="flex justify-between items-center border-t border-[#c3c8c1]/20 pt-3 mt-1">
+            <div class="flex items-center border border-[#c3c8c1]/60 rounded-lg bg-[#F0EDE6] h-8 overflow-hidden">
+              <button onclick="updateQty('${ci.id}', ${ci.quantity - 1})" class="px-2.5 h-full flex items-center justify-center text-stone-600 hover:text-[#3D6B4F] font-bold active:bg-[#c3c8c1]/20 transition-all">−</button>
+              <span class="px-2 text-xs font-bold text-[#3D6B4F] min-w-[20px] text-center">${ci.quantity}</span>
+              <button onclick="updateQty('${ci.id}', ${ci.quantity + 1})" class="px-2.5 h-full flex items-center justify-center text-stone-600 hover:text-[#3D6B4F] font-bold active:bg-[#c3c8c1]/20 transition-all">+</button>
             </div>
             <div class="text-right">
-              <p class="text-lg font-bold text-forest">${formatPaise(ci.price_paise * ci.quantity)}</p>
+              <p class="text-md font-bold text-[#3D6B4F]">${formatPaise(ci.price_paise * ci.quantity)}</p>
             </div>
           </div>
-          <button onclick="removeItem('${ci.id}')" aria-label="Remove item" class="absolute top-2 right-2 p-2 text-stone-400 hover:text-red-500 min-w-[44px] min-h-[44px] flex items-center justify-center">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-            </svg>
+          
+          <!-- Delete button placed perfectly at the top right -->
+          <button onclick="removeItem('${ci.id}')" aria-label="Remove item" class="absolute top-2 right-2 p-1.5 text-stone-400 hover:text-red-500 rounded-full hover:bg-stone-100 transition-all flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </article>
       `;
@@ -224,3 +206,5 @@
   window.removeItem = removeItem;
   window.addEventListener('DOMContentLoaded', initCart);
 </script>
+</body>
+</html>

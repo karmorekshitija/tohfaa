@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tohfa | Cancel Order #TF-88291</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&family=Playfair+Display:wght@100..900&family=Space+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f9faf5",
+                    "outline-variant": "#c1c9c0",
+                    "inverse-primary": "#a0d2b0",
+                    "on-tertiary-fixed-variant": "#324e29",
+                    "secondary-container": "#e6e2db",
+                    "on-background": "#1a1c1a",
+                    "tertiary": "#35512c",
+                    "on-surface-variant": "#414942",
+                    "surface-container": "#edeeea",
+                    "inverse-surface": "#2e312e",
+                    "secondary-fixed": "#e6e2db",
+                    "surface-tint": "#3a684c",
+                    "surface-variant": "#e2e3df",
+                    "surface-container-highest": "#e2e3df",
+                    "on-secondary-fixed": "#1c1c18",
+                    "primary-container": "#3d6b4f",
+                    "surface-container-low": "#f3f4f0",
+                    "on-primary-fixed-variant": "#214f36",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e7e9e4",
+                    "on-tertiary-container": "#c5e7b6",
+                    "surface-bright": "#f9faf5",
+                    "outline": "#717972",
+                    "surface": "#f9faf5",
+                    "error": "#ba1a1a",
+                    "primary-fixed-dim": "#a0d2b0",
+                    "on-primary": "#ffffff",
+                    "primary": "#255338",
+                    "tertiary-fixed-dim": "#afd0a0",
+                    "on-surface": "#1a1c1a",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#caecbb",
+                    "tertiary-container": "#4c6942",
+                    "surface-dim": "#d9dad6",
+                    "secondary": "#605e59",
+                    "primary-fixed": "#bceecb",
+                    "inverse-on-surface": "#f0f1ed",
+                    "on-primary-container": "#b7e9c6",
+                    "on-secondary-fixed-variant": "#484742",
+                    "surface-container-lowest": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c9c6c0",
+                    "on-secondary-container": "#66645f",
+                    "on-tertiary-fixed": "#062103",
+                    "on-primary-fixed": "#002110",
+                    "violet": "#7B5EA7",
+                    "gold": "#C8973A",
+                    "sage": "#8FAF82",
+                    "parchment": "#F7F3EC",
+                    "forest": "#3D6B4F"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "section-gap": "80px",
+                    "unit": "4px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Playfair Display"],
+                    "display-lg": ["Playfair Display"],
+                    "headline-sm": ["Playfair Display"],
+                    "mono-data": ["Space Mono"],
+                    "body-md": ["DM Sans"],
+                    "display-lg-mobile": ["Playfair Display"],
+                    "label-caps": ["Space Mono"],
+                    "body-lg": ["DM Sans"],
+                    "body-sm": ["DM Sans"]
+            },
+            "fontSize": {
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "display-lg": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            font-weight: 700;
+        }
+        .reason-chip:hover {
+            border-color: #3D6B4F;
+        }
+        .reason-chip.selected {
+            background-color: #3D6B4F;
+            color: white;
+            border-color: #3D6B4F;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-background border-b border-outline-variant/30" id="top-app-bar">
+<div class="flex items-center justify-between px-margin-mobile md:px-margin-desktop py-stack-md max-w-container-max mx-auto h-20">
+<!-- Brand -->
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined cursor-pointer text-primary">menu</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-headline-md text-primary tracking-tight">Tohfa</h1>
+</div>
+<!-- Desktop Navigation Center -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors" href="#">HOME</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors" href="#">CATEGORY</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors" href="#">REEL</a>
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1" href="#">PROFILE</a>
+</nav>
+<!-- Actions Right -->
+<div class="flex items-center gap-4 md:gap-6 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">search</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">favorite</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">shopping_cart</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">notifications</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-stack-lg">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 mb-stack-lg overflow-x-auto whitespace-nowrap">
+<span class="font-mono-data text-label-caps text-secondary">PROFILE</span>
+<span class="material-symbols-outlined text-[12px] text-outline-variant">chevron_right</span>
+<span class="font-mono-data text-label-caps text-secondary">ORDERS</span>
+<span class="material-symbols-outlined text-[12px] text-outline-variant">chevron_right</span>
+<span class="font-mono-data text-label-caps text-primary font-bold underline">#TF-88291</span>
+</nav>
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-lg border-b border-outline-variant/20 pb-stack-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Order #TF-88291</h2>
+<div class="flex flex-wrap items-center gap-4">
+<p class="font-mono-data text-body-sm text-secondary">Date: October 12, 2023</p>
+<div class="flex items-center gap-2 bg-violet/10 text-violet px-3 py-1 rounded-full border border-violet/20">
+<span class="w-2 h-2 rounded-full bg-violet animate-pulse"></span>
+<span class="font-label-caps text-label-caps">PROCESSING</span>
+</div>
+</div>
+</div>
+<div class="hidden md:block">
+<button class="font-label-caps text-label-caps border border-error text-error px-6 py-3 rounded hover:bg-error/5 transition-all" onclick="toggleModal(true)">
+                    CANCEL ORDER
+                </button>
+</div>
+</section>
+<!-- Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Item Details -->
+<div class="lg:col-span-8 space-y-stack-lg">
+<div class="bg-surface-container-lowest border border-sage/30 p-stack-lg flex flex-col md:flex-row gap-stack-lg relative">
+<!-- Product Image -->
+<div class="w-full md:w-48 h-48 bg-secondary-container flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A macro photograph of a hand-thrown ceramic mug with a deep moss-green reactive glaze. The texture is tactile and earthy, with subtle speckles of charcoal and cream. It is lit with soft afternoon sunlight in a minimalist studio setting with a parchment-colored background, emphasizing craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAYXKif3Kwi163-5eNBcw5HxyxpxSRghriHAcvlX3lDvuPzfp4yw9Ev_CHrOoNdVHv1PPSEr4Cq0gOe0o9-A6c3PHk6dU2-yz7ZsFVB42CEeZ_B7qsWDEXCiOjbG41CoSx-4gAEbh0ZDT2LThGJPxdni6aOPtMgxGUCUqSaCx3-O15mnN8_8YReCTq9xl94_FkI5Sy0x0Wykgkm4MGM2pIoQUoUyZGCKiuH4ljw5ExCX9C-huykL85q7T10bzocJqsVTGNtvYt1-g"/>
+</div>
+<!-- Product Info -->
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<span class="font-mono-data text-label-caps text-sage font-bold uppercase tracking-widest mb-2 block">CRAFTSMAN COLLECTION</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Hand-Thrown Moss Mug</h3>
+<p class="font-body-sm text-secondary mb-4">Limited Edition Artisan Ceramic, 12oz</p>
+<div class="flex items-center gap-6">
+<div>
+<span class="font-label-caps text-label-caps text-outline block">QTY</span>
+<span class="font-mono-data text-body-lg">01</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-outline block">PRICE</span>
+<span class="font-mono-data text-body-lg">$42.00</span>
+</div>
+</div>
+</div>
+<div class="mt-stack-md flex items-center gap-2 text-sage">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-mono-data text-label-caps">AUTHENTICATED HANDMADE</span>
+</div>
+</div>
+<!-- Seal -->
+<div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gold/10 border border-gold flex items-center justify-center rotate-12">
+<span class="font-label-caps text-[10px] text-gold font-bold text-center leading-tight">THE<br/>SEAL</span>
+</div>
+</div>
+<!-- Tracking / Status -->
+<div class="border border-outline-variant/30 p-stack-lg">
+<h4 class="font-label-caps text-label-caps text-secondary mb-stack-md">ORDER MILESTONES</h4>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="w-px h-full bg-primary/30 my-1"></div>
+</div>
+<div>
+<p class="font-body-md text-on-surface">Order Confirmed</p>
+<p class="font-mono-data text-body-sm text-secondary">Oct 12, 10:45 AM</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20"></div>
+</div>
+<div>
+<p class="font-body-md text-on-surface">Processing Atelier Preparation</p>
+<p class="font-mono-data text-body-sm text-secondary">Oct 13, 09:12 AM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Payment Summary -->
+<aside class="lg:col-span-4">
+<div class="bg-surface-container border border-outline-variant/30 p-stack-lg sticky top-24">
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-stack-lg">Payment Summary</h4>
+<div class="space-y-4 mb-stack-lg">
+<div class="flex justify-between">
+<span class="font-body-md text-secondary">Subtotal</span>
+<span class="font-mono-data text-body-md">$42.00</span>
+</div>
+<div class="flex justify-between">
+<span class="font-body-md text-secondary">Shipping (Artisan Care)</span>
+<span class="font-mono-data text-body-md">$5.00</span>
+</div>
+<div class="flex justify-between">
+<span class="font-body-md text-secondary">Taxes</span>
+<span class="font-mono-data text-body-md">$0.00</span>
+</div>
+<div class="pt-4 border-t border-outline-variant/30 flex justify-between">
+<span class="font-body-lg font-bold text-on-surface">Total</span>
+<span class="font-mono-data text-headline-sm text-primary">$47.00</span>
+</div>
+</div>
+<div class="mb-stack-lg">
+<h5 class="font-label-caps text-label-caps text-secondary mb-2">SHIPPING ADDRESS</h5>
+<p class="font-body-sm text-on-surface leading-relaxed">
+                            Aisha Al-Saud<br/>
+                            124 Heritage Lane, Al Balad<br/>
+                            Jeddah, Saudi Arabia
+                        </p>
+</div>
+<div class="md:hidden mt-stack-lg">
+<button class="w-full font-label-caps text-label-caps border border-error text-error py-4 rounded hover:bg-error/5 active:scale-[0.98] transition-all" onclick="toggleModal(true)">
+                            CANCEL THIS ORDER
+                        </button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-section-gap bg-surface-container-low border-t border-outline-variant/20">
+<div class="flex flex-col md:flex-row justify-between items-center py-stack-lg px-margin-desktop max-w-container-max mx-auto space-y-stack-md md:space-y-0">
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Tohfa Atelier. All rights reserved.</p>
+<div class="flex gap-8">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Privacy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Terms</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Contact</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 flex md:hidden justify-around items-center h-16 pb-safe px-4 shadow-sm">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-[10px]">HOME</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">category</span>
+<span class="font-label-caps text-[10px]">CATEGORY</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">movie</span>
+<span class="font-label-caps text-[10px]">REEL</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-caps text-[10px]">PROFILE</span>
+</div>
+</nav>
+<!-- Cancellation Modal Overlay -->
+<div class="fixed inset-0 z-[100] hidden" id="cancel-modal">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-on-background/60 backdrop-blur-sm transition-opacity" onclick="toggleModal(false)"></div>
+<!-- Modal Content Container -->
+<div class="absolute inset-x-0 bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md w-full animate-slide-up">
+<div class="bg-background rounded-t-xl md:rounded-xl shadow-2xl p-margin-mobile md:p-stack-lg border border-outline-variant/20">
+<!-- Modal Handle (Mobile) -->
+<div class="w-12 h-1 bg-outline-variant/30 rounded-full mx-auto mb-stack-lg md:hidden"></div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm">Cancel this order?</h3>
+<p class="font-body-md text-secondary mb-stack-lg">Please tell us why you are canceling. This helps our artisans understand their community better.</p>
+<!-- Reason Chips -->
+<div class="grid grid-cols-2 gap-3 mb-stack-lg" id="reason-container">
+<button class="reason-chip border border-outline-variant p-3 rounded font-body-sm text-left transition-all active:scale-95" onclick="selectReason(this)">Changed my mind</button>
+<button class="reason-chip border border-outline-variant p-3 rounded font-body-sm text-left transition-all active:scale-95" onclick="selectReason(this)">Ordered by mistake</button>
+<button class="reason-chip border border-outline-variant p-3 rounded font-body-sm text-left transition-all active:scale-95" onclick="selectReason(this)">Found elsewhere</button>
+<button class="reason-chip border border-outline-variant p-3 rounded font-body-sm text-left transition-all active:scale-95" onclick="selectReason(this)">Other</button>
+</div>
+<!-- Modal Actions -->
+<div class="flex flex-col gap-3">
+<button class="w-full bg-forest text-white font-label-caps text-label-caps py-4 rounded hover:bg-primary transition-all shadow-md active:scale-[0.98]" onclick="toggleModal(false)">
+                        KEEP MY ORDER
+                    </button>
+<button class="w-full border border-error text-error font-label-caps text-label-caps py-4 rounded hover:bg-error/5 transition-all active:scale-[0.98]" onclick="confirmCancel()">
+                        YES, CANCEL ORDER
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Modal Logic
+        function toggleModal(show) {
+            const modal = document.getElementById('cancel-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Chip selection Logic
+        function selectReason(element) {
+            const chips = document.querySelectorAll('.reason-chip');
+            chips.forEach(chip => chip.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Simulated confirmation
+        function confirmCancel() {
+            const selected = document.querySelector('.reason-chip.selected');
+            if (!selected) {
+                alert('Please select a reason for cancellation.');
+                return;
+            }
+            
+            // Interaction feedback
+            const btn = event.currentTarget;
+            btn.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-error" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> PROCESSING...</span>';
+            
+            setTimeout(() => {
+                alert('Order #TF-88291 has been canceled. Your refund is being processed to your original payment method.');
+                toggleModal(false);
+                window.location.reload();
+            }, 1500);
+        }
+
+        // Custom Animation definition for slide-up
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideUp {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
+            .animate-slide-up {
+                animation: slideUp 0.3s ease-out;
+            }
+            @media (min-width: 768px) {
+                .animate-slide-up {
+                    animation: none;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body></html>

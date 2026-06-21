@@ -110,6 +110,14 @@
             left: auto !important;
             transform: none !important;
         }
+        @media (max-width: 768px) {
+            #catalog-grid,
+            #custom-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 12px !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-white text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
@@ -283,7 +291,7 @@
                     </div>
                 </div>
 
-                <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+                <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
                     <!-- Loaded dynamically -->
                 </div>
                 <div id="catalog-empty" class="py-16 text-center text-on-surface-variant font-label-md hidden">
@@ -293,7 +301,7 @@
 
             <!-- 2. Customised Tab Panel -->
             <div id="panel-customised" class="tab-panel animate-fade-in hidden">
-                <div id="custom-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+                <div id="custom-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
                     <!-- Loaded dynamically -->
                 </div>
                 <div id="custom-empty" class="py-16 text-center text-on-surface-variant font-label-md hidden">
