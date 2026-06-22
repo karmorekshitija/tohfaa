@@ -390,7 +390,7 @@
 
     function getProductCardHtml(p, isCarousel) {
       const isWishlisted = wishlist.has(p.id);
-      const widthStyle = isCarousel ? "style='width: 62vw; max-width: 230px;'" : "";
+      const widthStyle = isCarousel ? "style='width: 80vw; max-width: 320px; scroll-snap-align: start;'" : "";
       const price = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
       const tag = p.is_bestseller ? 'bestseller' : (p.product_tag === 'Sponsored' || p.type === 'sponsored' ? 'sponsored' : (p.listing_type === 'custom' ? 'custom' : null));
       const imageUrl = p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';

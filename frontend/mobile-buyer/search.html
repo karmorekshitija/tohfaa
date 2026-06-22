@@ -227,8 +227,13 @@
             <!-- Trending Searches -->
             <section>
                 <h2 class="font-label-caps text-[11px] text-gold tracking-widest mb-md uppercase">Trending Now 🔥</h2>
-                <div id="trending-tags-container" class="flex overflow-x-auto gap-sm pb-2 scrollbar-hide snap-x whitespace-nowrap">
-                    <!-- Dynamic trending tags loaded from backend -->
+                <div class="flex flex-wrap gap-sm">
+                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">handmade candles</button>
+                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">ceramics</button>
+                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">wildflower jewelry</button>
+                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">leather journal</button>
+                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">woodworking</button>
+                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">custom portrait</button>
                 </div>
             </section>
 
@@ -418,8 +423,14 @@
                 });
             });
 
-            // Load trending tags from backend
-            loadTrendingTags();
+            // Wire trending chips clicks
+            document.querySelectorAll('.trending-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const text = chip.innerText;
+                    searchInput.value = text;
+                    executeSearch(text);
+                });
+            });
 
             // Handle URL Parameters
             if (queryParam) {
@@ -434,34 +445,6 @@
 
             // Setup Infinite Scroll
             window.addEventListener('scroll', handleScroll);
-        }
-
-        // Fetch and load trending tags
-        async function loadTrendingTags() {
-            const container = document.getElementById('trending-tags-container');
-            if (!container) return;
-            try {
-                const res = await apiClient.get('/products/trending-tags');
-                if (res.data && res.data.success) {
-                    const tags = res.data.data || [];
-                    if (tags.length > 0) {
-                        container.innerHTML = tags.map(tag => `
-                            <button class="trending-chip flex-shrink-0 whitespace-nowrap px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">${tag}</button>
-                        `).join('');
-                        
-                        // Wire dynamic chip clicks
-                        container.querySelectorAll('.trending-chip').forEach(chip => {
-                            chip.addEventListener('click', () => {
-                                const text = chip.innerText;
-                                searchInput.value = text;
-                                executeSearch(text);
-                            });
-                        });
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to load trending tags:", err);
-            }
         }
 
         // States navigation logic
