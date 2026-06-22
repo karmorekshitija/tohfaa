@@ -104,49 +104,71 @@
             display: none;
         }
         
-        @media (max-width: 768px) {
-            /* Mobile-only badge overrides: replace diagonal ribbons with stacked horizontal pills in top-left */
+        /* Redefine Ribbon to Flat top-left pills for both desktop and mobile */
+        .ribbon-wrapper {
+            position: absolute !important;
+            top: 8px !important;  /* Matches top-2 on mobile */
+            left: 8px !important; /* Matches left-2 on mobile */
+            width: auto !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            z-index: 20 !important;
+            overflow: visible !important;
+            pointer-events: none !important;
+        }
+
+        @media (min-width: 640px) {
             .ribbon-wrapper {
-                position: absolute !important;
-                top: 8px !important;
-                left: 8px !important;
-                width: auto !important;
-                height: auto !important;
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 4px !important;
-                z-index: 20 !important;
-                overflow: visible !important;
-                pointer-events: none !important;
+                top: 12px !important;  /* Matches top-3 on desktop */
+                left: 12px !important; /* Matches left-3 on desktop */
             }
-            .ribbon-tag {
-                position: static !important;
-                width: auto !important;
-                transform: none !important;
-                text-align: center !important;
-                font-size: 9px !important;
-                font-weight: 700 !important;
-                letter-spacing: 0.05em !important;
-                color: #ffffff !important;
-                line-height: 1 !important;
-                padding: 4px 8px !important;
-                border-radius: 9999px !important;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-                display: inline-block !important;
-                white-space: nowrap !important;
-            }
-            /* Hide the corner shadow folds */
-            .ribbon-tag::before,
-            .ribbon-tag::after {
-                display: none !important;
-            }
-            /* Reset any double positioning offsets */
-            .ribbon-bestseller-double,
-            .ribbon-custom-double {
-                top: auto !important;
-                left: auto !important;
-                position: static !important;
-            }
+        }
+
+        .ribbon-tag {
+            position: static !important;
+            width: auto !important;
+            transform: none !important;
+            text-align: center !important;
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em !important;
+            color: #ffffff !important;
+            line-height: 1 !important;
+            padding: 4px 8px !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            display: inline-block !important;
+            white-space: nowrap !important;
+        }
+
+        .ribbon-tag::before,
+        .ribbon-tag::after {
+            display: none !important;
+        }
+
+        .ribbon-bestseller-double,
+        .ribbon-custom-double {
+            top: auto !important;
+            left: auto !important;
+            position: static !important;
+        }
+
+        /* Force Filled White Heart with Green Border style */
+        .toggle-wishlist-btn .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1 !important;
+            -webkit-text-stroke: 1.5px #3D6B4F !important;
+            color: #ffffff !important;
+        }
+
+        .toggle-wishlist-btn[data-wishlisted="true"] .material-symbols-outlined,
+        .toggle-wishlist-btn .text-red-500 {
+            -webkit-text-stroke: 1.5px #ef4444 !important;
+            color: #ef4444 !important;
+        }
+
+        @media (max-width: 768px) {
             /* Protective Grid Carve-outs for 2-Column Mobile Feed */
             #product-feed-grid,
             #feed-skeletons {
@@ -330,20 +352,20 @@
 
 <!-- Sponsored Section -->
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
-        <div class="flex justify-between items-end mb-lg">
-            <div>
-                <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
-                    <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span>Sponsored</span>
-                </h3>
-                <p class="font-body-md text-on-surface-variant">Featured treasures from our creative community</p>
-            </div>
+    <div class="flex justify-between items-end mb-lg">
+        <div>
+            <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span>Sponsored</span>
+            </h3>
+            <p class="font-body-md text-on-surface-variant">Featured treasures from our creative community</p>
         </div>
-        
-        <!-- Sponsored Product Grid -->
-        <div id="sponsored-product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
-            <!-- Dynamic sponsored product cards will load here -->
-        </div>
+    </div>
+    
+    <!-- Sponsored Product Grid -->
+    <div id="sponsored-product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
+        <!-- Dynamic sponsored product cards will load here -->
+    </div>
 </section>
 
 <!-- For You (Capped at 15 products) -->

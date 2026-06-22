@@ -118,6 +118,70 @@
                 gap: 12px !important;
             }
         }
+
+        /* Redefine Ribbon to Flat top-left pills for both desktop and mobile */
+        .ribbon-wrapper {
+            position: absolute !important;
+            top: 8px !important;  /* Matches top-2 on mobile */
+            left: 8px !important; /* Matches left-2 on mobile */
+            width: auto !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            z-index: 20 !important;
+            overflow: visible !important;
+            pointer-events: none !important;
+        }
+
+        @media (min-width: 640px) {
+            .ribbon-wrapper {
+                top: 12px !important;  /* Matches top-3 on desktop */
+                left: 12px !important; /* Matches left-3 on desktop */
+            }
+        }
+
+        .ribbon-tag {
+            position: static !important;
+            width: auto !important;
+            transform: none !important;
+            text-align: center !important;
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em !important;
+            color: #ffffff !important;
+            line-height: 1 !important;
+            padding: 4px 8px !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            display: inline-block !important;
+            white-space: nowrap !important;
+        }
+
+        .ribbon-tag::before,
+        .ribbon-tag::after {
+            display: none !important;
+        }
+
+        .ribbon-bestseller-double,
+        .ribbon-custom-double {
+            top: auto !important;
+            left: auto !important;
+            position: static !important;
+        }
+
+        /* Force Filled White Heart with Green Border style */
+        .toggle-wishlist-btn .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1 !important;
+            -webkit-text-stroke: 1.5px #3D6B4F !important;
+            color: #ffffff !important;
+        }
+
+        .toggle-wishlist-btn[data-wishlisted="true"] .material-symbols-outlined,
+        .toggle-wishlist-btn .text-red-500 {
+            -webkit-text-stroke: 1.5px #ef4444 !important;
+            color: #ef4444 !important;
+        }
     </style>
 </head>
 <body class="bg-white text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
