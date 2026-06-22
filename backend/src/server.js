@@ -1510,6 +1510,62 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
   }
 });
 
+// GET /api/products/trending-tags
+app.get('/api/products/trending-tags', rateLimit(120), async (req, res) => {
+  try {
+    const categories = await db.prepare("SELECT COALESCE(display_name, name) AS name FROM categories ORDER BY item_count DESC LIMIT 8").all();
+    const topProducts = await db.prepare(`
+      SELECT p.name 
+      FROM products p
+      LEFT JOIN order_items oi ON p.id = oi.product_id
+      WHERE p.status = 'active'
+      GROUP BY p.id
+      ORDER BY SUM(COALESCE(oi.quantity, 0)) DESC, p.created_at DESC
+      LIMIT 8
+    `).all();
+    
+    const tagsSet = new Set();
+    
+    // Add categories first
+    categories.forEach(c => {
+      if (c.name && c.name.length < 20) {
+        tagsSet.add(c.name.toLowerCase());
+      }
+    });
+    
+    // Add popular products
+    topProducts.forEach(p => {
+      if (p.name && p.name.length < 20) {
+        tagsSet.add(p.name.toLowerCase());
+      }
+    });
+    
+    // Fallback/Default trending terms to guarantee enough tags
+    const defaults = [
+      "handmade candles", "ceramics", "wildflower jewelry", 
+      "leather journal", "woodworking", "custom portrait",
+      "resin coasters", "tote bags", "terracotta pots"
+    ];
+    defaults.forEach(d => tagsSet.add(d));
+
+    // Convert back to array and limit to 15 items
+    const trendingTags = Array.from(tagsSet).slice(0, 15);
+
+    return res.status(200).json({
+      success: true,
+      data: trendingTags
+    });
+  } catch (err) {
+    console.error('Error in trending tags:', err);
+    return res.status(500).json({
+      error: true,
+      message: "Internal server error",
+      code: "INTERNAL_SERVER_ERROR"
+    });
+  }
+});
+
+
 // TASK 19: GET /api/products/:id
 app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (req, res) => {
   const { id } = req.params;

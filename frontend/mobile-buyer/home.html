@@ -643,15 +643,15 @@
                         <span class="material-symbols-outlined text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                     </button>
                 </div>
-                <div class="flex flex-col mb-4 gap-y-1">
-                    <span class="font-bold text-lg text-[#C8973A]">${formattedPrice}</span>
-                    <div class="flex items-center gap-1 text-xs text-[#605e57]">
+                <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
+                    <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
+                    <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
                         <span class="text-[#C8973A] font-bold">★</span>
                         <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating || 0).toFixed(1)}</span>
                         <span>(${parseInt(product.review_count || 0, 10)})</span>
                     </div>
-                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1" style="font-family: 'Playfair Display', serif;">${product.name}</h4>
-                    <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${product.seller_id}'">By ${product.seller_name}</span>
+                    <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${product.name}</h4>
+                    <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${product.seller_id}'">By ${product.seller_name}</span>
                 </div>
             </div>
             <div class="w-full">

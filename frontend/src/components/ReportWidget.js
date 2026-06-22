@@ -3,42 +3,60 @@
   // 1. Inject Stylesheets dynamically
   const style = document.createElement('style');
   style.textContent = `
-    /* Floating Mascot Button */
+    /* Floating Mascot Button — bare transparent PNG, no circle background */
     #tohfa-chat-mascot {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background-color: #3D6B4F;
-      box-shadow: 0 4px 16px rgba(61, 107, 79, 0.35);
+      bottom: 80px;        /* above mobile bottom nav bar */
+      right: 12px;
+      width: 64px;
+      height: 64px;
+      background: none;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
       cursor: pointer;
       z-index: 99999;
-      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: 2px solid #FFFFFF;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: mascotFloat 3.5s ease-in-out infinite;
+    }
+    @media (min-width: 769px) {
+      #tohfa-chat-mascot {
+        width: 90px;
+        height: 90px;
+        bottom: 32px;
+        right: 32px;
+      }
     }
     #tohfa-chat-mascot:hover {
-      transform: scale(1.08);
-      background-color: #2f543e;
-      border-color: #C8973A;
-      box-shadow: 0 6px 20px rgba(61, 107, 79, 0.45);
+      transform: scale(1.1) translateY(-4px);
+      animation-play-state: paused;
     }
     #tohfa-chat-mascot:active {
-      transform: scale(0.92);
+      transform: scale(0.95);
     }
+    /* Hide old icon — replaced by img */
     #tohfa-chat-mascot span.material-symbols-outlined {
-      color: #FFFFFF;
-      font-size: 28px;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: none;
     }
+    /* Mascot PNG inside the button */
+    #tohfa-chat-mascot img.mascot-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: bottom center;
+      display: block;
+      filter: drop-shadow(0 6px 16px rgba(61, 107, 79, 0.28));
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+    /* Gold notification badge repositioned for bare image */
     #tohfa-chat-badge {
       position: absolute;
-      top: -2px;
-      right: -2px;
+      top: 6px;
+      right: 2px;
       width: 14px;
       height: 14px;
       background-color: #C8973A;
@@ -46,11 +64,14 @@
       border: 2px solid #FFFFFF;
       animation: pulseGold 2s infinite;
     }
-
     @keyframes pulseGold {
       0% { box-shadow: 0 0 0 0 rgba(200, 151, 58, 0.7); }
       70% { box-shadow: 0 0 0 6px rgba(200, 151, 58, 0); }
       100% { box-shadow: 0 0 0 0 rgba(200, 151, 58, 0); }
+    }
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
     }
 
     /* Chat Panel */
@@ -407,10 +428,10 @@
     /* Mobile view overrides */
     @media (max-width: 768px) {
       #tohfa-chat-mascot {
-        bottom: 16px;
-        right: 16px;
-        width: 48px;
-        height: 48px;
+        width: 64px;
+        height: 64px;
+        bottom: 76px;   /* clears mobile bottom nav (~64px) + breathing room */
+        right: 12px;
       }
       #tohfa-chat-panel {
         bottom: 0;
@@ -461,7 +482,7 @@
     mascot.id = 'tohfa-chat-mascot';
     mascot.title = 'Tohfa Assistant';
     mascot.innerHTML = `
-      <span class="material-symbols-outlined">forum</span>
+      <img class="mascot-img" src="/src/assets/mascot.png" alt="Tohfa Assistant" draggable="false" />
       <div id="tohfa-chat-badge" style="display:none;"></div>
     `;
     document.body.appendChild(mascot);

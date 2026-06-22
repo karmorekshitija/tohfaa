@@ -408,11 +408,11 @@
               </button>
             </div>
             <div class="p-2.5">
-              <div class="flex flex-col items-start gap-0.5 mb-1">
+              <div class="flex items-center justify-between mb-0.5">
                 <p class="text-[13px] font-bold text-[#C8973A] leading-tight" style="font-family: 'DM Sans', sans-serif;">${price}</p>
-                <div class="flex items-center gap-1 text-[11px] text-[#605e57]">
-                  <span class="text-[#C8973A] font-bold">★</span>
-                  <span class="font-semibold text-[#1f1b15]">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                <div class="flex items-center gap-1">
+                  <span class="text-[#C8973A] text-[11px] font-bold">★</span>
+                  <span class="text-[11px] font-semibold text-[#1f1b15]">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
                   <span class="text-[10px] text-[#605e57]">(${parseInt(p.review_count || 0)})</span>
                 </div>
               </div>
