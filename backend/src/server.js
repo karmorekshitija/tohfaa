@@ -1124,7 +1124,28 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
 // TASK 16: GET /api/categories
 app.get('/api/categories', rateLimit(120), async (req, res) => {
   try {
-    const categories = await db.prepare("SELECT * FROM categories ORDER BY item_count DESC").all();
+    const cats = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY sort_order ASC, id ASC").all();
+    let subcats = [];
+    try {
+      subcats = await db.prepare("SELECT * FROM subcategories ORDER BY name ASC").all();
+    } catch (e) {
+      console.warn("subcategories fetch failed:", e);
+    }
+    const categories = cats.map(c => ({
+      id: c.id,
+      display_name: c.display_name || c.name,
+      slug: c.slug,
+      emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
+      description: c.description || null,
+      image_url: c.image_url || null,
+      subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
+        id: sc.id,
+        category_id: sc.category_id,
+        name: sc.name,
+        slug: sc.slug,
+        description: sc.description || null
+      }))
+    }));
     return res.status(200).json({
       success: true,
       data: {
@@ -1170,6 +1191,34 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
     if (sub) {
       queryParts.push("(p.name LIKE ? OR p.description LIKE ?)");
       queryParams.push(`%${sub}%`, `%${sub}%`);
+    }
+
+    // Resolve subcategories filter
+    let subcatIds = [];
+    const subQuery = req.query.subcategories || req.query.subcategory_ids;
+    if (subQuery) {
+      if (Array.isArray(subQuery)) {
+        subcatIds = subQuery.map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+      } else if (typeof subQuery === 'string') {
+        const parts = subQuery.split(',').map(x => x.trim()).filter(Boolean);
+        for (const part of parts) {
+          const parsedId = parseInt(part, 10);
+          if (!isNaN(parsedId)) {
+            subcatIds.push(parsedId);
+          } else {
+            const scRow = await db.prepare('SELECT id FROM subcategories WHERE slug = ?').get(part);
+            if (scRow) {
+              subcatIds.push(scRow.id);
+            }
+          }
+        }
+      }
+    }
+
+    if (subcatIds.length > 0) {
+      const placeholders = subcatIds.map(() => '?').join(', ');
+      queryParts.push(`p.id IN (SELECT product_id FROM product_subcategories WHERE subcategory_id IN (${placeholders}))`);
+      queryParams.push(...subcatIds);
     }
     
     const minPrice = req.query.min_price;
@@ -5637,16 +5686,32 @@ function computeListingScore(listing, photoCount) {
 }
 
 // Helper: build full listing object for responses
+// Helper: build full listing object for responses
 async function buildListingDetail(listingId) {
   const l = await db.prepare('SELECT * FROM listings WHERE id = ?').get(listingId);
   if (!l) return null;
   const photos = await db.prepare('SELECT id as photo_id, url, is_cover, is_video, sort_order FROM listing_photos WHERE listing_id = ? ORDER BY sort_order').all(listingId);
+  
+  let subcategories = [];
+  try {
+    subcategories = await db.prepare(`
+      SELECT sc.id, sc.category_id, sc.name, sc.slug, sc.description 
+      FROM subcategories sc
+      JOIN listing_subcategories lsc ON sc.id = lsc.subcategory_id
+      WHERE lsc.listing_id = ?
+    `).all(listingId);
+  } catch (err) {
+    console.warn("Error loading listing subcategories:", err);
+  }
+
   return {
     listing_id: l.id,
     primary_name: l.primary_name,
     title: l.title,
     description: l.description,
     category: l.category,
+    category_id: l.category_id || null,
+    subcategories,
     primary_medium: l.primary_medium,
     tags: l.tags ? JSON.parse(l.tags) : [],
     badges: l.badges ? JSON.parse(l.badges) : [],
@@ -5674,6 +5739,36 @@ async function buildListingDetail(listingId) {
     customization_config: l.customization_config ? JSON.parse(l.customization_config) : null,
     product_tag: l.product_tag || null
   };
+}
+
+async function syncListingCategoryToProduct(listingId) {
+  try {
+    const listing = await db.prepare('SELECT id, seller_id, title, category_id FROM listings WHERE id = ?').get(listingId);
+    if (!listing) return;
+
+    // Find matching product
+    const product = await db.prepare('SELECT id FROM products WHERE seller_id = ? AND LOWER(TRIM(name)) = LOWER(TRIM(?))').get(listing.seller_id, listing.title);
+    if (!product) return;
+
+    // Update product category_id
+    await db.prepare('UPDATE products SET category_id = ? WHERE id = ?').run(listing.category_id, product.id);
+
+    // Sync subcategories from listing_subcategories to product_subcategories
+    const subcats = await db.prepare('SELECT subcategory_id FROM listing_subcategories WHERE listing_id = ?').all(listingId);
+    
+    // Clear old product subcategories
+    await db.prepare('DELETE FROM product_subcategories WHERE product_id = ?').run(product.id);
+
+    // Insert new product subcategories
+    if (subcats.length > 0) {
+      const stmt = db.prepare('INSERT INTO product_subcategories (product_id, subcategory_id) VALUES (?, ?)');
+      for (const sc of subcats) {
+        await stmt.run(product.id, sc.subcategory_id);
+      }
+    }
+  } catch (e) {
+    console.error('Error in syncListingCategoryToProduct:', e);
+  }
 }
 
 // Helper: build seller profile response shape
@@ -6384,6 +6479,24 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
     const finalListingType = (isCustomisable === true || isCustomisable === 'true') ? 'custom' : 'pre-made';
     const customConfigStr = customization_config ? (typeof customization_config === 'string' ? customization_config : JSON.stringify(customization_config)) : null;
 
+    let finalCategoryId = null;
+    let finalCategoryText = category;
+
+    if (req.body.category_id !== undefined && req.body.category_id !== null && req.body.category_id !== '') {
+      finalCategoryId = parseInt(req.body.category_id, 10);
+      const catRow = await db.prepare('SELECT display_name, name FROM categories WHERE id = ?').get(finalCategoryId);
+      if (catRow) {
+        finalCategoryText = catRow.display_name || catRow.name;
+      }
+    } else if (typeof category === 'string' && category.trim()) {
+      const catRow = await db.prepare('SELECT id FROM categories WHERE name = ? OR display_name = ? OR slug = ?').get(category, category, category);
+      if (catRow) {
+        finalCategoryId = catRow.id;
+      }
+    }
+
+    const subcategoryIds = req.body.subcategory_ids || req.body.subcategories || [];
+
     const result = await db.prepare(`
       INSERT INTO listings (
         seller_id, title, description, story, base_price, listing_type,
@@ -6391,8 +6504,8 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
         allow_prebooking, prebooking_window, min_order_qty, max_order_qty, weight_g,
         length_cm, width_cm, height_cm, shipping_method, packaging_type, return_policy,
         is_eco_friendly, festive_tags, category, tags, badges, status, published_at,
-        stock_count, customization_config, product_tag, daily_product_cap
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        stock_count, customization_config, product_tag, daily_product_cap, category_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       sellerId,
       titleVal,
@@ -6418,7 +6531,7 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
       return_policy,
       is_eco_friendly ? 1 : 0,
       Array.isArray(festive_tags) ? JSON.stringify(festive_tags) : null,
-      category,
+      finalCategoryText,
       Array.isArray(tags) ? JSON.stringify(tags) : null,
       Array.isArray(badges) ? JSON.stringify(badges) : null,
       status,
@@ -6426,10 +6539,28 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
       req.body.stock_count || 0,
       customConfigStr,
       product_tag || null,
-      daily_product_cap !== undefined && daily_product_cap !== null && daily_product_cap !== '' ? parseInt(daily_product_cap, 10) : null
+      daily_product_cap !== undefined && daily_product_cap !== null && daily_product_cap !== '' ? parseInt(daily_product_cap, 10) : null,
+      finalCategoryId
     );
 
     const listingId = result.lastInsertRowid;
+
+    // Insert subcategories
+    if (Array.isArray(subcategoryIds) && subcategoryIds.length > 0) {
+      const subcatInsertStmt = db.prepare(`
+        INSERT INTO listing_subcategories (listing_id, subcategory_id) VALUES (?, ?)
+      `);
+      for (const subId of subcategoryIds) {
+        const parsedSubId = parseInt(subId, 10);
+        if (!isNaN(parsedSubId)) {
+          try {
+            await subcatInsertStmt.run(listingId, parsedSubId);
+          } catch (e) {
+            console.error(`Failed to insert subcategory link:`, e.message);
+          }
+        }
+      }
+    }
 
     // Insert variants
     if (Array.isArray(variants)) {
@@ -6475,6 +6606,8 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
         await db.prepare('UPDATE listings SET cover_photo_url = ? WHERE id = ?').run(coverUrl, listingId);
       }
     }
+
+    await syncListingCategoryToProduct(listingId);
 
     const estimated_payout = basePriceVal - Math.floor(basePriceVal * 0.08);
 
@@ -6662,10 +6795,46 @@ const handleUpdateListing = async (req, res) => {
       fieldsToUpdate['published_at'] = new Date().toISOString();
     }
 
+    if (body.category_id !== undefined) {
+      if (body.category_id === null || body.category_id === '') {
+        fieldsToUpdate['category_id'] = null;
+      } else {
+        const catId = parseInt(body.category_id, 10);
+        fieldsToUpdate['category_id'] = catId;
+        const catRow = await db.prepare('SELECT display_name, name FROM categories WHERE id = ?').get(catId);
+        if (catRow) {
+          fieldsToUpdate['category'] = catRow.display_name || catRow.name;
+        }
+      }
+    } else if (body.category !== undefined && typeof body.category === 'string') {
+      const catRow = await db.prepare('SELECT id FROM categories WHERE name = ? OR display_name = ? OR slug = ?').get(body.category, body.category, body.category);
+      if (catRow) {
+        fieldsToUpdate['category_id'] = catRow.id;
+      }
+    }
+
     if (Object.keys(fieldsToUpdate).length > 0) {
       const setClauses = Object.keys(fieldsToUpdate).map(k => `${k} = ?`).join(', ');
       const values = Object.values(fieldsToUpdate);
       await db.prepare(`UPDATE listings SET ${setClauses}, updated_at = datetime('now') WHERE id = ?`).run(...values, listingId);
+    }
+
+    const subcategoryIds = body.subcategory_ids || body.subcategories;
+    if (subcategoryIds !== undefined && Array.isArray(subcategoryIds)) {
+      await db.prepare('DELETE FROM listing_subcategories WHERE listing_id = ?').run(listingId);
+      const subcatInsertStmt = db.prepare(`
+        INSERT INTO listing_subcategories (listing_id, subcategory_id) VALUES (?, ?)
+      `);
+      for (const subId of subcategoryIds) {
+        const parsedSubId = parseInt(subId, 10);
+        if (!isNaN(parsedSubId)) {
+          try {
+            await subcatInsertStmt.run(listingId, parsedSubId);
+          } catch (e) {
+            console.error(`Failed to insert subcategory link on update:`, e.message);
+          }
+        }
+      }
     }
 
     // Update variants if provided
@@ -6716,6 +6885,8 @@ const handleUpdateListing = async (req, res) => {
         await db.prepare('UPDATE listings SET cover_photo_url = ? WHERE id = ?').run(coverUrl, listingId);
       }
     }
+
+    await syncListingCategoryToProduct(listingId);
 
     const updated = await db.prepare('SELECT * FROM listings WHERE id = ?').get(listingId);
 
@@ -9722,10 +9893,29 @@ app.post('/api/admin/orders/:order_id/flag-refund', authenticateAdminToken, asyn
   }
 });
 
+// Multer configuration for category images
+const categoryStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '..', 'uploads', 'categories');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'category-' + Date.now() + path.extname(file.originalname));
+  }
+});
+const uploadCategory = multer({ storage: categoryStorage });
+
 // TASK 17: GET /api/admin/categories
 app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
   try {
     const cats = await db.prepare('SELECT * FROM categories ORDER BY sort_order ASC, id ASC').all();
+    let subcats = [];
+    try {
+      subcats = await db.prepare('SELECT * FROM subcategories ORDER BY name ASC').all();
+    } catch (e) {
+      console.warn("subcategories table read failed:", e);
+    }
     const categories = cats.map(c => ({
       id: c.id,
       display_name: c.display_name || c.name,
@@ -9735,7 +9925,15 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
       sort_order: c.sort_order || 0,
       is_active: c.is_active !== undefined ? !!c.is_active : true,
       status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
-      product_count: c.product_count || c.item_count || 0
+      product_count: c.product_count || c.item_count || 0,
+      image_url: c.image_url || null,
+      subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
+        id: sc.id,
+        category_id: sc.category_id,
+        name: sc.name,
+        slug: sc.slug,
+        description: sc.description || null
+      }))
     }));
     return res.status(200).json({ success: true, data: { categories, total: categories.length } });
   } catch (err) {
@@ -9745,7 +9943,7 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
 });
 
 // TASK 18: POST /api/admin/categories
-app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
+app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single('image'), async (req, res) => {
   try {
     const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
     if (!emoji_icon || !display_name || !slug || sort_order === undefined || is_active === undefined) {
@@ -9757,10 +9955,20 @@ app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
     const existing = await db.prepare('SELECT id FROM categories WHERE slug = ?').get(slug);
     if (existing) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
 
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = '/uploads/categories/' + req.file.filename;
+    } else {
+      imageUrl = `https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800&auto=format&fit=crop`;
+    }
+
+    const sortOrderVal = parseInt(sort_order, 10) || 0;
+    const isActiveVal = (is_active === 'true' || is_active === '1' || is_active === 1 || is_active === true) ? 1 : 0;
+
     const result = await db.prepare(`
-      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'))
-    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sort_order, is_active ? 1 : 0);
+      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at, image_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), ?)
+    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sortOrderVal, isActiveVal, imageUrl);
 
     await writeAuditLog('admin.category.created', req.admin.id, req.admin.display_name, 'category', result.lastInsertRowid, `Category: ${display_name}`);
 
@@ -9775,7 +9983,8 @@ app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
         sort_order: newCat.sort_order,
         is_active: !!newCat.is_active,
         status_label: newCat.is_active ? 'Active' : 'Hidden',
-        product_count: 0
+        product_count: 0,
+        image_url: newCat.image_url
       }
     });
   } catch (err) {
@@ -9785,7 +9994,7 @@ app.post('/api/admin/categories', authenticateAdminToken, async (req, res) => {
 });
 
 // TASK 19: PATCH /api/admin/categories/:category_id
-app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (req, res) => {
+app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCategory.single('image'), async (req, res) => {
   try {
     const catId = parseInt(req.params.category_id);
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
@@ -9800,7 +10009,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
       if (conflict) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
     }
 
-    const beforeJson = { display_name: cat.display_name, slug: cat.slug, is_active: cat.is_active };
+    const beforeJson = { display_name: cat.display_name, slug: cat.slug, is_active: cat.is_active, image_url: cat.image_url };
 
     const updates = [];
     const params = [];
@@ -9808,8 +10017,13 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
     if (display_name !== undefined) { updates.push('display_name = ?', 'name = ?'); params.push(display_name, display_name); }
     if (slug !== undefined) { updates.push('slug = ?'); params.push(slug); }
     if (description !== undefined) { updates.push('description = ?'); params.push(description); }
-    if (sort_order !== undefined) { updates.push('sort_order = ?'); params.push(sort_order); }
-    if (is_active !== undefined) { updates.push('is_active = ?'); params.push(is_active ? 1 : 0); }
+    if (sort_order !== undefined) { updates.push('sort_order = ?'); params.push(parseInt(sort_order, 10)); }
+    if (is_active !== undefined) { updates.push('is_active = ?'); params.push((is_active === 'true' || is_active === '1' || is_active === 1 || is_active === true) ? 1 : 0); }
+    if (req.file) {
+      const imageUrl = '/uploads/categories/' + req.file.filename;
+      updates.push('image_url = ?');
+      params.push(imageUrl);
+    }
 
     updates.push("updated_at = datetime('now')");
     params.push(catId);
@@ -9817,7 +10031,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
     await db.prepare(`UPDATE categories SET ${updates.join(', ')} WHERE id = ?`).run(...params);
 
     const updated = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
-    await writeAuditLog('admin.category.updated', req.admin.id, req.admin.display_name, 'category', catId, `Category: ${updated.display_name}`, beforeJson, { display_name: updated.display_name, slug: updated.slug, is_active: updated.is_active });
+    await writeAuditLog('admin.category.updated', req.admin.id, req.admin.display_name, 'category', catId, `Category: ${updated.display_name}`, beforeJson, { display_name: updated.display_name, slug: updated.slug, is_active: updated.is_active, image_url: updated.image_url });
 
     return res.status(200).json({
       success: true,
@@ -9829,7 +10043,8 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, async (r
         sort_order: updated.sort_order,
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
-        product_count: updated.product_count || updated.item_count || 0
+        product_count: updated.product_count || updated.item_count || 0,
+        image_url: updated.image_url
       }
     });
   } catch (err) {
@@ -9864,6 +10079,106 @@ app.delete('/api/admin/categories/:category_id', authenticateAdminToken, async (
     });
   } catch (err) {
     console.error('DELETE /api/admin/categories/:category_id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/admin/subcategories
+app.post('/api/admin/subcategories', authenticateAdminToken, async (req, res) => {
+  try {
+    const { category_id, name, slug, description } = req.body;
+    if (!category_id || !name || !slug) {
+      return res.status(400).json({ error: true, message: 'category_id, name, and slug are required', code: 'VALIDATION_ERROR' });
+    }
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return res.status(400).json({ error: true, message: 'Slug must match [a-z0-9-]+', code: 'INVALID_SLUG' });
+    }
+    
+    const category = await db.prepare('SELECT id FROM categories WHERE id = ?').get(category_id);
+    if (!category) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
+
+    const existing = await db.prepare('SELECT id FROM subcategories WHERE slug = ?').get(slug);
+    if (existing) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
+
+    const result = await db.prepare(`
+      INSERT INTO subcategories (category_id, name, slug, description, created_at, updated_at)
+      VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
+    `).run(category_id, name, slug, description || null);
+
+    const newSub = await db.prepare('SELECT * FROM subcategories WHERE id = ?').get(result.lastInsertRowid);
+    return res.status(201).json({
+      success: true,
+      data: newSub
+    });
+  } catch (err) {
+    console.error('POST /api/admin/subcategories error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// PATCH /api/admin/subcategories/:id
+app.patch('/api/admin/subcategories/:id', authenticateAdminToken, async (req, res) => {
+  try {
+    const subcatId = parseInt(req.params.id);
+    const subcat = await db.prepare('SELECT * FROM subcategories WHERE id = ?').get(subcatId);
+    if (!subcat) return res.status(404).json({ error: true, message: 'Subcategory not found', code: 'NOT_FOUND' });
+
+    const { name, slug, description } = req.body;
+    if (slug !== undefined) {
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        return res.status(400).json({ error: true, message: 'Invalid slug format', code: 'INVALID_SLUG' });
+      }
+      const conflict = await db.prepare('SELECT id FROM subcategories WHERE slug = ? AND id != ?').get(slug, subcatId);
+      if (conflict) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
+    }
+
+    const updates = [];
+    const params = [];
+    if (name !== undefined) { updates.push('name = ?'); params.push(name); }
+    if (slug !== undefined) { updates.push('slug = ?'); params.push(slug); }
+    if (description !== undefined) { updates.push('description = ?'); params.push(description); }
+
+    updates.push("updated_at = datetime('now')");
+    params.push(subcatId);
+
+    await db.prepare(`UPDATE subcategories SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+
+    const updated = await db.prepare('SELECT * FROM subcategories WHERE id = ?').get(subcatId);
+    return res.status(200).json({
+      success: true,
+      data: updated
+    });
+  } catch (err) {
+    console.error('PATCH /api/admin/subcategories/:id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// DELETE /api/admin/subcategories/:id
+app.delete('/api/admin/subcategories/:id', authenticateAdminToken, async (req, res) => {
+  try {
+    const subcatId = parseInt(req.params.id);
+    const subcat = await db.prepare('SELECT * FROM subcategories WHERE id = ?').get(subcatId);
+    if (!subcat) return res.status(404).json({ error: true, message: 'Subcategory not found', code: 'NOT_FOUND' });
+
+    const productLink = await db.prepare("SELECT COUNT(*) AS c FROM product_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const listingLink = await db.prepare("SELECT COUNT(*) AS c FROM listing_subcategories WHERE subcategory_id = ?").get(subcatId);
+    
+    if (productLink.c > 0 || listingLink.c > 0) {
+      return res.status(400).json({
+        error: true,
+        message: 'Cannot delete: this subcategory is linked to active listings/products.',
+        code: 'HAS_LINKED_PRODUCTS'
+      });
+    }
+
+    await db.prepare('DELETE FROM subcategories WHERE id = ?').run(subcatId);
+    return res.status(200).json({
+      success: true,
+      data: { deleted_id: subcatId, name: subcat.name }
+    });
+  } catch (err) {
+    console.error('DELETE /api/admin/subcategories/:id error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });

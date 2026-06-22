@@ -48,7 +48,7 @@ CREATE TABLE categories (
       icon_emoji  TEXT,
       item_count  INTEGER DEFAULT 0,
       created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    , display_name TEXT, emoji_icon TEXT DEFAULT '🏷️', sort_order INTEGER DEFAULT 0, is_active INTEGER DEFAULT 1, product_count INTEGER DEFAULT 0, updated_at TIMESTAMP WITH TIME ZONE, icon_url TEXT DEFAULT NULL, banner_image_url TEXT DEFAULT NULL);
+    , display_name TEXT, emoji_icon TEXT DEFAULT '🏷️', sort_order INTEGER DEFAULT 0, is_active INTEGER DEFAULT 1, product_count INTEGER DEFAULT 0, updated_at TIMESTAMP WITH TIME ZONE, icon_url TEXT DEFAULT NULL, banner_image_url TEXT DEFAULT NULL, image_url TEXT DEFAULT NULL);
 
 CREATE TABLE products (
       id              SERIAL PRIMARY KEY,
@@ -251,7 +251,7 @@ CREATE TABLE listings (
       cover_photo_url       TEXT     DEFAULT NULL,
       created_at TIMESTAMP WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP
-    , customization_config TEXT DEFAULT NULL, product_tag TEXT DEFAULT NULL, daily_product_cap INTEGER DEFAULT NULL, pickup_address_type TEXT DEFAULT NULL, carrier_preference TEXT DEFAULT NULL, compare_price REAL DEFAULT NULL, compare_at_price REAL DEFAULT NULL, discount_percentage INTEGER DEFAULT NULL, discounted_price INTEGER DEFAULT NULL, discount_active INTEGER DEFAULT 0);
+    , customization_config TEXT DEFAULT NULL, product_tag TEXT DEFAULT NULL, daily_product_cap INTEGER DEFAULT NULL, pickup_address_type TEXT DEFAULT NULL, carrier_preference TEXT DEFAULT NULL, compare_price REAL DEFAULT NULL, compare_at_price REAL DEFAULT NULL, discount_percentage INTEGER DEFAULT NULL, discounted_price INTEGER DEFAULT NULL, discount_active INTEGER DEFAULT 0, category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL);
 
 CREATE TABLE listing_variants (
       id            SERIAL PRIMARY KEY,
@@ -790,6 +790,28 @@ CREATE TABLE reel_product_links (
       product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(reel_id, product_id)
+    );
+
+CREATE TABLE subcategories (
+      id          SERIAL PRIMARY KEY,
+      category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+      name        TEXT NOT NULL,
+      slug        TEXT NOT NULL UNIQUE,
+      description TEXT,
+      created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE product_subcategories (
+      product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+      subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+      PRIMARY KEY (product_id, subcategory_id)
+    );
+
+CREATE TABLE listing_subcategories (
+      listing_id     INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+      subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+      PRIMARY KEY (listing_id, subcategory_id)
     );
 
 CREATE INDEX idx_users_email ON users(email);

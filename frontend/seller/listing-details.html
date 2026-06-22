@@ -130,16 +130,6 @@
 </div>
 </div>
 
-<div>
-<label class="block font-display-lg text-primary text-xl mb-4">Category Selection</label>
-<div id="category-container" class="flex flex-wrap gap-3">
-<button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Pressed Flowers</button>
-<button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Cyanotypes</button>
-<button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Handmade Paper</button>
-<button class="category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors">Artisan Kits</button>
-</div>
-</div>
-
 <!-- Dimensions & Weight (4-column inline grid) -->
 <div>
 <label class="block font-display-lg text-primary text-xl mb-3">Dimensions & Weight</label>
@@ -245,7 +235,24 @@
 <div class="lg:col-span-4 space-y-8">
 <div class="bg-sage/5 border border-sage/20 p-6 rounded-2xl">
 <h4 class="font-headline-sm text-primary text-lg mb-4">Discovery Settings</h4>
-<div class="space-y-4">
+<div class="space-y-5">
+<!-- Category Dropdown -->
+<div>
+  <label class="block text-[10px] font-bold text-sage uppercase tracking-widest mb-2">Category</label>
+  <select id="category-select" class="w-full bg-white border border-sage/40 rounded-lg px-4 py-2.5 text-sm focus:border-forest outline-none cursor-pointer">
+    <option value="">Select a Category</option>
+  </select>
+</div>
+
+<!-- Subcategories Selector -->
+<div id="subcategories-wrapper" class="hidden">
+  <label class="block text-[10px] font-bold text-sage uppercase tracking-widest mb-2">Subcategories</label>
+  <div id="subcategories-container" class="flex flex-wrap gap-2 p-3 bg-white border border-sage/20 rounded-lg max-h-40 overflow-y-auto">
+    <!-- Populated dynamically -->
+  </div>
+</div>
+
+<!-- Tags -->
 <div>
 <label class="block text-[10px] font-bold text-sage uppercase tracking-widest mb-2">Product Tags</label>
 <div class="relative">
@@ -296,7 +303,9 @@
 </seller-layout>
 <script>
     const API_BASE = window.location.origin;
-    let selectedCategory = '';
+    let categoriesList = [];
+    let selectedCategoryId = '';
+    let selectedSubcategoryIds = [];
     let tagsList = [];
 
     function showToast(msg, type='success') {
@@ -314,17 +323,79 @@
         setTimeout(() => toast.style.display = 'none', 3500);
     }
 
-    // Category selection logic
-    const categoryContainer = document.getElementById('category-container');
-    const catButtons = categoryContainer.querySelectorAll('.category-btn');
-    catButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            catButtons.forEach(b => {
-                b.className = 'category-btn px-5 py-2 rounded-full border border-sage/40 text-on-surface-variant hover:border-forest hover:text-forest text-sm font-medium transition-colors';
+    // Category and subcategory selection logic
+    async function initCategoriesAndSubcategories() {
+        try {
+            const res = await fetch(`${API_BASE}/api/categories`);
+            if (res.ok) {
+                const json = await res.json();
+                categoriesList = json.data?.categories || [];
+                
+                const categorySelect = document.getElementById('category-select');
+                categorySelect.innerHTML = '<option value="">Select a Category</option>';
+                
+                categoriesList.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.textContent = cat.display_name || cat.name;
+                    categorySelect.appendChild(opt);
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load categories:', err);
+        }
+    }
+
+    const categorySelect = document.getElementById('category-select');
+    const subcategoriesWrapper = document.getElementById('subcategories-wrapper');
+    const subcategoriesContainer = document.getElementById('subcategories-container');
+
+    categorySelect.addEventListener('change', () => {
+        const catId = categorySelect.value;
+        selectedCategoryId = catId;
+        subcategoriesContainer.innerHTML = '';
+        
+        if (!catId) {
+            subcategoriesWrapper.classList.add('hidden');
+            return;
+        }
+        
+        const cat = categoriesList.find(c => String(c.id) === String(catId));
+        if (cat && cat.subcategories && cat.subcategories.length > 0) {
+            subcategoriesWrapper.classList.remove('hidden');
+            cat.subcategories.forEach(sub => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center gap-2 px-3 py-1.5 bg-sage/5 hover:bg-sage/10 rounded-md border border-sage/20 cursor-pointer text-xs transition-all';
+                
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.value = sub.id;
+                cb.className = 'rounded border-sage text-forest focus:ring-forest';
+                if (selectedSubcategoryIds.includes(sub.id)) {
+                    cb.checked = true;
+                }
+                
+                cb.addEventListener('change', () => {
+                    const val = parseInt(cb.value, 10);
+                    if (cb.checked) {
+                        if (!selectedSubcategoryIds.includes(val)) selectedSubcategoryIds.push(val);
+                    } else {
+                        selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== val);
+                    }
+                });
+                
+                label.appendChild(cb);
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'text-primary font-medium';
+                nameSpan.textContent = sub.name;
+                label.appendChild(nameSpan);
+                
+                subcategoriesContainer.appendChild(label);
             });
-            btn.className = 'category-btn px-5 py-2 rounded-full border border-forest bg-forest text-white text-sm font-medium transition-colors';
-            selectedCategory = btn.textContent.trim();
-        });
+        } else {
+            subcategoriesWrapper.classList.add('hidden');
+        }
     });
 
     // Tags list logic
@@ -512,15 +583,24 @@
                 const weightVal = listing.weight_g !== null && listing.weight_g !== undefined ? listing.weight_g : (listing.weight_grams !== null && listing.weight_grams !== undefined ? listing.weight_grams : '');
                 document.getElementById('weight-input').value = weightVal;
                 
-                // Select Category
-                if (listing.category) {
-                    selectedCategory = listing.category;
-                    catButtons.forEach(btn => {
-                        if (btn.textContent.trim().toLowerCase() === selectedCategory.toLowerCase()) {
-                            btn.className = 'category-btn px-5 py-2 rounded-full border border-forest bg-forest text-white text-sm font-medium transition-colors';
-                        }
-                    });
+                // Select Category & Subcategories
+                if (listing.category_id) {
+                    selectedCategoryId = listing.category_id;
+                    document.getElementById('category-select').value = listing.category_id;
+                } else if (listing.category) {
+                    const catObj = categoriesList.find(c => (c.display_name || c.name).toLowerCase() === listing.category.toLowerCase());
+                    if (catObj) {
+                        selectedCategoryId = catObj.id;
+                        document.getElementById('category-select').value = catObj.id;
+                    }
                 }
+                
+                if (listing.subcategories) {
+                    selectedSubcategoryIds = listing.subcategories.map(sc => sc.id || sc);
+                }
+                
+                // Trigger change to populate subcategories checkboxes
+                document.getElementById('category-select').dispatchEvent(new Event('change'));
 
                 // Tags
                 if (listing.tags) {
@@ -598,11 +678,17 @@
             return;
         }
 
-        if (!selectedCategory) {
+        const categorySelectEl = document.getElementById('category-select');
+        const selectedCategoryIdVal = categorySelectEl.value;
+        if (!selectedCategoryIdVal) {
             showToast('Please select a category before continuing.', 'error');
-            document.getElementById('category-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            categorySelectEl.focus();
             return;
         }
+
+        const catObj = categoriesList.find(c => String(c.id) === String(selectedCategoryIdVal));
+        const categoryName = catObj ? (catObj.display_name || catObj.name) : '';
+        const subcatIds = Array.from(document.querySelectorAll('#subcategories-container input[type="checkbox"]:checked')).map(cb => parseInt(cb.value, 10));
 
         let product_tag = null;
 
@@ -638,7 +724,9 @@
                     title,
                     description: description,
                     story: null,
-                    category: selectedCategory,
+                    category: categoryName,
+                    category_id: parseInt(selectedCategoryIdVal, 10),
+                    subcategory_ids: subcatIds,
                     tags: tagsList,
                     status: 'draft',
                     isCustomisable,
@@ -729,9 +817,10 @@
         }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
         initCustomisationSuite();
-        loadDetailsDraft();
+        await initCategoriesAndSubcategories();
+        await loadDetailsDraft();
 
         const sidebar = document.querySelector('seller-sidebar');
         if (sidebar) {

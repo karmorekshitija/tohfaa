@@ -410,6 +410,38 @@ async function initDb() {
     // ─── Phase 4: Index on orders(buyer_id, status) for tiebreak query ────────
     await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_buyer_status ON orders(buyer_id, status)');
 
+    // Categories and Subcategories Overhaul
+    await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL');
+    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL');
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS subcategories (
+        id          SERIAL PRIMARY KEY,
+        category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        name        TEXT NOT NULL,
+        slug        TEXT NOT NULL UNIQUE,
+        description TEXT,
+        created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_subcategories (
+        product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+        PRIMARY KEY (product_id, subcategory_id)
+      )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS listing_subcategories (
+        listing_id     INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+        subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+        PRIMARY KEY (listing_id, subcategory_id)
+      )
+    `);
+
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);
   }

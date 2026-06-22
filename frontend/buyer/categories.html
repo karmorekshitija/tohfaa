@@ -300,6 +300,7 @@
                 const cat = categories.find(c => slot.slugs.includes(c.slug));
                 const slugToUse = cat ? cat.slug : slot.defaultSlug;
                 const count = cat ? (cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)) : null;
+                const imageToUse = (cat && cat.image_url) ? cat.image_url : slot.image;
 
                 if (cat) {
                   slot.slugs.forEach(s => displayedSlugs.add(s));
@@ -311,7 +312,7 @@
                   const countText = count !== null ? `${count} items` : '128 items';
                   html += `
                     <div ${clickAction} class="lg:col-span-2 lg:row-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       <div class="absolute bottom-0 left-0 p-lg text-white">
                         <span class="font-label-caps text-[10px] tracking-widest opacity-80 uppercase block mb-1">${slot.badge}</span>
@@ -335,7 +336,7 @@
                           <span class="font-data-price text-secondary">${countText}</span>
                         </div>
                         <div class="relative overflow-hidden">
-                          <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                          <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                         </div>
                       </div>
                       ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 left-4 text-tertiary/20 text-4xl">${slot.icon}</span>` : ''}
@@ -352,7 +353,7 @@
                           <button class="border border-primary text-primary hover:bg-primary hover:text-white px-lg py-xs rounded-full transition-all font-body-md text-xs">${slot.buttonText || 'Explore'}</button>
                         </div>
                         <div class="w-1/2 relative h-full">
-                          <img class="w-full h-full object-cover rounded-lg rotate-3 shadow-md group-hover:rotate-0 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                          <img class="w-full h-full object-cover rounded-lg rotate-3 shadow-md group-hover:rotate-0 transition-transform duration-500" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                         </div>
                       </div>
                       ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 right-4 text-tertiary-container/30 text-6xl">${slot.icon}</span>` : ''}
@@ -362,7 +363,7 @@
                   const countText = count !== null ? `${count} makes` : '91 prints';
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                       <div class="absolute bottom-4 left-4 text-white">
                         <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
@@ -374,7 +375,7 @@
                   const countText = count !== null ? `${count} pieces` : '24 pieces';
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 flex flex-col justify-end p-md bg-gradient-to-t from-primary/40 to-transparent">
                         <h3 class="font-title-serif text-title-serif text-white">${slot.displayName}</h3>
                         <p class="font-data-price text-[11px] text-white/80">${countText}</p>
@@ -385,7 +386,7 @@
                 } else if (slot.type === 'skincare-badge') {
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                       <div class="absolute top-4 left-4">
                         <div class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -397,7 +398,7 @@
                 } else if (slot.type === 'woodcraft-center') {
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
                         <h3 class="font-title-serif text-title-serif text-white border-y border-white/30 py-2 px-4">${slot.displayName}</h3>
                       </div>
@@ -408,7 +409,7 @@
                   const countText = count !== null ? `${count} makes` : '84 makes';
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant ${slot.bg || 'bg-secondary-container/10'} cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${slot.image}" alt="${slot.displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                       <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
                         <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
@@ -426,10 +427,11 @@
                   const displayName = cat.display_name || cat.name;
                   const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
                   const clickAction = `onclick="window.location.href='category.html?slug=${cat.slug}'"`;
+                  const imageToUse = cat.image_url || "https://placehold.co/400x400/f4ede3/516447?text=Handcrafted";
 
                   html += `
                     <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-secondary-container/10 cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://placehold.co/400x400/f4ede3/516447?text=Handcrafted" alt="${displayName}" loading="lazy">
+                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${displayName}" loading="lazy">
                       <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                       <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
                         <h3 class="font-title-serif text-title-serif">${displayName}</h3>

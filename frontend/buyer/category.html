@@ -500,21 +500,6 @@
     import { logout } from '/src/utils/auth.js';
     import { initSearchOverlay } from '/buyer/searchOverlay.js';
 
-    // Categories to Subcategories mapping
-    const SUBCATEGORIES_MAP = {
-      'ceramics-pottery': ['All', 'Bowl', 'Cup', 'Espresso Set', 'Carafe', 'Dish', 'Vase', 'Mug'],
-      'textile-arts': ['All', 'Crochet', 'Knitted', 'Blanket', 'Scarf', 'Wrap', 'Thread'],
-      'hand-knits': ['All', 'Crochet', 'Knitted', 'Blanket', 'Scarf', 'Wrap', 'Thread'],
-      'jewellery': ['All', 'Pendant', 'Ring', 'Necklace', 'Bracelet', 'Earring'],
-      'jewelry': ['All', 'Pendant', 'Ring', 'Necklace', 'Bracelet', 'Earring'],
-      'journals-stationery': ['All', 'Notebook', 'Card', 'Journal', 'Paper', 'Ink'],
-      'candles-fragrance': ['All', 'Soy', 'Incense', 'Wax', 'Lavender', 'Scented'],
-      'paintings': ['All', 'Canvas', 'Watercolor', 'Sketch', 'Print', 'Oil'],
-      'wall-art-prints': ['All', 'Canvas', 'Watercolor', 'Sketch', 'Print', 'Oil'],
-      'customized-gifts': ['All', 'Personalised', 'Bespoke', 'Custom', 'Gift'],
-      'home-decor': ['All', 'Wood', 'Woven', 'Carved', 'Rug', 'Basket']
-    };
-
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug') || 'ceramics-pottery';
     let currentSub = 'All';
@@ -528,6 +513,7 @@
       category_id: ''
     };
     let allCategoriesList = [];
+    let categorySubcategories = [];
 
     async function initPage() {
       // 1. Fetch categories to find display name & emoji
@@ -549,6 +535,7 @@
             if (cat) {
               categorySelect.value = cat.id;
               activeFilters.category_id = cat.id;
+              categorySubcategories = cat.subcategories || [];
 
               document.getElementById('category-title').innerText = cat.display_name || cat.name;
               document.getElementById('category-emoji').innerText = cat.emoji_icon || cat.icon_emoji || '🏺';
@@ -689,15 +676,18 @@
 
     function renderSubcategoryFilters() {
       const container = document.getElementById('subcategory-filters-container');
-      const subs = SUBCATEGORIES_MAP[slug] || ['All'];
+      if (!container) return;
+
+      const subs = [{ id: 'All', name: 'All' }, ...categorySubcategories];
       
       container.innerHTML = subs.map(sub => {
-        const isActive = sub === currentSub;
+        const subValue = sub.id;
+        const isActive = String(subValue) === String(currentSub);
         const activeClasses = "bg-primary-container text-white shadow-md";
         const inactiveClasses = "bg-[#F7F3EC] border border-outline-variant text-on-surface-variant font-body-md text-sm hover:border-primary";
         return `
-          <button class="flex-shrink-0 whitespace-nowrap px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-sub="${sub}">
-            ${sub}
+          <button class="flex-shrink-0 whitespace-nowrap px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-sub="${subValue}">
+            ${sub.name}
           </button>
         `;
       }).join('');
@@ -795,7 +785,7 @@
           category_id: activeFilters.category_id
         };
         if (currentSub !== 'All') {
-          params.sub = currentSub;
+          params.subcategory_ids = currentSub;
         }
         const res = await apiClient.get(`/categories/${slug}/products`, { params });
         if (res.data && res.data.success) {
