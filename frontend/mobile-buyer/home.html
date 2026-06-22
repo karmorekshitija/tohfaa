@@ -754,7 +754,7 @@
                         </button>
                         
                         <!-- Horizontally Scrollable Content -->
-                        <div class="flex gap-3 overflow-x-auto scroll-smooth pb-4 px-4 snap-x snap-mandatory scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;">
+                        <div class="flex gap-3 overflow-x-auto scroll-smooth pb-4 px-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
                             <!-- Product Cards will load here -->
                         </div>
 
@@ -763,15 +763,11 @@
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
-                    <div class="flex justify-center gap-1.5 mt-4 category-carousel-dots">
-                        <!-- Dots injected dynamically -->
-                    </div>
                 `;
 
                 const scrollContent = rowWrapper.querySelector('.scrollbar-none');
                 const leftBtn = rowWrapper.querySelector('.scroll-left-btn');
                 const rightBtn = rowWrapper.querySelector('.scroll-right-btn');
-                const dotsWrapper = rowWrapper.querySelector('.category-carousel-dots');
 
                 products.forEach(product => {
                     // Render using the same card layout with fixed width for horizontal scrolling and mobile peaking
@@ -779,25 +775,10 @@
                     scrollContent.appendChild(card);
                 });
 
-                // Generate dots
-                const dotsCount = products.length;
-                const dots = [];
-
                 const getCardStep = () => {
                     const card = scrollContent.firstElementChild;
                     return card ? (card.offsetWidth + 12) : 292; // card width + 12px gap
                 };
-
-                for (let i = 0; i < dotsCount; i++) {
-                    const dot = document.createElement('button');
-                    dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-200 bg-sage/40 hover:bg-sage/70 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#3D6B4F] ${i === 0 ? 'bg-[#3D6B4F] scale-125' : ''}`;
-                    dot.onclick = () => {
-                        const targetScroll = i * getCardStep();
-                        scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
-                    };
-                    dotsWrapper.appendChild(dot);
-                    dots.push(dot);
-                }
 
                 // Left & Right arrow actions (mobile scrolls card-by-card)
                 leftBtn.onclick = () => {
@@ -809,24 +790,6 @@
                     const targetScroll = scrollContent.scrollLeft + getCardStep();
                     scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
                 };
-
-                // Listen to scroll events to update dots active styling (debounced)
-                let scrollTimeout;
-                scrollContent.addEventListener('scroll', () => {
-                    window.clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(() => {
-                        const activeIndex = Math.round(scrollContent.scrollLeft / getCardStep());
-                        dots.forEach((dot, idx) => {
-                            if (idx === activeIndex) {
-                                dot.classList.add('bg-[#3D6B4F]', 'scale-125');
-                                dot.classList.remove('bg-sage/40');
-                            } else {
-                                dot.classList.remove('bg-[#3D6B4F]', 'scale-125');
-                                dot.classList.add('bg-sage/40');
-                            }
-                        });
-                    }, 50);
-                });
 
                 container.appendChild(rowWrapper);
             }
