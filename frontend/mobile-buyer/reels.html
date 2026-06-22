@@ -31,29 +31,6 @@
         }
         
         @media (max-width: 768px) {
-            /* Lock page scrolling on mobile */
-            body {
-                position: fixed;
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
-            }
-            main {
-                height: calc(100dvh - 80px - 64px) !important;
-                min-height: auto !important;
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-                justify-content: center;
-                overflow: hidden;
-            }
-            main > div.relative {
-                height: 100% !important;
-                max-width: 100% !important;
-                width: 100% !important;
-                border-radius: 0 !important;
-                aspect-ratio: auto !important;
-            }
-
             /* Shrink right rail action buttons on mobile */
             div.absolute.right-md {
                 bottom: 22% !important;
@@ -70,24 +47,6 @@
             }
             #like-count, #comment-count, #save-count {
                 font-size: 11px !important;
-            }
-
-            /* Prevent product tag panel from overlapping right rail */
-            #product-cta-container {
-                max-width: calc(100% - 68px) !important;
-            }
-            #product-cta-link {
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 4px 10px !important;
-            }
-            #product-name {
-                max-width: 90px !important;
-                white-space: nowrap !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-                display: inline-block !important;
-                vertical-align: middle;
             }
         }
 
@@ -296,43 +255,62 @@
   <!-- Footer / Input Form -->
   <div class="border-t border-outline-variant bg-[#F7F3EC] rounded-b-[20px]">
     <!-- Emoji Quick Reactions Row -->
-    <div class="px-md py-sm flex items-center gap-sm border-b border-outline-variant/30 select-none" id="emoji-reactions-row">
-      <span class="text-xs text-outline font-medium whitespace-nowrap mr-1">React:</span>
-      <div class="flex-grow flex overflow-x-auto gap-md scrollbar-hide snap-x whitespace-nowrap" style="scrollbar-width:none; -ms-overflow-style:none;">
-        <button onclick="appendEmoji('❤️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart">❤️</button>
-        <button onclick="appendEmoji('💖')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Sparkling Heart">💖</button>
-        <button onclick="appendEmoji('😍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart Eyes">😍</button>
-        <button onclick="appendEmoji('🤩')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star Struck">🤩</button>
-        <button onclick="appendEmoji('🙌')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Hooray">🙌</button>
-        <button onclick="appendEmoji('👏')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clap">👏</button>
-        <button onclick="appendEmoji('🥳')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Partying Face">🥳</button>
-        <button onclick="appendEmoji('🎉')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Celebration">🎉</button>
-        <button onclick="appendEmoji('🎈')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Balloon">🎈</button>
-        <button onclick="appendEmoji('🥂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Cheers Flutes">🥂</button>
-        <button onclick="appendEmoji('🍾')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Champagne Bottle">🍾</button>
-        <button onclick="appendEmoji('🪴')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Potted Plant">🪴</button>
-        <button onclick="appendEmoji('🌸')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Cherry Blossom">🌸</button>
-        <button onclick="appendEmoji('🍃')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Leaf in Wind">🍃</button>
-        <button onclick="appendEmoji('🏺')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Pottery Vase">🏺</button>
-        <button onclick="appendEmoji('🧵')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Thread">🧵</button>
-        <button onclick="appendEmoji('🎨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Palette">🎨</button>
-        <button onclick="appendEmoji('✨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Sparkles">✨</button>
-      </div>
+    <div class="px-md py-sm flex items-center gap-3 overflow-x-auto select-none scrollbar-hide" id="emoji-reactions-row" style="scrollbar-width:none; -ms-overflow-style:none;">
+      <span class="text-xs text-outline mr-xs font-medium whitespace-nowrap">React:</span>
+      <!-- Hearts -->
+      <button onclick="appendEmoji('❤️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Red Heart">❤️</button>
+      <button onclick="appendEmoji('🧡')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Orange Heart">🧡</button>
+      <button onclick="appendEmoji('💛')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Yellow Heart">💛</button>
+      <button onclick="appendEmoji('💚')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Green Heart">💚</button>
+      <button onclick="appendEmoji('💙')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Blue Heart">💙</button>
+      <button onclick="appendEmoji('💜')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Purple Heart">💜</button>
+      <button onclick="appendEmoji('🖤')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Black Heart">🖤</button>
+      <button onclick="appendEmoji('🤍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="White Heart">🤍</button>
+      <button onclick="appendEmoji('💗')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Growing Heart">💗</button>
+      <button onclick="appendEmoji('💓')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Beating Heart">💓</button>
+      <button onclick="appendEmoji('💞')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Revolving Hearts">💞</button>
+      <button onclick="appendEmoji('💘')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart with Arrow">💘</button>
+      <!-- Appreciation -->
+      <button onclick="appendEmoji('🙌')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Hands Raised">🙌</button>
+      <button onclick="appendEmoji('👏')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clapping Hands">👏</button>
+      <button onclick="appendEmoji('🤩')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star-Struck">🤩</button>
+      <button onclick="appendEmoji('😍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Heart Eyes">😍</button>
+      <button onclick="appendEmoji('🥰')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Smiling Face with Hearts">🥰</button>
+      <!-- Excitement -->
+      <button onclick="appendEmoji('🔥')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Fire">🔥</button>
+      <button onclick="appendEmoji('✨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Sparkles">✨</button>
+      <button onclick="appendEmoji('🎉')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Party Popper">🎉</button>
+      <button onclick="appendEmoji('🎊')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Confetti Ball">🎊</button>
+      <button onclick="appendEmoji('💫')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Dizzy">💫</button>
+      <button onclick="appendEmoji('⭐')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Star">⭐</button>
+      <!-- Expressions -->
+      <button onclick="appendEmoji('😄')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Grinning Face">😄</button>
+      <button onclick="appendEmoji('😂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Face with Tears of Joy">😂</button>
+      <button onclick="appendEmoji('🤣')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Rolling on the Floor Laughing">🤣</button>
+      <button onclick="appendEmoji('😮')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Face with Open Mouth">😮</button>
+      <button onclick="appendEmoji('😢')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Crying Face">😢</button>
+      <button onclick="appendEmoji('🥹')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Holding Back Tears">🥹</button>
+      <!-- Artisan/Product -->
+      <button onclick="appendEmoji('🏺')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Amphora/Pot">🏺</button>
+      <button onclick="appendEmoji('💍')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Ring">💍</button>
+      <button onclick="appendEmoji('🧵')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Thread/Crochet">🧵</button>
+      <button onclick="appendEmoji('🪴')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Potted Plant">🪴</button>
+      <button onclick="appendEmoji('🕯️')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Candle">🕯️</button>
+      <button onclick="appendEmoji('🎨')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Artist Palette">🎨</button>
+      <!-- Cheers -->
+      <button onclick="appendEmoji('🥂')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Clinking Glasses">🥂</button>
+      <button onclick="appendEmoji('🍾')" class="text-3xl hover:scale-125 active:scale-110 transition-transform cursor-pointer select-none flex-shrink-0" title="Bottle with Popping Cork">🍾</button>
     </div>
-    <div class="px-md pb-md flex items-start gap-sm">
-      <div id="user-avatar-circle" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden border border-outline-variant mt-1">
+    <div class="px-md pb-md flex items-center gap-sm">
+      <div id="user-avatar-circle" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden border border-outline-variant">
         <span id="user-avatar-letter">U</span>
       </div>
-      <div class="flex-grow flex flex-col gap-xs">
-        <textarea id="comment-input" rows="2" placeholder="Add a comment... or tap an emoji above 👆" class="w-full bg-[#F7F3EC] rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none placeholder:text-outline/70" maxlength="300"></textarea>
-        <div class="flex items-center justify-between mt-1">
-          <span id="char-counter" class="text-xs text-outline font-sans">0/300</span>
-          <button id="send-comment-btn" class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-1.5 rounded-full text-xs font-bold flex items-center gap-xs shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-            <span>Send</span>
-            <span class="material-symbols-outlined text-[14px]">send</span>
-          </button>
-        </div>
+      <div class="flex-grow">
+        <textarea id="comment-input" rows="2" placeholder="Add a comment" class="w-full bg-[#F7F3EC] rounded-xl border border-outline-variant/30 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-none placeholder:text-outline/70" maxlength="300"></textarea>
       </div>
+      <button id="send-comment-btn" class="w-10 h-10 bg-primary hover:bg-[#3D6B4F] text-white rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0" disabled>
+        <span class="material-symbols-outlined text-[18px]">send</span>
+      </button>
     </div>
   </div>
 </div>
@@ -506,7 +484,6 @@
     const userAvatarLetter = document.getElementById('user-avatar-letter');
     const userAvatarCircle = document.getElementById('user-avatar-circle');
     const commentInput = document.getElementById('comment-input');
-    const charCounter = document.getElementById('char-counter');
     const sendCommentBtn = document.getElementById('send-comment-btn');
     const commentsNotch = document.getElementById('comments-notch');
 
@@ -771,11 +748,9 @@
       const newPos = start + emoji.length;
       input.setSelectionRange(newPos, newPos);
       input.focus();
-      // Trigger counter & send button
+      // Trigger send button
       const len = input.value.length;
-      const counter = document.getElementById('char-counter');
       const sendBtn = document.getElementById('send-comment-btn');
-      if (counter) counter.textContent = `${len}/300`;
       if (sendBtn) sendBtn.disabled = (len === 0 || len > 300);
     };
 
@@ -1040,11 +1015,10 @@
         }
       });
 
-      // Comment input validation & counter
+      // Comment input validation
       commentInput.addEventListener('input', () => {
         const text = commentInput.value;
         const len = text.length;
-        charCounter.textContent = `${len}/300`;
         sendCommentBtn.disabled = (len === 0 || len > 300);
       });
 

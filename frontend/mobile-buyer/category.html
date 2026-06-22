@@ -248,20 +248,6 @@
       }
     };
 
-    const SUBCATEGORIES_MAP = {
-      'ceramics-pottery': ['All', 'Bowl', 'Cup', 'Espresso Set', 'Carafe', 'Dish', 'Vase', 'Mug'],
-      'textile-arts': ['All', 'Crochet', 'Knitted', 'Blanket', 'Scarf', 'Wrap', 'Thread'],
-      'hand-knits': ['All', 'Crochet', 'Knitted', 'Blanket', 'Scarf', 'Wrap', 'Thread'],
-      'jewellery': ['All', 'Pendant', 'Ring', 'Necklace', 'Bracelet', 'Earring'],
-      'jewelry': ['All', 'Pendant', 'Ring', 'Necklace', 'Bracelet', 'Earring'],
-      'journals-stationery': ['All', 'Notebook', 'Card', 'Journal', 'Paper', 'Ink'],
-      'candles-fragrance': ['All', 'Soy', 'Incense', 'Wax', 'Lavender', 'Scented'],
-      'paintings': ['All', 'Canvas', 'Watercolor', 'Sketch', 'Print', 'Oil'],
-      'wall-art-prints': ['All', 'Canvas', 'Watercolor', 'Sketch', 'Print', 'Oil'],
-      'customized-gifts': ['All', 'Personalised', 'Bespoke', 'Custom', 'Gift'],
-      'home-decor': ['All', 'Wood', 'Woven', 'Carved', 'Rug', 'Basket']
-    };
-
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug') || 'ceramics-pottery';
     let currentSub = 'All';
@@ -273,6 +259,7 @@
       availability: ''
     };
     let wishlist = new Set();
+    let categorySubcategories = [];
 
     async function initPage() {
       // 1. Fetch category meta
@@ -282,6 +269,7 @@
           const categories = res.data.data.categories || [];
           const cat = categories.find(c => c.slug === slug);
           if (cat) {
+            categorySubcategories = cat.subcategories || [];
             document.getElementById('cat-title').innerText = cat.display_name || cat.name;
             document.getElementById('cat-emoji').innerText = cat.emoji_icon || cat.icon_emoji || '🏺';
             document.getElementById('cat-count').innerText = `${cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)} active makes`;
@@ -355,13 +343,17 @@
 
     function renderSubcategories() {
       const container = document.getElementById('subcategory-container');
-      const subs = SUBCATEGORIES_MAP[slug] || ['All'];
+      if (!container) return;
+
+      const subs = [{ id: 'All', name: 'All' }, ...categorySubcategories];
+      
       container.innerHTML = subs.map(sub => {
-        const isActive = sub === currentSub;
+        const subValue = sub.id;
+        const isActive = String(subValue) === String(currentSub);
         const btnClass = isActive 
           ? "bg-[#8FAF82] text-white shadow-sm" 
           : "bg-[#F7F3EC] border border-[#c3c8c1] text-[#444840]";
-        return `<button class="flex-shrink-0 whitespace-nowrap px-4 py-1 rounded-full text-[12px] font-semibold transition-all active:scale-95 ${btnClass}" data-sub="${sub}">${sub}</button>`;
+        return `<button class="flex-shrink-0 whitespace-nowrap px-4 py-1 rounded-full text-[12px] font-semibold transition-all active:scale-95 ${btnClass}" data-sub="${subValue}">${sub.name}</button>`;
       }).join('');
 
       container.querySelectorAll('button').forEach(btn => {
@@ -390,7 +382,7 @@
 
     function getProductCardHtml(p, isCarousel) {
       const isWishlisted = wishlist.has(p.id);
-      const widthStyle = isCarousel ? "style='width: 62vw; max-width: 230px;'" : "";
+      const widthStyle = isCarousel ? "style='width: 80vw; max-width: 320px; scroll-snap-align: start;'" : "";
       const price = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
       const tag = p.is_bestseller ? 'bestseller' : (p.product_tag === 'Sponsored' || p.type === 'sponsored' ? 'sponsored' : (p.listing_type === 'custom' ? 'custom' : null));
       const imageUrl = p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
@@ -439,7 +431,7 @@
         availability: activeFilters.availability
       };
       if (currentSub !== 'All') {
-        params.sub = currentSub;
+        params.subcategory_ids = currentSub;
       }
 
       try {

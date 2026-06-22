@@ -117,16 +117,6 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 12px !important;
             }
-            #category-pills-container {
-                display: flex !important;
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important;
-                scrollbar-width: none !important;
-            }
-            #category-pills-container::-webkit-scrollbar {
-                display: none !important;
-            }
         }
     </style>
 </head>
@@ -269,7 +259,7 @@
         </div>
 
         <!-- Tabbed Navigation Bar -->
-        <div class="mt-12 border-b border-outline-variant flex flex-nowrap gap-4 md:gap-8 overflow-x-auto scrollbar-hide select-none">
+        <div class="mt-12 border-b border-outline-variant flex gap-4 md:gap-8 overflow-x-auto scrollbar-hide select-none">
             <button id="tab-catalog" onclick="switchTab('catalog')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold flex-shrink-0">Catalog</button>
             <button id="tab-customised" onclick="switchTab('customised')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Customised</button>
             <button id="tab-reels" onclick="switchTab('reels')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Reels</button>
