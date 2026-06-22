@@ -436,7 +436,7 @@
     }).join('');
   }
 
-  // ── Phase 2: Pause / Resume with modal ────────────────────────────────────
+  // ── Phase 2: Pause / Resume ────────────────────────────────────
   function togglePause(id, currentStatus) {
     const token = getTohfaToken();
     const isPaused = currentStatus === 'paused';
@@ -455,57 +455,24 @@
         })
         .catch(err => showToast(err.message || 'Failed to resume', 'error'));
     } else {
-      // Show pause bottom sheet
-      const sheet = document.getElementById('mobile-pause-sheet');
-      if (sheet) {
-        sheet.dataset.listingId = id;
-        sheet.dataset.token = token;
-        document.getElementById('mob-pause-reason').value = '';
-        document.getElementById('mob-pause-estimate').value = '';
-        document.getElementById('mob-pause-remake').checked = false;
-        sheet.classList.remove('hidden');
-      }
+      // Pause immediately
+      fetch(`${API_BASE}/api/seller/listings/${id}/pause`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({})
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success && data.message) throw new Error(data.message);
+          showToast('Listing paused. Buyers see similar products.', 'success');
+          return loadCatalog();
+        })
+        .catch(err => showToast(err.message || 'Failed to pause', 'error'));
     }
   }
-
-  document.getElementById('mob-pause-cancel')?.addEventListener('click', () => {
-    document.getElementById('mobile-pause-sheet').classList.add('hidden');
-  });
-
-  document.getElementById('mob-pause-confirm')?.addEventListener('click', async () => {
-    const sheet = document.getElementById('mobile-pause-sheet');
-    const id = sheet.dataset.listingId;
-    const token = sheet.dataset.token;
-    const reason = document.getElementById('mob-pause-reason').value.trim();
-    const resumeDate = document.getElementById('mob-pause-estimate').value;
-    const remakeEligible = document.getElementById('mob-pause-remake').checked;
-
-    const btn = document.getElementById('mob-pause-confirm');
-    btn.disabled = true;
-    btn.textContent = 'Pausing…';
-
-    try {
-      const res = await fetch(`${API_BASE}/api/seller/listings/${id}/pause`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({
-          reason: reason || undefined,
-          resume_estimate_date: resumeDate || undefined,
-          remake_eligible: remakeEligible
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to pause');
-      sheet.classList.add('hidden');
-      showToast('Listing paused. Buyers see similar products.', 'success');
-      await loadCatalog();
-    } catch (err) {
-      showToast(err.message, 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Pause Listing';
-    }
-  });
   // ───────────────────────────────────────────────────────────────────────────
 
   function editListing(id, status) {
@@ -579,46 +546,6 @@
   if (document.readyState !== 'loading') loadCatalog();
 </script>
 
-<!-- Mobile Pause Bottom-Sheet (Phase 2) -->
-<div id="mobile-pause-sheet" class="hidden fixed inset-0 z-[200] flex items-end" data-listing-id="" data-token="">
-  <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="document.getElementById('mobile-pause-sheet').classList.add('hidden')"></div>
-  <!-- Sheet -->
-  <div class="relative w-full bg-white rounded-t-2xl shadow-2xl px-5 pt-5 pb-8 z-10">
-    <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
-    <div class="flex items-center gap-2 mb-4">
-      <span class="material-symbols-outlined text-purple-600 text-xl">pause_circle</span>
-      <div>
-        <h3 class="font-semibold text-gray-900 text-base">Pause Listing</h3>
-        <p class="text-xs text-purple-600">Buyers won't be able to purchase while paused.</p>
-      </div>
-    </div>
-    <div class="space-y-3 mb-4">
-      <div>
-        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Reason (optional)</label>
-        <input id="mob-pause-reason" type="text" maxlength="120" placeholder="e.g. Restocking, vacation…"
-          class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-forest/30 focus:border-forest transition-all" />
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Expected Resume Date (optional)</label>
-        <input id="mob-pause-estimate" type="date"
-          class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-forest/30 focus:border-forest transition-all" />
-      </div>
-      <label class="flex items-center gap-3 cursor-pointer">
-        <input id="mob-pause-remake" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-forest focus:ring-forest" />
-        <span class="text-sm text-gray-700">Allow buyers to <strong>request a custom remake</strong> while paused</span>
-      </label>
-    </div>
-    <div class="flex gap-3">
-      <button id="mob-pause-cancel" class="flex-1 py-3 border border-gray-300 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">
-        Cancel
-      </button>
-      <button id="mob-pause-confirm" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-semibold active:scale-95 transition-all">
-        Pause Listing
-      </button>
-    </div>
-  </div>
-</div>
 
 </body></html>
 
