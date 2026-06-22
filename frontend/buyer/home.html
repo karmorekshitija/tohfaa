@@ -551,7 +551,7 @@
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url}" alt="${product.name}" loading="lazy">
-                    <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                    <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                         <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                     </button>
                 </div>
@@ -652,7 +652,7 @@
                         </button>
                         
                         <!-- Horizontally Scrollable Content -->
-                        <div class="flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-none" style="scrollbar-width: none; -ms-overflow-style: none;">
+                        <div class="flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
                             <!-- Product Cards will load here -->
                         </div>
 
@@ -661,15 +661,11 @@
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
-                    <div class="flex justify-center gap-2 mt-4 category-carousel-dots">
-                        <!-- Dots injected dynamically -->
-                    </div>
                 `;
 
                 const scrollContent = rowWrapper.querySelector('.scrollbar-none');
                 const leftBtn = rowWrapper.querySelector('.scroll-left-btn');
                 const rightBtn = rowWrapper.querySelector('.scroll-right-btn');
-                const dotsWrapper = rowWrapper.querySelector('.category-carousel-dots');
 
                 products.forEach(product => {
                     // Render using the same card layout with fixed width for horizontal scrolling
@@ -677,23 +673,7 @@
                     scrollContent.appendChild(card);
                 });
 
-                // Generate pagination dots
-                const cardsPerPage = 4;
-                const pageCount = Math.ceil(products.length / cardsPerPage);
-                const dots = [];
-
                 const getPageWidth = () => scrollContent.clientWidth > 0 ? (scrollContent.clientWidth + 24) : 1216;
-
-                for (let i = 0; i < pageCount; i++) {
-                    const dot = document.createElement('button');
-                    dot.className = `w-2 h-2 rounded-full transition-all duration-200 bg-sage/40 hover:bg-sage/70 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#3D6B4F] ${i === 0 ? 'bg-[#3D6B4F] scale-125' : ''}`;
-                    dot.onclick = () => {
-                        const targetScroll = i * getPageWidth();
-                        scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
-                    };
-                    dotsWrapper.appendChild(dot);
-                    dots.push(dot);
-                }
 
                 // Left & Right arrow actions
                 leftBtn.onclick = () => {
@@ -705,24 +685,6 @@
                     const targetScroll = scrollContent.scrollLeft + getPageWidth();
                     scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
                 };
-
-                // Listen to scroll events to update dots active styling
-                let scrollTimeout;
-                scrollContent.addEventListener('scroll', () => {
-                    window.clearTimeout(scrollTimeout);
-                    scrollTimeout = setTimeout(() => {
-                        const pageIndex = Math.round(scrollContent.scrollLeft / getPageWidth());
-                        dots.forEach((dot, idx) => {
-                            if (idx === pageIndex) {
-                                dot.classList.add('bg-[#3D6B4F]', 'scale-125');
-                                dot.classList.remove('bg-sage/40');
-                            } else {
-                                dot.classList.remove('bg-[#3D6B4F]', 'scale-125');
-                                dot.classList.add('bg-sage/40');
-                            }
-                        });
-                    }, 50);
-                });
 
                 container.appendChild(rowWrapper);
             }

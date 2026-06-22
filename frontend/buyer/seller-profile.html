@@ -1067,7 +1067,7 @@
                         <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                             ${ribbonHtml}
                             <img src="${p.image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Creation'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" loading="lazy" />
-                            <button onclick="toggleWishlist(event, ${p.id})" class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10">
+                            <button onclick="toggleWishlist(event, ${p.id})" class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10">
                                 <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" id="wishlist-icon-${p.id}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                             </button>
                             ${isSoldOut ? `

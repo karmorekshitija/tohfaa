@@ -739,7 +739,7 @@
             <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
               ${ribbonHtml}
               <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imageUrl}" alt="${p.name}" loading="lazy">
-              <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
+              <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
                 <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${p.is_wishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${p.is_wishlisted ? 1 : 0};">favorite</span>
               </button>
             </div>

@@ -393,7 +393,7 @@
             <div class="relative aspect-square bg-[#F7F3EC]">
               <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
               ${tag ? `<div class="absolute top-2 left-2 flex flex-col gap-1">${getBadgeHtml(tag)}</div>` : ""}
-              <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+              <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                 <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
               </button>
             </div>

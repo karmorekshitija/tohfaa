@@ -330,7 +330,6 @@
 
 <!-- Sponsored Section -->
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
-    <div class="bg-[#F7F3EC] rounded-xl border border-outline-variant p-6 md:p-8">
         <div class="flex justify-between items-end mb-lg">
             <div>
                 <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
@@ -345,7 +344,6 @@
         <div id="sponsored-product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
             <!-- Dynamic sponsored product cards will load here -->
         </div>
-    </div>
 </section>
 
 <!-- For You (Capped at 15 products) -->
@@ -643,7 +641,7 @@
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url}" alt="${product.name}" loading="lazy">
-                    <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                    <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                         <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                     </button>
                 </div>
