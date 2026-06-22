@@ -813,7 +813,7 @@
         const div = document.createElement('div');
         
         const cardHtml = `
-          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='./product.html?id=${product_id}'">
+          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="${product_id ? `window.location.href='./product.html?id=${product_id}'` : ''}">
             <div class="flex items-center">
               <span class="font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold text-white" style="background-color: ${tagColor};">
                 ${tagLabel}
@@ -1290,6 +1290,10 @@
       activeConversationId = parseInt(initialConvId, 10);
       document.getElementById('chat-area-empty').classList.add('hidden');
       document.getElementById('chat-area').classList.remove('hidden');
+    } else if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        toggleSidebarDrawer();
+      }, 300);
     }
 
     await loadConversations();
@@ -1299,7 +1303,7 @@
 
     sidebarPollingInterval = setInterval(() => {
       loadConversations(true);
-    }, 30000);
+    }, 8000);
   });
 
   window.addEventListener('beforeunload', () => {

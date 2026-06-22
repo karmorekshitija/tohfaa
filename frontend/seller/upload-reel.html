@@ -492,11 +492,11 @@
 
         div.innerHTML = `
           <img class="w-12 h-12 rounded object-cover" src="${l.cover_photo_url || 'https://ui-avatars.com/api/?name=Product'}" alt="${l.title}" loading="lazy">
-          <div class="ml-2 flex-grow">
-            <p class="text-body-sm font-bold text-primary">${l.title}</p>
+          <div class="ml-2 flex-grow min-w-0">
+            <p class="text-body-sm font-bold text-primary truncate">${l.title}</p>
             <p class="font-data-mono text-[12px] text-gold">₹${price}</p>
           </div>
-          <button class="px-3 py-1 rounded-full border border-primary text-[11px] text-primary font-bold transition-all ${isSelected ? 'bg-primary text-white' : 'opacity-0 group-hover:opacity-100'}">${isSelected ? 'Tagged' : 'Tag'}</button>
+          <button type="button" class="px-3 py-1 rounded-full border border-primary text-[11px] text-primary font-bold transition-all shrink-0 pointer-events-none ${isSelected ? 'bg-primary text-white' : 'opacity-0 group-hover:opacity-100'}">${isSelected ? 'Tagged' : 'Tag'}</button>
         `;
 
         div.addEventListener('click', () => {
@@ -506,12 +506,12 @@
             selectedListings.delete(lid);
             div.className = "product-item flex items-center p-2 border border-outline-variant/40 rounded-lg bg-surface hover:bg-surface-container-low cursor-pointer transition-all active:scale-95 mb-2 group";
             btn.textContent = "Tag";
-            btn.className = "px-3 py-1 rounded-full border border-primary text-[11px] text-primary font-bold transition-all opacity-0 group-hover:opacity-100";
+            btn.className = "px-3 py-1 rounded-full border border-primary text-[11px] text-primary font-bold transition-all shrink-0 pointer-events-none opacity-0 group-hover:opacity-100";
           } else {
             selectedListings.add(lid);
             div.className = "product-item flex items-center p-2 border-2 border-primary rounded-lg bg-secondary-container/10 cursor-pointer transition-all mb-2 group";
             btn.textContent = "Tagged";
-            btn.className = "px-3 py-1 rounded-full border border-primary text-[11px] text-primary font-bold transition-all bg-primary text-white";
+            btn.className = "px-3 py-1 rounded-full border border-primary text-[11px] text-primary font-bold transition-all shrink-0 pointer-events-none bg-primary text-white";
           }
         });
 

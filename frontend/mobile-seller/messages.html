@@ -83,8 +83,9 @@
 <!-- Mobile Style Overrides -->
 <style>
   @media (max-width: 768px) {
-    /* Stack grid & flex items */
-    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+    /* Scope column collapse to non-chat content only */
+    seller-layout .grid:not(#chat-area *),
+    seller-layout [class*="grid-cols-"]:not(#chat-area *) {
       display: flex !important;
       flex-direction: column !important;
       width: 100% !important;
@@ -141,6 +142,7 @@
     aside.w-80 {
       width: 100% !important;
       display: flex !important;
+      height: calc(100vh - 5rem) !important;
     }
     /* When active conversation is open, COLUMN B covers COLUMN A */
     #chat-area:not(.hidden) {
@@ -444,6 +446,7 @@ window.goBackToInbox = function() {
   let sidebarPollingInterval = null;
   let selectedFiles = [];
   let countdownIntervals = [];
+  let pollCount = 0;
 
   function getAuthToken() {
     return localStorage.getItem('token') || sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
@@ -647,6 +650,7 @@ window.goBackToInbox = function() {
 
   async function loadConversation(id) {
     if (activePollingInterval) clearInterval(activePollingInterval);
+    pollCount = 0;
     
     const token = getAuthToken();
     try {
@@ -723,6 +727,10 @@ window.goBackToInbox = function() {
 
   async function pollMessages(id) {
     const token = getAuthToken();
+    pollCount++;
+    if (pollCount % 3 === 0) {
+      loadConversations(true);
+    }
     try {
       const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -813,7 +821,7 @@ window.goBackToInbox = function() {
         const div = document.createElement('div');
         
         const cardHtml = `
-          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='/mobile-buyer/product.html?id=${product_id}'">
+          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="${product_id ? `window.location.href='/mobile-buyer/product.html?id=${product_id}'` : ''}">
             <div class="flex items-center">
               <span class="font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold text-white" style="background-color: ${tagColor};">
                 ${tagLabel}
@@ -1230,10 +1238,10 @@ window.goBackToInbox = function() {
       await loadConversation(activeConversationId);
     }
 
-    // Polling inbox list every 30s
+    // Polling inbox list every 8s
     sidebarPollingInterval = setInterval(() => {
       loadConversations(true);
-    }, 30000);
+    }, 8000);
   });
 
   window.addEventListener('beforeunload', () => {

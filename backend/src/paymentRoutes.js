@@ -358,16 +358,20 @@ router.get('/api/payments/earnings/graph', requireSeller, async (req, res) => {
     if (range === '30d') days = 30;
     else if (range === '3m') days = 90;
 
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    const cutoffString = cutoffDate.toISOString().slice(0, 19).replace('T', ' ');
+
     const query = `
       SELECT 
         date(created_at) as date,
         COALESCE(SUM(net_amount), 0) as amount
       FROM transactions
-      WHERE seller_id = ? AND type = 'SALE' AND created_at >= date('now', ?)
+      WHERE seller_id = ? AND type = 'SALE' AND created_at >= ?
       GROUP BY date(created_at)
       ORDER BY date(created_at) ASC
     `;
-    const rows = await db.prepare(query).all(req.seller.user_id, `-${days} days`);
+    const rows = await db.prepare(query).all(req.seller.user_id, cutoffString);
 
     const formatted = rows.map(r => ({
       date: r.date,

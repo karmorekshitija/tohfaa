@@ -132,6 +132,16 @@
       max-width: 100vw !important;
       padding: 24px !important;
     }
+    /* Fix: buyer row — icon + name must be on the same horizontal line */
+    .order-row > div.flex.items-center {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      width: 100% !important;
+    }
+    .order-row > div.flex.items-center > * {
+      margin-top: 0 !important;
+    }
   }
 </style>
 
@@ -881,12 +891,14 @@
         if (show) {
             slideOver.classList.remove('pointer-events-none');
             overlay.classList.add('opacity-100');
-            overlay.classList.remove('pointer-events-none');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
             content.classList.remove('translate-x-full');
+            content.classList.add('translate-x-0');
         } else {
             slideOver.classList.add('pointer-events-none');
             overlay.classList.remove('opacity-100');
-            overlay.classList.add('pointer-events-none');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('translate-x-0');
             content.classList.add('translate-x-full');
         }
     }

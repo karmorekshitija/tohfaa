@@ -8298,6 +8298,40 @@ app.post('/api/seller/reviews/:id/reply', requireSeller, async (req, res) => {
   }
 });
 
+app.get('/api/seller/review-settings', requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    let settings = await db.prepare("SELECT enabled, delay_days_after_del FROM review_request_settings WHERE seller_id = ?").get(sellerId);
+    if (!settings) {
+      await db.prepare("INSERT INTO review_request_settings (seller_id, enabled, delay_days_after_del) VALUES (?, 1, 3)").run(sellerId);
+      settings = { enabled: 1, delay_days_after_del: 3 };
+    }
+    return res.status(200).json({ success: true, data: settings });
+  } catch (err) {
+    console.error('GET /api/seller/review-settings error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
+app.post('/api/seller/review-settings', requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    const { enabled, delay_days_after_del } = req.body;
+    const existing = await db.prepare("SELECT seller_id FROM review_request_settings WHERE seller_id = ?").get(sellerId);
+    if (existing) {
+      await db.prepare("UPDATE review_request_settings SET enabled = ?, delay_days_after_del = ?, updated_at = datetime('now') WHERE seller_id = ?")
+        .run(enabled, delay_days_after_del, sellerId);
+    } else {
+      await db.prepare("INSERT INTO review_request_settings (seller_id, enabled, delay_days_after_del) VALUES (?, ?, ?)")
+        .run(sellerId, enabled, delay_days_after_del);
+    }
+    return res.status(200).json({ success: true, message: 'Auto-request settings saved successfully' });
+  } catch (err) {
+    console.error('POST /api/seller/review-settings error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
 // TASK 16: GET /api/seller/analytics
 // ============================================================
 app.get('/api/seller/analytics', requireSeller, async (req, res) => {

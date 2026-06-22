@@ -243,13 +243,23 @@
       position: relative !important;
     }
     /* Ivory card styling overrides for containers on mobile */
+    /* .no-card is added to layout-only divs (avatar row, section icon headers)
+       so they are excluded from the card treatment below */
     .bg-surface-container-lowest,
-    section > div {
+    section > div:not(.no-card) {
       background: #FCFAF5 !important;
       border: 1px solid #8FAF82 !important;
       border-radius: 16px !important;
       box-shadow: 0 2px 8px rgba(58,51,40,0.07) !important;
       padding: 16px !important;
+    }
+    /* Reset for layout-only divs that must NOT become standalone cards */
+    section > div.no-card {
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
     }
     /* Team access invite field stacking */
     .flex-1 > .flex.gap-2.mb-8 {
@@ -373,7 +383,7 @@
 <!-- Page Header — matches all other tabs -->
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-md mb-6 flex-shrink-0">
   <div>
-    <h1 class="font-headline-lg text-primary text-4xl font-bold">Profile & Settings</h1>
+    <h1 class="font-headline-lg text-primary text-xl font-bold">Profile & Settings</h1>
     <p class="text-on-surface-variant text-base font-body-md mt-2">Manage your profile details, shop policies, and settings</p>
   </div>
 </div>
@@ -402,12 +412,12 @@
   <div id="tab-panel-profile" class="tab-panel space-y-7">
     <!-- SECTION A: BASIC INFO -->
     <section class="card-section">
-      <div class="flex items-center gap-2 mb-7">
+      <div class="no-card flex items-center gap-2 mb-7">
         <span class="material-symbols-outlined text-primary">account_circle</span>
         <h2 class="font-headline text-2xl">Basic Info</h2>
       </div>
       <!-- Avatar Row -->
-      <div class="flex flex-col md:flex-row gap-8 items-start mb-7">
+      <div class="no-card flex flex-col md:flex-row gap-8 items-start mb-7">
         <div class="flex-shrink-0">
           <div class="relative group cursor-pointer w-24 h-24" onclick="document.getElementById('input-avatar').click()" title="Change profile photo">
             <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-high shadow-sm bg-surface-container">
@@ -496,7 +506,7 @@
     </section>
     <!-- SECTION B: ABOUT PAGE -->
     <section class="card-section">
-      <div class="flex items-center gap-2 mb-7">
+      <div class="no-card flex items-center gap-2 mb-7">
         <span class="material-symbols-outlined text-primary">auto_stories</span>
         <h2 class="font-headline text-2xl">About Page</h2>
       </div>
@@ -575,7 +585,7 @@
   <div id="tab-panel-settings" class="tab-panel hidden space-y-7">
     <!-- SECTION A: ACCOUNT & SECURITY -->
     <section class="card-section">
-      <div class="flex items-center gap-2 mb-7">
+      <div class="no-card flex items-center gap-2 mb-7">
         <span class="material-symbols-outlined text-primary">security</span>
         <h2 class="font-headline text-2xl">Account &amp; Security</h2>
       </div>
@@ -623,7 +633,7 @@
     </section>
     <!-- SECTION B: SELLING LIMITS -->
     <section class="card-section">
-      <div class="flex items-center gap-2 mb-7">
+      <div class="no-card flex items-center gap-2 mb-7">
         <span class="material-symbols-outlined text-primary">speed</span>
         <h2 class="font-headline text-2xl">Selling Limits</h2>
       </div>
@@ -678,7 +688,7 @@
     </section>
     <!-- SECTION C: BANK ACCOUNT & PAYOUTS -->
     <section class="card-section">
-      <div class="flex items-center gap-2 mb-7">
+      <div class="no-card flex items-center gap-2 mb-7">
         <span class="material-symbols-outlined text-primary">account_balance</span>
         <h2 class="font-headline text-2xl">Bank Account Details</h2>
       </div>
@@ -715,7 +725,7 @@
     <!-- SECTION D: WHATSAPP ASSISTANT                               -->
     <!-- ═══════════════════════════════════════════════════════════ -->
     <section class="card-section mt-6">
-      <div class="flex items-center gap-2 mb-7">
+      <div class="no-card flex items-center gap-2 mb-7">
         <span class="material-symbols-outlined text-primary">chat</span>
         <h2 class="font-headline text-2xl">WhatsApp Assistant Integration</h2>
       </div>

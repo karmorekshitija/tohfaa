@@ -69,7 +69,7 @@ function translateSql(sql) {
   // Auto-append RETURNING id for INSERT queries if not already present
   const isInsert = cleanSql.trim().toUpperCase().startsWith('INSERT');
   if (isInsert && !cleanSql.toUpperCase().includes('RETURNING')) {
-    if (cleanSql.toLowerCase().includes('store_config')) {
+    if (cleanSql.toLowerCase().includes('store_config') || cleanSql.toLowerCase().includes('review_request_settings')) {
       cleanSql = cleanSql.trim() + ' RETURNING seller_id';
     } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('reel_listing_links') || cleanSql.toLowerCase().includes('reel_product_links') || cleanSql.toLowerCase().includes('daily_order_tracking')) {
       // No single auto-increment id column

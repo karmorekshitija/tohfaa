@@ -144,9 +144,9 @@
         <div class="grid grid-cols-12 px-6 py-2 font-label-caps text-on-surface-variant opacity-60 text-xs tracking-wider">
             <div class="col-span-1 flex justify-center"><input type="checkbox" id="select-all-checkbox" class="rounded border-sage text-primary focus:ring-primary"/></div>
             <div class="col-span-2">Order Date</div>
-            <div class="col-span-1">Order ID</div>
+            <div class="col-span-2">Order ID</div>
             <div class="col-span-2">Buyer</div>
-            <div class="col-span-3">Product Title</div>
+            <div class="col-span-2">Product Title</div>
             <div class="col-span-1 text-center">Amount</div>
             <div class="col-span-2 text-center">Status</div>
         </div>
@@ -248,11 +248,11 @@
             <div class="order-row grid grid-cols-12 px-6 py-5 bg-white border border-outline-variant/30 rounded-xl items-center shadow-sm relative group cursor-pointer fade-in" data-id="${o.internal_id}">
                 <div class="col-span-1 flex justify-center"><input type="checkbox" class="order-select-checkbox rounded border-sage text-primary focus:ring-primary" data-id="${o.internal_id}" onclick="event.stopPropagation();"/></div>
                 <div class="col-span-2 font-data-price text-on-surface-variant">${formatDate(o.order_date)}</div>
-                <div class="col-span-1 font-data-price text-primary">#${o.order_id || '—'}</div>
+                <div class="col-span-2 font-data-price text-primary whitespace-nowrap">#${o.order_id || '—'}</div>
                 <div class="col-span-2 flex flex-col">
                     <span class="font-body-md font-bold text-on-surface">${o.buyer_name || '—'}</span>
                 </div>
-                <div class="col-span-3 flex flex-col">
+                <div class="col-span-2 flex flex-col">
                     <span class="font-body-md truncate max-w-[200px] text-on-surface-variant font-medium">${o.item_title || '—'}</span>
                 </div>
                 <div class="col-span-1 text-center font-data-price text-primary font-bold">${formatPaise(o.total_paise)}</div>

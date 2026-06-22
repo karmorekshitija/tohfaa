@@ -569,6 +569,26 @@
         };
         updateDaysDisplay();
 
+        // Load Settings from Backend
+        async function loadReviewSettings() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/seller/review-settings`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const resp = await res.json();
+                    const settings = resp.data || {};
+                    daysCount = settings.delay_days_after_del || 3;
+                    const enabled = settings.enabled !== 0 && settings.enabled !== false;
+                    document.getElementById('modal-enable-auto').checked = enabled;
+                    updateDaysDisplay();
+                }
+            } catch (err) {
+                console.error("Error loading review settings:", err);
+            }
+        }
+        loadReviewSettings();
+
         modalDaysMinus.addEventListener('click', () => {
             if (daysCount > 1) {
                 daysCount--;
@@ -607,12 +627,32 @@
             }
         });
 
-        modalSaveBtn.addEventListener('click', () => {
+        modalSaveBtn.addEventListener('click', async () => {
             const enabled = document.getElementById('modal-enable-auto').checked;
-            localStorage.setItem('auto_request_enabled', enabled ? 'true' : 'false');
-            localStorage.setItem('auto_request_days', String(daysCount));
-            showToast('Auto-request settings saved successfully!', 'success');
-            closeModal();
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/seller/review-settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        enabled: enabled ? 1 : 0,
+                        delay_days_after_del: daysCount
+                    })
+                });
+                if (res.ok) {
+                    localStorage.setItem('auto_request_enabled', enabled ? 'true' : 'false');
+                    localStorage.setItem('auto_request_days', String(daysCount));
+                    showToast('Auto-request settings saved successfully!', 'success');
+                    closeModal();
+                } else {
+                    showToast('Failed to save settings', 'error');
+                }
+            } catch (err) {
+                console.error("Error saving review settings:", err);
+                showToast('Failed to save settings', 'error');
+            }
         });
     });
 </script>
