@@ -62,6 +62,19 @@ fs.mkdirSync(sellerBannerDir, { recursive: true });
 fs.mkdirSync(sellerAboutDir, { recursive: true });
 
 const app = express();
+app.disable('x-powered-by');
+
+const helmet = require('helmet');
+app.use(helmet());
+
+const expressRateLimit = require('express-rate-limit');
+app.use(expressRateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
+
 const cors = require('cors');
 app.use(cors({
   origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
@@ -5652,7 +5665,9 @@ const listingPhotosDir = path.join(__dirname, '..', 'uploads', 'listings');
 fs.mkdirSync(listingPhotosDir, { recursive: true });
 const listingPhotoStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const dir = path.join(listingPhotosDir, String(req.params.id || 'tmp'));
+    const rawId = String(req.params.id || 'tmp');
+    const safeId = rawId.replace(/[^a-zA-Z0-9_-]/g, '') || 'tmp';
+    const dir = path.join(listingPhotosDir, safeId);
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
@@ -14865,6 +14880,16 @@ app.post('/api/requests/:id/counter', authenticateToken, async (req, res) => {
     console.error('Error countering quote:', err);
     return res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
+});
+
+// Centralized Error Handler to prevent stack trace leaks
+app.use((err, req, res, next) => {
+  console.error('Unhandled Server Error:', err.message);
+  res.status(500).json({
+    error: true,
+    message: 'Internal server error',
+    code: 'INTERNAL_SERVER_ERROR'
+  });
 });
 
 const PORT = process.env.PORT || 5001;
