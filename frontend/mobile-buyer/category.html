@@ -109,7 +109,7 @@
         </div>
       </div>
       <!-- Subcategory chips -->
-      <div class="flex gap-2 overflow-x-auto px-4 pb-2.5 no-scrollbar" id="subcategory-container">
+      <div class="flex flex-nowrap gap-2 overflow-x-auto px-4 pb-2.5 no-scrollbar" id="subcategory-container">
         <!-- Loaded dynamically -->
       </div>
     </section>
@@ -121,7 +121,7 @@
         <!-- Loaded dynamically -->
       </div>
 
-      <div class="px-4 pt-1 pb-2 flex items-center justify-between">
+      <div class="px-4 pt-1 pb-2 flex items-center justify-between" id="carousel-helper-text">
         <p class="text-[12px] text-[#74786f] italic" style="font-family: 'Playfair Display', serif;">Swipe to explore more makes →</p>
       </div>
 
@@ -361,7 +361,7 @@
         const btnClass = isActive 
           ? "bg-[#8FAF82] text-white shadow-sm" 
           : "bg-[#F7F3EC] border border-[#c3c8c1] text-[#444840]";
-        return `<button class="flex-shrink-0 px-4 py-1 rounded-full text-[12px] font-semibold transition-all active:scale-95 ${btnClass}" data-sub="${sub}">${sub}</button>`;
+        return `<button class="flex-shrink-0 whitespace-nowrap px-4 py-1 rounded-full text-[12px] font-semibold transition-all active:scale-95 ${btnClass}" data-sub="${sub}">${sub}</button>`;
       }).join('');
 
       container.querySelectorAll('button').forEach(btn => {
@@ -447,13 +447,24 @@
         if (res.data && res.data.success) {
           const products = res.data.data.products || [];
 
-          // Render carousel
+          // Render carousel (Sponsored only)
           const carousel = document.getElementById("product-carousel");
-          carousel.innerHTML = products.map(p => getProductCardHtml(p, true)).join("");
+          const helperText = document.getElementById("carousel-helper-text");
+          const sponsored = products.filter(p => p.type === 'sponsored' || p.product_tag === 'Sponsored' || p.is_sponsored);
+          const nonSponsored = products.filter(p => !(p.type === 'sponsored' || p.product_tag === 'Sponsored' || p.is_sponsored));
 
-          // Render grid
+          if (sponsored.length === 0) {
+            carousel.classList.add('hidden');
+            if (helperText) helperText.classList.add('hidden');
+          } else {
+            carousel.classList.remove('hidden');
+            if (helperText) helperText.classList.remove('hidden');
+            carousel.innerHTML = sponsored.map(p => getProductCardHtml(p, true)).join("");
+          }
+
+          // Render grid (Non-sponsored only)
           const grid = document.getElementById("product-grid");
-          grid.innerHTML = products.map(p => getProductCardHtml(p, false)).join("");
+          grid.innerHTML = nonSponsored.map(p => getProductCardHtml(p, false)).join("");
 
           // Re-bind actions
           bindProductEvents();
