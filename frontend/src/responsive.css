@@ -504,4 +504,77 @@ table button {
   min-width: 0 !important;
 }
 
+/* ==========================================================================
+   Seller Studio Responsive Sidebar and Drawer Overrides
+   ========================================================================== */
+@media (max-width: 1023px) {
+  /* 1. Stack flex layout containers holding aside panels vertically */
+  .seller-main-panel .flex:has(> aside):not(.chat-container),
+  .seller-layout-container .flex:has(> aside):not(.chat-container),
+  .flex-1.flex:has(> aside),
+  div.flex:has(> aside) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* 2. Force sidebars to expand to full width on mobile/tablet viewports */
+  aside.w-80,
+  aside.w-\[360px\],
+  aside.w-96,
+  aside:not(.absolute) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid rgba(61, 107, 79, 0.12) !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. Constrain absolute drawers/slide-overs to viewport width */
+  aside.absolute {
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  /* 4. Remove dividing vertical borders from stacked columns */
+  .border-r,
+  .border-r-secondary,
+  .border-l,
+  .border-l-secondary {
+    border-right: none !important;
+    border-left: none !important;
+  }
+}
+
+/* Constrain all horizontal scroll containers globally to prevent layout overflow */
+.overflow-x-auto {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  display: block !important;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 767px) {
+  /* Enforce horizontal scrolling tables on mobile */
+  .overflow-x-auto table {
+    min-width: 750px !important;
+  }
+  /* Override desktop-level paddings on mobile viewports */
+  .px-12 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  /* Wrap stats card elements to prevent horizontal page stretching */
+  .flex:has(> .bg-primary\/10),
+  .flex:has(> .bg-gold\/10),
+  .flex:has(> .bg-violet\/10) {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+}
+
+
 
