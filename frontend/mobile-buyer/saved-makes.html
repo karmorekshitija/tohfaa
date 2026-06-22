@@ -343,15 +343,15 @@
                                         <span class="material-symbols-outlined active-heart text-[20px] text-red-500 transition-all" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                     </button>
                                 </div>
-                                <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1 text-left">
-                                    <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
-                                    <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                                <div class="flex flex-col mb-4 gap-y-1 text-left">
+                                    <span class="font-bold text-lg text-[#C8973A]">${formattedPrice}</span>
+                                    <div class="flex items-center gap-1 text-xs text-[#605e57]">
                                         <span class="text-[#C8973A] font-bold">★</span>
                                         <span class="font-semibold text-on-surface">${parseFloat(item.avg_rating || 0).toFixed(1)}</span>
                                         <span>(${parseInt(item.review_count || 0, 10)})</span>
                                     </div>
-                                    <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${item.name}</h4>
-                                    <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation();">By ${item.seller_name}</span>
+                                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1" style="font-family: 'Playfair Display', serif;">${item.name}</h4>
+                                    <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation();">By ${item.seller_name}</span>
                                 </div>
                             </div>
                             <div class="w-full mt-auto">
