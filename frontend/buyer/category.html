@@ -160,7 +160,7 @@
 <span id="filter-btn-text" class="text-sm font-body-md pr-1">Filter</span>
 </button>
 </div>
-<div id="subcategory-filters-container" class="flex items-center gap-sm overflow-x-auto no-scrollbar flex-grow">
+<div id="subcategory-filters-container" class="flex flex-nowrap items-center gap-sm overflow-x-auto no-scrollbar flex-grow">
   <!-- Dynamic subcategory buttons will be injected here -->
 </div>
 <div class="flex items-center gap-sm ml-lg border-l border-outline-variant/50 pl-lg">
@@ -667,7 +667,7 @@
         const activeClasses = "bg-primary-container text-white shadow-md";
         const inactiveClasses = "bg-[#F7F3EC] border border-outline-variant text-on-surface-variant font-body-md text-sm hover:border-primary";
         return `
-          <button class="flex-shrink-0 px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-sub="${sub}">
+          <button class="flex-shrink-0 whitespace-nowrap px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-sub="${sub}">
             ${sub}
           </button>
         `;

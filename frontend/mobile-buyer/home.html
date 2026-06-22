@@ -149,11 +149,15 @@
             }
             /* Protective Grid Carve-outs for 2-Column Mobile Feed */
             #product-feed-grid,
-            #sponsored-product-grid,
             #feed-skeletons {
                 display: grid !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                 gap: 12px !important;
+            }
+            #sponsored-product-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 8px !important;
             }
         }
     </style>
@@ -627,7 +631,7 @@
     // Helper to create product card template (reusable)
     function createProductCard(product, extraClasses = '') {
         const card = document.createElement('div');
-        card.className = `group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer opacity-0 translate-y-10 ${extraClasses}`;
+        card.className = `group bg-white border border-[#c3c8c1] rounded-xl p-2.5 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer opacity-0 translate-y-10 ${extraClasses}`;
         card.onclick = () => window.location.href = `./product.html?id=${product.id}`;
 
         const ribbonHtml = getRibbonHtml(product);
@@ -644,7 +648,7 @@
                     </button>
                 </div>
                 <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
-                    <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
+                    <span class="col-span-1 font-bold text-sm md:text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
                     <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
                         <span class="text-[#C8973A] font-bold">★</span>
                         <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating || 0).toFixed(1)}</span>
