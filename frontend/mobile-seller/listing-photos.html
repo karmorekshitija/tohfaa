@@ -14,6 +14,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
   <script src="/components/seller-components.js"></script>
+<style>
+  .slot-spinner {
+    border: 3px solid #8FAF82;
+    border-top-color: #3D6B4F;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
 </head>
 <body class="min-h-screen pb-32">
 <seller-layout active-tab="catalog">
@@ -25,9 +35,9 @@
 <h1 class="font-serif text-3xl text-forest">Craft New Listing</h1>
 </div>
 <div class="flex gap-4">
-<button class="px-6 py-2 border border-forest text-forest rounded-full font-medium">Save as Draft</button>
-<button class="px-6 py-2 bg-forest text-white rounded-full font-medium flex items-center gap-2">Continue <span class="text-xl">→</span></button>
-<button class="px-6 py-2 border border-red-200 text-red-500 rounded-full font-medium">Discard Draft</button>
+<button id="btn-keep-draft-desktop" class="px-6 py-2 border border-forest text-forest rounded-full font-medium hover:bg-forest/5 active:scale-95 transition-all">Save as Draft</button>
+<button id="btn-continue-desktop" class="px-6 py-2 bg-forest text-white rounded-full font-medium flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">Continue <span class="text-xl">→</span></button>
+<button id="btn-discard-desktop" class="px-6 py-2 border border-red-200 text-red-500 rounded-full font-medium hover:bg-red-50 active:scale-95 transition-all">Discard Draft</button>
 </div>
 </div>
 <!-- Multi-step Progress Indicator -->
@@ -81,70 +91,248 @@
             Capture your work from multiple angles under soft, natural sunlight for the best presentation in your studio.
           </p>
 <div class="bg-sage/10 rounded-xl p-6 border border-sage/20 space-y-4">
-<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Minimum 4 photos</div>
-<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Add one video/reel</div>
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Minimum 1 photo required</div>
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Cover photo auto-selected</div>
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Tap ★ to change cover</div>
 <div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Neutral backgrounds</div>
 </div>
 </div>
 <!-- END: Instructions -->
 <!-- BEGIN: Upload Grid -->
-<div class="lg:w-2/3 grid grid-cols-2 md:grid-cols-4 gap-4" data-purpose="upload-grid">
-<!-- Large Upload Zone -->
-<div class="col-span-2 row-span-2 border-2 border-dashed border-sage/40 bg-white/50 rounded-2xl flex flex-col items-center justify-center p-8 text-center min-h-[320px]">
-<div class="w-12 h-12 mb-4 text-forest opacity-60">
-<svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</div>
-<span class="font-mono text-[11px] font-bold tracking-[0.2em] text-forest/60 uppercase">Drag &amp; Drop<br/>Photos or Videos</span>
-</div>
-<!-- Individual Slots -->
-<!-- Slot 1: Cover Image -->
-<div class="relative rounded-2xl overflow-hidden aspect-square border-2 border-forest ring-4 ring-forest/10">
-<img alt="Cover Image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxh-50-lOwPd4bjP0-KxgZgvLSDpBBsClQo-tL6LKLWhVd5Ewe_bR1ltUd6Su0oNaR-OEJJvci7vxf5YqowF2TTanydd95-GkrgD2uJeP_vvm0PFUAD4gnwCnxflBpu4PjcZn6SbCdIS9Z6N7VNr8-M-jkZE9lxMxE4zbp-cTxD1O5G8i8Q4txO5ic7buneCFnxgpyf6-ou2J9tJBU8HKLh9OyDm3qvklsA_lcp5itAra-9Q7gcLKmD-Sp7U6xs0-jeHWbJZ8nPQ" loading="lazy" />
-<div class="absolute inset-x-0 bottom-0 bg-black/40 p-2 flex items-center gap-1">
-<span class="text-[8px] font-mono font-bold text-white uppercase tracking-widest">Cover ★</span>
-</div>
-<div class="absolute top-2 right-2 bg-forest text-white rounded-full p-1">
-<svg class="w-3 h-3" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-</div>
-</div>
-<!-- Empty Slots -->
-<div class="bg-white/30 rounded-2xl aspect-square border border-white flex items-center justify-center">
-<svg class="w-6 h-6 text-forest/20" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" fill-rule="evenodd"></path></svg>
-</div>
-<div class="bg-white/30 rounded-2xl aspect-square border border-white flex items-center justify-center">
-<svg class="w-6 h-6 text-forest/20" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" fill-rule="evenodd"></path></svg>
-</div>
-<div class="bg-white/30 rounded-2xl aspect-square border border-white flex items-center justify-center">
-<svg class="w-6 h-6 text-forest/20" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" fill-rule="evenodd"></path></svg>
-</div>
-<div class="bg-white/30 rounded-2xl aspect-square border border-white flex items-center justify-center">
-<svg class="w-6 h-6 text-forest/20" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" fill-rule="evenodd"></path></svg>
-</div>
-<!-- Add Reel Button -->
-<div class="bg-sage/20 rounded-2xl aspect-square border border-sage/40 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-sage/30 transition-colors">
-<svg class="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<span class="font-mono text-[9px] font-bold tracking-widest text-forest uppercase">Add Reel</span>
-</div>
+<div class="lg:w-2/3" data-purpose="upload-grid">
+  <div id="photo-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- Dynamically rendered by JS -->
+  </div>
+  <!-- Hidden reel file input -->
+  <input id="reel-file-input" type="file" accept="video/*" class="hidden">
 </div>
 <!-- END: Upload Grid -->
 </div>
-<!-- BEGIN: Form Fields (Implicit from "Primary Identification Name" snippet) -->
-<div class="mt-16 space-y-6">
-<label class="block">
-<span class="font-serif text-forest text-lg block mb-2">Primary Identification Name</span>
-<input class="w-full bg-white border border-gray-200 rounded-lg py-3 px-4 focus:ring-forest focus:border-forest" placeholder="e.g. Vintage Ceramic Fern Platter" type="text"/>
-</label>
-</div>
-<!-- END: Form Fields -->
 </section>
 </main>
 <!-- END: Main Content Area -->
 <!-- BEGIN: Mobile Fixed Footer -->
 <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-2 z-50 md:hidden" data-purpose="mobile-footer">
-<button class="flex-1 min-h-[44px] border border-gray-300 text-gray-700 text-sm font-bold rounded-lg px-2">Keep Draft</button>
-<button class="flex-[2] min-h-[44px] bg-forest text-white text-sm font-bold rounded-lg px-2 flex items-center justify-center gap-2">Continue <span class="text-xl">→</span></button>
-<button class="flex-1 min-h-[44px] border border-red-200 text-red-500 text-sm font-bold rounded-lg px-2">Discard</button>
+<button id="btn-keep-draft" class="flex-1 min-h-[44px] border border-gray-300 text-gray-700 text-sm font-bold rounded-lg px-2 hover:bg-gray-50 active:scale-95 transition-all">Keep Draft</button>
+<button id="btn-continue" class="flex-[2] min-h-[44px] bg-forest text-white text-sm font-bold rounded-lg px-2 flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">Continue <span class="text-xl">→</span></button>
+<button id="btn-discard" class="flex-1 min-h-[44px] border border-red-200 text-red-500 text-sm font-bold rounded-lg px-2 hover:bg-red-50 active:scale-95 transition-all">Discard</button>
 </footer>
 <!-- END: Mobile Fixed Footer -->
 </seller-layout>
+
+<script>
+(function() {
+  const DRAFT_ID = sessionStorage.getItem('draft_id');
+  if (!DRAFT_ID) { window.location.href = '/mobile-seller/catalog.html'; }
+
+  const API_BASE = window.location.origin;
+  const MAX_PHOTOS = 5;
+  let photos = []; // { url, photo_id, is_cover }
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-photos');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-photos'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  }
+
+  async function uploadPhoto(file, slotIndex) {
+    const token = getToken();
+    const fd = new FormData();
+    fd.append('file', file);
+    const isCoverUpload = (slotIndex === 0 || photos.length === 0);
+    if (isCoverUpload) fd.append('is_cover', 'true');
+    const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}/photos`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: fd
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || `Upload failed: HTTP ${res.status}`);
+    }
+    return await res.json(); // { data: { photo_id, url, is_cover, ... } }
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('photo-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Render filled photo slots
+    photos.forEach((photo, idx) => {
+      const isCover = photo.is_cover;
+      const isFirstSlot = idx === 0;
+      const slotDiv = document.createElement('div');
+      slotDiv.className = `relative rounded-2xl overflow-hidden border-2 ${isCover ? 'border-forest ring-4 ring-forest/10' : 'border-sage/30'} ${isFirstSlot ? 'col-span-2 row-span-2' : ''} aspect-square`;
+      slotDiv.dataset.slot = idx;
+      slotDiv.innerHTML = `
+        <img src="${photo.url}" class="w-full h-full object-cover" loading="lazy" alt="Photo ${idx + 1}"/>
+        ${isCover ? '<div class="absolute inset-x-0 bottom-0 bg-black/40 p-1 text-[8px] font-mono text-white uppercase tracking-widest text-center">Cover ★</div>' : ''}
+        <button onclick="window.__photosSetCover(${photo.photo_id}, '${photo.url}')" class="absolute top-1 left-1 bg-white/80 rounded-full w-7 h-7 flex items-center justify-center text-[11px] hover:bg-gold hover:text-white transition-all" style="transition:all 0.2s ease" title="Set as cover">★</button>
+        <button onclick="window.__photosRemovePhoto(${photo.photo_id}, ${idx})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm hover:bg-red-600 transition-all" style="transition:all 0.2s ease">×</button>
+      `;
+      grid.appendChild(slotDiv);
+    });
+
+    // Render empty upload slots (up to MAX_PHOTOS)
+    for (let i = photos.length; i < MAX_PHOTOS; i++) {
+      const isFirst = i === 0;
+      const slotDiv = document.createElement('div');
+      slotDiv.className = `relative rounded-2xl overflow-hidden aspect-square border-2 border-dashed border-sage/30 bg-white/50 flex items-center justify-center cursor-pointer hover:border-forest hover:bg-sage/5 active:scale-95 transition-all ${isFirst ? 'col-span-2 row-span-2' : ''}`;
+      slotDiv.style.transition = 'all 0.2s ease';
+      slotDiv.dataset.slot = i;
+      slotDiv.innerHTML = `
+        <div class="flex flex-col items-center gap-2 text-forest/40">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span class="font-mono text-[9px] uppercase tracking-widest">${isFirst ? 'Cover Photo' : 'Add Photo'}</span>
+        </div>
+        <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" data-slot-index="${i}">
+      `;
+      slotDiv.querySelector('input[type="file"]').addEventListener('change', (e) => handleFileSelect(e, i));
+      grid.appendChild(slotDiv);
+    }
+
+    // Reel slot (always last)
+    const reelDiv = document.createElement('div');
+    reelDiv.className = 'relative rounded-2xl overflow-hidden aspect-square border-2 border-dashed border-sage/40 bg-sage/5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-sage/10 active:scale-95 transition-all';
+    reelDiv.style.transition = 'all 0.2s ease';
+    reelDiv.id = 'reel-slot';
+    reelDiv.innerHTML = `
+      <svg class="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      <span class="font-mono text-[9px] font-bold tracking-widest text-forest uppercase">Add Reel</span>
+    `;
+    reelDiv.addEventListener('click', () => document.getElementById('reel-file-input').click());
+    grid.appendChild(reelDiv);
+  }
+
+  async function handleFileSelect(event, slotIndex) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Show spinner in this slot
+    const grid = document.getElementById('photo-grid');
+    const slotEl = grid.querySelector(`[data-slot="${slotIndex}"]`);
+    if (slotEl) {
+      slotEl.innerHTML = '<div class="slot-spinner"></div>';
+      slotEl.classList.remove('cursor-pointer', 'hover:border-forest');
+    }
+
+    try {
+      const resp = await uploadPhoto(file, slotIndex);
+      const photoData = resp.data || resp;
+      const isCover = photos.length === 0; // first upload = cover
+      photos.push({
+        url: photoData.url,
+        photo_id: photoData.photo_id,
+        is_cover: isCover || photoData.is_cover
+      });
+      // Ensure only one cover flag
+      if (isCover) photos.forEach((p, i) => { p.is_cover = (i === photos.length - 1); });
+      renderGrid();
+      showToast('Photo uploaded!', 'success');
+    } catch (err) {
+      showToast('Upload failed: ' + err.message, 'error');
+      renderGrid(); // restore grid
+    }
+  }
+
+  window.__photosRemovePhoto = async function(photoId, slotIndex) {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}/photos/${photoId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      // Remove locally regardless of 404 (already deleted)
+      photos = photos.filter(p => p.photo_id !== photoId);
+      // Re-assign cover if removed was cover
+      if (photos.length > 0 && !photos.some(p => p.is_cover)) photos[0].is_cover = true;
+      renderGrid();
+      showToast('Photo removed.', 'success');
+    } catch (err) {
+      // Remove locally anyway
+      photos = photos.filter(p => p.photo_id !== photoId);
+      renderGrid();
+    }
+  };
+
+  window.__photosSetCover = async function(photoId, photoUrl) {
+    const token = getToken();
+    try {
+      // PATCH listing cover_photo_url directly
+      await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ cover_photo_url: photoUrl })
+      });
+      photos.forEach(p => { p.is_cover = (p.photo_id === photoId); });
+      renderGrid();
+      showToast('Cover photo updated!', 'success');
+    } catch (err) {
+      showToast('Could not set cover: ' + err.message, 'error');
+    }
+  };
+
+  // Reel upload (inline, navigates to reel-upload.html with draft_id)
+  document.getElementById('reel-file-input')?.addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      window.location.href = `/mobile-seller/reel-upload.html?draft_id=${DRAFT_ID}`;
+    }
+  });
+
+  // Footer button wiring
+  async function discardDraft() {
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+    } catch (_) {}
+    sessionStorage.removeItem('draft_id');
+    sessionStorage.removeItem('draft_data');
+    window.location.href = '/mobile-seller/catalog.html';
+  }
+
+  function continueToDetails() {
+    if (photos.length < 1) {
+      showToast('Please upload at least one photo before continuing.', 'error');
+      return;
+    }
+    // Save photo data to draft_data
+    let draft = {};
+    try { draft = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch (_) {}
+    draft.photos = photos;
+    sessionStorage.setItem('draft_data', JSON.stringify(draft));
+    window.location.href = '/mobile-seller/listing-details.html';
+  }
+
+  ['btn-continue', 'btn-continue-desktop'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', continueToDetails);
+  });
+  ['btn-keep-draft', 'btn-keep-draft-desktop'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => {
+      window.location.href = '/mobile-seller/catalog.html';
+    });
+  });
+  ['btn-discard', 'btn-discard-desktop'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', discardDraft);
+  });
+
+  // Initial render
+  renderGrid();
+})();
+</script>
 </body></html>

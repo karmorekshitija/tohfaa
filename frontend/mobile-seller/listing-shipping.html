@@ -21,7 +21,7 @@
 <!-- BEGIN: Content Header -->
 <div class="bg-offwhite border-b border-forest/10 p-4 md:px-8 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
 <div class="flex items-center gap-4">
-<button class="p-2 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors">
+<button id="btn-back" class="p-2 border border-slate-300 rounded-full hover:bg-slate-50 transition-all duration-200 active:scale-95">
 <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </button>
 <div class="flex items-center gap-2">
@@ -32,12 +32,12 @@
 </div>
 </div>
 <div class="hidden md:flex items-center gap-4">
-<button class="px-6 py-2 border border-forest/20 text-forest font-medium rounded-full hover:bg-forest/5">Save as Draft</button>
-<button class="px-8 py-2 bg-forest text-white font-bold rounded-full hover:bg-forest/90 flex items-center gap-2">
+<button id="btn-draft-desktop" class="px-6 py-2 border border-forest/20 text-forest font-medium rounded-full hover:bg-forest/5 transition-all duration-200 active:scale-95">Save as Draft</button>
+<button id="btn-continue-desktop" class="px-8 py-2 bg-forest text-white font-bold rounded-full hover:bg-forest/90 flex items-center gap-2 transition-all duration-200 active:scale-95">
             Continue 
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
 </button>
-<button class="px-6 py-2 border border-red-200 text-red-600 font-medium rounded-full hover:bg-red-50">Discard Draft</button>
+<button id="btn-discard-desktop" class="px-6 py-2 border border-red-200 text-red-600 font-medium rounded-full hover:bg-red-50 transition-all duration-200 active:scale-95">Discard Draft</button>
 </div>
 </div>
 <!-- END: Content Header -->
@@ -148,11 +148,11 @@
 <div class="space-y-2">
 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Estimated Dispatch Time</label>
 <div class="relative">
-<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
-<option>3–5 days</option>
-<option>1–2 days</option>
-<option>Next day</option>
-<option>Within a week</option>
+<select id="select-dispatch" class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option value="5">3–5 days</option>
+<option value="2">1–2 days</option>
+<option value="1">Next day</option>
+<option value="7">Within a week</option>
 </select>
 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
@@ -163,11 +163,11 @@
 <div class="space-y-2">
 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Shipping Carrier Preference (Optional)</label>
 <div class="relative">
-<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
-<option>No preference</option>
-<option>FedEx</option>
-<option>DHL</option>
-<option>BlueDart</option>
+<select id="select-carrier" class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option value="No preference">No preference</option>
+<option value="FedEx">FedEx</option>
+<option value="DHL">DHL</option>
+<option value="BlueDart">BlueDart</option>
 </select>
 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
@@ -178,10 +178,10 @@
 <div class="space-y-2">
 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Packaging Type</label>
 <div class="relative">
-<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
-<option>Standard</option>
-<option>Fragile / Premium</option>
-<option>Eco-friendly</option>
+<select id="select-packaging" class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option value="standard">Standard</option>
+<option value="fragile">Fragile / Premium</option>
+<option value="eco">Eco-friendly</option>
 </select>
 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
@@ -192,10 +192,10 @@
 <div class="space-y-2">
 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Return Policy</label>
 <div class="relative">
-<select class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
-<option>No Returns</option>
-<option>7-day window</option>
-<option>14-day window</option>
+<select id="select-return-policy" class="w-full bg-offwhite border border-slate-200 rounded-xl px-4 py-3 appearance-none focus:ring-forest focus:border-forest transition-all">
+<option value="no-returns">No Returns</option>
+<option value="7-day">7-day window</option>
+<option value="15-day">14-day window</option>
 </select>
 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
@@ -267,17 +267,193 @@
 </div>
 </div>
 <!-- END: Layout Content -->
-<!-- BEGIN: Mobile Bottom Bar -->
-<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex items-center justify-between z-50">
-<button class="text-forest font-bold px-4 py-3 h-11 flex items-center">Save Draft</button>
-<button class="bg-forest text-white font-bold px-8 py-3 rounded-full h-11 flex items-center shadow-lg shadow-forest/20">
-            Continue   →
-          </button>
-</div>
-<!-- END: Mobile Bottom Bar -->
+<!-- BEGIN: Fixed Mobile Action Buttons -->
+<footer class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex gap-2 z-50">
+<button id="btn-draft-mobile" class="flex-1 touch-target rounded-lg border border-slate-300 text-sm font-bold text-slate-500 bg-white transition-all duration-200 active:scale-95">Draft</button>
+<button id="btn-continue-mobile" class="flex-[2] touch-target rounded-lg bg-forest text-parchment font-bold shadow-lg shadow-forest/20 transition-all duration-200 active:scale-95">Continue →</button>
+<button id="btn-discard-mobile" class="flex-1 touch-target rounded-lg border border-red-100 text-red-500 bg-red-50 transition-all duration-200 active:scale-95">
+<svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</footer>
+<!-- END: Fixed Mobile Action Buttons -->
 </main>
 <!-- END: Main Content Area -->
 </div>
 <!-- END: Navigation Container -->
 </seller-layout>
+
+<script>
+(function() {
+  const DRAFT_ID = sessionStorage.getItem('draft_id');
+  if (!DRAFT_ID) {
+    window.location.href = '/mobile-seller/catalog.html';
+    return;
+  }
+
+  const API_BASE = window.location.origin;
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-shipping');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-shipping'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  }
+
+  function init() {
+    let draftData = {};
+    try {
+      draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
+    } catch {}
+
+    if (draftData.dispatch_sla_days !== undefined && draftData.dispatch_sla_days !== null) {
+      document.getElementById('select-dispatch').value = draftData.dispatch_sla_days;
+    }
+    if (draftData.shipping_carrier !== undefined && draftData.shipping_carrier !== null) {
+      document.getElementById('select-carrier').value = draftData.shipping_carrier;
+    }
+    if (draftData.packaging_type !== undefined && draftData.packaging_type !== null) {
+      document.getElementById('select-packaging').value = draftData.packaging_type;
+    }
+    if (draftData.return_policy !== undefined && draftData.return_policy !== null) {
+      document.getElementById('select-return-policy').value = draftData.return_policy;
+    }
+  }
+
+  function gatherFormData() {
+    return {
+      dispatch_sla_days: parseInt(document.getElementById('select-dispatch').value) || 3,
+      shipping_carrier: document.getElementById('select-carrier').value,
+      shipping_method: 'courier', // standard courier shipment
+      packaging_type: document.getElementById('select-packaging').value,
+      return_policy: document.getElementById('select-return-policy').value
+    };
+  }
+
+  async function updateDraftOnBackend(fields) {
+    const token = getToken();
+    const payload = {
+      dispatch_sla_days: fields.dispatch_sla_days,
+      shipping_method: fields.shipping_method,
+      packaging_type: fields.packaging_type,
+      return_policy: fields.return_policy
+    };
+    const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || 'Failed to update draft');
+    }
+    return await res.json();
+  }
+
+  // Bind Back Button
+  document.getElementById('btn-back').addEventListener('click', () => {
+    const local = gatherFormData();
+    let oldData = {};
+    try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+    sessionStorage.setItem('draft_data', JSON.stringify({ ...oldData, ...local }));
+    window.location.href = '/mobile-seller/listing-pricing-a.html';
+  });
+
+  // Action Logic
+  async function handleSaveDraft(btn) {
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-forest border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const local = gatherFormData();
+      let oldData = {};
+      try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+      const merged = { ...oldData, ...local };
+      sessionStorage.setItem('draft_data', JSON.stringify(merged));
+      await updateDraftOnBackend(local);
+      showToast('Draft saved successfully', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
+  async function handleContinue(btn) {
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const local = gatherFormData();
+      let oldData = {};
+      try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+      const merged = { ...oldData, ...local };
+      sessionStorage.setItem('draft_data', JSON.stringify(merged));
+      await updateDraftOnBackend(local);
+      window.location.href = '/mobile-seller/listing-preview.html';
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  async function handleDiscard(btn) {
+    if (!confirm('Are you sure you want to discard this draft? This will permanently delete it.')) return;
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete draft');
+      sessionStorage.removeItem('draft_id');
+      sessionStorage.removeItem('draft_data');
+      showToast('Draft discarded', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  // Event Listeners for buttons
+  document.getElementById('btn-draft-desktop').addEventListener('click', function() { handleSaveDraft(this); });
+  document.getElementById('btn-draft-mobile').addEventListener('click', function() { handleSaveDraft(this); });
+
+  document.getElementById('btn-continue-desktop').addEventListener('click', function() { handleContinue(this); });
+  document.getElementById('btn-continue-mobile').addEventListener('click', function() { handleContinue(this); });
+
+  document.getElementById('btn-discard-desktop').addEventListener('click', function() { handleDiscard(this); });
+  document.getElementById('btn-discard-mobile').addEventListener('click', function() { handleDiscard(this); });
+
+  init();
+})();
+</script>
 </body></html>

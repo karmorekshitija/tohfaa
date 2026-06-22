@@ -68,52 +68,70 @@
 <!-- END: Progress Stepper -->
 <!-- BEGIN: Listing Live Success Card -->
 <div class="max-w-2xl mx-auto px-4">
-<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12 text-center" data-purpose="success-card">
-<!-- Success Icon Animation Container -->
-<div class="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full border-[1.5px] border-forest relative">
-<div class="w-full h-full rounded-full border-forest animate-ping absolute opacity-20"></div>
-<!-- Decorative leaf/plant icons often seen in the brand -->
-<svg class="w-10 h-10 text-forest" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
-<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-<h1 class="font-serif text-3xl md:text-4xl text-forest font-bold mb-4 flex items-center justify-center gap-2">
-          Your listing is live! <span class="text-gold">✦</span>
-</h1>
-<p class="text-gray-600 text-lg md:text-xl mb-12 max-w-md mx-auto leading-relaxed">
-          Midnight Jasmine Resin Study is now visible to buyers.
-        </p>
-<!-- Action Buttons Grid -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<!-- Share Post -->
-<button class="flex flex-col items-center justify-center gap-2 bg-violet text-white p-5 rounded-2xl hover:brightness-110 transition-all min-h-[110px]" data-purpose="share-btn">
-<div class="bg-white/20 p-2 rounded-lg">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase font-bold">Share Post</span>
-</button>
-<!-- Add Reel -->
-<a href="upload-reel.html" class="flex flex-col items-center justify-center gap-2 bg-forest text-white p-5 rounded-2xl hover:brightness-110 transition-all min-h-[110px]" data-purpose="reel-btn">
-<div class="bg-white/20 p-2 rounded-lg">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-<path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase font-bold">Add Reel</span>
-</a>
-<!-- View Catalog -->
-<button class="flex flex-col items-center justify-center gap-2 bg-parchment text-forest p-5 rounded-2xl hover:bg-[#efeadf] transition-all border border-forest/10 min-h-[110px]" data-purpose="catalog-btn">
-<div class="bg-forest/10 p-2 rounded-lg">
-<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase font-bold">View Catalog</span>
-</button>
-</div>
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12 text-center min-h-[350px] flex flex-col justify-center" data-purpose="success-card">
+  <!-- Loading View -->
+  <div id="publish-loading" class="flex flex-col items-center justify-center py-12">
+    <div class="w-16 h-16 border-4 border-forest border-t-transparent rounded-full animate-spin mb-6"></div>
+    <h2 class="font-serif text-2xl text-forest font-bold mb-2">Publishing listing...</h2>
+    <p class="text-gray-500 text-sm">Please wait while we publish your listing to the catalog.</p>
+  </div>
+
+  <!-- Success View (Hidden initially) -->
+  <div id="publish-success" class="hidden flex flex-col items-center">
+    <div class="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full border-[1.5px] border-forest relative">
+      <div class="w-full h-full rounded-full border-forest animate-ping absolute opacity-20"></div>
+      <svg class="w-10 h-10 text-forest" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24">
+        <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <h1 class="font-serif text-3xl md:text-4xl text-forest font-bold mb-4 flex items-center justify-center gap-2">
+      Your listing is live! <span class="text-gold">✦</span>
+    </h1>
+    <p id="success-title-text" class="text-gray-600 text-lg md:text-xl mb-12 max-w-md mx-auto leading-relaxed">
+      Midnight Jasmine Resin Study is now visible to buyers.
+    </p>
+    <!-- Action Buttons Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+      <!-- Share Post -->
+      <button class="flex flex-col items-center justify-center gap-2 bg-violet text-white p-5 rounded-2xl hover:brightness-110 active:scale-95 transition-all min-h-[110px]" data-purpose="share-btn">
+        <div class="bg-white/20 p-2 rounded-lg">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] font-mono tracking-widest uppercase font-bold">Share Post</span>
+      </button>
+      <!-- Add Reel -->
+      <a href="upload-reel.html" class="flex flex-col items-center justify-center gap-2 bg-forest text-white p-5 rounded-2xl hover:brightness-110 active:scale-95 transition-all min-h-[110px] flex justify-center items-center" data-purpose="reel-btn">
+        <div class="bg-white/20 p-2 rounded-lg">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] font-mono tracking-widest uppercase font-bold">Add Reel</span>
+      </a>
+      <!-- View Catalog -->
+      <button id="btn-view-catalog" class="flex flex-col items-center justify-center gap-2 bg-parchment text-forest p-5 rounded-2xl hover:bg-[#efeadf] active:scale-95 transition-all border border-forest/10 min-h-[110px]" data-purpose="catalog-btn">
+        <div class="bg-forest/10 p-2 rounded-lg">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-[10px] font-mono tracking-widest uppercase font-bold">View Catalog</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error View -->
+  <div id="publish-error" class="hidden flex flex-col items-center py-6">
+    <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600 mb-6 animate-pulse">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+    </div>
+    <h2 class="font-serif text-2xl text-red-600 font-bold mb-2">Publishing Failed</h2>
+    <p id="error-message" class="text-gray-500 text-sm mb-8 max-w-sm">An error occurred while publishing your listing.</p>
+    <button id="btn-retry" class="px-8 py-3 bg-forest text-white font-bold rounded-full hover:bg-forest/90 active:scale-95 transition-all">Retry Publishing</button>
+  </div>
 </div>
 </div>
 <!-- END: Listing Live Success Card -->
@@ -123,4 +141,81 @@
 </div>
 </main>
 </seller-layout>
+
+<script>
+(function() {
+  const DRAFT_ID = sessionStorage.getItem('draft_id');
+  if (!DRAFT_ID) {
+    window.location.href = '/mobile-seller/catalog.html';
+    return;
+  }
+
+  const API_BASE = window.location.origin;
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showView(viewId) {
+    document.getElementById('publish-loading').classList.add('hidden');
+    document.getElementById('publish-success').classList.add('hidden');
+    document.getElementById('publish-error').classList.add('hidden');
+    
+    if (viewId === 'loading') {
+      document.getElementById('publish-loading').classList.remove('hidden');
+    } else if (viewId === 'success') {
+      document.getElementById('publish-success').classList.remove('hidden');
+    } else if (viewId === 'error') {
+      document.getElementById('publish-error').classList.remove('hidden');
+    }
+  }
+
+  async function publishListing() {
+    showView('loading');
+    const token = getToken();
+
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'active' })
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || 'Failed to update status to active');
+      }
+
+      let title = 'Your listing';
+      try {
+        const draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
+        title = draftData.title || title;
+      } catch {}
+
+      document.getElementById('success-title-text').textContent = `${title} is now visible to buyers.`;
+      
+      sessionStorage.removeItem('draft_id');
+      sessionStorage.removeItem('draft_data');
+
+      showView('success');
+    } catch (err) {
+      document.getElementById('error-message').textContent = err.message || 'An error occurred while publishing your listing.';
+      showView('error');
+    }
+  }
+
+  document.getElementById('btn-retry').addEventListener('click', publishListing);
+  document.getElementById('btn-view-catalog').addEventListener('click', () => {
+    window.location.href = '/mobile-seller/catalog.html';
+  });
+
+  publishListing();
+})();
+</script>
 </body></html>

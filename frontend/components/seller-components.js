@@ -157,6 +157,11 @@
         padding-left: 16px !important;
         padding-right: 16px !important;
       }
+
+      seller-topbar {
+        height: 0 !important;
+        overflow: hidden !important;
+      }
     }
   `;
   document.head.appendChild(style);

@@ -20,7 +20,7 @@
 <!-- BEGIN: Header Section -->
 <section class="mb-8" data-purpose="listing-header">
 <div class="flex items-center gap-4 mb-4">
-<button class="bg-white rounded-full p-2 border border-forest/20">
+<button id="btn-back" class="bg-white rounded-full p-2 border border-forest/20 transition-all hover:bg-forest/5 active:scale-95 duration-200">
 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
@@ -84,29 +84,30 @@
 <legend class="text-xl font-playfair mb-4">Product Type</legend>
 <div class="grid grid-cols-1 gap-4">
 <!-- Selection 1 -->
-<label class="relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer">
+<label id="label-product-type-premade" class="relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer">
 <div class="flex items-start gap-4">
-<div class="mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center">
-<div class="w-2.5 h-2.5 bg-forest rounded-full"></div>
+<div id="outer-product-type-premade" class="mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center">
+<div id="dot-product-type-premade" class="w-2.5 h-2.5 bg-forest rounded-full"></div>
 </div>
 <div>
 <span class="block font-bold text-lg mb-1">Pre-made / Ready Inventory</span>
 <span class="text-sm opacity-70">Standard item ready to ship directly from inventory</span>
 </div>
 </div>
-<input checked="" class="hidden" name="product_type" type="radio" value="pre-made"/>
+<input checked="" class="hidden" name="product_type" type="radio" value="pre-made" id="input-product-type-premade"/>
 </label>
 <!-- Selection 2 -->
-<label class="relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer">
+<label id="label-product-type-custom" class="relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer">
 <div class="flex items-start gap-4">
-<div class="mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center">
+<div id="outer-product-type-custom" class="mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center">
+<div id="dot-product-type-custom" class="w-2.5 h-2.5 bg-forest rounded-full hidden"></div>
 </div>
 <div>
 <span class="block font-bold text-lg mb-1">Customisable / Made-to-Order</span>
 <span class="text-sm opacity-70">Accept custom text, colors, photos, or special instructions</span>
 </div>
 </div>
-<input class="hidden" name="product_type" type="radio" value="custom"/>
+<input class="hidden" name="product_type" type="radio" value="custom" id="input-product-type-custom"/>
 </label>
 </div>
 </fieldset>
@@ -117,7 +118,7 @@
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Product Tags</label>
 <div class="relative">
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 font-sans focus:ring-forest focus:border-forest" placeholder="Add tags..." type="text"/>
+<input id="input-tags" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 font-sans focus:ring-forest focus:border-forest" placeholder="Add tags..." type="text"/>
 <span class="absolute right-4 top-1/2 -translate-y-1/2 text-forest/40">#</span>
 </div>
 </div>
@@ -127,9 +128,9 @@
 <div class="space-y-2">
 <h2 class="text-xl font-playfair">Listing Title</h2>
 <div class="relative">
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
+<input id="input-title" maxlength="80" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
 <div class="text-right mt-2">
-<span class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
+<span id="title-char-count" class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
 </div>
 </div>
 </div>
@@ -137,12 +138,7 @@
 <!-- BEGIN: Category Selection -->
 <div class="space-y-4">
 <h2 class="text-xl font-playfair">Category Selection</h2>
-<div class="flex flex-wrap gap-2">
-<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Pressed Flowers</button>
-<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Cyanotypes</button>
-<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Handmade Paper</button>
-<button class="px-5 py-3 rounded-full bg-white border-2 border-forest text-sm font-sans" type="button">Artisan Kits</button>
-</div>
+<div id="category-buttons-container" class="flex flex-wrap gap-2"></div>
 </div>
 <!-- END: Category Selection -->
 <!-- BEGIN: Dimensions & Weight -->
@@ -151,19 +147,19 @@
 <div class="grid grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">L (CM)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
+<input id="input-length" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">W (CM)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
+<input id="input-width" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">H (CM)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
+<input id="input-height" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Weight (G)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
+<input id="input-weight" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
 </div>
 </div>
 </div>
@@ -171,7 +167,7 @@
 <!-- BEGIN: Product Description -->
 <div class="space-y-4">
 <h2 class="text-xl font-playfair">Product Description</h2>
-<textarea class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
+<textarea id="textarea-description" class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
 </div>
 <!-- END: Product Description -->
 </form>
@@ -180,20 +176,280 @@
 <!-- BEGIN: Footer Actions -->
 <footer class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4" data-purpose="sticky-footer">
 <div class="flex items-center gap-3">
-<button class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px]">
+<button id="btn-keep-draft" class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] transition-all hover:bg-forest/5 active:scale-95 duration-200">
         Keep Draft
       </button>
-<button class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2">
+<button id="btn-continue" class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-95 duration-200">
         Continue
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
 </button>
-<button class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px]">
+<button id="btn-discard" class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] transition-all hover:bg-red-50 active:scale-95 duration-200">
         Discard
       </button>
 </div>
 </footer>
 <!-- END: Footer Actions -->
 </seller-layout>
+
+<script>
+(function() {
+  const DRAFT_ID = sessionStorage.getItem('draft_id');
+  if (!DRAFT_ID) {
+    window.location.href = '/mobile-seller/catalog.html';
+    return;
+  }
+
+  const API_BASE = window.location.origin;
+  let selectedCategory = '';
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-details');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-details'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  }
+
+  function updateProductTypeUI() {
+    const isPremade = document.getElementById('input-product-type-premade').checked;
+    
+    const labelPremade = document.getElementById('label-product-type-premade');
+    const labelCustom = document.getElementById('label-product-type-custom');
+    
+    const outerPremade = document.getElementById('outer-product-type-premade');
+    const outerCustom = document.getElementById('outer-product-type-custom');
+    
+    const dotPremade = document.getElementById('dot-product-type-premade');
+    const dotCustom = document.getElementById('dot-product-type-custom');
+
+    if (isPremade) {
+      labelPremade.className = "relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer";
+      labelCustom.className = "relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer";
+      outerPremade.className = "mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center";
+      outerCustom.className = "mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center";
+      dotPremade.classList.remove('hidden');
+      dotCustom.classList.add('hidden');
+    } else {
+      labelPremade.className = "relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer";
+      labelCustom.className = "relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer";
+      outerPremade.className = "mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center";
+      outerCustom.className = "mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center";
+      dotPremade.classList.add('hidden');
+      dotCustom.classList.remove('hidden');
+    }
+  }
+
+  document.getElementById('input-product-type-premade').addEventListener('change', updateProductTypeUI);
+  document.getElementById('input-product-type-custom').addEventListener('change', updateProductTypeUI);
+
+  const titleInput = document.getElementById('input-title');
+  const titleCharCount = document.getElementById('title-char-count');
+  titleInput.addEventListener('input', () => {
+    const len = titleInput.value.length;
+    titleCharCount.textContent = `${len}/80 characters`;
+  });
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/categories`, {
+        headers: { 'Authorization': `Bearer ${getToken()}` }
+      });
+      if (!res.ok) throw new Error('API failed');
+      const data = await res.json();
+      const categories = data.data || data || [];
+      renderCategoryButtons(categories.map(c => typeof c === 'string' ? c : (c.name || '')));
+    } catch (err) {
+      console.warn('Failed to fetch categories, falling back to default list', err);
+      renderCategoryButtons(['Pressed Flowers', 'Cyanotypes', 'Handmade Paper', 'Artisan Kits']);
+    }
+  }
+
+  function renderCategoryButtons(categories) {
+    const container = document.getElementById('category-buttons-container');
+    container.innerHTML = '';
+    categories.forEach(catName => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = catName;
+      btn.className = `px-5 py-3 rounded-full text-sm font-sans transition-all duration-200 active:scale-95 ${
+        selectedCategory === catName 
+          ? 'bg-forest text-white border-2 border-forest font-bold font-sans' 
+          : 'bg-white border border-forest/10 hover:border-forest hover:bg-forest/5'
+      }`;
+      btn.addEventListener('click', () => {
+        selectedCategory = catName;
+        renderCategoryButtons(categories);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function init() {
+    let draftData = {};
+    try {
+      draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
+    } catch {}
+
+    if (draftData.product_type === 'custom') {
+      document.getElementById('input-product-type-custom').checked = true;
+    } else {
+      document.getElementById('input-product-type-premade').checked = true;
+    }
+    updateProductTypeUI();
+
+    document.getElementById('input-title').value = draftData.title || '';
+    titleInput.dispatchEvent(new Event('input'));
+
+    document.getElementById('input-tags').value = Array.isArray(draftData.tags) ? draftData.tags.join(', ') : (draftData.tags || '');
+    document.getElementById('input-length').value = draftData.length_cm || '';
+    document.getElementById('input-width').value = draftData.width_cm || '';
+    document.getElementById('input-height').value = draftData.height_cm || '';
+    document.getElementById('input-weight').value = draftData.weight_g || '';
+    document.getElementById('textarea-description').value = draftData.description || '';
+
+    selectedCategory = draftData.category || '';
+    fetchCategories();
+  }
+
+  function gatherFormData() {
+    const isCustom = document.getElementById('input-product-type-custom').checked;
+    const tagsRaw = document.getElementById('input-tags').value;
+    const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+    return {
+      product_type: isCustom ? 'custom' : 'pre-made',
+      title: document.getElementById('input-title').value.trim() || 'Untitled Draft',
+      tags: tags,
+      length_cm: parseFloat(document.getElementById('input-length').value) || null,
+      width_cm: parseFloat(document.getElementById('input-width').value) || null,
+      height_cm: parseFloat(document.getElementById('input-height').value) || null,
+      weight_g: parseFloat(document.getElementById('input-weight').value) || null,
+      description: document.getElementById('textarea-description').value.trim(),
+      category: selectedCategory
+    };
+  }
+
+  async function updateDraftOnBackend(fields) {
+    const token = getToken();
+    const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(fields)
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || 'Failed to update draft');
+    }
+    return await res.json();
+  }
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+    const local = gatherFormData();
+    let oldData = {};
+    try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+    sessionStorage.setItem('draft_data', JSON.stringify({ ...oldData, ...local }));
+    window.location.href = '/mobile-seller/listing-photos.html';
+  });
+
+  document.getElementById('btn-keep-draft').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-keep-draft');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-forest border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const local = gatherFormData();
+      let oldData = {};
+      try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+      const merged = { ...oldData, ...local };
+      sessionStorage.setItem('draft_data', JSON.stringify(merged));
+      await updateDraftOnBackend(local);
+      showToast('Draft saved successfully', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  document.getElementById('btn-continue').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-continue');
+    const originalText = btn.innerHTML;
+    
+    const local = gatherFormData();
+    if (!local.title) {
+      showToast('Please enter a listing title', 'error');
+      return;
+    }
+    if (!local.category) {
+      showToast('Please select a category', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      let oldData = {};
+      try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+      const merged = { ...oldData, ...local };
+      sessionStorage.setItem('draft_data', JSON.stringify(merged));
+      await updateDraftOnBackend(local);
+      window.location.href = '/mobile-seller/listing-pricing-a.html';
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  });
+
+  document.getElementById('btn-discard').addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to discard this draft? This will permanently delete it.')) return;
+    
+    const btn = document.getElementById('btn-discard');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete draft');
+      sessionStorage.removeItem('draft_id');
+      sessionStorage.removeItem('draft_data');
+      showToast('Draft discarded', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  init();
+})();
+</script>
 </body></html>

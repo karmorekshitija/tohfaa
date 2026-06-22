@@ -120,36 +120,36 @@
 <body class="min-h-screen flex flex-col lg:flex-row">
 <seller-layout active-tab="catalog">
 <!-- BEGIN: Top Summary Cards -->
-<section class="mb-8 overflow-x-auto no-scrollbar" data-purpose="summary-stats">
-<div class="flex lg:grid lg:grid-cols-3 gap-4 min-w-max lg:min-w-0">
-<!-- Total Listings -->
-<div class="bg-[#EFF3F0] border border-sage/20 rounded-xl p-5 w-44 lg:w-full">
-<p class="text-forest text-xs font-mono tracking-wider uppercase mb-2">Total Listings</p>
-<p class="font-serif text-4xl text-forest">7</p>
-</div>
-<!-- Low Stock -->
-<div class="bg-[#FAF6ED] border border-gold/20 rounded-xl p-5 w-44 lg:w-full">
-<p class="text-gold text-xs font-mono tracking-wider uppercase mb-2">Low Stock</p>
-<p class="font-serif text-4xl text-gold">4</p>
-</div>
-<!-- On Discount -->
-<div class="bg-[#F3F0F7] border border-violet/20 rounded-xl p-5 w-44 lg:w-full">
-<p class="text-violet text-xs font-mono tracking-wider uppercase mb-2">On Discount</p>
-<p class="font-serif text-4xl text-violet">0</p>
-</div>
-</div>
+<section class="mb-4 -mx-4 px-4 overflow-x-auto no-scrollbar" data-purpose="summary-stats">
+  <div class="flex gap-3 pb-1" style="width: max-content;">
+    <!-- green card: Total Listings -->
+    <div id="stat-total" class="bg-[#EFF3F0] border border-sage/20 rounded-xl p-4 flex-shrink-0 w-36">
+      <p class="text-forest text-[10px] font-mono tracking-wider uppercase mb-1">Total Listings</p>
+      <p class="font-serif text-3xl text-forest">—</p>
+    </div>
+    <!-- yellow card: Low Stock -->
+    <div id="stat-low-stock" class="bg-[#FAF6ED] border border-gold/20 rounded-xl p-4 flex-shrink-0 w-36">
+      <p class="text-gold text-[10px] font-mono tracking-wider uppercase mb-1">Low Stock</p>
+      <p class="font-serif text-3xl text-gold">—</p>
+    </div>
+    <!-- purple card: On Discount -->
+    <div id="stat-discount" class="bg-[#F3F0F7] border border-violet/20 rounded-xl p-4 flex-shrink-0 w-36">
+      <p class="text-violet text-[10px] font-mono tracking-wider uppercase mb-1">On Discount</p>
+      <p class="font-serif text-3xl text-violet">—</p>
+    </div>
+  </div>
 </section>
 <!-- END: Top Summary Cards -->
 <!-- BEGIN: Actions & Filters -->
 <section class="mb-8 space-y-4" data-purpose="catalog-controls">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-<div class="flex items-center gap-3">
-<button class="bg-white border border-sage/30 px-6 py-2.5 rounded-full text-sm font-medium text-forest flex items-center gap-2 touch-target shadow-sm">
-<span>📥</span> Download Report
-          </button>
-<button class="bg-forest px-6 py-2.5 rounded-full text-sm font-medium text-white flex items-center gap-2 touch-target shadow-lg">
-<span>+</span> New Listing
-          </button>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-2" data-purpose="action-row">
+  <button id="btn-download-report" class="flex items-center gap-1.5 bg-white border border-sage/30 px-4 py-2.5 rounded-full text-xs font-medium text-forest touch-target shadow-sm flex-shrink-0 hover:shadow transition-all active:scale-95" style="transition:all 0.2s ease">
+    <span>📥</span><span class="hidden xs:inline">Download Report</span><span class="xs:hidden">Report</span>
+  </button>
+  <button id="btn-new-listing" class="flex items-center gap-1.5 bg-forest px-4 py-2.5 rounded-full text-xs font-medium text-white touch-target shadow-lg flex-1 justify-center hover:opacity-90 active:scale-95" style="transition:all 0.2s ease">
+    <span class="text-base leading-none">+</span> New Listing
+  </button>
 </div>
 <div class="relative w-full md:w-80">
 <input data-filter="search" class="w-full bg-white border-sage/20 rounded-full pl-10 pr-4 py-2.5 focus:ring-forest focus:border-forest text-sm" placeholder="Search entries..." type="text"/>
@@ -313,6 +313,14 @@
 
     document.getElementById('catalog-loading').classList.add('hidden');
     applyFilters();
+
+    // P1d: Populate stat cards dynamically
+    const totalEl = document.getElementById('stat-total');
+    const lowStockEl = document.getElementById('stat-low-stock');
+    const discountEl = document.getElementById('stat-discount');
+    if (totalEl) totalEl.querySelector('p:last-child').textContent = allListings.length;
+    if (lowStockEl) lowStockEl.querySelector('p:last-child').textContent = allListings.filter(l => l.stock_count > 0 && l.stock_count <= 5).length;
+    if (discountEl) discountEl.querySelector('p:last-child').textContent = allListings.filter(l => l.discount_active).length;
   }
 
   function applyFilters() {
@@ -544,6 +552,35 @@
   document.addEventListener('DOMContentLoaded', loadCatalog);
   // Fallback if DOMContentLoaded already fired
   if (document.readyState !== 'loading') loadCatalog();
+
+  // P1c: Wire "New Listing" button
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btn-new-listing')?.addEventListener('click', async () => {
+      const token = getTohfaToken();
+      if (!token) { window.location.href = '/auth/login.html'; return; }
+      const btn = document.getElementById('btn-new-listing');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="text-base leading-none animate-spin inline-block">⏳</span> Creating…';
+      try {
+        const res = await fetch(`${API_BASE}/api/seller/listings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ title: 'Untitled Draft', status: 'draft', price_paise: 0, stock_count: 0 })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const draftId = data?.data?.id || data?.data?.listing_id || data?.id || data?.listing_id;
+        if (!draftId) throw new Error('No draft ID returned');
+        sessionStorage.setItem('draft_id', String(draftId));
+        sessionStorage.removeItem('draft_data');
+        window.location.href = '/mobile-seller/listing-photos.html';
+      } catch (err) {
+        showToast('Could not create listing: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<span class="text-base leading-none">+</span> New Listing';
+      }
+    });
+  });
 </script>
 
 

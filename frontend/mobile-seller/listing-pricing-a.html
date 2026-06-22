@@ -21,7 +21,7 @@
 <!-- Header Section -->
 <header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
 <div class="flex items-center gap-4">
-<button class="w-10 h-10 rounded-full border border-forest/20 flex items-center justify-center hover:bg-forest hover:text-white transition-colors">
+<button id="btn-back" class="w-10 h-10 rounded-full border border-forest/20 flex items-center justify-center hover:bg-forest hover:text-white transition-all duration-200 active:scale-95">
 <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 <path clip-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" fill-rule="evenodd"></path>
 </svg>
@@ -29,9 +29,9 @@
 <h2 class="font-serif text-2xl md:text-3xl text-forest font-bold">Craft New Listing</h2>
 </div>
 <div class="hidden md:flex gap-3">
-<button class="px-6 py-2 rounded-full border border-forest text-forest hover:bg-forest/5 font-medium">Save as Draft</button>
-<button class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium">Continue →</button>
-<button class="px-6 py-2 rounded-full border border-red-200 text-red-500 hover:bg-red-50 font-medium">Discard Draft</button>
+<button id="btn-draft-desktop" class="px-6 py-2 rounded-full border border-forest text-forest hover:bg-forest/5 font-medium transition-all duration-200 active:scale-95">Save as Draft</button>
+<button id="btn-continue-desktop" class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium transition-all duration-200 active:scale-95">Continue →</button>
+<button id="btn-discard-desktop" class="px-6 py-2 rounded-full border border-red-200 text-red-500 hover:bg-red-50 font-medium transition-all duration-200 active:scale-95">Discard Draft</button>
 </div>
 </header>
 <!-- Progress Indicator -->
@@ -86,7 +86,7 @@
 <label class="block font-serif text-lg">Retail Price</label>
 <div class="relative group">
 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-serif">₹</span>
-<input class="w-full pl-10 pr-16 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" placeholder="0.00" type="number"/>
+<input id="input-price" class="w-full pl-10 pr-16 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" placeholder="0.00" type="number" step="0.01" min="0"/>
 <span class="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-100 px-2 py-1 rounded text-[10px] font-bold text-slate-500 uppercase tracking-tighter">INR</span>
 </div>
 </div>
@@ -98,7 +98,7 @@
 <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">
 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </span>
-<input class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" type="number" value="1"/>
+<input id="input-stock" class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" type="number" value="1" min="0"/>
 </div>
 </div>
 <!-- SKU / Reference -->
@@ -222,12 +222,178 @@
 <!-- END: Main Content Area -->
 <!-- BEGIN: Fixed Mobile Action Buttons -->
 <footer class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex gap-2 z-50">
-<button class="flex-1 touch-target rounded-lg border border-slate-300 text-sm font-bold text-slate-500 bg-white">Draft</button>
-<button class="flex-[2] touch-target rounded-lg bg-forest text-parchment font-bold shadow-lg shadow-forest/20">Continue →</button>
-<button class="flex-1 touch-target rounded-lg border border-red-100 text-red-500 bg-red-50">
+<button id="btn-draft-mobile" class="flex-1 touch-target rounded-lg border border-slate-300 text-sm font-bold text-slate-500 bg-white transition-all duration-200 active:scale-95">Draft</button>
+<button id="btn-continue-mobile" class="flex-[2] touch-target rounded-lg bg-forest text-parchment font-bold shadow-lg shadow-forest/20 transition-all duration-200 active:scale-95">Continue →</button>
+<button id="btn-discard-mobile" class="flex-1 touch-target rounded-lg border border-red-100 text-red-500 bg-red-50 transition-all duration-200 active:scale-95">
 <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </button>
 </footer>
 <!-- END: Fixed Mobile Action Buttons -->
 </seller-layout>
+
+<script>
+(function() {
+  const DRAFT_ID = sessionStorage.getItem('draft_id');
+  if (!DRAFT_ID) {
+    window.location.href = '/mobile-seller/catalog.html';
+    return;
+  }
+
+  const API_BASE = window.location.origin;
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-pricing');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-pricing'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  }
+
+  function init() {
+    let draftData = {};
+    try {
+      draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
+    } catch {}
+
+    if (draftData.price_paise !== undefined && draftData.price_paise !== null) {
+      document.getElementById('input-price').value = (draftData.price_paise / 100).toFixed(2);
+    }
+    if (draftData.stock_count !== undefined && draftData.stock_count !== null) {
+      document.getElementById('input-stock').value = draftData.stock_count;
+    }
+  }
+
+  function gatherFormData() {
+    const priceDisplay = parseFloat(document.getElementById('input-price').value) || 0;
+    const stockVal = parseInt(document.getElementById('input-stock').value) || 0;
+
+    return {
+      price_paise: Math.round(priceDisplay * 100),
+      stock_count: stockVal
+    };
+  }
+
+  async function updateDraftOnBackend(fields) {
+    const token = getToken();
+    const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(fields)
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || 'Failed to update draft');
+    }
+    return await res.json();
+  }
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+    const local = gatherFormData();
+    let oldData = {};
+    try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+    sessionStorage.setItem('draft_data', JSON.stringify({ ...oldData, ...local }));
+    window.location.href = '/mobile-seller/listing-details.html';
+  });
+
+  async function handleSaveDraft(btn) {
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-forest border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const local = gatherFormData();
+      let oldData = {};
+      try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+      const merged = { ...oldData, ...local };
+      sessionStorage.setItem('draft_data', JSON.stringify(merged));
+      await updateDraftOnBackend(local);
+      showToast('Draft saved successfully', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
+  async function handleContinue(btn) {
+    const originalText = btn.innerHTML;
+    
+    const local = gatherFormData();
+    if (local.price_paise <= 0) {
+      showToast('Please enter a valid price greater than 0', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      let oldData = {};
+      try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
+      const merged = { ...oldData, ...local };
+      sessionStorage.setItem('draft_data', JSON.stringify(merged));
+      await updateDraftOnBackend(local);
+      window.location.href = '/mobile-seller/listing-shipping.html';
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  async function handleDiscard(btn) {
+    if (!confirm('Are you sure you want to discard this draft? This will permanently delete it.')) return;
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete draft');
+      sessionStorage.removeItem('draft_id');
+      sessionStorage.removeItem('draft_data');
+      showToast('Draft discarded', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  document.getElementById('btn-draft-desktop').addEventListener('click', function() { handleSaveDraft(this); });
+  document.getElementById('btn-draft-mobile').addEventListener('click', function() { handleSaveDraft(this); });
+
+  document.getElementById('btn-continue-desktop').addEventListener('click', function() { handleContinue(this); });
+  document.getElementById('btn-continue-mobile').addEventListener('click', function() { handleContinue(this); });
+
+  document.getElementById('btn-discard-desktop').addEventListener('click', function() { handleDiscard(this); });
+  document.getElementById('btn-discard-mobile').addEventListener('click', function() { handleDiscard(this); });
+
+  init();
+})();
+</script>
 </body></html>
