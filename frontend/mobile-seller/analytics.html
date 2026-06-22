@@ -143,49 +143,55 @@
     <!-- KPI Cards -->
     <section id="kpi-strip" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-md mb-xl">
         <!-- Card 1: Total Revenue -->
-        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
-            <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Total Revenue</p>
-            <h3 class="font-data-price text-xl font-bold text-primary" id="kpi-revenue">₹0</h3>
-            <p class="text-[10px] text-primary flex items-center gap-xs mt-xs">
+        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm relative font-body" style="background-color: #FDF6EC; border-top: 4px solid #B5813A;">
+            <p class="font-display-hero italic text-[12px] mb-xs" style="color: rgba(181, 129, 58, 0.7);">Total Revenue</p>
+            <h3 class="font-data-price text-xl font-bold font-mono" id="kpi-revenue" style="color: #B5813A;">₹0</h3>
+            <p class="text-[10px] flex items-center gap-xs mt-xs" style="color: #B5813A;">
                 <span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">trending_up</span> Live earnings
             </p>
+            <span class="material-symbols-outlined text-xl absolute bottom-2 right-2" style="color: #B5813A; opacity: 0.6;">payments</span>
         </div>
         <!-- Card 2: Total Orders -->
-        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
-            <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Total Orders</p>
-            <h3 class="font-data-price text-xl font-bold text-on-surface" id="kpi-orders">0</h3>
-            <p class="text-[10px] text-on-surface-variant mt-xs">Completed orders</p>
+        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm relative font-body" style="background-color: #EDF5F0; border-top: 4px solid #3D6B4F;">
+            <p class="font-display-hero italic text-[12px] mb-xs" style="color: rgba(61, 107, 79, 0.7);">Total Orders</p>
+            <h3 class="font-data-price text-xl font-bold font-mono" id="kpi-orders" style="color: #3D6B4F;">0</h3>
+            <p class="text-[10px] mt-xs" style="color: rgba(61, 107, 79, 0.7);">Completed orders</p>
+            <span class="material-symbols-outlined text-xl absolute bottom-2 right-2" style="color: #3D6B4F; opacity: 0.6;">inventory</span>
         </div>
         <!-- Card 3: Avg Order Value -->
-        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
-            <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Avg Order Value</p>
-            <h3 class="font-data-price text-xl font-bold text-on-surface" id="kpi-aov">₹0</h3>
-            <p class="text-[10px] text-on-surface-variant mt-xs">Revenue / Orders</p>
+        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm relative font-body" style="background-color: #EDF2FA; border-top: 4px solid #4A6FA5;">
+            <p class="font-display-hero italic text-[12px] mb-xs" style="color: rgba(74, 111, 165, 0.7);">Avg Order Value</p>
+            <h3 class="font-data-price text-xl font-bold font-mono" id="kpi-aov" style="color: #4A6FA5;">₹0</h3>
+            <p class="text-[10px] mt-xs" style="color: rgba(74, 111, 165, 0.7);">Revenue / Orders</p>
+            <span class="material-symbols-outlined text-xl absolute bottom-2 right-2" style="color: #4A6FA5; opacity: 0.6;">receipt</span>
         </div>
         <!-- Card 4: Store Visitors -->
-        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
-            <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Store Visitors</p>
-            <h3 class="font-data-price text-xl font-bold text-on-surface" id="kpi-visitors">0</h3>
-            <p class="text-[10px] text-on-surface-variant mt-xs">Listing views total</p>
+        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm relative font-body" style="background-color: #F4EDF8; border-top: 4px solid #7B5EA7;">
+            <p class="font-display-hero italic text-[12px] mb-xs" style="color: rgba(123, 94, 167, 0.7);">Store Visitors</p>
+            <h3 class="font-data-price text-xl font-bold font-mono" id="kpi-visitors" style="color: #7B5EA7;">0</h3>
+            <p class="text-[10px] mt-xs" style="color: rgba(123, 94, 167, 0.7);">Listing views total</p>
+            <span class="material-symbols-outlined text-xl absolute bottom-2 right-2" style="color: #7B5EA7; opacity: 0.6;">storefront</span>
         </div>
         <!-- Card 5: Conversion Rate -->
-        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
-            <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Conversion Rate</p>
-            <h3 class="font-data-price text-xl font-bold text-on-surface" id="kpi-conversion">0%</h3>
-            <p class="text-[10px] text-on-surface-variant mt-xs">Visits converted</p>
+        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm relative font-body" style="background-color: #EDF8F7; border-top: 4px solid #3A7D77;">
+            <p class="font-display-hero italic text-[12px] mb-xs" style="color: rgba(58, 125, 119, 0.7);">Conversion Rate</p>
+            <h3 class="font-data-price text-xl font-bold font-mono" id="kpi-conversion" style="color: #3A7D77;">0%</h3>
+            <p class="text-[10px] mt-xs" style="color: rgba(58, 125, 119, 0.7);">Visits converted</p>
+            <span class="material-symbols-outlined text-xl absolute bottom-2 right-2" style="color: #3A7D77; opacity: 0.6;">trending_up</span>
         </div>
         <!-- Card 6: Cancellations -->
-        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm">
-            <p class="font-display-hero italic text-on-surface-variant text-[12px] mb-xs">Cancellations</p>
-            <h3 class="font-data-price text-xl font-bold text-error" id="kpi-cancellations">0</h3>
-            <p class="text-[10px] text-on-surface-variant mt-xs">Cancelled & refunded</p>
+        <div class="bg-surface-container-lowest p-sm border border-outline-variant/30 rounded-lg shadow-sm relative font-body" style="background-color: #FDF0EE; border-top: 4px solid #A05C4A;">
+            <p class="font-display-hero italic text-[12px] mb-xs" style="color: rgba(160, 92, 74, 0.7);">Cancellations</p>
+            <h3 class="font-data-price text-xl font-bold font-mono" id="kpi-cancellations" style="color: #A05C4A;">0</h3>
+            <p class="text-[10px] mt-xs" style="color: rgba(160, 92, 74, 0.7);">Cancelled & refunded</p>
+            <span class="material-symbols-outlined text-xl absolute bottom-2 right-2" style="color: #A05C4A; opacity: 0.6;">cancel</span>
         </div>
     </section>
 
     <!-- Section: Charts Grid -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-xl">
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-xl font-body">
         <!-- Chart 1: Revenue Over Time -->
-        <div class="bg-parchment p-lg rounded-xl border border-outline-variant/20 shadow-sm">
+        <div class="bg-parchment p-lg rounded-xl border border-outline-variant/20 shadow-sm" style="border-left: 4px solid #B5813A;">
             <h4 class="font-display-hero italic text-title-serif text-primary mb-md">Revenue Over Time</h4>
             <div class="h-64 relative">
                 <canvas id="revenueChart"></canvas>
@@ -193,7 +199,7 @@
         </div>
 
         <!-- Chart 2: Orders Per Day -->
-        <div class="bg-white p-lg rounded-xl border border-outline-variant/20 shadow-sm">
+        <div class="p-lg rounded-xl border border-outline-variant/20 shadow-sm" style="background-color: #EDF5F0; border-left: 4px solid #3D6B4F;">
             <h4 class="font-display-hero italic text-title-serif text-primary mb-md">Orders Per Day</h4>
             <div class="h-64 relative">
                 <canvas id="ordersChart"></canvas>
@@ -201,7 +207,7 @@
         </div>
 
         <!-- Chart 3: Top Products -->
-        <div class="bg-white p-lg rounded-xl border border-outline-variant/20 shadow-sm">
+        <div class="p-lg rounded-xl border border-outline-variant/20 shadow-sm" style="background-color: #EDF2FA; border-left: 4px solid #4A6FA5;">
             <h4 class="font-display-hero italic text-title-serif text-primary mb-md">Top Products</h4>
             <div class="h-64 relative">
                 <canvas id="topProductsChart"></canvas>
@@ -209,7 +215,7 @@
         </div>
 
         <!-- Chart 4: Conversion Rate -->
-        <div class="bg-parchment p-lg rounded-xl border border-outline-variant/20 shadow-sm">
+        <div class="p-lg rounded-xl border border-outline-variant/20 shadow-sm" style="background-color: #EDF8F7; border-left: 4px solid #3A7D77;">
             <h4 class="font-display-hero italic text-title-serif text-primary mb-md">Conversion Rate</h4>
             <div class="h-64 relative">
                 <canvas id="conversionChart"></canvas>
