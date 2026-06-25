@@ -213,6 +213,15 @@
     import { logout } from '/src/utils/auth.js';
     import Toast from '/src/components/Toast.js';
 
+    function isProductOwned(sellerId) {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
+            return user && Number(user.id) === Number(sellerId);
+        } catch (e) {
+            return false;
+        }
+    }
+
         let isLoggedIn = false;
     async function checkAuthState() {
         const token = sessionStorage.getItem('tohfa_access_token');
@@ -321,23 +330,37 @@
                 
                 grid.innerHTML = items.map(item => {
                     const imgUrl = item.image_url || 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=500&auto=format&fit=crop&q=60';
+                    const isOwner = isProductOwned(item.seller_id);
+                    
+                    const wishlistBtnHtml = isOwner
+                        ? `<button class="absolute top-sm right-sm w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-primary opacity-50 cursor-not-allowed" disabled onclick="event.stopPropagation();">
+                               <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                           </button>`
+                        : `<button class="absolute top-sm right-sm w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-primary hover:scale-110 transition-transform remove-wishlist-btn" data-id="${item.product_id}">
+                               <span class="material-symbols-outlined active-heart text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                           </button>`;
+
+                    const addToCartBtnHtml = isOwner
+                        ? `<button class="w-full py-sm px-md border border-secondary text-secondary font-body-md text-body-md rounded-lg opacity-50 cursor-not-allowed bg-[#3D6B4F]/20 mt-auto" disabled onclick="event.stopPropagation();">
+                               Own Product
+                           </button>`
+                        : `<button class="w-full py-sm px-md border border-secondary text-secondary font-body-md text-body-md rounded-lg hover:bg-secondary hover:text-white transition-all active:scale-[0.98] add-to-cart-btn mt-auto ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" ${item.in_cart ? 'disabled' : ''}>
+                               ${item.in_cart ? 'Added ✦' : 'Add to cart'}
+                           </button>`;
+
                     return `
                         <div class="bg-[#F7F3EC] p-lg rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='/buyer/product.html?id=${item.product_id}'">
                             <div>
                                 <div class="relative aspect-square overflow-hidden rounded-lg mb-md">
                                     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${imgUrl}" alt="${item.name}" loading="lazy">
-                                    <button class="absolute top-sm right-sm w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-primary hover:scale-110 transition-transform remove-wishlist-btn" data-id="${item.product_id}">
-                                        <span class="material-symbols-outlined active-heart text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-                                    </button>
+                                    ${wishlistBtnHtml}
                                 </div>
                                 <div class="flex flex-col gap-xs mb-md">
                                     <h3 class="font-lora text-title-serif text-on-background">${item.name}</h3>
                                     <p class="font-data-price text-data-price text-on-tertiary-fixed-variant">₹${(item.price_paise / 100).toLocaleString('en-IN')}</p>
                                 </div>
                             </div>
-                            <button class="w-full py-sm px-md border border-secondary text-secondary font-body-md text-body-md rounded-lg hover:bg-secondary hover:text-white transition-all active:scale-[0.98] add-to-cart-btn mt-auto ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" ${item.in_cart ? 'disabled' : ''}>
-                                ${item.in_cart ? 'Added ✦' : 'Add to cart'}
-                            </button>
+                            ${addToCartBtnHtml}
                         </div>
                     `;
                 }).join('');

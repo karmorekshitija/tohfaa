@@ -286,6 +286,15 @@
     import { logout } from '/src/utils/auth.js';
     import Toast from '/src/components/Toast.js';
 
+    function isProductOwned(sellerId) {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
+            return user && Number(user.id) === Number(sellerId);
+        } catch (e) {
+            return false;
+        }
+    }
+
         let isLoggedIn = false;
     async function checkAuthState() {
         const token = getTohfaToken();
@@ -395,14 +404,30 @@
                 grid.innerHTML = items.map(item => {
                     const imgUrl = item.image_url || 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=500&auto=format&fit=crop&q=60';
                     const formattedPrice = `₹${(item.price_paise / 100).toLocaleString('en-IN')}`;
+                    const isOwner = isProductOwned(item.seller_id);
+
+                    const wishlistBtnHtml = isOwner
+                        ? `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md opacity-50 cursor-not-allowed flex items-center justify-center z-10" disabled onclick="event.stopPropagation();">
+                               <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] text-red-500" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                           </button>`
+                        : `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 remove-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${item.product_id}" onclick="event.stopPropagation();">
+                               <span class="material-symbols-outlined active-heart text-[14px] sm:text-[16px] md:text-[20px] text-red-500 transition-all" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                           </button>`;
+
+                    const addToCartBtnHtml = isOwner
+                        ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
+                               Own Product
+                           </button>`
+                        : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" onclick="event.stopPropagation();" ${item.in_cart ? 'disabled' : ''}>
+                               ${item.in_cart ? 'Added ✦' : 'Add to cart'}
+                           </button>`;
+
                     return `
                         <div class="bg-[#F7F3EC] p-4 rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${item.product_id}'">
                             <div>
                                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imgUrl}" alt="${item.name}" loading="lazy">
-                                    <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-110 active:scale-95 transition-all duration-200 remove-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${item.product_id}" onclick="event.stopPropagation();">
-                                        <span class="material-symbols-outlined active-heart text-[14px] sm:text-[16px] md:text-[20px] text-red-500 transition-all" style="font-variation-settings: 'FILL' 1;">favorite</span>
-                                    </button>
+                                    ${wishlistBtnHtml}
                                 </div>
                                 <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1 text-left">
                                     <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
@@ -416,9 +441,7 @@
                                 </div>
                             </div>
                             <div class="w-full mt-auto">
-                                <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" onclick="event.stopPropagation();" ${item.in_cart ? 'disabled' : ''}>
-                                    ${item.in_cart ? 'Added ✦' : 'Add to cart'}
-                                </button>
+                                ${addToCartBtnHtml}
                             </div>
                         </div>
                     `;

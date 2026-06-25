@@ -453,6 +453,15 @@
     import apiClient from '../src/utils/apiClient.js';
     import { logout } from '/src/utils/auth.js';
 
+    function isProductOwned(sellerId) {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
+            return user && Number(user.id) === Number(sellerId);
+        } catch (e) {
+            return false;
+        }
+    }
+
     const grid = document.getElementById('product-feed-grid');
     const skeletons = document.getElementById('feed-skeletons');
 
@@ -604,14 +613,29 @@
         const formattedPrice = `₹${(product.price_paise / 100).toLocaleString('en-IN')}`;
         const isWishlisted = !!product.is_wishlisted;
 
+        const isOwner = isProductOwned(product.seller_id);
+        const wishlistBtnHtml = isOwner
+            ? `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent opacity-50 cursor-not-allowed flex items-center justify-center z-10" disabled onclick="event.stopPropagation();">
+                   <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] text-secondary" style="font-variation-settings: 'FILL' 0;">favorite</span>
+               </button>`
+            : `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                   <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
+               </button>`;
+
+        const addToCartBtnHtml = isOwner
+            ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
+                   Own Product
+               </button>`
+            : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                   Add to Cart
+               </button>`;
+
         card.innerHTML = `
             <div>
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url || 'https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60'}" alt="${product.name}" loading="lazy">
-                    <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
-                        <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
-                    </button>
+                    ${wishlistBtnHtml}
                 </div>
                 <div class="flex flex-col mb-4">
                     <div class="flex items-center justify-between gap-2 mb-1">
@@ -627,25 +651,27 @@
                 </div>
             </div>
             <div class="w-full">
-                <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
-                    Add to Cart
-                </button>
+                ${addToCartBtnHtml}
             </div>
         `;
 
         // Bind wishlist and cart events
         const wishlistBtn = card.querySelector('.toggle-wishlist-btn');
-        wishlistBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const wishlisted = wishlistBtn.getAttribute('data-wishlisted') === 'true';
-            await handleToggleWishlist(product.id, wishlisted, wishlistBtn);
-        });
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const wishlisted = wishlistBtn.getAttribute('data-wishlisted') === 'true';
+                await handleToggleWishlist(product.id, wishlisted, wishlistBtn);
+            });
+        }
 
         const addToCartBtn = card.querySelector('.add-to-cart-btn');
-        addToCartBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            await handleAddToCart(product.id);
-        });
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await handleAddToCart(product.id);
+            });
+        }
 
         setTimeout(() => {
             card.classList.remove('opacity-0', 'translate-y-10');

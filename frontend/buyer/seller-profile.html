@@ -759,6 +759,7 @@
         let sellerProfile = null;
         let activeTab = 'catalog';
         let isLoggedIn = false;
+        let currentUser = null;
         let isWishlistUpdating = {};
         
         let allSellerProducts = [];
@@ -826,6 +827,7 @@
                     let initial = 'A';
                     const res = await apiClient.get('/profile/me');
                     if (res.data && res.data.success) {
+                        currentUser = res.data.data;
                         avatarUrl = res.data.data.avatar_url;
                         if (res.data.data.full_name) {
                             initial = res.data.data.full_name.charAt(0).toUpperCase();
@@ -965,15 +967,25 @@
             const btn = document.getElementById('follow-btn');
             const icon = document.getElementById('follow-icon');
             const text = document.getElementById('follow-text');
+            if (!btn) return;
+            
+            const isOwner = currentUser && sellerProfile && currentUser.id === sellerProfile.id;
+            if (isOwner) {
+                btn.className = "flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-on-primary opacity-50 cursor-not-allowed font-label-md text-sm shadow-md";
+                if (icon) icon.innerText = "person";
+                if (text) text.innerText = "Own Shop";
+                btn.disabled = true;
+                return;
+            }
             
             if (isFollowing) {
                 btn.className = "flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white transition-all font-label-md text-sm cursor-pointer active:scale-95 duration-200";
-                icon.innerText = "person_check";
-                text.innerText = "Following";
+                if (icon) icon.innerText = "person_check";
+                if (text) text.innerText = "Following";
             } else {
                 btn.className = "flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-on-primary hover:opacity-90 transition-all font-label-md text-sm shadow-md cursor-pointer active:scale-95 duration-200";
-                icon.innerText = "person_add";
-                text.innerText = "Follow";
+                if (icon) icon.innerText = "person_add";
+                if (text) text.innerText = "Follow";
             }
         }
 
@@ -1154,14 +1166,30 @@
                     `;
                 }
 
+                const isOwner = currentUser && sellerProfile && Number(currentUser.id) === Number(sellerProfile.id);
+
+                const wishlistBtnHtml = isOwner
+                    ? `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent opacity-50 cursor-not-allowed flex items-center justify-center z-10" disabled onclick="event.stopPropagation();">
+                           <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] text-secondary" style="font-variation-settings: 'FILL' 0;">favorite</span>
+                       </button>`
+                    : `<button onclick="toggleWishlist(event, ${p.id})" class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10">
+                           <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" id="wishlist-icon-${p.id}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
+                       </button>`;
+
+                const addToCartBtnHtml = isOwner
+                    ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
+                           Own Product
+                       </button>`
+                    : `<button onclick="addToCart(event, ${p.id})" class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}">
+                           Add to Cart
+                       </button>`;
+
                 card.innerHTML = `
                     <div>
                         <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                             ${ribbonHtml}
                             <img src="${p.image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Creation'}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" loading="lazy" />
-                            <button onclick="toggleWishlist(event, ${p.id})" class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10">
-                                <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" id="wishlist-icon-${p.id}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
-                            </button>
+                            ${wishlistBtnHtml}
                             ${isSoldOut ? `
                                 <div class="absolute bottom-4 left-4 bg-red-100 text-red-700 px-3 py-1 rounded shadow-sm text-[10px] font-semibold uppercase tracking-wider z-10">
                                     Sold Out
@@ -1182,9 +1210,7 @@
                         </div>
                     </div>
                     <div class="w-full font-['DM_Sans']">
-                        <button onclick="addToCart(event, ${p.id})" class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}">
-                            Add to Cart
-                        </button>
+                        ${addToCartBtnHtml}
                     </div>
                 `;
                 grid.appendChild(card);
@@ -1492,6 +1518,10 @@
 
         // ── Follow/Unfollow ──
         window.toggleFollow = async function() {
+            if (currentUser && sellerProfile && currentUser.id === sellerProfile.id) {
+                window.Toast?.show("You cannot follow yourself", "error");
+                return;
+            }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to follow artisans", "error");
                 setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
@@ -1525,6 +1555,10 @@
         // ── Cart & Wishlist Add Actions ──
         window.addToCart = async function(e, productId) {
             e.stopPropagation();
+            if (currentUser && sellerProfile && currentUser.id === sellerProfile.id) {
+                window.Toast?.show("Sellers cannot purchase their own products", "error");
+                return;
+            }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to purchase items", "error");
                 setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
@@ -1547,6 +1581,10 @@
 
         window.toggleWishlist = async function(e, productId) {
             e.stopPropagation();
+            if (currentUser && sellerProfile && currentUser.id === sellerProfile.id) {
+                window.Toast?.show("Sellers cannot wishlist their own products", "error");
+                return;
+            }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to add to wishlist", "error");
                 setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
@@ -1627,6 +1665,10 @@
         let currentQuestion = null;
 
         window.startCustomisation = async function(listingId, productTypeTag, listingTitle) {
+            if (currentUser && sellerProfile && currentUser.id === sellerProfile.id) {
+                window.Toast?.show("Sellers cannot start a chat with themselves", "error");
+                return;
+            }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to request customization", "error");
                 setTimeout(() => {

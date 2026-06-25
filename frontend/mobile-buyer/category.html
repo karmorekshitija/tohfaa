@@ -292,6 +292,15 @@
     import apiClient from '/src/utils/apiClient.js';
     import { logout } from '/src/utils/auth.js';
 
+    function isProductOwned(sellerId) {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
+            return user && Number(user.id) === Number(sellerId);
+        } catch (e) {
+            return false;
+        }
+    }
+
     // Show toast message shims
     window.Toast = {
       show: function(msg, type = 'success') {
@@ -451,15 +460,30 @@
       const tag = p.is_bestseller ? 'bestseller' : (p.product_tag === 'Sponsored' || p.type === 'sponsored' ? 'sponsored' : (p.listing_type === 'custom' ? 'custom' : null));
       const imageUrl = p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
 
+      const isOwner = isProductOwned(p.seller_id);
+      const wishlistBtnHtml = isOwner
+          ? `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent opacity-50 cursor-not-allowed flex items-center justify-center z-10" disabled onclick="event.stopPropagation();">
+                 <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] text-secondary" style="font-variation-settings: 'FILL' 0;">favorite</span>
+             </button>`
+          : `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                 <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
+             </button>`;
+
+      const addToCartBtnHtml = isOwner
+          ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] text-[11px] font-semibold py-1.5 rounded-lg opacity-50 cursor-not-allowed" disabled onclick="event.stopPropagation();">
+                 Own Product
+             </button>`
+          : `<button class="w-full bg-[#3D6B4F] text-white text-[11px] font-semibold py-1.5 rounded-lg active:scale-95 transition-transform add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                 Add to Cart
+             </button>`;
+
       return `
         <div class="bg-white border border-[#c3c8c1] rounded-xl overflow-hidden shadow-sm flex-shrink-0 flex flex-col justify-between" ${widthStyle} onclick="window.location.href='./product.html?id=${p.id}'">
           <div>
             <div class="relative aspect-square bg-[#F7F3EC]">
               <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
               ${tag ? `<div class="absolute top-2 left-2 flex flex-col gap-1">${getBadgeHtml(tag)}</div>` : ""}
-              <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
-                <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
-              </button>
+              ${wishlistBtnHtml}
             </div>
             <div class="p-2.5">
               <div class="flex items-center justify-between mb-0.5">
@@ -475,9 +499,7 @@
             </div>
           </div>
           <div class="p-2.5 pt-0">
-            <button class="w-full bg-[#3D6B4F] text-white text-[11px] font-semibold py-1.5 rounded-lg active:scale-95 transition-transform add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
-              Add to Cart
-            </button>
+            ${addToCartBtnHtml}
           </div>
         </div>
       `;

@@ -496,6 +496,7 @@
         let isLoggedIn = false;
         let matchedOrderId = null;
         let selectedRating = 0;
+        let currentUser = null;
 
     async function checkAuthState() {
         const token = getTohfaToken();
@@ -509,6 +510,7 @@
                 try {
                     const res = await apiClient.get('/profile/me');
                     if (res.data && res.data.success) {
+                        currentUser = res.data.data;
                         avatarUrl = res.data.data.avatar_url;
                         if (res.data.data.full_name) {
                             initial = res.data.data.full_name.charAt(0).toUpperCase();
@@ -802,6 +804,45 @@
                                 </div>`;
                         }
                     }
+
+                    // Owner Restrictions
+                    const isOwner = currentUser && product.seller && currentUser.id === product.seller.id;
+                    if (isOwner) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                            const spanLabel = addToCartBtn.querySelector('span:last-child');
+                            if (spanLabel) spanLabel.innerText = 'Own Product';
+                        }
+                        const chatBtn = document.getElementById('chat-with-seller-btn');
+                        if (chatBtn) {
+                            chatBtn.disabled = true;
+                            chatBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                            const spanLabel = chatBtn.querySelector('span:last-child');
+                            if (spanLabel) spanLabel.innerText = 'Own Shop';
+                        }
+                        const remakeBtn = document.getElementById('mob-remake-request-btn');
+                        if (remakeBtn) {
+                            remakeBtn.disabled = true;
+                            remakeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        const wishlistBtn = document.getElementById('wishlist-toggle-btn');
+                        if (wishlistBtn) {
+                            wishlistBtn.disabled = true;
+                            wishlistBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        
+                        // Insert notice below the button group
+                        const btnContainer = addToCartBtn?.parentElement;
+                        if (btnContainer && !document.getElementById('owner-notice')) {
+                            const notice = document.createElement('p');
+                            notice.id = 'owner-notice';
+                            notice.className = 'text-xs text-on-surface-variant italic text-center mt-2 text-[#C9972C] font-semibold';
+                            notice.textContent = 'You cannot buy/wishlist/chat your own product.';
+                            btnContainer.insertAdjacentElement('afterend', notice);
+                        }
+                    }
                     // ─────────────────────────────────────────────────────────────────────
 
                 } else {
@@ -816,6 +857,13 @@
         function updateWishlistButtonUI() {
             const wishlistIcon = document.getElementById('wishlist-icon');
             const wishlistBtn = document.getElementById('wishlist-toggle-btn');
+            const isOwner = currentUser && product && product.seller && currentUser.id === product.seller.id;
+            if (isOwner) {
+                wishlistIcon.style.fontVariationSettings = "'FILL' 0";
+                wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md transition-all text-outline opacity-50 cursor-not-allowed focus:outline-none";
+                wishlistBtn.disabled = true;
+                return;
+            }
             if (isWishlisted) {
                 wishlistIcon.style.fontVariationSettings = "'FILL' 1";
                 wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-red-600 focus:outline-none";
@@ -826,6 +874,10 @@
         }
 
         async function handleToggleWishlist() {
+            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                window.Toast?.show("Sellers cannot wishlist their own products", "error");
+                return;
+            }
             if (!isLoggedIn) {
                 window.location.href = '/auth/login.html';
                 return;
@@ -970,6 +1022,10 @@
         }
 
         async function handleChatWithSeller() {
+            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                window.Toast?.show("Sellers cannot start a chat with themselves", "error");
+                return;
+            }
             if (product && product.holiday_mode_active) return;
             if (!isLoggedIn) {
                 window.location.href = '/auth/login.html';
@@ -999,6 +1055,10 @@
         }
 
         async function handleAddToCart() {
+            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                window.Toast?.show("Sellers cannot purchase their own products", "error");
+                return;
+            }
             if (product && product.holiday_mode_active) return;
             if (isCustomized) {
                 if (!isLoggedIn) {
@@ -1119,6 +1179,10 @@
 
                         // Wire remake button
                         document.getElementById('mob-remake-request-btn')?.addEventListener('click', async () => {
+                            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                                window.Toast?.show("Sellers cannot request a remake of their own product", "error");
+                                return;
+                            }
                             try {
                                 const res = await apiClient.post('/conversations', { listing_id: Number(productId), product_type_tag: 'remake_request' });
                                 const convId = res.data.conversation_id;

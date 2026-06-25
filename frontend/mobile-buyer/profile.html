@@ -112,6 +112,14 @@
                 </div>
             </a>
 
+            <a href="notifications.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-secondary text-2xl">notifications</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Notifications</p>
+                    <p class="text-[10px] text-secondary mt-0.5">Recent alerts</p>
+                </div>
+            </a>
+
             <a href="followers.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover col-span-2">
                 <div class="flex justify-between items-center w-full">
                     <span class="material-symbols-outlined text-blue-500 text-2xl">group</span>
@@ -208,25 +216,7 @@
     </section>
 </main>
 
-<!-- Bottom Navigation Bar -->
-<div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#F7F3EC] border-t border-[#8FAF82] h-16 flex items-center justify-around z-50">
-    <a href="home.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
-        <span class="material-symbols-outlined text-2xl">home</span>
-        <span class="text-[10px] font-medium">Home</span>
-    </a>
-    <a href="categories.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
-        <span class="material-symbols-outlined text-2xl">category</span>
-        <span class="text-[10px] font-medium">Category</span>
-    </a>
-    <a href="zipgift.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
-        <span class="material-symbols-outlined text-2xl">bolt</span>
-        <span class="text-[10px] font-medium">ZipGift</span>
-    </a>
-    <a href="profile.html" class="flex flex-col items-center gap-0.5 text-primary transition-colors py-1 px-3">
-        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
-        <span class="text-[10px] font-bold">Profile</span>
-    </a>
-</div>
+<!-- Bottom Navigation Bar removed dynamically by ProtectedRoute.js -->
 
 <script type="module">
     import apiClient from '/src/utils/apiClient.js';
@@ -561,7 +551,11 @@
         }
     };
 
-    window.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 </script>
 <!-- Success Toast Notification -->
 <div id="success-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[10000] hidden">

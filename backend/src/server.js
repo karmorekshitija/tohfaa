@@ -1940,7 +1940,7 @@ app.post('/api/cart/items', rateLimit(60), authenticateToken, async (req, res) =
   
   try {
     // 1. Validate product exists and is active
-    const product = await db.prepare('SELECT status, stock_qty FROM products WHERE id = ?').get(product_id);
+    const product = await db.prepare('SELECT status, stock_qty, seller_id FROM products WHERE id = ?').get(product_id);
     if (!product || product.status === 'archived') {
       return res.status(404).json({
         error: true,
@@ -1953,6 +1953,15 @@ app.post('/api/cart/items', rateLimit(60), authenticateToken, async (req, res) =
         error: true,
         message: "Product not found or not active",
         code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    // Guard: Sellers cannot buy their own products
+    if (product.seller_id === userId) {
+      return res.status(403).json({
+        error: true,
+        message: "Sellers cannot purchase their own products",
+        code: "OWN_PRODUCT_FORBIDDEN"
       });
     }
     
@@ -2765,6 +2774,13 @@ app.post('/api/orders', rateLimit(10), authenticateToken, async (req, res) => {
       const pRow = await db.prepare('SELECT seller_id FROM products WHERE id = ?').get(item.product_id);
       const sid = pRow ? pRow.seller_id : null;
       if (sid !== null) {
+        if (sid === userId) {
+          return res.status(403).json({
+            error: true,
+            message: "Sellers cannot purchase their own products",
+            code: "OWN_PRODUCT_FORBIDDEN"
+          });
+        }
         if (!sellerQuantityMap[sid]) {
           sellerQuantityMap[sid] = { totalQty: 0, items: [] };
         }
@@ -4072,7 +4088,7 @@ app.get('/api/wishlist', rateLimit(60), authenticateToken, async (req, res) => {
   try {
     const sql = `
       SELECT 
-        w.id, w.product_id,
+        w.id, w.product_id, p.seller_id,
         p.name, p.price_paise, p.status,
         COALESCE(
           (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
@@ -4119,12 +4135,20 @@ app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (re
   const productId = req.params.productId;
 
   try {
-    const product = await db.prepare("SELECT id FROM products WHERE id = ? AND status != 'archived'").get(productId);
+    const product = await db.prepare("SELECT id, seller_id FROM products WHERE id = ? AND status != 'archived'").get(productId);
     if (!product) {
       return res.status(404).json({
         error: true,
         message: "Product not found",
         code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    if (product.seller_id === userId) {
+      return res.status(403).json({
+        error: true,
+        message: "Sellers cannot wishlist their own products",
+        code: "OWN_PRODUCT_FORBIDDEN"
       });
     }
 
@@ -10529,6 +10553,14 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
     }
     const buyer_id = req.user.user_id;
     const seller_id = listing.seller_id;
+
+    if (buyer_id === seller_id) {
+      return res.status(403).json({
+        error: true,
+        message: "Sellers cannot start a chat with themselves",
+        code: "OWN_CHAT_FORBIDDEN"
+      });
+    }
     
     // Check if open conversation exists
     let existing = await db.prepare(`
