@@ -1,0 +1,651 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Studio Ceramics | Tohfa Artisan Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#3a684c",
+                        "outline-variant": "#c1c9c0",
+                        "surface-bright": "#fff8f3",
+                        "on-surface": "#1f1b15",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#002110",
+                        "on-secondary-fixed-variant": "#324e29",
+                        "on-secondary-container": "#4d6a43",
+                        "outline": "#717972",
+                        "on-tertiary-container": "#ffd796",
+                        "tertiary": "#624400",
+                        "tertiary-fixed": "#ffdeaa",
+                        "secondary-fixed": "#caecbb",
+                        "on-tertiary-fixed-variant": "#5f4100",
+                        "on-background": "#1f1b15",
+                        "on-primary-container": "#b7e9c6",
+                        "surface-container": "#f6ece2",
+                        "secondary-container": "#c8e9b8",
+                        "surface": "#fff8f3",
+                        "surface-variant": "#eae1d7",
+                        "secondary-fixed-dim": "#afd0a0",
+                        "surface-container-high": "#f0e7dd",
+                        "on-tertiary-fixed": "#271900",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#214f36",
+                        "primary": "#255338",
+                        "primary-fixed": "#bceecb",
+                        "tertiary-container": "#815a00",
+                        "secondary": "#49663f",
+                        "inverse-on-surface": "#f9efe5",
+                        "surface-container-low": "#fcf2e8",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#062103",
+                        "tertiary-fixed-dim": "#f3be5d",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#a0d2b0",
+                        "background": "#ffffff",
+                        "surface-container-highest": "#eae1d7",
+                        "surface-dim": "#e2d9cf",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#3d6b4f",
+                        "inverse-surface": "#343029",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#a0d2b0",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#414942",
+                        "error": "#ba1a1a",
+                        "amber-accent": "#C8973A",
+                        "sage-accent": "#8FAF82",
+                        "forest-deep": "#091510"
+                    },
+                    spacing: {
+                        "container-max": "1280px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "md": "24px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "margin-desktop": "80px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-md": ["DM Sans"],
+                        "display-hero": ["Playfair Display"],
+                        "label-md": ["Space Mono"],
+                        "label-sm": ["Space Mono"],
+                        "label-caps": ["Space Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .dot-grid {
+            background-image: radial-gradient(#3d6b4f 0.5px, transparent 0.5px);
+            background-size: 12px 12px;
+        }
+        .ribbon-gradient {
+            background: linear-gradient(135deg, #C8973A 0%, #8FAF82 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #8FAF82;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-secondary-container">
+<!-- 1. TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant/10">
+<nav class="flex justify-between items-center px-margin-desktop py-4 w-full max-w-7xl mx-auto h-[80px]">
+<div class="flex items-center gap-12">
+<a class="font-display-hero italic text-headline-lg text-primary" href="#">Tohfa<span class="text-amber-accent">.</span></a>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Home</a>
+<a class="text-primary font-bold border-b-2 border-primary py-1 font-body-md" href="#">Category</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Reels</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Profile</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="p-2 hover:bg-surface-variant rounded-full transition-transform active:scale-90">
+<span class="material-symbols-outlined text-primary">search</span>
+</button>
+<button class="p-2 hover:bg-surface-variant rounded-full transition-transform active:scale-90">
+<span class="material-symbols-outlined text-primary">favorite</span>
+</button>
+<button class="p-2 hover:bg-surface-variant rounded-full transition-transform active:scale-90 relative">
+<span class="material-symbols-outlined text-primary">shopping_cart</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-amber-accent rounded-full border border-surface"></span>
+</button>
+<button class="p-2 hover:bg-surface-variant rounded-full transition-transform active:scale-90">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="max-w-7xl mx-auto px-margin-desktop space-y-lg pb-xl">
+<!-- 2. Category Header -->
+<section class="h-[140px] mt-8 rounded-2xl overflow-hidden relative flex items-center px-10 bg-gradient-to-r from-surface to-sage-accent/20">
+<div class="absolute inset-0 dot-grid opacity-20 -rotate-12 transform scale-150 pointer-events-none"></div>
+<div class="relative z-10 flex items-center justify-between w-full">
+<div class="flex items-center gap-6">
+<span class="text-4xl filter drop-shadow-sm">🏺</span>
+<div>
+<h1 class="font-headline-lg text-[36px] text-primary leading-tight">Studio Ceramics</h1>
+<p class="font-label-sm text-[11px] tracking-[0.2em] text-on-surface-variant uppercase mt-1">47 active makes</p>
+</div>
+</div>
+<div class="opacity-[0.09] scale-[2.5]">
+<span class="material-symbols-outlined text-primary text-9xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+</div>
+</section>
+<!-- 3. Sticky Filter/Sort Row -->
+<section class="sticky top-[80px] z-40 bg-background/95 backdrop-blur-md py-4 border-b border-outline-variant/30">
+<div class="flex items-center justify-between gap-4">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg font-body-md text-on-surface-variant hover:bg-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                    Filter
+                </button>
+<div class="h-6 w-px bg-outline-variant/50"></div>
+<div class="flex-1 overflow-x-auto custom-scrollbar flex items-center gap-3 no-scrollbar py-1">
+<button class="px-5 py-1.5 bg-primary text-white rounded-full text-label-sm shrink-0">All Pieces</button>
+<button class="px-5 py-1.5 bg-surface border border-outline-variant text-on-surface-variant rounded-full text-label-sm shrink-0 hover:bg-surface-variant transition-colors">Vases</button>
+<button class="px-5 py-1.5 bg-surface border border-outline-variant text-on-surface-variant rounded-full text-label-sm shrink-0 hover:bg-surface-variant transition-colors">Bowls</button>
+<button class="px-5 py-1.5 bg-surface border border-outline-variant text-on-surface-variant rounded-full text-label-sm shrink-0 hover:bg-surface-variant transition-colors">Dinnerware</button>
+<button class="px-5 py-1.5 bg-surface border border-outline-variant text-on-surface-variant rounded-full text-label-sm shrink-0 hover:bg-surface-variant transition-colors">Sculptural</button>
+<button class="px-5 py-1.5 bg-surface border border-outline-variant text-on-surface-variant rounded-full text-label-sm shrink-0 hover:bg-surface-variant transition-colors">Incense Burners</button>
+</div>
+<div class="h-6 w-px bg-outline-variant/50"></div>
+<div class="relative min-w-[160px]">
+<select class="w-full appearance-none bg-transparent border border-outline-variant rounded-lg px-4 py-2 font-body-md text-on-surface-variant focus:ring-1 focus:ring-primary focus:border-primary cursor-pointer">
+<option>Sort: Featured</option>
+<option>Price: Low to High</option>
+<option>Newest First</option>
+<option>Customer Rating</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</section>
+<!-- 4. Bulk Order Banner -->
+<section class="h-[180px] rounded-[18px] bg-gradient-to-br from-forest-deep to-primary-container relative overflow-hidden flex items-center group">
+<div class="absolute left-0 top-0 bottom-0 w-[5px] bg-amber-accent"></div>
+<div class="absolute right-0 top-0 p-8 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[140px] text-white">inventory_2</span>
+</div>
+<div class="absolute -right-20 -bottom-20 w-80 h-80 bg-amber-accent/10 blur-[100px] rounded-full"></div>
+<div class="relative z-10 px-12 flex justify-between items-center w-full">
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-amber-accent font-label-sm tracking-widest text-[11px]">
+<span class="">✦</span>
+<span class="">BULK ORDERS</span>
+</div>
+<h2 class="font-headline-lg italic text-white text-[38px] leading-tight">Ordering in bulk for a studio or cafe or corporate?</h2>
+<p class="text-white/70 font-body-md">Get dedicated artisan consultation and wholesale tiered pricing on bespoke sets.</p>
+</div>
+<button class="bg-amber-accent hover:bg-tertiary-fixed-dim text-on-tertiary-fixed font-bold py-3 px-8 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1">
+                    Contact Our Team
+                    <span class="material-symbols-outlined">arrow_right_alt</span>
+</button>
+</div>
+</section>
+<!-- 5. Sponsored Products Carousel -->
+<section class="space-y-6">
+<div class="flex items-center gap-2">
+<span class="text-amber-accent text-lg">★</span>
+<h3 class="font-headline-md text-primary">Sponsored Products</h3>
+</div>
+<div class="flex gap-gutter overflow-x-auto pb-4 no-scrollbar">
+<!-- Card 1 -->
+<div class="min-w-[280px] bg-surface rounded-xl overflow-hidden group border border-outline-variant/30 hover:shadow-lg transition-all duration-300">
+<div class="h-[220px] bg-[#fdfaf5] p-6 relative overflow-hidden">
+<img class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="A professional studio photograph of a handcrafted, textured ceramic vase with a reactive sage green glaze. The lighting is soft and warm, highlighting the tactile imperfections of the clay. The vase sits on a minimalist wooden pedestal against a clean, off-white background in a high-end minimalist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3vd3WO7txddM-BLC67HzKbmK55RTJmCxdDLLYTR8NyYHa3sNOLi5je13QUmKlRXCCVBERkUrJKxfKvOl-kGzZ6LMrhnPAy9FZIk7SC9qEq-hJapT0JRVAuI8aGiRzHX0hi7oXpI3azH9sa6P2F-pgTOMMfTo4fxpwkLmtq0g72h99bq2GKdL0J2BJVw5kFVnYQvbBD748owl22oUp3P9DGSZV64W0biltftqQpsOMkFBSzIpnGAucPuWg0gguv7g-yBmEaBOkK4Y">
+<div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-outline-variant/20 shadow-sm">
+<span class="text-label-sm text-primary font-bold">New Studio Drop</span>
+</div>
+</div>
+<div class="p-5 space-y-3">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-md text-lg group-hover:text-primary transition-colors">Tonal Sage Flask</h4>
+<span class="font-label-md text-amber-accent">₹3,450</span>
+</div>
+<p class="text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.9 (12 reviews)
+                        </p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="min-w-[280px] bg-surface rounded-xl overflow-hidden group border border-outline-variant/30 hover:shadow-lg transition-all duration-300">
+<div class="h-[220px] bg-[#fdfaf5] p-6 relative overflow-hidden">
+<img class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="A minimalist overhead shot of a set of four organic-shaped ceramic bowls in varying shades of terracotta and cream. The surfaces are matte and show subtle finger-marks from the potter's wheel. Soft morning sunlight creates long, gentle shadows on a light stone surface, evoking a sense of warm Indian craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgLCOuYAUJPs-2WyR-RZt56gEPBTMu4YmtMTPHl1RDa8TazRv0zbfmeDPCsw_tahNXl5cI3LFy4Sxv6naP4xaUY_AXJHd9UfTn9rrlvL6kpkow_pL4UQ0fFZypxaAlYwTumxtI5jFShBatZYpAdZL63sNqrNnZP3se6-ng0x2l6bz15qWSeV0ayQ_lfBmbhMw-XuINnTbPE46bKis_pY2PQ0XmjJY5V6ceH1jWbS3-XWgi8rsQgxBYsRAiDJSGKN3ga0Ce44WTg8s">
+</div>
+<div class="p-5 space-y-3">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-md text-lg group-hover:text-primary transition-colors">Terra Breakfast Set</h4>
+<span class="font-label-md text-amber-accent">₹4,200</span>
+</div>
+<p class="text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.7 (8 reviews)
+                        </p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="min-w-[280px] bg-surface rounded-xl overflow-hidden group border border-outline-variant/30 hover:shadow-lg transition-all duration-300">
+<div class="h-[220px] bg-[#fdfaf5] p-6 relative overflow-hidden">
+<img class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="A sculptural, tall ceramic incense burner with a dark forest green metallic glaze and intricate hand-carved floral patterns. Smoke drifts elegantly from the top. The product is shot with dramatic, low-key lighting that emphasizes its silhouette and texture, fitting a sophisticated and premium lifestyle aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI9tVzk7DbMSePz3y7QQiN3k6I1rgYogu9DRCTfT9NTPmm9TjRMa1cOCza6i66f6mAggBhKoeSEUz0wvGrskL2BkHX1GomQFwj5fdRBLrOY-koh9xawzS-P8JCxgxJ2OmpHMM10E8hvBPvfuF7Pt--ruMYQiCWt9CVyP3b2W9SnyanDWJ5-MidYpFDYDdMFF-M2jEPbEeaN97BtZUsHP5K9tQ5gHeU1oP4dPUW4M6irD7T1p91ib0tsYWqHu_u2gVmCwuQPteAfN8">
+</div>
+<div class="p-5 space-y-3">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-md text-lg group-hover:text-primary transition-colors">Carved Ritual Vessel</h4>
+<span class="font-label-md text-amber-accent">₹2,800</span>
+</div>
+<p class="text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            5.0 (4 reviews)
+                        </p>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="min-w-[280px] bg-surface rounded-xl overflow-hidden group border border-outline-variant/30 hover:shadow-lg transition-all duration-300">
+<div class="h-[220px] bg-[#fdfaf5] p-6 relative overflow-hidden">
+<img class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" data-alt="Close-up of a large ceramic serving platter with an intricate blue and white hand-painted botanical design. The glaze is glossy and crackled, reflecting soft gallery-style lighting. The platter rests on a bed of neutral linen fabric, conveying a warm, curated, and artisanal feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIUG_EyB9qQPf4cbsJMF9nQZgghsgcnfXuXyQYtkbuWdq1xloKB2leNoRC07ZP4RljF8xo1cWzdiiVJfqPw-cJufHYszEVGbrKgqEG-R8sSqrfCrADUVd9ZRT35w-FG22z67ak0GjD-pGquu10P-Pl9mTcY1hc_5NOLLCmMVHK6OCKEHp3pPPx_mKiQy89bQvXaLUQHyt8fjywFGdRCO6x1A7JA_4adm50zv_zi2hRT5hX5lZnOdO69Gpgdmzjvz29Q31V7nuyWJM">
+</div>
+<div class="p-5 space-y-3">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-md text-lg group-hover:text-primary transition-colors">Botanical Platter</h4>
+<span class="font-label-md text-amber-accent">₹5,500</span>
+</div>
+<p class="text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.8 (15 reviews)
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. Product Grid (4 columns) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mt-12">
+<!-- 8 Product Cards -->
+<script>
+                const products = [
+                    { name: "Sutra Pinch Bowl", price: "₹850", tag: "Sponsored", tagColor: "ribbon-gradient" },
+                    { name: "Eclipse Stone Jar", price: "₹2,100", tag: "Best Seller", tagColor: "bg-primary" },
+                    { name: "Himalayan Glaze Cup", price: "₹1,250", tag: "Custom", tagColor: "bg-tertiary-container" },
+                    { name: "Earth & Ash Vase", price: "₹3,900", tag: null },
+                    { name: "Zen Pour-over Set", price: "₹4,500", tag: "New", tagColor: "bg-sage-accent" },
+                    { name: "Moonslate Platter", price: "₹3,200", tag: null },
+                    { name: "Rustic Grain Pitcher", price: "₹2,800", tag: "Limited", tagColor: "bg-error" },
+                    { name: "Flow Slate Bowl", price: "₹1,750", tag: null }
+                ];
+
+                document.write(products.map((p, index) => `
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of ${p.name}, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            ${p.tag ? `
+                                <div class="absolute top-4 -right-8 rotate-45 w-32 ${p.tagColor} text-white py-1 text-center font-label-sm shadow-sm">
+                                    <span class="text-[10px] tracking-widest">${p.tag}</span>
+                                </div>
+                            ` : ''}
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">${p.price}</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.${(index % 3) + 7}</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">${p.name}</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `).join(''));
+            </script>
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Sutra Pinch Bowl, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                                <div class="absolute top-4 -right-8 rotate-45 w-32 ribbon-gradient text-white py-1 text-center font-label-sm shadow-sm">
+                                    <span class="text-[10px] tracking-widest">Sponsored</span>
+                                </div>
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹850</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.7</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Sutra Pinch Bowl</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Eclipse Stone Jar, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                                <div class="absolute top-4 -right-8 rotate-45 w-32 bg-primary text-white py-1 text-center font-label-sm shadow-sm">
+                                    <span class="text-[10px] tracking-widest">Best Seller</span>
+                                </div>
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹2,100</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.8</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Eclipse Stone Jar</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Himalayan Glaze Cup, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                                <div class="absolute top-4 -right-8 rotate-45 w-32 bg-tertiary-container text-white py-1 text-center font-label-sm shadow-sm">
+                                    <span class="text-[10px] tracking-widest">Custom</span>
+                                </div>
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹1,250</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.9</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Himalayan Glaze Cup</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Earth &amp; Ash Vase, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹3,900</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.7</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Earth &amp; Ash Vase</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Zen Pour-over Set, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                                <div class="absolute top-4 -right-8 rotate-45 w-32 bg-sage-accent text-white py-1 text-center font-label-sm shadow-sm">
+                                    <span class="text-[10px] tracking-widest">New</span>
+                                </div>
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹4,500</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.8</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Zen Pour-over Set</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Moonslate Platter, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹3,200</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.9</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Moonslate Platter</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Rustic Grain Pitcher, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                                <div class="absolute top-4 -right-8 rotate-45 w-32 bg-error text-white py-1 text-center font-label-sm shadow-sm">
+                                    <span class="text-[10px] tracking-widest">Limited</span>
+                                </div>
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹2,800</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.7</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Rustic Grain Pitcher</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+                    <div class="bg-white rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col border border-outline-variant/20">
+                        <div class="h-[280px] bg-[#fdfaf5] p-8 relative overflow-hidden flex items-center justify-center">
+                            <img src="placeholder" data-alt="A premium product shot of Flow Slate Bowl, a handcrafted ceramic piece showcasing unique textures and artisanal glaze. Professional lighting, minimalist setting, warm color palette matching Tohfa brand identity." class="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                            
+                            <button class="absolute top-4 left-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:text-error transition-colors shadow-sm">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-label-md text-amber-accent text-[16px]">₹1,750</span>
+                                    <div class="flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-accent" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="text-label-sm text-on-surface-variant">4.8</span>
+                                    </div>
+                                </div>
+                                <h4 class="font-headline-md text-xl group-hover:text-primary transition-colors leading-snug">Flow Slate Bowl</h4>
+                            </div>
+                            <button class="w-full py-3 bg-primary text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-all active:scale-95 group/btn">
+                                <span class="material-symbols-outlined text-[20px] group-hover/btn:translate-x-1 transition-transform">shopping_bag</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                
+</section>
+<!-- 7. Loading Indicator -->
+<section class="flex flex-col items-center justify-center py-xl gap-4">
+<div class="relative w-12 h-12">
+<div class="absolute inset-0 rounded-full border-4 border-outline-variant/20"></div>
+<div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+</div>
+<p class="font-headline-md italic text-on-surface-variant">Curation of more unique makes...</p>
+</section>
+</main>
+<!-- 8. Footer -->
+<footer class="w-full bg-[#1f1b15] text-white/80 py-xl mt-auto">
+<div class="max-w-7xl mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-xl">
+<!-- Branding -->
+<div class="space-y-6">
+<a class="font-display-hero italic text-headline-lg text-white" href="#">Tohfa<span class="text-amber-accent">.</span></a>
+<p class="text-body-md text-white/60 leading-relaxed">Dedicated to the discovery and elevation of traditional Indian craftsmanship. Every piece tells a story of heritage and human touch.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">language</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</a>
+</div>
+</div>
+<!-- Explore -->
+<div class="space-y-6">
+<h5 class="font-label-caps text-white font-bold text-xs tracking-widest uppercase">Explore</h5>
+<ul class="space-y-3 font-body-md">
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Studio Ceramics</a></li>
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Wooden Artifacts</a></li>
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Brass Sculptures</a></li>
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Artisan Textiles</a></li>
+</ul>
+</div>
+<!-- Studio -->
+<div class="space-y-6">
+<h5 class="font-label-caps text-white font-bold text-xs tracking-widest uppercase">Studio</h5>
+<ul class="space-y-3 font-body-md">
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Our Story</a></li>
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Artisan Certification</a></li>
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Bulk Inquiries</a></li>
+<li class=""><a class="hover:text-amber-accent transition-colors" href="#">Contact Us</a></li>
+</ul>
+</div>
+<!-- Newsletter -->
+<div class="space-y-6">
+<h5 class="font-label-caps text-white font-bold text-xs tracking-widest uppercase">The Journal</h5>
+<p class="text-label-sm leading-relaxed">Join 12,000+ patrons receiving monthly updates on new artisan collaborations.</p>
+<div class="relative">
+<input class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-accent transition-colors" placeholder="Your email address" type="email">
+<button class="absolute right-2 top-2 p-1.5 bg-amber-accent text-on-tertiary-fixed rounded hover:bg-tertiary-fixed-dim transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-xl pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="font-label-sm text-[11px] text-white/40 uppercase tracking-widest">© 2024 TOFA Artisan Studio. Hand-placed with care.</p>
+<div class="flex gap-8 font-label-sm text-[11px] text-white/40 uppercase tracking-widest">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                if (btn.querySelector('.material-symbols-outlined')) {
+                    // Slight hover effect already handled by Tailwind
+                }
+            });
+        });
+        
+        // Sticky Header Scroll Logic
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+    </script>
+
+
+</body></html>
