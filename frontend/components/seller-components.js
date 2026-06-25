@@ -193,11 +193,7 @@ class SellerSidebar extends HTMLElement {
             <span class="material-symbols-outlined mb-1 text-2xl">library_books</span>
             <span class="text-[9px] uppercase tracking-widest text-center">Catalog</span>
           </a>
-          <!-- Reels -->
-          <a class="sidebar-link ${activeTab === 'reels' ? 'sidebar-link-active' : ''}" href="${prefix}/upload-reel.html" id="sidebar-reels" title="Reels">
-            <span class="material-symbols-outlined mb-1 text-2xl">movie</span>
-            <span class="text-[9px] uppercase tracking-widest text-center">Reels</span>
-          </a>
+
           <!-- Orders -->
           <a class="sidebar-link ${activeTab === 'orders' ? 'sidebar-link-active' : ''}" href="${prefix}/orders.html" id="sidebar-orders" title="Orders">
             <span class="material-symbols-outlined mb-1 text-2xl">shopping_basket</span>

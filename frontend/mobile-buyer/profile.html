@@ -68,13 +68,7 @@
                 </div>
             </a>
             
-            <a href="saved-reels.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
-                <span class="material-symbols-outlined text-[#C8973A] text-2xl">video_library</span>
-                <div>
-                    <p class="font-playfair text-sm font-bold text-on-surface">Saved Reels</p>
-                    <p id="hub-reels-count" class="text-[10px] text-secondary mt-0.5">0 saved reels</p>
-                </div>
-            </a>
+
             
             <a href="addresses.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
                 <span class="material-symbols-outlined text-tertiary text-2xl">location_on</span>
@@ -198,9 +192,9 @@
         <span class="material-symbols-outlined text-2xl">category</span>
         <span class="text-[10px] font-medium">Category</span>
     </a>
-    <a href="reels.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
-        <span class="material-symbols-outlined text-2xl">movie</span>
-        <span class="text-[10px] font-medium">Reels</span>
+    <a href="zipgift.html" class="flex flex-col items-center gap-0.5 text-[#414942] hover:text-primary transition-colors py-1 px-3">
+        <span class="material-symbols-outlined text-2xl">bolt</span>
+        <span class="text-[10px] font-medium">ZipGift</span>
     </a>
     <a href="profile.html" class="flex flex-col items-center gap-0.5 text-primary transition-colors py-1 px-3">
         <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
@@ -253,7 +247,7 @@
 
         // Activity Hub counts
         document.getElementById('hub-orders-count').innerText = `${profile.active_orders_count || 0} active shipments`;
-        document.getElementById('hub-reels-count').innerText = `${profile.saved_reels_count || 0} saved reels`;
+        
         document.getElementById('hub-addresses-count').innerText = `${profile.address_count || 0} saved locations`;
 
         // Follower counts based on role

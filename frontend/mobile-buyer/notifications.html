@@ -38,10 +38,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="./reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="./profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -213,9 +213,18 @@
                 
                 row.className = `flex items-center gap-md p-md hover:bg-white/40 transition-colors border-b border-[#F7F3EC]/60 group cursor-pointer relative ${isUnread ? 'pl-3.5 border-l-4 border-l-[#C8973A] bg-white/20' : 'pl-md border-l-0'}`;
                 
-                if (item.link_url) {
-                    row.onclick = () => window.location.href = item.link_url;
-                }
+                row.onclick = async () => {
+                    if (isUnread) {
+                        try {
+                            await apiClient.patch('/notifications/mark-read', { notification_ids: [item.id] });
+                        } catch(e) {
+                            console.error('Failed to mark notification as read:', e);
+                        }
+                    }
+                    if (item.link_url) {
+                        window.location.href = item.link_url;
+                    }
+                };
 
                 row.innerHTML = `
                     <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${iconDetails.classes}">

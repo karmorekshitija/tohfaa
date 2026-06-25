@@ -8,7 +8,8 @@ CREATE TABLE users (
       is_active INTEGER DEFAULT 1,
       is_banned INTEGER DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      last_active_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     , display_name TEXT, bio TEXT, location TEXT, ships_in_days INTEGER DEFAULT 3, instagram_handle TEXT, phone TEXT);
 
 CREATE TABLE refresh_tokens (
@@ -476,60 +477,7 @@ CREATE TABLE reviews (
       updated_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP
     );
 
-CREATE TABLE reels (
-      id            SERIAL PRIMARY KEY,
-      seller_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      product_id    INTEGER REFERENCES products(id),
-      title         TEXT,
-      caption       TEXT    DEFAULT NULL,
-      video_url     TEXT    NOT NULL,
-      thumbnail_url TEXT    DEFAULT NULL,
-      duration_secs INTEGER DEFAULT NULL,
-      share_to_instagram INTEGER DEFAULT 0,
-      reel_type     TEXT    DEFAULT NULL CHECK(reel_type IN ('process','behind_the_scenes','storytime','qa','tutorial','other','showcase')),
-      seasonal_tag  TEXT    DEFAULT NULL,
-      visibility    TEXT    DEFAULT 'draft' CHECK(visibility IN ('public','store-only','draft')),
-      ig_reminder   INTEGER DEFAULT 0,
-      view_count    INTEGER DEFAULT 0,
-      like_count    INTEGER DEFAULT 0,
-      comment_count INTEGER DEFAULT 0,
-      save_count    INTEGER DEFAULT 0,
-      status        TEXT    DEFAULT 'active',
-      created_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP
-    );
 
-CREATE TABLE reel_likes (
-      id        SERIAL PRIMARY KEY,
-      reel_id   INTEGER NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
-      user_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      liked_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(reel_id, user_id)
-    );
-
-CREATE TABLE reel_comments (
-      id            SERIAL PRIMARY KEY,
-      reel_id       INTEGER NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
-      user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      body          TEXT NOT NULL,
-      created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-
-CREATE TABLE saved_reels (
-      id        SERIAL PRIMARY KEY,
-      reel_id   INTEGER NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
-      user_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      saved_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(reel_id, user_id)
-    );
-
-CREATE TABLE reel_listing_links (
-      id         SERIAL PRIMARY KEY,
-      reel_id    INTEGER NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
-      listing_id INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
-      created_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(reel_id, listing_id)
-    );
 
 CREATE TABLE seller_order_meta (
       id SERIAL PRIMARY KEY,
@@ -620,8 +568,8 @@ CREATE TABLE conversation_messages (
       id SERIAL PRIMARY KEY,
       conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
       sender_id INTEGER NOT NULL REFERENCES users(id),
-      sender_role TEXT CHECK(sender_role IN ('buyer','seller','bot')),
-      message_type TEXT CHECK(message_type IN ('text','photo','system')),
+      sender_role TEXT CHECK(sender_role IN ('buyer','seller','bot','bot_as_seller')),
+      message_type TEXT CHECK(message_type IN ('text','photo','system','order_draft_card','system_notice','product_inquiry')),
       content TEXT,
       image_url TEXT DEFAULT NULL,
       sent_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -630,6 +578,22 @@ CREATE TABLE conversation_messages (
       offer_id INTEGER,
       metadata JSONB DEFAULT NULL
     );
+
+CREATE TABLE custom_orders (
+      id SERIAL PRIMARY KEY,
+      thread_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+      qty INTEGER NOT NULL DEFAULT 1,
+      customization_specs JSONB DEFAULT '{}',
+      reference_images TEXT[] DEFAULT '{}',
+      draft_price INTEGER DEFAULT NULL,
+      final_price INTEGER DEFAULT NULL,
+      delivery_days INTEGER DEFAULT NULL,
+      status TEXT NOT NULL DEFAULT 'pending_seller_review',
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE INDEX IF NOT EXISTS idx_conversations_seller_status ON conversations(seller_id, status);
 
 CREATE TABLE sellers (
       id                  SERIAL PRIMARY KEY,
@@ -784,13 +748,7 @@ CREATE TABLE seller_payment_preferences (
       notify_on_payout INTEGER NOT NULL DEFAULT 1 CHECK(notify_on_payout IN (0, 1))
     );
 
-CREATE TABLE reel_product_links (
-      id          SERIAL PRIMARY KEY,
-      reel_id     INTEGER NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
-      product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(reel_id, product_id)
-    );
+
 
 CREATE TABLE subcategories (
       id          SERIAL PRIMARY KEY,
@@ -896,15 +854,7 @@ CREATE INDEX idx_reviews_seller ON reviews(seller_id);
 
 CREATE INDEX idx_reviews_listing ON reviews(listing_id);
 
-CREATE INDEX idx_reel_likes_reel ON reel_likes(reel_id);
 
-CREATE INDEX idx_reel_comments_reel ON reel_comments(reel_id);
-
-CREATE INDEX idx_saved_reels_user ON saved_reels(user_id);
-
-CREATE INDEX idx_reels_seller ON reels(seller_id);
-
-CREATE INDEX idx_rll_reel ON reel_listing_links(reel_id);
 
 CREATE INDEX idx_som_order_id ON seller_order_meta(order_id);
 
@@ -956,7 +906,7 @@ CREATE INDEX idx_rd_order ON refund_disputes(order_id);
 
 CREATE INDEX idx_spp_seller ON seller_payment_preferences(seller_id);
 
-CREATE INDEX idx_rpl_reel ON reel_product_links(reel_id);
+
 
 -- Admin Panel tables added during overhaul
 CREATE TABLE IF NOT EXISTS product_events (

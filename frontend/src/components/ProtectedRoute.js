@@ -63,26 +63,32 @@
     if (!authContainer) return;
 
     if (token) {
-      if (!authContainer.innerHTML.trim()) {
-        const userStr = sessionStorage.getItem('tohfa_user');
-        let initial = 'A';
-        if (userStr) {
-          try {
-            const user = JSON.parse(userStr);
-            if (user.full_name) {
-              initial = user.full_name.charAt(0).toUpperCase();
-            } else if (user.name) {
-              initial = user.name.charAt(0).toUpperCase();
-            } else if (user.email) {
-              initial = user.email.charAt(0).toUpperCase();
-            }
-          } catch(e) {}
+      const isMobile = window.location.pathname.includes('/mobile-buyer/');
+      if (isMobile) {
+        if (!authContainer.innerHTML.trim()) {
+          const userStr = sessionStorage.getItem('tohfa_user');
+          let initial = 'A';
+          if (userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              if (user.full_name) {
+                initial = user.full_name.charAt(0).toUpperCase();
+              } else if (user.name) {
+                initial = user.name.charAt(0).toUpperCase();
+              } else if (user.email) {
+                initial = user.email.charAt(0).toUpperCase();
+              }
+            } catch(e) {}
+          }
+          authContainer.innerHTML = `
+            <a href="/mobile-buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer select-none">
+              ${initial}
+            </a>
+          `;
         }
-        authContainer.innerHTML = `
-          <a href="${window.location.pathname.includes('/mobile-buyer/') ? '/mobile-buyer/profile.html' : '/buyer/profile.html'}" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer select-none">
-            ${initial}
-          </a>
-        `;
+      } else {
+        // On desktop, we remove the rightmost acct logo besides notification
+        authContainer.innerHTML = '';
       }
     } else {
       if (!authContainer.innerHTML.trim()) {
@@ -105,8 +111,8 @@
     const isMobilePage = path.includes('/mobile-buyer/');
     const isHome = path.endsWith('/home.html') || path.endsWith('/home') || path.endsWith('/buyer/') || path.endsWith('/mobile-buyer/');
     const isCategory = path.includes('/categories.html') || path.includes('/category.html');
-    const isReel = path.includes('/reels.html') || path.includes('/saved-reels.html');
-    const isProfile = !isHome && !isCategory && !isReel;
+    const isZipGift = path.includes('/zipgift.html');
+    const isProfile = !isHome && !isCategory && !isZipGift;
 
     let wishlistCount = '0';
     let wishlistHidden = true;
@@ -318,9 +324,9 @@
           <span class="material-symbols-outlined text-[24px]">category</span>
           <span class="text-[9px] font-bold tracking-wider">CATEGORY</span>
         </a>
-        <a href="/mobile-buyer/reels.html" class="mbb-tab-link ${isReel ? 'text-[#3D6B4F]' : 'text-[#8FAF82] hover:text-[#3D6B4F]'}">
-          <span class="material-symbols-outlined text-[24px]">movie</span>
-          <span class="text-[9px] font-bold tracking-wider">REEL</span>
+        <a href="/mobile-buyer/zipgift.html" class="mbb-tab-link ${isZipGift ? 'text-[#3D6B4F]' : 'text-[#8FAF82] hover:text-[#3D6B4F]'}">
+          <span class="material-symbols-outlined text-[24px]">bolt</span>
+          <span class="text-[9px] font-bold tracking-wider">ZIPGIFT</span>
         </a>
         <a href="/mobile-buyer/profile.html" class="mbb-tab-link ${isProfile ? 'text-[#3D6B4F]' : 'text-[#8FAF82] hover:text-[#3D6B4F]'}">
           <span class="material-symbols-outlined text-[24px]">person</span>
@@ -358,9 +364,9 @@
             <span class="material-symbols-outlined text-[20px]">category</span>
             <span>CATEGORY</span>
           </a>
-          <a href="/buyer/reels.html" class="flex items-center gap-xs transition-colors h-full px-1 font-['DM_Sans'] text-[16px] uppercase ${isReel ? 'text-[#3D6B4F] border-b-2 border-[#3D6B4F] font-bold' : 'text-[#414942] hover:text-[#3D6B4F] font-normal'}">
-            <span class="material-symbols-outlined text-[20px]">movie</span>
-            <span>REEL</span>
+          <a href="/buyer/zipgift.html" class="flex items-center gap-xs transition-colors h-full px-1 font-['DM_Sans'] text-[16px] uppercase ${isZipGift ? 'text-[#3D6B4F] border-b-2 border-[#3D6B4F] font-bold' : 'text-[#414942] hover:text-[#3D6B4F] font-normal'}">
+            <span class="material-symbols-outlined text-[20px]">bolt</span>
+            <span>ZIPGIFT</span>
           </a>
           <a href="/buyer/profile.html" class="flex items-center gap-xs transition-colors h-full px-1 font-['DM_Sans'] text-[16px] uppercase ${isProfile ? 'text-[#3D6B4F] border-b-2 border-[#3D6B4F] font-bold' : 'text-[#414942] hover:text-[#3D6B4F] font-normal'}">
             <span class="material-symbols-outlined text-[20px]">person</span>
@@ -514,9 +520,9 @@
             <span class="material-symbols-outlined">category</span>
             <span>Category</span>
           </a>
-          <a href="/buyer/reels.html" class="flex items-center gap-4 text-lg text-[#6B6B6B] hover:text-[#3D6B4F] py-2 font-medium">
-            <span class="material-symbols-outlined">movie</span>
-            <span>Reels</span>
+          <a href="/buyer/zipgift.html" class="flex items-center gap-4 text-lg text-[#6B6B6B] hover:text-[#3D6B4F] py-2 font-medium">
+            <span class="material-symbols-outlined">bolt</span>
+            <span>ZipGift</span>
           </a>
           <a href="/buyer/profile.html" class="flex items-center gap-4 text-lg text-[#6B6B6B] hover:text-[#3D6B4F] py-2 font-medium">
             <span class="material-symbols-outlined">person</span>
@@ -600,6 +606,29 @@
       });
     }
   }
+
+  function startNotifPoll() {
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (!token) return;
+    async function pollNotif() {
+      try {
+        const res = await fetch(`${window.location.origin}/api/notifications?unread_only=true&limit=1`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const count = data.unread_count || 0;
+          ['nav-notifications-badge', 'nav-notif-badge'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden', count === 0);
+          });
+        }
+      } catch(e) {}
+    }
+    pollNotif();
+    setInterval(pollNotif, 10000);
+  }
+  startNotifPoll();
 })();
 
 

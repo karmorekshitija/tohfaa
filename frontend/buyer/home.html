@@ -193,10 +193,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -235,21 +235,7 @@
 <div class="watermark-lavender top-[800px] right-24 w-40 h-40 -rotate-12">
 <span class="material-symbols-outlined text-9xl opacity-20">eco</span>
 </div>
-<!-- Greeting Banner -->
-<section class="bg-[#F7F3EC] w-full py-xl px-margin-desktop relative overflow-hidden">
-<div class="max-w-[1440px] mx-auto flex flex-col items-center justify-center text-center py-xl relative z-10">
-<h1 class="font-headline-lg text-display-hero italic text-primary mb-sm">
-                    Good morning <span class="font-normal not-italic opacity-60">✦</span>
-</h1>
-<p class="font-title-serif text-title-serif font-light italic text-on-surface-variant">
-                    What will you discover today?
-                </p>
 
-</div>
-<!-- Texture Overlay (Simulated Wax Tape) -->
-<div class="absolute top-10 right-[10%] w-24 h-8 bg-surface-variant/30 rotate-12 border-l border-r border-outline-variant/20 shadow-sm opacity-60"></div>
-<div class="absolute bottom-10 left-[15%] w-32 h-10 bg-primary-fixed-dim/20 -rotate-6 border-l border-r border-outline-variant/10 shadow-sm opacity-40"></div>
-</section>
 <!-- Explore Collection Hero -->
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-xl">
 <div class="grid grid-cols-12 gap-xl items-center">
@@ -614,7 +600,7 @@
             <div>
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
-                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url}" alt="${product.name}" loading="lazy">
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url || 'https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60'}" alt="${product.name}" loading="lazy">
                     <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                         <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                     </button>
@@ -703,7 +689,7 @@
 
                 rowWrapper.innerHTML = `
                     <div class="flex justify-between items-baseline mb-6">
-                        <h3 class="font-headline-lg text-2xl text-primary font-semibold">${category.name}</h3>
+                        <h3 class="font-headline-lg text-2xl text-primary font-semibold">${category.display_name}</h3>
                         <a href="/buyer/category.html?slug=${category.slug}" class="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
                             <span>View All</span>
                             <span class="material-symbols-outlined text-[16px]">chevron_right</span>

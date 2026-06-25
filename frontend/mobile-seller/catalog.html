@@ -76,7 +76,7 @@
       -webkit-font-smoothing: antialiased;
     }
     .status-active { background-color: #3D6B4F; color: white; }
-    .status-paused { background-color: #8FAF82; color: white; }
+    .status-paused { background-color: #7B5EA7; color: white; }
     .status-outofstock { background-color: #E2E8F0; color: #64748b; }
     
     /* Custom scrollbar for desktop sidebar */
@@ -430,7 +430,7 @@
                 <button class="touch-target p-2 text-gray-400 hover:text-forest active:scale-90 focus:outline-[#C8973A] transition-all" title="Edit" onclick="editListing('${l.listing_id}', '${l.status}')">
                   <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
                 </button>
-                <button class="touch-target p-2 ${isPaused ? 'text-forest' : 'text-gray-400 hover:text-forest'} active:scale-90 focus:outline-[#C8973A] transition-all" title="${isPaused ? 'Resume' : 'Pause'}" onclick="togglePause('${l.listing_id}', '${l.status}')">
+                <button class="touch-target p-2 ${isPaused ? 'text-[#7B5EA7]' : 'text-gray-400 hover:text-[#7B5EA7]'} active:scale-90 focus:outline-[#C8973A] transition-all" title="${isPaused ? 'Resume' : 'Pause'}" onclick="togglePause('${l.listing_id}', '${l.status}')">
                   <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${pauseIcon}</svg>
                 </button>
                 <button class="touch-target p-2 text-gray-400 hover:text-red-500 active:scale-90 focus:outline-red-400 transition-all" title="Delete" onclick="deleteListing('${l.listing_id}', '${l.title}')">

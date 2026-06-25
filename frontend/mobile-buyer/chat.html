@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link rel="stylesheet" href="/src/tailwind.css">
   <style>
   .material-symbols-outlined {
@@ -139,6 +140,12 @@
 </head>
 <body class="bg-white text-on-surface font-body h-screen flex flex-col overflow-hidden">
 
+<!-- Offline Banner -->
+<div id="offline-banner" class="hidden bg-[#7B5EA7] text-white text-center py-2 px-4 text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
+  <span class="material-symbols-outlined text-base">wifi_off</span>
+  <span>You are currently offline. Polling paused.</span>
+</div>
+
 <!-- TopNavBar -->
 <header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-[64px] h-20 shrink-0">
   <!-- Brand Logo (Task 59) -->
@@ -160,10 +167,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="./reels.html" class="flex items-center gap-[4px] text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-[4px] text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="./profile.html" class="flex items-center gap-[4px] text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -271,6 +278,9 @@
       <!-- Injected dynamically -->
     </div>
 
+    <!-- Handoff / Pay Actions container -->
+    <div id="chat-actions-container" class="hidden"></div>
+
     <!-- Image Attachment Preview Strip -->
     <div id="attachment-preview-strip" class="bg-white px-6 py-2 border-t border-outline-variant hidden">
       <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-1" id="preview-thumbnails">
@@ -362,6 +372,19 @@
     const toast = document.getElementById('error-toast');
     toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
     toast.classList.remove('translate-y-0', 'opacity-100');
+  }
+
+  async function parseErrorResponse(res, defaultMsg = "An error occurred.") {
+    try {
+      const data = await res.json();
+      return data.error || data.message || defaultMsg;
+    } catch (_) {
+      try {
+        const text = await res.text();
+        if (text && text.length < 150) return text;
+      } catch (_) {}
+      return defaultMsg;
+    }
   }
 
   function openLightbox(url) {
@@ -576,11 +599,12 @@
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/conversations`, {
+      const res = await fetch(`${API_BASE}/api/requests`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to load inbox conversations.");
-      conversations = await res.json();
+      const data = await res.json();
+      conversations = Array.isArray(data) ? data : (data.conversations || []);
       renderSidebarList();
     } catch (e) {
       if (!isSilent) triggerToastError(e.message);
@@ -712,7 +736,7 @@
     
     const token = getAuthToken();
     try {
-      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+      const res = await fetch(`${API_BASE}/api/requests/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to load conversation details.");
@@ -722,19 +746,55 @@
       
       document.getElementById('chat-name').textContent = data.other_party.name;
       const initials = data.other_party.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-      document.getElementById('chat-avatar').textContent = initials;
+      const avatarEl = document.getElementById('chat-avatar');
+      if (avatarEl) {
+        if (data.other_party.avatar_url) {
+          avatarEl.innerHTML = `<img src="${data.other_party.avatar_url.startsWith('http') ? data.other_party.avatar_url : API_BASE + data.other_party.avatar_url}" class="w-full h-full object-cover rounded-full" alt="avatar" />`;
+          avatarEl.classList.remove('bg-sage', 'text-white');
+        } else {
+          avatarEl.textContent = initials;
+          avatarEl.classList.add('bg-sage', 'text-white');
+        }
+      }
       
       const badgesContainer = document.getElementById('chat-context-badges');
-      const typeLabel = data.status === 'completed' ? 'ACCEPTED' : data.status.toUpperCase();
-      const typeBadgeClass = data.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
+      const isAccepted = data.status === 'completed' || data.status === 'accepted_paid';
+      const typeLabel = isAccepted ? 'ACCEPTED & PAID' : data.status.replace(/_/g, ' ').toUpperCase();
+      const typeBadgeClass = isAccepted ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
       
       badgesContainer.innerHTML = `
         <span class="text-[9px] font-eyebrow font-bold ${typeBadgeClass} px-2.5 py-0.5 rounded">${typeLabel}</span>
         <span class="text-[9px] font-mono text-gray-400">#${data.listing.product_name || 'custom'}</span>
       `;
 
+      activeOfferId = data.active_offer ? data.active_offer.id : null;
+
+      const actionArea = document.getElementById('chat-actions-container');
+      if (actionArea) {
+        if (data.status === 'POST_DRAFT_CHOICE') {
+          actionArea.innerHTML = `
+            <div class="flex gap-3 p-4 bg-[#FFFDFB] border-t border-outline-variant/30 w-full justify-center">
+              <button onclick="escalateToSeller()" class="px-5 py-2.5 bg-[#3D6B4F] text-white hover:bg-[#C8973A] text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase shadow-sm">Talk to Seller</button>
+              <button disabled class="px-5 py-2.5 bg-gray-200 text-gray-400 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase cursor-not-allowed" title="Awaiting price confirmation">Pay Now</button>
+            </div>
+          `;
+          actionArea.classList.remove('hidden');
+        } else if (data.status === 'SELLER_FINALIZED') {
+          actionArea.innerHTML = `
+            <div class="flex gap-3 p-4 bg-[#FFFDFB] border-t border-outline-variant/30 w-full justify-center">
+              <button onclick="escalateToSeller()" class="px-5 py-2.5 border border-[#3D6B4F] text-[#3D6B4F] hover:bg-[#3D6B4F]/5 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase">Talk to Seller</button>
+              <button onclick="payFinalizedQuote()" class="px-5 py-2.5 bg-[#3D6B4F] text-white hover:bg-[#C8973A] text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase shadow-sm">Pay Now</button>
+            </div>
+          `;
+          actionArea.classList.remove('hidden');
+        } else {
+          actionArea.innerHTML = '';
+          actionArea.classList.add('hidden');
+        }
+      }
+
       currentMessages = data.messages || [];
-      renderMessagesList(data.active_offer);
+      renderMessagesList(data.active_offer, data.other_party);
       renderRightPanel(data.active_offer, data.order_details, data.messages);
 
       // Automatically trigger opening the right panel when selecting a conversation if there is an active pending offer (desktop only).
@@ -760,7 +820,7 @@
   async function pollMessages(id) {
     const token = getAuthToken();
     try {
-      const res = await fetch(`${API_BASE}/api/conversations/${id}`, {
+      const res = await fetch(`${API_BASE}/api/requests/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -771,8 +831,34 @@
         const container = document.getElementById('messages-container');
         const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 120;
         
+        activeOfferId = data.active_offer ? data.active_offer.id : null;
+
+        const actionArea = document.getElementById('chat-actions-container');
+        if (actionArea) {
+          if (data.status === 'POST_DRAFT_CHOICE') {
+            actionArea.innerHTML = `
+              <div class="flex gap-3 p-4 bg-[#FFFDFB] border-t border-outline-variant/30 w-full justify-center">
+                <button onclick="escalateToSeller()" class="px-5 py-2.5 bg-[#3D6B4F] text-white hover:bg-[#C8973A] text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase shadow-sm">Talk to Seller</button>
+                <button disabled class="px-5 py-2.5 bg-gray-200 text-gray-400 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase cursor-not-allowed" title="Awaiting price confirmation">Pay Now</button>
+              </div>
+            `;
+            actionArea.classList.remove('hidden');
+          } else if (data.status === 'SELLER_FINALIZED') {
+            actionArea.innerHTML = `
+              <div class="flex gap-3 p-4 bg-[#FFFDFB] border-t border-outline-variant/30 w-full justify-center">
+                <button onclick="escalateToSeller()" class="px-5 py-2.5 border border-[#3D6B4F] text-[#3D6B4F] hover:bg-[#3D6B4F]/5 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase">Talk to Seller</button>
+                <button onclick="payFinalizedQuote()" class="px-5 py-2.5 bg-[#3D6B4F] text-white hover:bg-[#C8973A] text-xs font-eyebrow font-bold rounded-lg transition-all tracking-wider uppercase shadow-sm">Pay Now</button>
+              </div>
+            `;
+            actionArea.classList.remove('hidden');
+          } else {
+            actionArea.innerHTML = '';
+            actionArea.classList.add('hidden');
+          }
+        }
+
         currentMessages = data.messages || [];
-        renderMessagesList(data.active_offer);
+        renderMessagesList(data.active_offer, data.other_party);
         renderRightPanel(data.active_offer, data.order_details, data.messages);
 
         if (isNearBottom) {
@@ -782,11 +868,19 @@
     } catch(e) {}
   }
 
-  function renderMessagesList(activeOffer) {
+  function renderMessagesList(activeOffer, otherParty) {
     const container = document.getElementById('messages-container');
     container.innerHTML = '';
     
     let lastDate = null;
+    
+    // Extract dynamic details for other party (seller)
+    const otherInitials = otherParty ? otherParty.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'SD';
+    const otherAvatarUrl = otherParty ? otherParty.avatar_url : null;
+    const avatarHtml = otherAvatarUrl 
+      ? `<img src="${otherAvatarUrl.startsWith('http') ? otherAvatarUrl : API_BASE + otherAvatarUrl}" class="w-full h-full object-cover rounded-full" alt="avatar" />`
+      : otherInitials;
+    const avatarClass = otherAvatarUrl ? "" : "bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner";
     
     currentMessages.forEach(msg => {
       const date = new Date(msg.sent_at);
@@ -797,6 +891,78 @@
         separator.className = "flex justify-center my-4";
         separator.innerHTML = `<span class="bg-[#E8E2D5] px-3 py-1 rounded-full text-[10px] font-eyebrow font-bold text-[#9C8E82] tracking-wider uppercase">${dateStr}</span>`;
         container.appendChild(separator);
+      }
+
+      if (msg.message_type === 'system_notice') {
+        const sysDiv = document.createElement('div');
+        sysDiv.className = "flex justify-center my-3 w-full";
+        sysDiv.innerHTML = `<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">${msg.content}</span>`;
+        container.appendChild(sysDiv);
+        return;
+      }
+
+      if (msg.message_type === 'order_draft_card') {
+        let orderData = {};
+        try {
+          orderData = JSON.parse(msg.content);
+        } catch (e) {
+          console.error(e);
+        }
+        
+        const draftCardDiv = document.createElement('div');
+        draftCardDiv.className = "flex justify-center w-full my-4";
+        
+        const specsList = Object.keys(orderData.specs || {}).map(k => `
+          <div class="flex justify-between text-xs py-1 border-b border-dashed border-gray-100">
+            <span class="text-gray-400 capitalize">${k.replace(/_/g, ' ')}</span>
+            <span class="font-semibold text-primary text-right max-w-[160px] break-words">${orderData.specs[k] || '—'}</span>
+          </div>
+        `).join('');
+
+        const imagesHtml = (orderData.ref_images || []).map(img => `
+          <img src="${img.startsWith('http') ? img : API_BASE + img}" class="w-12 h-12 object-cover rounded border border-gray-200 cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openLightbox('${img.startsWith('http') ? img : API_BASE + img}')" />
+        `).join('');
+
+        const priceLabel = orderData.draft_price 
+          ? `₹${(orderData.draft_price / 100).toFixed(2)}` 
+          : `<span class="text-amber-600 italic">Pending review</span>`;
+
+        const statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
+        const statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+
+        draftCardDiv.innerHTML = `
+          <div class="w-full max-w-[340px] bg-[#FFFDFB] border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative interactive-hover">
+            <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
+              ${statusLabel}
+            </div>
+            <div class="p-5 space-y-3">
+              <p class="font-eyebrow text-[9px] text-gray-400 tracking-wider uppercase font-bold">CUSTOM ORDER SPECIFICATIONS</p>
+              <h4 class="font-display text-sm font-bold text-primary leading-tight">${orderData.product_name || 'Custom order'}</h4>
+              
+              <div class="space-y-1 pt-2">
+                <div class="flex justify-between text-xs py-1 border-b border-dashed border-gray-100">
+                  <span class="text-gray-400">Quantity</span>
+                  <span class="font-semibold text-primary">${orderData.qty || 1}</span>
+                </div>
+                ${specsList}
+              </div>
+
+              ${imagesHtml ? `
+                <div class="space-y-1.5 pt-2">
+                  <p class="text-[9px] font-eyebrow text-gray-400 font-bold uppercase">Reference Photos</p>
+                  <div class="flex gap-2 flex-wrap">${imagesHtml}</div>
+                </div>
+              ` : ''}
+
+              <div class="flex justify-between items-center pt-3 border-t border-outline-variant/30">
+                <span class="text-gray-400 text-xs font-bold">Price</span>
+                <span class="font-mono text-sm text-gold font-bold">${priceLabel}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(draftCardDiv);
+        return;
       }
 
       if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
@@ -864,7 +1030,7 @@
           div.className = "flex justify-start w-full";
           div.innerHTML = `
             <div class="flex items-start gap-3 max-w-[80%]">
-              <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">SD</div>
+              <div class="w-8 h-8 rounded-full shrink-0 ${avatarClass}">${avatarHtml}</div>
               <div class="flex flex-col gap-1">
                 ${cardHtml}
                 <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
@@ -951,7 +1117,7 @@
         }
         div.innerHTML = `
           <div class="flex items-start gap-3 max-w-[80%]">
-            <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">SD</div>
+            <div class="w-8 h-8 rounded-full shrink-0 ${avatarClass}">${avatarHtml}</div>
             <div class="flex flex-col gap-1">
               <div class="bg-[#FFFDFB] p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
                 ${contentHtml}
@@ -1066,26 +1232,147 @@
   async function respondToOffer(offerId, action) {
     const token = getAuthToken();
     try {
-      const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/offer/${offerId}/respond`, {
+      if (action === 'accept') {
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/accept`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to accept offer.");
+        }
+
+        const rpOptions = await res.json();
+
+        if (typeof Razorpay === 'undefined') {
+          console.warn("Razorpay SDK not loaded. Simulating mock payment verification...");
+          const verifyRes = await fetch(`${API_BASE}/api/payments/verify`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              conversation_id: rpOptions.conversation_id || activeConversationId,
+              offer_id: rpOptions.offer_id || offerId,
+              razorpay_order_id: rpOptions.razorpay_order_id,
+              razorpay_payment_id: "pay_mock12345",
+              razorpay_signature: "mock_signature"
+            })
+          });
+
+          if (!verifyRes.ok) {
+            const verifyErr = await verifyRes.json();
+            throw new Error(verifyErr.error || "Mock payment verification failed.");
+          }
+
+          await loadConversation(activeConversationId);
+          await loadConversations(true);
+          return;
+        }
+
+        const options = {
+          key: rpOptions.key_id,
+          amount: rpOptions.amount,
+          currency: rpOptions.currency,
+          name: "Tohfa",
+          description: "Custom / Bulk Order Payment",
+          order_id: rpOptions.razorpay_order_id,
+          handler: async function (response) {
+            try {
+              const verifyRes = await fetch(`${API_BASE}/api/payments/verify`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  conversation_id: rpOptions.conversation_id || activeConversationId,
+                  offer_id: rpOptions.offer_id || offerId,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature
+                })
+              });
+
+              if (!verifyRes.ok) {
+                const verifyErr = await verifyRes.json();
+                throw new Error(verifyErr.error || "Payment verification failed.");
+              }
+
+              await loadConversation(activeConversationId);
+              await loadConversations(true);
+            } catch (err) {
+              triggerToastError(err.message);
+            }
+          },
+          theme: {
+            color: "#3D6B4F"
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+          triggerToastError("Payment failed: " + response.error.description);
+        });
+        rzp.open();
+
+      } else {
+        const note = prompt("Please enter what changes you would like to request (or cancel to keep the offer):");
+        if (note === null) return;
+
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/counter`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ note })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to request changes.");
+        }
+
+        await loadConversation(activeConversationId);
+        await loadConversations(true);
+      }
+    } catch (e) {
+      triggerToastError(e.message);
+    }
+  }
+
+  async function escalateToSeller() {
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/talk-to-seller`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ action })
+        }
       });
-
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.error || "Failed to respond to offer.");
+        throw new Error(errData.error || "Failed to submit request.");
       }
-
       await loadConversation(activeConversationId);
-      await loadConversations(true);
-
     } catch (e) {
       triggerToastError(e.message);
     }
+  }
+
+  async function payFinalizedQuote() {
+    if (!activeOfferId) {
+      triggerToastError("No active offer found to pay.");
+      return;
+    }
+    await respondToOffer(activeOfferId, 'accept');
   }
 
   function requestRevision(productName) {
@@ -1170,28 +1457,28 @@
       for (const file of selectedFiles) {
         const formData = new FormData();
         formData.append('photo', file);
-        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/messages`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
         });
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Failed to upload image.");
+          const errMsg = await parseErrorResponse(res, "Failed to upload image.");
+          throw new Error(errMsg);
         }
       }
 
       if (content) {
         const formData = new FormData();
         formData.append('content', content);
-        const res = await fetch(`${API_BASE}/api/conversations/${activeConversationId}/messages`, {
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/messages`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
         });
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Failed to send text message.");
+          const errMsg = await parseErrorResponse(res, "Failed to send text message.");
+          throw new Error(errMsg);
         }
       }
 
@@ -1322,6 +1609,33 @@
     sidebarPollingInterval = setInterval(() => {
       loadConversations(true);
     }, 8000);
+  });
+
+  window.addEventListener('offline', () => {
+    const banner = document.getElementById('offline-banner');
+    if (banner) banner.classList.remove('hidden');
+    if (activePollingInterval) {
+      clearInterval(activePollingInterval);
+      activePollingInterval = null;
+    }
+    if (sidebarPollingInterval) {
+      clearInterval(sidebarPollingInterval);
+      sidebarPollingInterval = null;
+    }
+  });
+
+  window.addEventListener('online', () => {
+    const banner = document.getElementById('offline-banner');
+    if (banner) banner.classList.add('hidden');
+    loadConversations(true);
+    if (activeConversationId) {
+      loadConversation(activeConversationId);
+    }
+    if (!sidebarPollingInterval) {
+      sidebarPollingInterval = setInterval(() => {
+        loadConversations(true);
+      }, 8000);
+    }
   });
 
   window.addEventListener('beforeunload', () => {

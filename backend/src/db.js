@@ -33,9 +33,7 @@ function translateSql(sql) {
     // Replace date(...) when it is not 'now'
     .replace(/date\((?!'now')([^)]+)\)/gi, "CAST($1 AS date)")
     // Replace INSERT OR IGNORE for specific tables
-    .replace(/INSERT OR IGNORE INTO reel_product_links\b/gi, 'INSERT INTO reel_product_links')
     .replace(/INSERT OR IGNORE INTO follows\b/gi, 'INSERT INTO follows')
-    .replace(/INSERT OR IGNORE INTO reel_listing_links\b/gi, 'INSERT INTO reel_listing_links')
     .replace(/INSERT OR IGNORE INTO store_config\b/gi, 'INSERT INTO store_config')
     .replace(/INSERT OR IGNORE INTO admin_users\b/gi, 'INSERT INTO admin_users')
     // Replace INSERT OR REPLACE INTO zai_mode_state
@@ -53,12 +51,8 @@ function translateSql(sql) {
 
   // ON CONFLICT DO NOTHING for INSERT OR IGNORE
   if (sql.toUpperCase().includes('INSERT OR IGNORE')) {
-    if (sql.toLowerCase().includes('reel_product_links')) {
-      cleanSql += ' ON CONFLICT (reel_id, product_id) DO NOTHING';
-    } else if (sql.toLowerCase().includes('follows')) {
+    if (sql.toLowerCase().includes('follows')) {
       cleanSql += ' ON CONFLICT (follower_id, following_id) DO NOTHING';
-    } else if (sql.toLowerCase().includes('reel_listing_links')) {
-      cleanSql += ' ON CONFLICT (reel_id, listing_id) DO NOTHING';
     } else if (sql.toLowerCase().includes('store_config')) {
       cleanSql += ' ON CONFLICT (seller_id) DO NOTHING';
     } else if (sql.toLowerCase().includes('admin_users')) {
@@ -71,7 +65,7 @@ function translateSql(sql) {
   if (isInsert && !cleanSql.toUpperCase().includes('RETURNING')) {
     if (cleanSql.toLowerCase().includes('store_config') || cleanSql.toLowerCase().includes('review_request_settings')) {
       cleanSql = cleanSql.trim() + ' RETURNING seller_id';
-    } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('reel_listing_links') || cleanSql.toLowerCase().includes('reel_product_links') || cleanSql.toLowerCase().includes('daily_order_tracking')) {
+    } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('daily_order_tracking')) {
       // No single auto-increment id column
     } else {
       cleanSql = cleanSql.trim() + ' RETURNING id';
@@ -441,6 +435,31 @@ async function initDb() {
         PRIMARY KEY (listing_id, subcategory_id)
       )
     `);
+
+    // Concierge Chat alterations
+    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP');
+    await pool.query('ALTER TABLE conversation_messages DROP CONSTRAINT IF EXISTS conversation_messages_sender_role_check');
+    await pool.query("ALTER TABLE conversation_messages ADD CONSTRAINT conversation_messages_sender_role_check CHECK(sender_role IN ('buyer','seller','bot','bot_as_seller'))");
+    await pool.query('ALTER TABLE conversation_messages DROP CONSTRAINT IF EXISTS conversation_messages_message_type_check');
+    await pool.query("ALTER TABLE conversation_messages ADD CONSTRAINT conversation_messages_message_type_check CHECK(message_type IN ('text','photo','system','order_draft_card','system_notice','product_inquiry'))");
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS custom_orders (
+        id SERIAL PRIMARY KEY,
+        thread_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+        qty INTEGER NOT NULL DEFAULT 1,
+        customization_specs JSONB DEFAULT '{}',
+        reference_images TEXT[] DEFAULT '{}',
+        draft_price INTEGER DEFAULT NULL,
+        final_price INTEGER DEFAULT NULL,
+        delivery_days INTEGER DEFAULT NULL,
+        status TEXT NOT NULL DEFAULT 'pending_seller_review',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_seller_status ON conversations(seller_id, status)');
 
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);

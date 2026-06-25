@@ -208,10 +208,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="./reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="./profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -662,7 +662,7 @@
             <div>
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
-                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url}" alt="${product.name}" loading="lazy">
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url || 'https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60'}" alt="${product.name}" loading="lazy">
                     <button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
                         <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                     </button>
@@ -761,7 +761,7 @@
 
                 rowWrapper.innerHTML = `
                     <div class="flex justify-between items-baseline mb-6 px-4">
-                        <h3 class="font-headline-lg text-2xl text-primary font-semibold">${category.name}</h3>
+                        <h3 class="font-headline-lg text-2xl text-primary font-semibold">${category.display_name}</h3>
                         <a href="./category.html?slug=${category.slug}" class="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
                             <span>View All</span>
                             <span class="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -1099,15 +1099,11 @@
         });
     }
 
-    // Initialize — guard against unauthenticated access to auth-required APIs
-    if (!getTohfaToken()) {
-        window.location.replace('/auth/login.html?redirect=' + encodeURIComponent(window.location.href));
-    } else {
-        loadHeroSlides();
-        loadSponsoredProducts();
-        loadForYouProducts();
-        loadCategoryRows();
-    }
+    // Initialize
+    loadHeroSlides();
+    loadSponsoredProducts();
+    loadForYouProducts();
+    loadCategoryRows();
 
     let isLoggedIn = false;
     async function checkAuthState() {

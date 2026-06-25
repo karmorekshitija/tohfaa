@@ -9,9 +9,11 @@ function isCollectedFieldsComplete(requestType, collectedFields, isCustomizable)
   const fields = collectedFields || {};
   if (requestType === 'customization') {
     return (
-      fields.color !== undefined && fields.color !== null && fields.color !== "" &&
-      fields.text !== undefined && fields.text !== null && fields.text !== "" &&
-      fields.quantity !== undefined && fields.quantity !== null
+      fields.quantity !== undefined && fields.quantity !== null &&
+      fields.customization_type !== undefined && fields.customization_type !== null && fields.customization_type !== "" &&
+      fields.color_material !== undefined && fields.color_material !== null && fields.color_material !== "" &&
+      fields.inspiration_reference !== undefined && fields.inspiration_reference !== null && fields.inspiration_reference !== "" &&
+      fields.other_notes !== undefined && fields.other_notes !== null && fields.other_notes !== ""
     );
   } else if (requestType === 'bulk') {
     const baseBulkComplete = (
@@ -21,8 +23,10 @@ function isCollectedFieldsComplete(requestType, collectedFields, isCustomizable)
     if (!baseBulkComplete) return false;
     if (isCustomizable) {
       return (
-        fields.color !== undefined && fields.color !== null && fields.color !== "" &&
-        fields.text !== undefined && fields.text !== null && fields.text !== ""
+        fields.customization_type !== undefined && fields.customization_type !== null && fields.customization_type !== "" &&
+        fields.color_material !== undefined && fields.color_material !== null && fields.color_material !== "" &&
+        fields.inspiration_reference !== undefined && fields.inspiration_reference !== null && fields.inspiration_reference !== "" &&
+        fields.other_notes !== undefined && fields.other_notes !== null && fields.other_notes !== ""
       );
     }
     return true;
@@ -37,15 +41,19 @@ function getMissingFields(requestType, collectedFields, isCustomizable) {
   const fields = collectedFields || {};
   const missing = [];
   if (requestType === 'customization') {
-    if (fields.color === undefined || fields.color === null || fields.color === "") missing.push('color');
-    if (fields.text === undefined || fields.text === null || fields.text === "") missing.push('text (engraving/custom text)');
     if (fields.quantity === undefined || fields.quantity === null) missing.push('quantity');
+    if (fields.customization_type === undefined || fields.customization_type === null || fields.customization_type === "") missing.push('customization_type');
+    if (fields.color_material === undefined || fields.color_material === null || fields.color_material === "") missing.push('color_material');
+    if (fields.inspiration_reference === undefined || fields.inspiration_reference === null || fields.inspiration_reference === "") missing.push('inspiration_reference');
+    if (fields.other_notes === undefined || fields.other_notes === null || fields.other_notes === "") missing.push('other_notes');
   } else if (requestType === 'bulk') {
     if (fields.quantity === undefined || fields.quantity === null) missing.push('quantity');
     if (fields.needed_by_date === undefined || fields.needed_by_date === null || fields.needed_by_date === "") missing.push('needed_by_date');
     if (isCustomizable) {
-      if (fields.color === undefined || fields.color === null || fields.color === "") missing.push('color');
-      if (fields.text === undefined || fields.text === null || fields.text === "") missing.push('text (engraving/custom text)');
+      if (fields.customization_type === undefined || fields.customization_type === null || fields.customization_type === "") missing.push('customization_type');
+      if (fields.color_material === undefined || fields.color_material === null || fields.color_material === "") missing.push('color_material');
+      if (fields.inspiration_reference === undefined || fields.inspiration_reference === null || fields.inspiration_reference === "") missing.push('inspiration_reference');
+      if (fields.other_notes === undefined || fields.other_notes === null || fields.other_notes === "") missing.push('other_notes');
     }
   }
   return missing;
@@ -66,22 +74,22 @@ async function processIntakeMessage(conversation, userMessage, listing) {
     collectedFields = {};
   }
 
-  const isCustomizable = listing.listing_type === 'custom';
+  const isCustomizable = listing.listing_type === 'custom' || listing.listing_type === 'customizable';
   const missingFieldsBefore = getMissingFields(requestType, collectedFields, isCustomizable);
 
   // If no fields are missing, prompt confirmation deterministically
   if (missingFieldsBefore.length === 0) {
     return {
       updatedFields: collectedFields,
-      botResponse: "Would you like to confirm and proceed with these details, or do you have any other questions for the seller?",
+      botResponse: "Got it! I have gathered all the details for your request. Do you have any other questions for the seller, or would you like to confirm and proceed?",
       isComplete: true
     };
   }
 
   // Use Gemini to extract information and generate next question
   const systemInstruction = `
-You are the Tohfa Artisan Assistant, a warm, brief, and genuine bot helping a buyer customize their order or place a bulk order.
-Your task is to analyze the buyer's latest message, extract any information matching the missing fields, and write a friendly response asking for the next missing field.
+You are the seller's assistant (a bot impersonating the seller) helping a buyer customize their order or place a bulk order.
+Your tone should be warm, brief, and genuine. Act as if you are the seller directly gathering details.
 
 Product details:
 - Title: "${listing.title}"
@@ -95,17 +103,24 @@ Missing fields to collect:
 ${missingFieldsBefore.join(", ")}
 
 Instructions:
-1. Identify if the buyer's message provides values for any of the missing fields (color, text, quantity, needed_by_date).
-2. Write a warm and brief follow-up response asking for exactly ONE of the remaining missing fields.
-3. If the user answered a question, acknowledge it warmly.
-4. Output your response as a valid JSON object with:
-   - "extracted_fields": key-value pairs of any fields newly extracted from this user message (e.g. {"color": "Red"}). Only extract fields that are currently missing.
+1. Analyze the buyer's latest message, identify and extract values for any of the missing fields:
+   - "quantity" (e.g. 5)
+   - "customization_type" (e.g. engraving, hand-painted pattern, custom embroidery)
+   - "color_material" (e.g. Crimson silk, Walnut wood, blue clay)
+   - "inspiration_reference" (e.g. "I want a floral pattern similar to my wedding garland" or "none/skipped" if they don't have one)
+   - "other_notes" (e.g. additional text to engrave, special requests)
+   - "needed_by_date" (for bulk orders only)
+2. If the user indicates they don't have an inspiration photo/reference, or wants to skip it, set "inspiration_reference" to "none".
+3. Write a warm and brief follow-up response asking for exactly ONE of the remaining missing fields.
+4. If the user answered a question, acknowledge it warmly as the seller.
+5. Output your response as a valid JSON object with:
+   - "extracted_fields": key-value pairs of any fields newly extracted from this user message (e.g. {"color_material": "Gold brass"}). Only extract fields that are currently missing.
    - "bot_response": your reply to the user.
   `;
 
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-3.5-flash",
+      model: "gemini-1.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -138,7 +153,7 @@ Instructions:
 
     let botResponse = parsed.bot_response;
     if (isComplete) {
-      botResponse = "Got it, I have gathered all the details for your request! Do you have any other questions for the seller, or would you like to confirm and proceed?";
+      botResponse = "Got it! I have gathered all the details for your request. Do you have any other questions for the seller, or would you like to confirm and proceed?";
     }
 
     return {
@@ -149,9 +164,10 @@ Instructions:
   } catch (err) {
     console.error("Gemini intake bot error:", err);
     // Simple fallback in case of errors
+    const nextField = missingFieldsBefore[0];
     return {
       updatedFields: collectedFields,
-      botResponse: "Thank you for the details. Could you please specify any other customization details like color, text, or quantity?",
+      botResponse: `Thanks for sharing. To proceed, could you please tell me about your preferences for: ${nextField}?`,
       isComplete: false
     };
   }

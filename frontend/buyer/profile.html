@@ -71,10 +71,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="/buyer/reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -155,11 +155,7 @@
       <p class="font-title-serif text-on-surface">Orders</p>
       <p id="hub-orders-count" class="text-xs text-outline mt-xs">0 active shipments</p>
     </a>
-    <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/saved-reels.html">
-      <span class="material-symbols-outlined text-secondary mb-md" data-icon="video_library">video_library</span>
-      <p class="font-title-serif text-on-surface">Saved Reels</p>
-      <p id="hub-reels-count" class="text-xs text-outline mt-xs">0 saved reels</p>
-    </a>
+
     <a class="p-lg bg-surface-container-low rounded-xl artisan-card-hover group border border-transparent hover:border-outline-variant" href="/buyer/addresses.html">
       <span class="material-symbols-outlined text-tertiary mb-md" data-icon="location_on">location_on</span>
       <p class="font-title-serif text-on-surface">Addresses</p>
@@ -363,10 +359,7 @@
             ordersCountEl.innerText = `${profile.active_orders_count || 0} active shipments`;
         }
 
-        const reelsCountEl = document.getElementById('hub-reels-count');
-        if (reelsCountEl) {
-            reelsCountEl.innerText = `${profile.saved_reels_count || 0} saved reels`;
-        }
+        
 
         const addressesCountEl = document.getElementById('hub-addresses-count');
         if (addressesCountEl) {

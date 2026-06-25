@@ -85,8 +85,12 @@
       background: #F7F3EC !important;
       transition: all 0.2s ease !important;
     }
-    .edit-btn:hover, .pause-btn:hover {
+    .edit-btn:hover {
       background: #8FAF82 !important;
+      color: white !important;
+    }
+    .pause-btn:hover {
+      background: #7B5EA7 !important;
       color: white !important;
     }
     .delete-btn:hover {
@@ -698,7 +702,7 @@ function rowHTML(l) {
                 <button class="edit-btn text-sage hover:text-forest transition-colors" title="Edit" data-id="${l.listing_id}">
                     <span class="material-symbols-outlined text-lg">edit</span>
                 </button>
-                <button class="pause-btn text-sage hover:text-forest transition-colors" title="${pauseTitle}" data-id="${l.listing_id}" data-status="${l.status}">
+                <button class="pause-btn text-[#7B5EA7] hover:text-[#7B5EA7]/85 transition-colors" title="${pauseTitle}" data-id="${l.listing_id}" data-status="${l.status}">
                     <span class="material-symbols-outlined text-lg">${pauseIcon}</span>
                 </button>
                 <button class="delete-btn text-rose-400 hover:text-rose-600 transition-colors" title="Delete" data-id="${l.listing_id}" data-title="${l.title}">

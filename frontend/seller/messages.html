@@ -71,6 +71,12 @@
 </head>
 <body class="bg-white text-on-surface font-body h-screen flex flex-col overflow-hidden">
 
+<!-- Offline Banner -->
+<div id="offline-banner" class="hidden bg-[#7B5EA7] text-white text-center py-2 px-4 text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
+  <span class="material-symbols-outlined text-base">wifi_off</span>
+  <span>You are currently offline. Polling paused.</span>
+</div>
+
 <seller-layout active-tab="messages">
 <div class="h-[calc(100vh-5rem)] flex relative w-full overflow-hidden bg-white">
   
@@ -240,6 +246,19 @@
         <button type="submit" id="btn-send-offer" class="w-full py-3 bg-primary text-white hover:bg-primary/95 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-widest uppercase">Send Offer</button>
       </form>
 
+      <!-- Finalize Quote Form (Concierge Chat) -->
+      <form id="finalize-quote-form" onsubmit="handleFinalizeQuoteSubmit(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Final Price (₹)</label>
+          <input type="number" id="finalize-price" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all" placeholder="e.g. 1500">
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Delivery Timeline (Days)</label>
+          <input type="number" id="finalize-days" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all" placeholder="e.g. 5">
+        </div>
+        <button type="submit" id="btn-finalize-quote" class="w-full py-3 bg-[#3D6B4F] text-white hover:bg-[#C8973A] text-xs font-eyebrow font-bold rounded-lg transition-all tracking-widest uppercase">Confirm & Finalize Quote</button>
+      </form>
+
       <!-- Read-Only Order Details Card -->
       <div id="accepted-order-card" class="space-y-4 hidden">
         <h4 class="font-eyebrow text-xs text-gray-500 font-bold tracking-widest uppercase border-b border-outline-variant pb-1">Order Details</h4>
@@ -324,6 +343,19 @@
     const toast = document.getElementById('error-toast');
     toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
     toast.classList.remove('translate-y-0', 'opacity-100');
+  }
+
+  async function parseErrorResponse(res, defaultMsg = "An error occurred.") {
+    try {
+      const data = await res.json();
+      return data.error || data.message || defaultMsg;
+    } catch (_) {
+      try {
+        const text = await res.text();
+        if (text && text.length < 150) return text;
+      } catch (_) {}
+      return defaultMsg;
+    }
   }
 
   function openLightbox(url) {
@@ -507,13 +539,16 @@
     listContainer.innerHTML = filtered.map(c => {
       const isActive = c.conversation_id === activeConversationId;
       const activeClass = isActive ? 'bg-parchment border-l-4 border-primary' : 'hover:bg-gray-50';
-      const initials = c.other_party_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const initials = (c.other_party_name || 'User').split(' ').map(n => n[0] || '').join('').substring(0, 2).toUpperCase() || 'U';
       const lastMsgText = c.last_message_preview || "No messages yet";
       const timestamp = c.last_message_at ? formatRelativeTime(c.last_message_at) : '';
       const unreadDot = c.unread_count > 0 ? `<span class="w-2.5 h-2.5 bg-primary rounded-full shrink-0"></span>` : '';
       const tagBadge = c.product_type_tag === 'overflow' 
         ? `<span class="text-[9px] font-eyebrow font-bold bg-sage/20 text-primary px-2 py-0.5 rounded">OVERFLOW</span>`
         : `<span class="text-[9px] font-eyebrow font-bold bg-gold/20 text-gold px-2 py-0.5 rounded">CUSTOM</span>`;
+      const waitingBadge = c.status === 'ESCALATION_PENDING'
+        ? `<span class="text-[9px] font-eyebrow font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded animate-pulse">BUYER WAITING</span>`
+        : '';
 
       return `
         <div onclick="selectConversation(${c.conversation_id})" class="p-4 cursor-pointer flex gap-3 ${activeClass} transition-colors">
@@ -525,7 +560,10 @@
             </div>
             <p class="text-xs text-gray-500 truncate mt-0.5">${lastMsgText}</p>
             <div class="flex items-center justify-between mt-2">
-              ${tagBadge}
+              <div class="flex gap-1.5 items-center">
+                ${tagBadge}
+                ${waitingBadge}
+              </div>
               ${unreadDot}
             </div>
           </div>
@@ -560,7 +598,7 @@
       const data = await res.json();
       
       document.getElementById('chat-name').textContent = data.other_party.name;
-      const initials = data.other_party.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const initials = ((data.other_party && data.other_party.name) || 'User').split(' ').map(n => n[0] || '').join('').substring(0, 2).toUpperCase() || 'U';
       document.getElementById('chat-avatar').textContent = initials;
       
       const badgesContainer = document.getElementById('chat-context-badges');
@@ -583,11 +621,15 @@
       }
 
       const orderForm = document.getElementById('custom-order-form');
+      const finalizeForm = document.getElementById('finalize-quote-form');
       const orderCard = document.getElementById('accepted-order-card');
       const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
       
+      const isConcierge = data.messages.some(m => m.message_type === 'order_draft_card');
+
       if (data.order_details) {
         orderForm.classList.add('hidden');
+        if (finalizeForm) finalizeForm.classList.add('hidden');
         orderCard.classList.remove('hidden');
         document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
         document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
@@ -596,19 +638,37 @@
         
         toggleBtnText.textContent = "Order Details";
       } else {
-        orderForm.classList.remove('hidden');
         orderCard.classList.add('hidden');
-        toggleBtnText.textContent = "Custom Order";
         
-        if (data.active_offer) {
-          document.getElementById('form-offer-id').value = data.active_offer.id;
-          document.getElementById('form-product-name').value = data.active_offer.product_name || '';
-          document.getElementById('form-price').value = data.active_offer.price || '';
-          document.getElementById('form-quantity').value = data.active_offer.quantity || 1;
-          document.getElementById('form-delivery-date').value = data.active_offer.delivery_date || '';
-          document.getElementById('form-custom-notes').value = data.active_offer.custom_notes || '';
-          document.getElementById('form-expiry').value = data.active_offer.expiry_hours || 48;
-          updateCharCounter(document.getElementById('form-custom-notes'));
+        if (isConcierge) {
+          orderForm.classList.add('hidden');
+          if (finalizeForm) {
+            finalizeForm.classList.remove('hidden');
+            if (data.status === 'SELLER_FINALIZED' && data.quoted_price) {
+              document.getElementById('finalize-price').value = data.quoted_price / 100;
+              if (data.active_offer && data.active_offer.delivery_date) {
+                const diffTime = Math.abs(new Date(data.active_offer.delivery_date) - new Date());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('finalize-days').value = diffDays;
+              }
+            }
+          }
+          toggleBtnText.textContent = "Finalize Quote";
+        } else {
+          orderForm.classList.remove('hidden');
+          if (finalizeForm) finalizeForm.classList.add('hidden');
+          toggleBtnText.textContent = "Custom Order";
+          
+          if (data.active_offer) {
+            document.getElementById('form-offer-id').value = data.active_offer.id;
+            document.getElementById('form-product-name').value = data.active_offer.product_name || '';
+            document.getElementById('form-price').value = data.active_offer.price || '';
+            document.getElementById('form-quantity').value = data.active_offer.quantity || 1;
+            document.getElementById('form-delivery-date').value = data.active_offer.delivery_date || '';
+            document.getElementById('form-custom-notes').value = data.active_offer.custom_notes || '';
+            document.getElementById('form-expiry').value = data.active_offer.expiry_hours || 48;
+            updateCharCounter(document.getElementById('form-custom-notes'));
+          }
         }
       }
 
@@ -656,17 +716,31 @@
         }
 
         const orderForm = document.getElementById('custom-order-form');
+        const finalizeForm = document.getElementById('finalize-quote-form');
         const orderCard = document.getElementById('accepted-order-card');
         const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
         
+        const isConcierge = data.messages.some(m => m.message_type === 'order_draft_card');
+
         if (data.order_details) {
           orderForm.classList.add('hidden');
+          if (finalizeForm) finalizeForm.classList.add('hidden');
           orderCard.classList.remove('hidden');
           document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
           document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
           document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
           document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
           toggleBtnText.textContent = "Order Details";
+        } else {
+          if (isConcierge) {
+            orderForm.classList.add('hidden');
+            if (finalizeForm) finalizeForm.classList.remove('hidden');
+            toggleBtnText.textContent = "Finalize Quote";
+          } else {
+            orderForm.classList.remove('hidden');
+            if (finalizeForm) finalizeForm.classList.add('hidden');
+            toggleBtnText.textContent = "Custom Order";
+          }
         }
       }
     } catch(e) {}
@@ -687,6 +761,78 @@
         separator.className = "flex justify-center my-4";
         separator.innerHTML = `<span class="bg-[#E8E2D5] px-3 py-1 rounded-full text-[10px] font-eyebrow font-bold text-[#9C8E82] tracking-wider uppercase">${dateStr}</span>`;
         container.appendChild(separator);
+      }
+
+      if (msg.message_type === 'system_notice') {
+        const sysDiv = document.createElement('div');
+        sysDiv.className = "flex justify-center my-3 w-full";
+        sysDiv.innerHTML = `<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">${msg.content}</span>`;
+        container.appendChild(sysDiv);
+        return;
+      }
+
+      if (msg.message_type === 'order_draft_card') {
+        let orderData = {};
+        try {
+          orderData = JSON.parse(msg.content);
+        } catch (e) {
+          console.error(e);
+        }
+        
+        const draftCardDiv = document.createElement('div');
+        draftCardDiv.className = "flex justify-center w-full my-4";
+        
+        const specsList = Object.keys(orderData.specs || {}).map(k => `
+          <div class="flex justify-between text-xs py-1 border-b border-dashed border-gray-100">
+            <span class="text-gray-400 capitalize">${k.replace(/_/g, ' ')}</span>
+            <span class="font-semibold text-primary text-right max-w-[160px] break-words">${orderData.specs[k] || '—'}</span>
+          </div>
+        `).join('');
+
+        const imagesHtml = (orderData.ref_images || []).map(img => `
+          <img src="${img.startsWith('http') ? img : API_BASE + img}" class="w-12 h-12 object-cover rounded border border-gray-200 cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openLightbox('${img.startsWith('http') ? img : API_BASE + img}')" />
+        `).join('');
+
+        const priceLabel = orderData.draft_price 
+          ? `₹${(orderData.draft_price / 100).toFixed(2)}` 
+          : `<span class="text-amber-600 italic">Pending review</span>`;
+
+        const statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
+        const statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+
+        draftCardDiv.innerHTML = `
+          <div class="w-full max-w-[340px] bg-[#FFFDFB] border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative border-dashed">
+            <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
+              ${statusLabel}
+            </div>
+            <div class="p-5 space-y-3">
+              <p class="font-eyebrow text-[9px] text-gray-400 tracking-wider uppercase font-bold">CUSTOM ORDER SPECIFICATIONS</p>
+              <h4 class="font-display text-sm font-bold text-primary leading-tight">${orderData.product_name || 'Custom order'}</h4>
+              
+              <div class="space-y-1 pt-2">
+                <div class="flex justify-between text-xs py-1 border-b border-dashed border-gray-100">
+                  <span class="text-gray-400">Quantity</span>
+                  <span class="font-semibold text-primary">${orderData.qty || 1}</span>
+                </div>
+                ${specsList}
+              </div>
+
+              ${imagesHtml ? `
+                <div class="space-y-1.5 pt-2">
+                  <p class="text-[9px] font-eyebrow text-gray-400 font-bold uppercase">Reference Photos</p>
+                  <div class="flex gap-2 flex-wrap">${imagesHtml}</div>
+                </div>
+              ` : ''}
+
+              <div class="flex justify-between items-center pt-3 border-t border-outline-variant/30">
+                <span class="text-gray-400 text-xs font-bold">Price</span>
+                <span class="font-mono text-sm text-gold font-bold">${priceLabel}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(draftCardDiv);
+        return;
       }
 
       if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
@@ -782,7 +928,7 @@
         return;
       }
 
-      const isOutgoing = msg.sender_role === 'seller';
+      const isOutgoing = msg.sender_role === 'seller' || msg.sender_role === 'bot_as_seller';
       const div = document.createElement('div');
       
       if (isOutgoing) {
@@ -800,6 +946,8 @@
           </div>
         `;
       } else {
+        const chatNameEl = document.getElementById('chat-name');
+        const initials = (chatNameEl && chatNameEl.textContent) ? chatNameEl.textContent.split(' ').map(n => n[0] || '').join('').substring(0, 2).toUpperCase() || 'BY' : 'BY';
         div.className = "flex justify-start w-full";
         let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>` : '';
         if (msg.image_url) {
@@ -807,7 +955,7 @@
         }
         div.innerHTML = `
           <div class="flex items-start gap-3 max-w-[80%]">
-            <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">BY</div>
+            <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">${initials}</div>
             <div class="flex flex-col gap-1">
               <div class="bg-[#FFFDFB] p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
                 ${contentHtml}
@@ -984,8 +1132,8 @@
           body: formData
         });
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Failed to upload attachment image.");
+          const errMsg = await parseErrorResponse(res, "Failed to upload attachment image.");
+          throw new Error(errMsg);
         }
       }
 
@@ -999,8 +1147,8 @@
           body: formData
         });
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Failed to send text message.");
+          const errMsg = await parseErrorResponse(res, "Failed to send text message.");
+          throw new Error(errMsg);
         }
       }
 
@@ -1080,6 +1228,59 @@
     }
   }
 
+  async function handleFinalizeQuoteSubmit(e) {
+    e.preventDefault();
+    const token = getAuthToken();
+    const priceVal = parseFloat(document.getElementById('finalize-price').value);
+    const daysVal = parseInt(document.getElementById('finalize-days').value, 10);
+
+    if (isNaN(priceVal) || priceVal <= 0) {
+      triggerToastError("Please enter a valid price.");
+      return;
+    }
+    if (isNaN(daysVal) || daysVal <= 0) {
+      triggerToastError("Please enter a valid delivery timeline.");
+      return;
+    }
+
+    const pricePaise = Math.round(priceVal * 100);
+
+    const submitBtn = document.getElementById('btn-finalize-quote');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/finalize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          price: pricePaise,
+          delivery_days: daysVal
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to finalize quote.");
+      }
+
+      // Success: reload
+      toggleRightPanel();
+      document.getElementById('finalize-quote-form').reset();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Confirm & Finalize Quote";
+    }
+  }
+
   // Formatting utilities
   function formatRelativeTime(isoString) {
     const date = new Date(isoString);
@@ -1126,6 +1327,33 @@
     sidebarPollingInterval = setInterval(() => {
       loadConversations(true);
     }, 30000);
+  });
+
+  window.addEventListener('offline', () => {
+    const banner = document.getElementById('offline-banner');
+    if (banner) banner.classList.remove('hidden');
+    if (activePollingInterval) {
+      clearInterval(activePollingInterval);
+      activePollingInterval = null;
+    }
+    if (sidebarPollingInterval) {
+      clearInterval(sidebarPollingInterval);
+      sidebarPollingInterval = null;
+    }
+  });
+
+  window.addEventListener('online', () => {
+    const banner = document.getElementById('offline-banner');
+    if (banner) banner.classList.add('hidden');
+    loadConversations(true);
+    if (activeConversationId) {
+      loadConversation(activeConversationId);
+    }
+    if (!sidebarPollingInterval) {
+      sidebarPollingInterval = setInterval(() => {
+        loadConversations(true);
+      }, 30000);
+    }
   });
 
   window.addEventListener('beforeunload', () => {

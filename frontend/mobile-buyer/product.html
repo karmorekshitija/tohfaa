@@ -139,10 +139,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="./reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="./profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -354,10 +354,10 @@
       <span class="material-symbols-outlined text-[20px]">category</span>
       <span>Category</span>
     </a>
-    <!-- Reels -->
-    <a href="./reels.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-      <span class="material-symbols-outlined text-[20px]">movie</span>
-      <span>Reels</span>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
     </a>
     <!-- Profile -->
     <a href="./profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
@@ -550,7 +550,7 @@
                         if (qtySelector) qtySelector.style.display = 'none';
                         if (addToCartBtn) {
                             addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'chat';
-                            addToCartBtn.querySelector('span:last-child').innerText = 'Chat with Seller';
+                            addToCartBtn.querySelector('span:last-child').innerText = isCustomized ? 'Talk to Seller' : 'Chat with Seller';
                         }
                     } else {
                         if (qtySelector) qtySelector.style.display = 'flex';
@@ -908,11 +908,10 @@
                 btn.disabled = true;
                 btn.querySelector('span:last-child').innerText = 'Starting chat...';
                 try {
-                    const res = await apiClient.post('/conversations', {
+                    const res = await apiClient.post('/requests', {
                         listing_id: Number(productId),
-                        product_type_tag: 'custom',
-                        quantity: qty,
-                        bypass_intake: true
+                        request_type: 'customization',
+                        quantity: qty
                     });
                     const convId = res.data.conversation_id;
                     window.location.href = `./chat.html?conversationId=${convId}`;
@@ -921,7 +920,7 @@
                     window.Toast?.show("Failed to start chat. Please try again.", "error");
                 } finally {
                     btn.disabled = false;
-                    btn.querySelector('span:last-child').innerText = 'Chat with Seller';
+                    btn.querySelector('span:last-child').innerText = 'Talk to Seller';
                 }
                 return;
             }

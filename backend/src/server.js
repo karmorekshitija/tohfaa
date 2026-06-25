@@ -52,17 +52,16 @@ try { db.exec("ALTER TABLE store_config ADD COLUMN away_dates TEXT DEFAULT NULL;
 });
 
 // Ensure upload directories exist
-const reelsDir = path.join(__dirname, '..', 'uploads', 'reels');
 const avatarsDir = path.join(__dirname, '..', 'uploads', 'avatars');
 const sellerBannerDir = path.join(__dirname, '..', 'uploads', 'banners');
 const sellerAboutDir = path.join(__dirname, '..', 'uploads', 'about');
-fs.mkdirSync(reelsDir, { recursive: true });
 fs.mkdirSync(avatarsDir, { recursive: true });
 fs.mkdirSync(sellerBannerDir, { recursive: true });
 fs.mkdirSync(sellerAboutDir, { recursive: true });
 
 const app = express();
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
 const helmet = require('helmet');
 app.use(helmet());
@@ -70,9 +69,15 @@ app.use(helmet());
 const expressRateLimit = require('express-rate-limit');
 app.use(expressRateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 50000, // Significantly increased for local development and testing to prevent hitting limits
   standardHeaders: true,
   legacyHeaders: false,
+  handler: (req, res, next, options) => {
+    res.status(429).json({
+      error: "Too many requests from this IP, please try again after 15 minutes.",
+      code: "RATE_LIMIT_EXCEEDED"
+    });
+  }
 }));
 
 const cors = require('cors');
@@ -101,7 +106,6 @@ const serveStitchScreen = (fileName) => {
 
 app.get('/', serveStitchScreen('20_tohfa_home_feed_-_pure_white_background_code.html'));
 app.get('/category', serveStitchScreen('12_tohfa_category_page_-_desktop_infinite_scroll_code.html'));
-app.get('/reels', serveStitchScreen('23_tohfa_reels_-_artisan_studio_desktop_experience_code.html'));
 app.get('/profile', serveStitchScreen('21_tohfa_buyer_profile_-_artisan_studio_desktop_code.html'));
 app.get('/cart', serveStitchScreen('19_tohfa_cart__checkout_-_artisan_studio_desktop_code.html'));
 app.get('/wishlist', serveStitchScreen('05_tohfa_wishlist_-_desktop_web_app_code.html'));
@@ -137,8 +141,7 @@ function rateLimit(limit, windowMs = 60000) {
     clientLimits[pathKey].count++;
     if (clientLimits[pathKey].count > limit) {
       return res.status(429).json({
-        error: true,
-        message: "Too many requests, please try again later.",
+        error: "Too many requests, please try again later.",
         code: "RATE_LIMIT_EXCEEDED"
       });
     }
@@ -3963,6 +3966,12 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
         db.prepare("INSERT INTO daily_order_tracking (seller_id, date, total_units_ordered) VALUES (?, ?, ?)")
           .run(order.seller_id, todayStr, totalUnits);
       }
+
+      // Notify the seller
+      await db.prepare(`
+        INSERT INTO notifications (user_id, type, message, order_code, is_read, created_at)
+        VALUES (?, 'new_order', ?, ?, 0, datetime('now'))
+      `).run(order.seller_id, `New order received! Order #${order.order_ref}`, order.order_ref);
     });
     
     await verifyTx();
@@ -4167,737 +4176,6 @@ app.delete('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (
   }
 });
 
-// TASK 39: GET /api/reels/feed
-app.get('/api/reels/feed', rateLimit(60), optionalAuthenticateToken, async (req, res) => {
-  const userId = req.user ? req.user.user_id : null;
-  const cursor = req.query.cursor;
-  const limit = parseInt(req.query.limit, 10) || 10;
-
-  try {
-    let sql = `
-      SELECT 
-        r.id, r.video_url, r.thumbnail_url, r.caption, r.duration_secs,
-        r.like_count, r.comment_count, r.save_count, r.seller_id, r.product_id,
-        r.created_at,
-        u.avatar_url AS seller_avatar,
-        COALESCE(sp.shop_name, u.full_name) AS seller_name,
-        p.name AS product_name, p.price_paise AS product_price_paise
-    `;
-
-    const sqlParams = [];
-
-    if (userId) {
-      sql += `,
-        ((SELECT 1 FROM reel_likes WHERE reel_id = r.id AND user_id = ?) IS NOT NULL) AS is_liked,
-        ((SELECT 1 FROM saved_reels WHERE reel_id = r.id AND user_id = ?) IS NOT NULL) AS is_saved,
-        ((SELECT 1 FROM follows WHERE follower_id = ? AND following_id = r.seller_id) IS NOT NULL) AS is_followed
-      `;
-      sqlParams.push(userId, userId, userId);
-    } else {
-      sql += `,
-        0 AS is_liked,
-        0 AS is_saved,
-        0 AS is_followed
-      `;
-    }
-
-    sql += `
-      FROM reels r
-      JOIN users u ON r.seller_id = u.id
-      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      LEFT JOIN products p ON r.product_id = p.id
-      WHERE r.status = 'active'
-    `;
-
-    if (cursor) {
-      const cursorReel = await db.prepare("SELECT created_at, id FROM reels WHERE id = ?").get(cursor);
-      if (cursorReel) {
-        sql += ` AND (r.created_at < ? OR (r.created_at = ? AND r.id < ?))`;
-        sqlParams.push(cursorReel.created_at, cursorReel.created_at, cursorReel.id);
-      }
-    }
-
-    sql += ` ORDER BY r.created_at DESC, r.id DESC LIMIT ?`;
-    sqlParams.push(limit + 1);
-
-    const rows = await db.prepare(sql).all(...sqlParams);
-
-    const hasMore = rows.length > limit;
-    if (hasMore) {
-      rows.pop();
-    }
-
-    const reelIds = rows.map(r => r.id);
-    let productLinks = [];
-    if (reelIds.length > 0) {
-      const placeholders = reelIds.map(() => '?').join(',');
-      productLinks = await db.prepare(`
-        SELECT 
-          rpl.reel_id, rpl.product_id AS id, p.name, p.price_paise,
-          COALESCE(
-            (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
-            (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
-          ) AS image_url
-        FROM reel_product_links rpl
-        JOIN products p ON rpl.product_id = p.id
-        WHERE rpl.reel_id IN (${placeholders})
-      `).all(...reelIds);
-    }
-
-    const productsByReelId = {};
-    for (const link of productLinks) {
-      if (!productsByReelId[link.reel_id]) {
-        productsByReelId[link.reel_id] = [];
-      }
-      productsByReelId[link.reel_id].push({
-        id: link.id,
-        name: link.name,
-        price_paise: link.price_paise,
-        image_url: link.image_url
-      });
-    }
-
-    const reels = rows.map(row => {
-      const r = {
-        id: row.id,
-        video_url: row.video_url,
-        thumbnail_url: row.thumbnail_url,
-        caption: row.caption,
-        duration_secs: row.duration_secs,
-        like_count: row.like_count || 0,
-        comment_count: row.comment_count || 0,
-        save_count: row.save_count || 0,
-        is_liked: !!row.is_liked,
-        is_saved: !!row.is_saved,
-        seller: {
-          id: row.seller_id,
-          seller_name: row.seller_name,
-          avatar_url: row.seller_avatar,
-          is_followed: !!row.is_followed
-        }
-      };
-
-      r.linked_products = productsByReelId[row.id] || [];
-      r.linked_product = r.linked_products.length > 0 ? r.linked_products[0] : null;
-
-      return r;
-    });
-
-    const nextCursor = hasMore && reels.length > 0 ? String(reels[reels.length - 1].id) : null;
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        reels,
-        next_cursor: nextCursor,
-        has_more: hasMore
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching reels feed:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 46: GET /api/reels/saved
-app.get('/api/reels/saved', rateLimit(60), authenticateToken, async (req, res) => {
-  const userId = req.user.user_id;
-  console.log(`[BACKEND] GET /api/reels/saved - user_id: ${userId}`);
-
-  try {
-    const sql = `
-      SELECT 
-        r.id, r.thumbnail_url, r.caption, r.seller_id,
-        COALESCE(sp.shop_name, u.full_name) AS seller_name,
-        sr.saved_at
-      FROM saved_reels sr
-      JOIN reels r ON sr.reel_id = r.id
-      JOIN users u ON r.seller_id = u.id
-      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE sr.user_id = ?
-      ORDER BY sr.saved_at DESC
-    `;
-
-    const rows = await db.prepare(sql).all(userId);
-
-    const savedReels = rows.map(row => ({
-      id: row.id,
-      thumbnail_url: row.thumbnail_url,
-      caption: row.caption,
-      seller_name: row.seller_name,
-      seller_id: row.seller_id,
-      saved_at: safeToISOString(row.saved_at)
-    }));
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        saved_reels: savedReels,
-        count: savedReels.length
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching saved reels:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// GET /api/reels/:id
-app.get('/api/reels/:id', rateLimit(60), optionalAuthenticateToken, async (req, res) => {
-  const userId = req.user ? req.user.user_id : null;
-  const reelId = req.params.id;
-
-  try {
-    let sql = `
-      SELECT 
-        r.id, r.video_url, r.thumbnail_url, r.caption, r.duration_secs,
-        r.like_count, r.comment_count, r.save_count, r.seller_id, r.product_id,
-        r.created_at,
-        u.avatar_url AS seller_avatar,
-        COALESCE(sp.shop_name, u.full_name) AS seller_name,
-        p.name AS product_name, p.price_paise AS product_price_paise
-    `;
-
-    const sqlParams = [];
-
-    if (userId) {
-      sql += `,
-        ((SELECT 1 FROM reel_likes WHERE reel_id = r.id AND user_id = ?) IS NOT NULL) AS is_liked,
-        ((SELECT 1 FROM saved_reels WHERE reel_id = r.id AND user_id = ?) IS NOT NULL) AS is_saved,
-        ((SELECT 1 FROM follows WHERE follower_id = ? AND following_id = r.seller_id) IS NOT NULL) AS is_followed
-      `;
-      sqlParams.push(userId, userId, userId);
-    } else {
-      sql += `,
-        0 AS is_liked,
-        0 AS is_saved,
-        0 AS is_followed
-      `;
-    }
-
-    sql += `
-      FROM reels r
-      JOIN users u ON r.seller_id = u.id
-      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      LEFT JOIN products p ON r.product_id = p.id
-      WHERE r.id = ? AND r.status = 'active'
-    `;
-    sqlParams.push(reelId);
-
-    const row = await db.prepare(sql).get(...sqlParams);
-    if (!row) {
-      return res.status(404).json({
-        error: true,
-        message: "Reel not found",
-        code: "REEL_NOT_FOUND"
-      });
-    }
-
-    const reel = {
-      id: row.id,
-      video_url: row.video_url,
-      thumbnail_url: row.thumbnail_url,
-      caption: row.caption,
-      duration_secs: row.duration_secs,
-      like_count: row.like_count || 0,
-      comment_count: row.comment_count || 0,
-      save_count: row.save_count || 0,
-      is_liked: !!row.is_liked,
-      is_saved: !!row.is_saved,
-      seller: {
-        id: row.seller_id,
-        seller_name: row.seller_name,
-        avatar_url: row.seller_avatar,
-        is_followed: !!row.is_followed
-      }
-    };
-
-    const taggedProducts = await db.prepare(`
-      SELECT 
-        rpl.product_id AS id, p.name, p.price_paise,
-        COALESCE(
-          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
-          (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
-        ) AS image_url
-      FROM reel_product_links rpl
-      JOIN products p ON rpl.product_id = p.id
-      WHERE rpl.reel_id = ?
-    `).all(row.id);
-
-    reel.linked_products = taggedProducts;
-    reel.linked_product = taggedProducts.length > 0 ? taggedProducts[0] : null;
-
-    return res.status(200).json({
-      success: true,
-      data: reel
-    });
-  } catch (err) {
-    console.error('Error fetching single reel:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// Multer configuration for reels upload
-const reelsStorage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    cb(null, reelsDir);
-  },
-  filename: async (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'reel-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-const uploadReel = multer({
-  storage: reelsStorage,
-  limits: { fileSize: 30 * 1024 * 1024 } // 30MB
-});
-
-const uploadReelMiddleware = async (req, res, next) => {
-  uploadReel.single('video')(req, res, async (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({
-          error: true,
-          message: "File exceeds 30MB",
-          code: "FILE_TOO_LARGE"
-        });
-      }
-      return res.status(400).json({
-        error: true,
-        message: err.message,
-        code: "UPLOAD_ERROR"
-      });
-    }
-    next();
-  });
-};
-
-// TASK 40: POST /api/reels
-app.post('/api/reels', rateLimit(60), authenticateToken, uploadReelMiddleware, async (req, res) => {
-  // 1. Verify user role = 'seller'
-  if (req.user.role !== 'seller') {
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
-    return res.status(403).json({
-      error: true,
-      message: "Only sellers can upload reels",
-      code: "FORBIDDEN"
-    });
-  }
-
-  // 2. Validate file exists
-  if (!req.file) {
-    return res.status(400).json({
-      error: true,
-      message: "video is required",
-      code: "VIDEO_REQUIRED"
-    });
-  }
-
-  // 3. Validate product_id / product_ids if provided
-  let productIds = [];
-  if (req.body.product_ids) {
-    if (Array.isArray(req.body.product_ids)) {
-      productIds = req.body.product_ids.map(id => parseInt(id, 10));
-    } else {
-      try {
-        const parsed = JSON.parse(req.body.product_ids);
-        productIds = Array.isArray(parsed) ? parsed.map(id => parseInt(id, 10)) : [parseInt(parsed, 10)];
-      } catch (e) {
-        productIds = req.body.product_ids.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
-      }
-    }
-  } else if (req.body.product_id) {
-    productIds = [parseInt(req.body.product_id, 10)];
-  }
-  productIds = [...new Set(productIds)].filter(id => !isNaN(id));
-
-  if (productIds.length > 0) {
-    for (const pId of productIds) {
-      const product = await db.prepare("SELECT id, seller_id FROM products WHERE id = ? AND status != 'archived'").get(pId);
-      if (!product || product.seller_id !== req.user.user_id) {
-        if (req.file) {
-          fs.unlinkSync(req.file.path);
-        }
-        return res.status(422).json({
-          error: true,
-          message: `product_id ${pId} not found or not owned by this seller`,
-          code: "INVALID_PRODUCT"
-        });
-      }
-    }
-  }
-
-  // 4. Validate duration
-  let durationSecs = 0;
-  try {
-    const ffprobeCmd = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${req.file.path}"`;
-    const durationStr = execSync(ffprobeCmd).toString().trim();
-    durationSecs = Math.round(parseFloat(durationStr)) || 0;
-  } catch (probeErr) {
-    console.error('Error probing video duration:', probeErr);
-  }
-
-  if (durationSecs > 60) {
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
-    return res.status(422).json({
-      error: true,
-      message: "Duration exceeds 60 seconds",
-      code: "DURATION_EXCEEDED"
-    });
-  }
-
-  // 5. Generate thumbnail from first frame (use ffmpeg if available)
-  const thumbnailFilename = path.basename(req.file.filename, path.extname(req.file.filename)) + '-thumb.jpg';
-  const thumbnailPath = path.join(reelsDir, thumbnailFilename);
-  let thumbnailUrl = null;
-  try {
-    const ffmpegCmd = `ffmpeg -i "${req.file.path}" -ss 00:00:01 -vframes 1 "${thumbnailPath}" -y`;
-    execSync(ffmpegCmd);
-    const host = req.get('host');
-    const protocol = req.protocol;
-    thumbnailUrl = `${protocol}://${host}/uploads/reels/${thumbnailFilename}`;
-  } catch (thumbErr) {
-    console.error('Error generating thumbnail with ffmpeg:', thumbErr);
-  }
-
-  try {
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const videoUrl = `${protocol}://${host}/uploads/reels/${req.file.filename}`;
-    const caption = req.body.caption || '';
-    const prodId = productIds.length > 0 ? productIds[0] : null;
-    const sellerId = req.user.user_id;
-
-    const insertResult = await db.prepare(`
-      INSERT INTO reels (seller_id, product_id, caption, video_url, thumbnail_url, duration_secs, status)
-      VALUES (?, ?, ?, ?, ?, ?, 'active')
-    `).run(sellerId, prodId, caption, videoUrl, thumbnailUrl, durationSecs);
-
-    const newReelId = insertResult.lastInsertRowid;
-    if (productIds.length > 0) {
-      const insertLink = db.prepare("INSERT OR IGNORE INTO reel_product_links (reel_id, product_id) VALUES (?, ?)");
-      for (const pId of productIds) {
-        await insertLink.run(newReelId, pId);
-      }
-    }
-
-    const newReel = await db.prepare("SELECT * FROM reels WHERE id = ?").get(newReelId);
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        id: newReel.id,
-        video_url: newReel.video_url,
-        thumbnail_url: newReel.thumbnail_url,
-        caption: newReel.caption,
-        seller_id: newReel.seller_id
-      }
-    });
-  } catch (err) {
-    console.error('Error uploading reel:', err);
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 41: POST /api/reels/:id/like (toggle)
-app.post('/api/reels/:id/like', rateLimit(60), authenticateToken, async (req, res) => {
-  const userId = req.user.user_id;
-  const reelId = req.params.id;
-
-  try {
-    const reel = await db.prepare("SELECT id, like_count FROM reels WHERE id = ?").get(reelId);
-    if (!reel) {
-      return res.status(404).json({
-        error: true,
-        message: "Reel not found",
-        code: "REEL_NOT_FOUND"
-      });
-    }
-
-    const existingLike = await db.prepare("SELECT id FROM reel_likes WHERE reel_id = ? AND user_id = ?").get(reelId, userId);
-    let liked = false;
-    let newLikeCount = reel.like_count || 0;
-
-    if (existingLike) {
-      await db.prepare("DELETE FROM reel_likes WHERE reel_id = ? AND user_id = ?").run(reelId, userId);
-      newLikeCount = Math.max(0, newLikeCount - 1);
-      await db.prepare("UPDATE reels SET like_count = ? WHERE id = ?").run(newLikeCount, reelId);
-      liked = false;
-    } else {
-      await db.prepare("INSERT INTO reel_likes (reel_id, user_id) VALUES (?, ?)").run(reelId, userId);
-      newLikeCount = newLikeCount + 1;
-      await db.prepare("UPDATE reels SET like_count = ? WHERE id = ?").run(newLikeCount, reelId);
-      liked = true;
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        liked,
-        like_count: newLikeCount
-      }
-    });
-  } catch (err) {
-    console.error('Error liking/unliking reel:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 42: GET /api/reels/:id/comments
-app.get('/api/reels/:id/comments', rateLimit(60), async (req, res) => {
-  const reelId = req.params.id;
-  const cursor = req.query.cursor;
-  const limit = parseInt(req.query.limit, 10) || 30;
-
-  try {
-    const reel = await db.prepare("SELECT id, comment_count FROM reels WHERE id = ?").get(reelId);
-    if (!reel) {
-      return res.status(404).json({
-        error: true,
-        message: "Reel not found",
-        code: "REEL_NOT_FOUND"
-      });
-    }
-
-    let sql = `
-      SELECT 
-        rc.id, rc.user_id, rc.body, rc.created_at,
-        u.full_name AS user_name, u.avatar_url
-      FROM reel_comments rc
-      JOIN users u ON rc.user_id = u.id
-      WHERE rc.reel_id = ?
-    `;
-
-    const sqlParams = [reelId];
-
-    if (cursor) {
-      sql += ` AND rc.id < ?`;
-      sqlParams.push(cursor);
-    }
-
-    sql += ` ORDER BY rc.id DESC LIMIT ?`;
-    sqlParams.push(limit + 1);
-
-    const rows = await db.prepare(sql).all(...sqlParams);
-
-    const hasMore = rows.length > limit;
-    if (hasMore) {
-      rows.pop();
-    }
-
-    const comments = rows.map(row => ({
-      id: row.id,
-      user_id: row.user_id,
-      user_name: row.user_name,
-      avatar_url: row.avatar_url,
-      body: row.body,
-      created_at: safeToISOString(row.created_at),
-      time_ago: formatTimeAgo(row.created_at)
-    }));
-
-    const nextCursor = hasMore && comments.length > 0 ? String(comments[comments.length - 1].id) : null;
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        reel_id: parseInt(reelId, 10),
-        comment_count: reel.comment_count || 0,
-        comments,
-        next_cursor: nextCursor,
-        has_more: hasMore
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching reel comments:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 43: POST /api/reels/:id/comments
-app.post('/api/reels/:id/comments', rateLimit(60), authenticateToken, async (req, res) => {
-  const userId = req.user.user_id;
-  const reelId = req.params.id;
-  const bodyStr = req.body.body;
-
-  if (!bodyStr || typeof bodyStr !== 'string' || bodyStr.trim() === '') {
-    return res.status(400).json({
-      error: true,
-      message: "body is required",
-      code: "BODY_REQUIRED"
-    });
-  }
-
-  if (bodyStr.length > 300) {
-    return res.status(400).json({
-      error: true,
-      message: "body exceeds 300 characters",
-      code: "BODY_TOO_LONG"
-    });
-  }
-
-  try {
-    const reel = await db.prepare("SELECT id FROM reels WHERE id = ?").get(reelId);
-    if (!reel) {
-      return res.status(404).json({
-        error: true,
-        message: "Reel not found",
-        code: "REEL_NOT_FOUND"
-      });
-    }
-
-    const insertResult = await db.prepare(`
-      INSERT INTO reel_comments (reel_id, user_id, body)
-      VALUES (?, ?, ?)
-    `).run(reelId, userId, bodyStr);
-
-    await db.prepare("UPDATE reels SET comment_count = comment_count + 1 WHERE id = ?").run(reelId);
-
-    const commentId = insertResult.lastInsertRowid;
-    const comment = await db.prepare(`
-      SELECT 
-        rc.id, rc.body, rc.created_at,
-        u.full_name AS user_name, u.avatar_url
-      FROM reel_comments rc
-      JOIN users u ON rc.user_id = u.id
-      WHERE rc.id = ?
-    `).get(commentId);
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        id: comment.id,
-        user_name: comment.user_name,
-        avatar_url: comment.avatar_url,
-        body: comment.body,
-        created_at: safeToISOString(comment.created_at),
-        time_ago: "Just now"
-      }
-    });
-  } catch (err) {
-    console.error('Error adding reel comment:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 44: POST /api/reels/:id/save
-app.post('/api/reels/:id/save', rateLimit(60), authenticateToken, async (req, res) => {
-  const userId = req.user.user_id;
-  const reelId = req.params.id;
-  console.log(`[BACKEND] POST /api/reels/${reelId}/save - user_id: ${userId}`);
-
-  try {
-    const reel = await db.prepare("SELECT id FROM reels WHERE id = ?").get(reelId);
-    if (!reel) {
-      console.log(`[BACKEND] POST /api/reels/${reelId}/save - Reel not found`);
-      return res.status(404).json({
-        error: true,
-        message: "Reel not found",
-        code: "REEL_NOT_FOUND"
-      });
-    }
-
-    const existing = await db.prepare("SELECT id FROM saved_reels WHERE reel_id = ? AND user_id = ?").get(reelId, userId);
-    if (!existing) {
-      await db.prepare("INSERT INTO saved_reels (reel_id, user_id) VALUES (?, ?)").run(reelId, userId);
-      await db.prepare("UPDATE reels SET save_count = save_count + 1 WHERE id = ?").run(reelId);
-      console.log(`[BACKEND] POST /api/reels/${reelId}/save - Reel saved successfully`);
-    } else {
-      console.log(`[BACKEND] POST /api/reels/${reelId}/save - Reel already saved`);
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        saved: true
-      }
-    });
-  } catch (err) {
-    console.error('Error saving reel:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 45: DELETE /api/reels/:id/save
-app.delete('/api/reels/:id/save', rateLimit(60), authenticateToken, async (req, res) => {
-  const userId = req.user.user_id;
-  const reelId = req.params.id;
-  console.log(`[BACKEND] DELETE /api/reels/${reelId}/save - user_id: ${userId}`);
-
-  try {
-    const reel = await db.prepare("SELECT id FROM reels WHERE id = ?").get(reelId);
-    if (!reel) {
-      console.log(`[BACKEND] DELETE /api/reels/${reelId}/save - Reel not found`);
-      return res.status(404).json({
-        error: true,
-        message: "Reel not found",
-        code: "REEL_NOT_FOUND"
-      });
-    }
-
-    const existing = await db.prepare("SELECT id FROM saved_reels WHERE reel_id = ? AND user_id = ?").get(reelId, userId);
-    if (existing) {
-      await db.prepare("DELETE FROM saved_reels WHERE reel_id = ? AND user_id = ?").run(reelId, userId);
-      await db.prepare("UPDATE reels SET save_count = MAX(0, save_count - 1) WHERE id = ?").run(reelId);
-      console.log(`[BACKEND] DELETE /api/reels/${reelId}/save - Reel unsaved successfully`);
-    } else {
-      console.log(`[BACKEND] DELETE /api/reels/${reelId}/save - Reel was not saved`);
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        saved: false
-      }
-    });
-  } catch (err) {
-    console.error('Error unsaving reel:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
 // TASK 47: GET /api/profile/me
 app.get('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
@@ -4920,7 +4198,6 @@ app.get('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) =>
     const followingCount = (await db.prepare("SELECT COUNT(*) AS count FROM follows WHERE follower_id = ?").get(userId))?.count || 0;
     const followersCount = (await db.prepare("SELECT COUNT(*) AS count FROM follows WHERE following_id = ?").get(userId))?.count || 0;
     const wishlistCount = (await db.prepare("SELECT COUNT(*) AS count FROM wishlists WHERE user_id = ?").get(userId))?.count || 0;
-    const savedReelsCount = (await db.prepare("SELECT COUNT(*) AS count FROM saved_reels WHERE user_id = ?").get(userId))?.count || 0;
     const activeOrdersCount = (await db.prepare("SELECT COUNT(*) AS count FROM orders WHERE buyer_id = ? AND status IN ('Processing', 'Shipped')").get(userId))?.count || 0;
     const addressCount = (await db.prepare("SELECT COUNT(*) AS count FROM addresses WHERE user_id = ?").get(userId))?.count || 0;
 
@@ -4940,7 +4217,6 @@ app.get('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) =>
         following_count: followingCount,
         followers_count: followersCount,
         wishlist_count: wishlistCount,
-        saved_reels_count: savedReelsCount,
         active_orders_count: activeOrdersCount,
         address_count: addressCount,
         created_at: safeToISOString(user.created_at)
@@ -4955,7 +4231,6 @@ app.get('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) =>
     });
   }
 });
-
 // TASK 48: PATCH /api/profile/me
 app.patch('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
@@ -5675,14 +4950,7 @@ const listingPhotoStorage = multer.diskStorage({
 });
 const uploadListingPhoto = multer({ storage: listingPhotoStorage, limits: { fileSize: 50 * 1024 * 1024 } });
 
-// Multer storage for seller reels
-const sellerReelsDir = path.join(__dirname, '..', 'uploads', 'seller-reels');
-fs.mkdirSync(sellerReelsDir, { recursive: true });
-const sellerReelStorage = multer.diskStorage({
-  destination: async (req, file, cb) => cb(null, sellerReelsDir),
-  filename: async (req, file, cb) => cb(null, `reel-${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`)
-});
-const uploadSellerReel = multer({ storage: sellerReelStorage, limits: { fileSize: 500 * 1024 * 1024 } });
+
 
 // Helper: compute listing_score
 function computeListingScore(listing, photoCount) {
@@ -7331,244 +6599,6 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     return res.status(201).json({ success: true, data: { photo_id: photoId, url, is_cover: isCover, is_video: isVideo, sort_order: sortOrder } });
   } catch (err) {
     console.error('POST /api/seller/listings/:id/photos error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-// ============================================================
-// TASK 21: POST/GET/DELETE /api/seller/reels
-// ============================================================
-app.post('/api/seller/reels', rateLimit(20), requireSeller, uploadSellerReel.fields([{ name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), async (req, res) => {
-  try {
-    const sellerId = req.user.user_id;
-    const body = req.body;
-
-    let title = body.title || 'Untitled Reel';
-    let caption = body.caption || '';
-    let videoUrl = body.video_url || '';
-    let thumbnailUrl = body.thumbnail_url || null;
-    let reelType = body.reel_type || 'process';
-    let seasonalTag = body.seasonal_tag || null;
-    let visibility = body.visibility || 'public';
-    let igReminder = body.ig_reminder === true || body.ig_reminder === 'true' ? 1 : 0;
-    let linkedListingIds = [];
-
-    if (req.files) {
-      if (req.files.video && req.files.video[0]) {
-        videoUrl = `/uploads/seller-reels/${req.files.video[0].filename}`;
-      }
-      if (req.files.thumbnail && req.files.thumbnail[0]) {
-        thumbnailUrl = `/uploads/seller-reels/${req.files.thumbnail[0].filename}`;
-      }
-    }
-
-    if (!videoUrl) {
-      return res.status(400).json({ error: true, message: 'Video URL or file required', code: 'VALIDATION_ERROR' });
-    }
-
-    if (body.linked_listing_ids) {
-      if (Array.isArray(body.linked_listing_ids)) {
-        linkedListingIds = body.linked_listing_ids;
-      } else {
-        try {
-          linkedListingIds = JSON.parse(body.linked_listing_ids);
-        } catch (e) {
-          linkedListingIds = [parseInt(body.linked_listing_ids)];
-        }
-      }
-    }
-
-    const primaryProductId = linkedListingIds.length > 0 ? parseInt(linkedListingIds[0], 10) : null;
-
-    const result = await db.prepare(`
-      INSERT INTO reels (seller_id, product_id, title, caption, video_url, thumbnail_url, reel_type, seasonal_tag, visibility, share_to_instagram, ig_reminder)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      sellerId,
-      primaryProductId,
-      title,
-      caption,
-      videoUrl,
-      thumbnailUrl,
-      reelType,
-      seasonalTag,
-      visibility,
-      igReminder,
-      igReminder
-    );
-
-    const reelId = result.lastInsertRowid;
-
-    if (Array.isArray(linkedListingIds)) {
-      const stmt = db.prepare('INSERT OR IGNORE INTO reel_listing_links (reel_id, listing_id) VALUES (?, ?)');
-      const stmtProd = db.prepare('INSERT OR IGNORE INTO reel_product_links (reel_id, product_id) VALUES (?, ?)');
-      for (const lid of linkedListingIds) {
-        if (lid) {
-          const idVal = parseInt(lid, 10);
-          await stmt.run(reelId, idVal);
-          await stmtProd.run(reelId, idVal);
-        }
-      }
-    }
-
-    return res.status(201).json({
-      success: true,
-      data: {
-        id: reelId,
-        reel_id: reelId,
-        title,
-        visibility,
-        video_url: videoUrl,
-        thumbnail_url: thumbnailUrl
-      }
-    });
-  } catch (err) {
-    console.error('POST /api/seller/reels error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-app.get('/api/seller/reels', requireSeller, async (req, res) => {
-  try {
-    const sellerId = req.user.user_id;
-
-    const reelsRows = await db.prepare(`
-      SELECT * FROM reels WHERE seller_id = ? ORDER BY id DESC
-    `).all(sellerId);
-
-    const reels = await Promise.all(reelsRows.map(async r => {
-      const links = await db.prepare(`
-        SELECT l.id, l.title
-        FROM reel_listing_links rll
-        JOIN listings l ON l.id = rll.listing_id
-        WHERE rll.reel_id = ?
-      `).all(r.id);
-
-      return {
-        id: r.id,
-        title: r.title,
-        caption: r.caption || '',
-        video_url: r.video_url || '',
-        thumbnail_url: r.thumbnail_url || null,
-        reel_type: r.reel_type || 'process',
-        seasonal_tag: r.seasonal_tag || null,
-        visibility: r.visibility || 'public',
-        view_count: r.view_count || 0,
-        linked_listings: links
-      };
-    }))
-
-    return res.json({
-      success: true,
-      data: {
-        reels
-      }
-    });
-  } catch (err) {
-    console.error('GET /api/seller/reels error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-app.put('/api/seller/reels/:id', requireSeller, async (req, res) => {
-  try {
-    const reelId = parseInt(req.params.id, 10);
-    const sellerId = req.user.user_id;
-
-    const reel = await db.prepare('SELECT * FROM reels WHERE id = ?').get(reelId);
-    if (!reel) {
-      return res.status(404).json({ error: true, message: 'Reel not found', code: 'NOT_FOUND' });
-    }
-    if (reel.seller_id !== sellerId) {
-      return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
-    }
-
-    const body = req.body;
-    const title = body.title || 'Untitled Reel';
-    const caption = body.caption || '';
-    const visibility = body.visibility || 'public';
-    const reelType = body.reel_type || 'process';
-    const seasonalTag = body.seasonal_tag || null;
-
-    let linkedListingIds = body.linked_listing_ids || body.tagged_listing_ids || [];
-    if (!Array.isArray(linkedListingIds)) {
-      if (typeof linkedListingIds === 'string') {
-        try {
-          linkedListingIds = JSON.parse(linkedListingIds);
-        } catch (e) {
-          linkedListingIds = [parseInt(linkedListingIds, 10)];
-        }
-      } else {
-        linkedListingIds = [parseInt(linkedListingIds, 10)];
-      }
-    }
-
-    const primaryProductId = linkedListingIds.length > 0 ? parseInt(linkedListingIds[0], 10) : null;
-
-    await db.prepare(`
-      UPDATE reels
-      SET title = ?, caption = ?, visibility = ?, reel_type = ?, seasonal_tag = ?, product_id = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `).run(title, caption, visibility, reelType, seasonalTag, primaryProductId, reelId);
-
-    // Sync linked listings / products
-    await db.prepare('DELETE FROM reel_listing_links WHERE reel_id = ?').run(reelId);
-    await db.prepare('DELETE FROM reel_product_links WHERE reel_id = ?').run(reelId);
-
-    if (Array.isArray(linkedListingIds)) {
-      const stmt = db.prepare('INSERT OR IGNORE INTO reel_listing_links (reel_id, listing_id) VALUES (?, ?)');
-      const stmtProd = db.prepare('INSERT OR IGNORE INTO reel_product_links (reel_id, product_id) VALUES (?, ?)');
-      for (const lid of linkedListingIds) {
-        if (lid) {
-          const idVal = parseInt(lid, 10);
-          await stmt.run(reelId, idVal);
-          await stmtProd.run(reelId, idVal);
-        }
-      }
-    }
-
-    return res.json({
-      success: true,
-      data: {
-        id: reelId,
-        title,
-        caption,
-        visibility,
-        reel_type: reelType,
-        seasonal_tag: seasonalTag,
-        product_id: primaryProductId
-      }
-    });
-  } catch (err) {
-    console.error('PUT /api/seller/reels/:id error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
-
-app.delete('/api/seller/reels/:id', requireSeller, async (req, res) => {
-  try {
-    const reelId = parseInt(req.params.id);
-    const sellerId = req.user.user_id;
-
-    const reel = await db.prepare('SELECT * FROM reels WHERE id = ?').get(reelId);
-    if (!reel) {
-      return res.status(404).json({ error: true, message: 'Reel not found', code: 'NOT_FOUND' });
-    }
-    if (reel.seller_id !== sellerId) {
-      return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
-    }
-
-    await db.prepare('DELETE FROM reels WHERE id = ?').run(reelId);
-
-    return res.json({
-      success: true,
-      data: {
-        deleted: true
-      }
-    });
-  } catch (err) {
-    console.error('DELETE /api/seller/reels/:id error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -9632,9 +8662,7 @@ app.post('/api/admin/sellers/:seller_id/ban', authenticateAdminToken, async (req
     const banTransaction = db.transaction(async () => {
       await db.prepare("UPDATE users SET is_banned = 1, updated_at = datetime('now') WHERE id = ?").run(sellerId);
       await db.prepare("UPDATE products SET status = 'archived', updated_at = datetime('now') WHERE seller_id = ?").run(sellerId);
-      try {
-        await db.prepare("UPDATE reels SET status = 'inactive' WHERE seller_id = ?").run(sellerId);
-      } catch (e) {}
+
       const banRow = await db.prepare(`
         INSERT INTO seller_bans (seller_id, banned_by, ban_reason) VALUES (?, ?, ?)
       `).run(sellerId, req.admin.id, ban_reason.trim());
@@ -11494,7 +10522,7 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
     const question_count = questionCountRow ? questionCountRow.count : 0;
     
     const qtyVal = quantity ? parseInt(quantity, 10) : 1;
-    const isBypass = bypass_intake === true || bypass_intake === 'true';
+    const isBypass = bypass_intake === true || bypass_intake === 'true' || question_count === 0;
     
     if (existing) {
       let isIntakeComplete = existing.intake_complete === 1;
@@ -13243,65 +12271,6 @@ app.get('/api/sellers/:id/customizations', async (req, res) => {
   }
 });
 
-// 4. GET /api/sellers/:id/reels - Public Seller reels
-app.get('/api/sellers/:id/reels', optionalAuthenticateToken, async (req, res) => {
-  try {
-    const sellerId = parseInt(req.params.id, 10);
-    if (isNaN(sellerId)) {
-      return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
-    }
-
-    const userId = req.user ? req.user.user_id : null;
-
-    let query = `
-      SELECT 
-        r.id, r.seller_id, r.product_id, r.title, r.caption, r.video_url, r.thumbnail_url,
-        r.view_count, r.like_count, r.comment_count, r.save_count, r.created_at
-    `;
-    if (userId) {
-      query += `, (SELECT 1 FROM reel_likes WHERE user_id = ? AND reel_id = r.id) IS NOT NULL AS is_liked`;
-      query += `, (SELECT 1 FROM saved_reels WHERE user_id = ? AND reel_id = r.id) IS NOT NULL AS is_saved`;
-    } else {
-      query += `, 0 AS is_liked, 0 AS is_saved`;
-    }
-    query += `
-      FROM reels r
-      WHERE r.seller_id = ? AND r.status = 'active' AND r.visibility = 'public'
-      ORDER BY r.created_at DESC
-    `;
-
-    const stmt = db.prepare(query);
-    const rows = userId 
-      ? await stmt.all(userId, userId, sellerId) 
-      : await stmt.all(sellerId);
-
-    const reels = rows.map(r => ({
-      id: r.id,
-      seller_id: r.seller_id,
-      product_id: r.product_id,
-      title: r.title,
-      caption: r.caption,
-      video_url: r.video_url,
-      thumbnail_url: r.thumbnail_url,
-      view_count: r.view_count || 0,
-      like_count: r.like_count || 0,
-      comment_count: r.comment_count || 0,
-      save_count: r.save_count || 0,
-      is_liked: !!r.is_liked,
-      is_saved: !!r.is_saved,
-      created_at: r.created_at
-    }));
-
-    return res.status(200).json({
-      success: true,
-      data: { reels }
-    });
-  } catch (err) {
-    console.error('GET /api/sellers/:id/reels error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
-});
-
 // 5. GET /api/sellers/:id/reviews - Public Seller reviews
 app.get('/api/sellers/:id/reviews', async (req, res) => {
   try {
@@ -14258,7 +13227,45 @@ cron.schedule('0 16 * * *', async () => {
 // Customize & Bulk Order Chat (Gemini Bot) Routes
 // ==========================================
 
-const { processIntakeMessage } = require('./services/customizationBot');
+const { processIntakeMessage, getMissingFields } = require('./services/customizationBot');
+
+async function updateSellerActivity(sellerId) {
+  try {
+    // 1. Update last_active_at
+    await db.prepare("UPDATE users SET last_active_at = datetime('now') WHERE id = ?").run(sellerId);
+
+    // 2. Find pending ESCALATION_PENDING threads
+    const pendingThreads = await db.prepare("SELECT * FROM conversations WHERE seller_id = ? AND status = 'ESCALATION_PENDING'").all(sellerId);
+    
+    if (pendingThreads.length > 0) {
+      const sellerUser = await db.prepare("SELECT full_name FROM users WHERE id = ?").get(sellerId);
+      const sellerProfile = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(sellerId);
+      const sellerName = (sellerProfile && sellerProfile.shop_name) || (sellerUser && sellerUser.full_name) || "Seller";
+
+      const { sendWhatsAppTextMessage } = require('./services/whatsappService');
+
+      for (const conv of pendingThreads) {
+        // Transition to SELLER_LIVE
+        await db.prepare("UPDATE conversations SET status = 'SELLER_LIVE', updated_at = datetime('now') WHERE id = ?").run(conv.id);
+
+        // Post system notice
+        await db.prepare(`
+          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+          VALUES (?, ?, 'seller', 'system_notice', 'Artisan is now online. Live handoff completed.', datetime('now'), 0)
+        `).run(conv.id, sellerId);
+
+        // WhatsApp to buyer
+        const buyer = await db.prepare("SELECT phone FROM users WHERE id = ?").get(conv.buyer_id);
+        if (buyer && buyer.phone) {
+          const msg = `${sellerName} is now online — continue your conversation on Tohfa.`;
+          await sendWhatsAppTextMessage(buyer.phone, msg);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error in updateSellerActivity:", err);
+  }
+}
 
 // 1. POST /api/requests - start customization or bulk request
 app.post('/api/requests', authenticateToken, async (req, res) => {
@@ -14325,15 +13332,21 @@ app.post('/api/requests', authenticateToken, async (req, res) => {
     // Initial bot question
     let initialBotMsg = "";
     if (request_type === 'customization') {
-      initialBotMsg = `Hi! I see you want to customize "${listing.title}". I'll help you get the details sorted. What color would you like for this custom piece?`;
+      initialBotMsg = `Hi! I see you want to customize "${listing.title}". I'll help you get the details sorted. First, what kind of customization are you looking for? (e.g. engraving, hand-painted pattern, custom embroidery)`;
     } else {
-      initialBotMsg = `Hi! I see you are interested in a bulk order of "${listing.title}". Let's get the details sorted. When is your needed-by date, and what's the target quantity?`;
+      initialBotMsg = `Hi! I see you are interested in a bulk order of "${listing.title}". Let's get the details sorted. When is your needed-by date?`;
     }
 
     await db.prepare(`
       INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content)
-      VALUES (?, ?, 'bot', 'text', ?)
+      VALUES (?, ?, 'bot_as_seller', 'text', ?)
     `).run(new_id, seller_id, initialBotMsg);
+
+    // Notify the seller
+    await db.prepare(`
+      INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
+      VALUES (?, 'new_customize_request', 'A buyer started a new custom request for your product', ?, 0, datetime('now'))
+    `).run(seller_id, new_id);
 
     return res.status(200).json({
       conversation_id: new_id,
@@ -14361,9 +13374,12 @@ app.get('/api/requests/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: "Forbidden", code: "FORBIDDEN" });
     }
 
-    if (req.user.user_id === conversation.seller_id && (conversation.status === 'awaiting_seller' || conversation.status === 'pending_seller_review')) {
-      await db.prepare("UPDATE conversations SET status = 'seller_negotiating', updated_at = datetime('now') WHERE id = ?").run(id);
-      conversation.status = 'seller_negotiating';
+    if (req.user.user_id === conversation.seller_id) {
+      await updateSellerActivity(req.user.user_id);
+      if (['awaiting_seller', 'pending_seller_review', 'ESCALATION_PENDING', 'POST_DRAFT_CHOICE'].includes(conversation.status)) {
+        await db.prepare("UPDATE conversations SET status = 'SELLER_LIVE', updated_at = datetime('now') WHERE id = ?").run(id);
+        conversation.status = 'SELLER_LIVE';
+      }
     }
 
     const listing = await db.prepare("SELECT id, title, base_price, cover_photo_url FROM listings WHERE id = ?").get(conversation.listing_id);
@@ -14523,6 +13539,7 @@ app.get('/api/requests', authenticateToken, async (req, res) => {
       if (parseInt(seller_id, 10) !== userId) {
         return res.status(403).json({ error: "Forbidden", code: "FORBIDDEN" });
       }
+      await updateSellerActivity(userId);
       rows = await db.prepare(`
         SELECT c.*, l.title as product_title, l.cover_photo_url, u.full_name as other_party_name
         FROM conversations c
@@ -14542,11 +13559,51 @@ app.get('/api/requests', authenticateToken, async (req, res) => {
       `).all(userId);
     }
 
-    const conversations = rows.map(c => {
+    const conversations = await Promise.all(rows.map(async c => {
       let parsedFields = {};
       try {
         parsedFields = typeof c.collected_fields === 'string' ? JSON.parse(c.collected_fields) : (c.collected_fields || {});
       } catch(e) {}
+
+      // Get last message info
+      const lastMsg = await db.prepare(`
+        SELECT sender_id, message_type, content, sent_at
+        FROM conversation_messages
+        WHERE conversation_id = ?
+        ORDER BY id DESC LIMIT 1
+      `).get(c.id);
+
+      let last_message_preview = "No messages yet";
+      let last_message_at = c.created_at;
+
+      if (lastMsg) {
+        last_message_at = lastMsg.sent_at;
+        if (lastMsg.message_type === 'photo') {
+          last_message_preview = '[Photo]';
+        } else if (lastMsg.message_type === 'system') {
+          last_message_preview = '[System Message]';
+        } else {
+          last_message_preview = lastMsg.content || "";
+        }
+      }
+
+      // Get unread count
+      const unreadRow = await db.prepare(`
+        SELECT COUNT(*) as count
+        FROM conversation_messages
+        WHERE conversation_id = ? AND sender_id != ? AND is_read = 0
+      `).get(c.id, req.user.user_id);
+      const unread_count = unreadRow ? unreadRow.count : 0;
+
+      // Handle shop name override if buyer
+      let other_party_name = c.other_party_name || "";
+      const isBuyer = (req.user.user_id === c.buyer_id);
+      if (isBuyer) {
+        const sellerProfile = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(c.seller_id);
+        if (sellerProfile && sellerProfile.shop_name) {
+          other_party_name = sellerProfile.shop_name;
+        }
+      }
 
       return {
         id: c.id,
@@ -14559,15 +13616,21 @@ app.get('/api/requests', authenticateToken, async (req, res) => {
         request_type: c.request_type || 'customization',
         collected_fields: parsedFields,
         other_party: {
-          name: c.other_party_name
+          name: other_party_name
         },
+        other_party_name: other_party_name,
         listing: {
           product_name: c.product_title,
           cover_image_url: c.cover_photo_url
         },
+        product_name: c.product_title,
+        product_type_tag: c.product_type_tag || 'custom',
+        last_message_preview,
+        last_message_at,
+        unread_count,
         updated_at: c.updated_at
       };
-    });
+    }));
 
     return res.status(200).json({ conversations });
   } catch (err) {
@@ -14594,9 +13657,12 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
     const sender_role = (req.user.user_id === conversation.buyer_id) ? 'buyer' : 'seller';
     const other_party_id = (req.user.user_id === conversation.buyer_id) ? conversation.seller_id : conversation.buyer_id;
 
-    if (sender_role === 'seller' && (conversation.status === 'pending_seller_review' || conversation.status === 'awaiting_seller')) {
-      await db.prepare("UPDATE conversations SET status = 'seller_negotiating', updated_at = datetime('now') WHERE id = ?").run(id);
-      conversation.status = 'seller_negotiating';
+    if (sender_role === 'seller') {
+      await updateSellerActivity(req.user.user_id);
+      if (['pending_seller_review', 'awaiting_seller', 'ESCALATION_PENDING', 'POST_DRAFT_CHOICE'].includes(conversation.status)) {
+        await db.prepare("UPDATE conversations SET status = 'SELLER_LIVE', updated_at = datetime('now') WHERE id = ?").run(id);
+        conversation.status = 'SELLER_LIVE';
+      }
     }
 
     let message_type = 'text';
@@ -14620,9 +13686,40 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
 
     if (sender_role === 'buyer' && (conversation.status === 'bot_collecting' || conversation.status === 'intake_in_progress')) {
       const listing = await db.prepare("SELECT * FROM listings WHERE id = ?").get(conversation.listing_id);
-      const botResult = await processIntakeMessage(conversation, content, listing);
+      
+      let collectedFields = {};
+      try {
+        collectedFields = typeof conversation.collected_fields === 'string'
+          ? JSON.parse(conversation.collected_fields)
+          : (conversation.collected_fields || {});
+      } catch (e) {
+        collectedFields = {};
+      }
 
-      const nextStatus = botResult.isComplete ? 'pending_seller_review' : 'bot_collecting';
+      // Add image to inspiration_reference if uploaded
+      if (image_url) {
+        if (!Array.isArray(collectedFields.inspiration_reference)) {
+          collectedFields.inspiration_reference = [];
+        }
+        collectedFields.inspiration_reference.push(image_url);
+        conversation.collected_fields = JSON.stringify(collectedFields);
+      }
+
+      const userText = content || (image_url ? "I uploaded a photo" : "");
+      const botResult = await processIntakeMessage(conversation, userText, listing);
+
+      // Merge newly updated fields
+      const finalFields = { ...collectedFields, ...botResult.updatedFields };
+      if (image_url) {
+        if (!Array.isArray(finalFields.inspiration_reference)) {
+          finalFields.inspiration_reference = [];
+        }
+        if (!finalFields.inspiration_reference.includes(image_url)) {
+          finalFields.inspiration_reference.push(image_url);
+        }
+      }
+
+      const nextStatus = botResult.isComplete ? 'POST_DRAFT_CHOICE' : 'bot_collecting';
       const intakeCompleteVal = botResult.isComplete ? 1 : 0;
       
       let intakeSummaryVal = null;
@@ -14631,10 +13728,10 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
         const sellerProfile = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(conversation.seller_id);
         const sellerName = (sellerProfile && sellerProfile.shop_name) || (sellerUser && sellerUser.full_name) || "Seller";
         
-        const qaList = Object.keys(botResult.updatedFields).map(k => ({
+        const qaList = Object.keys(finalFields).map(k => ({
           question: k,
-          answer_type: k === 'photos' ? 'photo_upload' : 'free_text',
-          answer: botResult.updatedFields[k]
+          answer_type: k === 'inspiration_reference' ? 'photo_upload' : 'free_text',
+          answer: finalFields[k]
         }));
 
         intakeSummaryVal = JSON.stringify({
@@ -14650,20 +13747,63 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
         UPDATE conversations 
         SET collected_fields = ?, status = ?, intake_complete = ?, intake_summary = ?, updated_at = datetime('now')
         WHERE id = ?
-      `).run(JSON.stringify(botResult.updatedFields), nextStatus, intakeCompleteVal, intakeSummaryVal, id);
-
-      await db.prepare(`
-        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
-        VALUES (?, ?, 'bot', 'text', ?, datetime('now'), 0)
-      `).run(id, conversation.seller_id, botResult.botResponse);
+      `).run(JSON.stringify(finalFields), nextStatus, intakeCompleteVal, intakeSummaryVal, id);
 
       if (botResult.isComplete) {
+        // Create a row in custom_orders
+        const qty = finalFields.quantity || 1;
+        const specs = {
+          customization_type: finalFields.customization_type || "",
+          color_material: finalFields.color_material || "",
+          other_notes: finalFields.other_notes || ""
+        };
+        const refImages = Array.isArray(finalFields.inspiration_reference) ? finalFields.inspiration_reference : [];
+
+        const ordInfo = await db.prepare(`
+          INSERT INTO custom_orders (thread_id, qty, customization_specs, reference_images, status)
+          VALUES (?, ?, ?, ?, 'pending_seller_review')
+        `).run(id, qty, JSON.stringify(specs), refImages);
+
+        const customOrderId = ordInfo.lastInsertRowid;
+
+        // Bot message: Order drafted
+        const botAlert = `I've put together a custom order based on what you shared — this'll be reviewed by ${listing.title}'s artisan and they'll get back to you shortly.`;
+        await db.prepare(`
+          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+          VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'), 0)
+        `).run(id, conversation.seller_id, botAlert);
+
+        // Render card
+        const cardData = JSON.stringify({
+          custom_order_id: customOrderId,
+          product_name: listing.title,
+          qty: qty,
+          specs: specs,
+          ref_images: refImages,
+          draft_price: null,
+          status: 'pending_seller_review'
+        });
+
+        await db.prepare(`
+          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+          VALUES (?, ?, 'bot_as_seller', 'order_draft_card', ?, datetime('now'), 0)
+        `).run(id, conversation.seller_id, cardData);
+
+        // Notify seller
         await db.prepare(`
           INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
           VALUES (?, 'new_customize_request', 'A buyer completed the custom request details', ?, 0, datetime('now'))
         `).run(conversation.seller_id, id);
+
+      } else {
+        // Just reply next question
+        await db.prepare(`
+          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+          VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'), 0)
+        `).run(id, conversation.seller_id, botResult.botResponse);
       }
     } else {
+      await db.prepare("UPDATE conversations SET updated_at = datetime('now') WHERE id = ?").run(id);
       await db.prepare(`
         INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
         VALUES (?, 'new_message', 'You have a new message', ?, 0, datetime('now'))
@@ -14878,6 +14018,168 @@ app.post('/api/requests/:id/counter', authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error('Error countering quote:', err);
+    return res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// 9. POST /api/requests/:id/talk-to-seller - handoff & escalation
+app.post('/api/requests/:id/talk-to-seller', authenticateToken, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const conversation = await db.prepare("SELECT * FROM conversations WHERE id = ?").get(id);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found", code: "NOT_FOUND" });
+    }
+    if (req.user.user_id !== conversation.buyer_id) {
+      return res.status(403).json({ error: "Forbidden", code: "FORBIDDEN" });
+    }
+
+    // Check if seller is online (last_active_at within 5 minutes)
+    const seller = await db.prepare("SELECT last_active_at, full_name FROM users WHERE id = ?").get(conversation.seller_id);
+    const sellerProfile = await db.prepare("SELECT shop_name, whatsapp_number FROM seller_profiles WHERE user_id = ?").get(conversation.seller_id);
+    const sellerName = (sellerProfile && sellerProfile.shop_name) || (seller && seller.full_name) || "Seller";
+    
+    let isOnline = false;
+    if (seller && seller.last_active_at) {
+      const activeMs = new Date(seller.last_active_at.replace(' ', 'T') + 'Z').getTime();
+      isOnline = (Date.now() - activeMs) < (5 * 60 * 1000); // 5 minutes
+    }
+
+    if (isOnline) {
+      // Transition to SELLER_LIVE
+      await db.prepare("UPDATE conversations SET status = 'SELLER_LIVE', updated_at = datetime('now') WHERE id = ?").run(id);
+      
+      // Post system notice
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+        VALUES (?, ?, 'seller', 'system_notice', 'Artisan is now online. Live handoff completed.', datetime('now'), 0)
+      `).run(id, conversation.seller_id);
+
+      return res.status(200).json({ status: 'SELLER_LIVE', online: true });
+    } else {
+      // Transition to ESCALATION_PENDING
+      await db.prepare("UPDATE conversations SET status = 'ESCALATION_PENDING', updated_at = datetime('now') WHERE id = ?").run(id);
+
+      // Bot notice
+      const botResponse = `Your request will be handled shortly — we'll let you know as soon as ${sellerName} is online.`;
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+        VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'), 0)
+      `).run(id, conversation.seller_id, botResponse);
+
+      // Send WhatsApp ping to seller
+      if (sellerProfile && sellerProfile.whatsapp_number) {
+        const listing = await db.prepare("SELECT title FROM listings WHERE id = ?").get(conversation.listing_id);
+        const prodName = listing ? listing.title : "your product";
+        const message = `A buyer wants to discuss a custom order for ${prodName}. Open Tohfa Seller app to respond.`;
+        const { sendWhatsAppTextMessage } = require('./services/whatsappService');
+        await sendWhatsAppTextMessage(sellerProfile.whatsapp_number, message);
+      }
+
+      return res.status(200).json({ status: 'ESCALATION_PENDING', online: false });
+    }
+  } catch (err) {
+    console.error('Error in talk-to-seller:', err);
+    return res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// 10. POST /api/requests/:id/finalize - finalize quote and notify buyer
+app.post('/api/requests/:id/finalize', authenticateToken, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { price, delivery_days } = req.body;
+
+    if (price === undefined || price === null || !Number.isInteger(price) || price <= 0) {
+      return res.status(400).json({ error: "Price must be a positive integer in paise", code: "VALIDATION_ERROR" });
+    }
+    if (delivery_days === undefined || delivery_days === null || !Number.isInteger(delivery_days) || delivery_days <= 0) {
+      return res.status(400).json({ error: "Delivery days must be a positive integer", code: "VALIDATION_ERROR" });
+    }
+
+    const conversation = await db.prepare("SELECT * FROM conversations WHERE id = ?").get(id);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found", code: "NOT_FOUND" });
+    }
+    if (req.user.user_id !== conversation.seller_id) {
+      return res.status(403).json({ error: "Forbidden", code: "FORBIDDEN" });
+    }
+
+    const listing = await db.prepare("SELECT title FROM listings WHERE id = ?").get(conversation.listing_id);
+    const prodName = listing ? listing.title : "Custom Order";
+
+    const sellerUser = await db.prepare("SELECT full_name FROM users WHERE id = ?").get(conversation.seller_id);
+    const sellerProfile = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(conversation.seller_id);
+    const sellerName = (sellerProfile && sellerProfile.shop_name) || (sellerUser && sellerUser.full_name) || "Seller";
+
+    // Update custom_orders status
+    await db.prepare(`
+      UPDATE custom_orders 
+      SET final_price = ?, delivery_days = ?, status = 'finalized', updated_at = datetime('now')
+      WHERE thread_id = ?
+    `).run(price, delivery_days, id);
+
+    // Create custom_offers entry to connect with standard checkout flow
+    const expires_at = new Date(Date.now() + 48 * 3600 * 1000).toISOString();
+    const delDate = new Date(Date.now() + delivery_days * 24 * 3600 * 1000).toISOString().split('T')[0];
+
+    const offerInfo = await db.prepare(`
+      INSERT INTO custom_offers (conversation_id, seller_id, buyer_id, price, delivery_date, status, expires_at, product_name)
+      VALUES (?, ?, ?, ?, ?, 'pending', ?, ?)
+    `).run(id, conversation.seller_id, conversation.buyer_id, price, delDate, expires_at, prodName);
+    const offerId = offerInfo.lastInsertRowid;
+
+    // Transition status to SELLER_FINALIZED
+    await db.prepare("UPDATE conversations SET status = 'SELLER_FINALIZED', quoted_price = ?, updated_at = datetime('now') WHERE id = ?").run(price, id);
+
+    // Post system notice
+    const finalizedText = `Custom order finalized by artisan: ₹${(price / 100).toFixed(2)} with ${delivery_days} days delivery.`;
+    await db.prepare(`
+      INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, offer_id, type, sent_at, is_read)
+      VALUES (?, ?, 'seller', 'system_notice', ?, ?, 'offer', datetime('now'), 0)
+    `).run(id, conversation.seller_id, finalizedText, offerId);
+
+    // Update draft card content (overwrite/re-render card as finalized)
+    const specs = await db.prepare("SELECT customization_specs, reference_images, qty FROM custom_orders WHERE thread_id = ?").get(id);
+    const parsedSpecs = specs ? (typeof specs.customization_specs === 'string' ? JSON.parse(specs.customization_specs) : specs.customization_specs) : {};
+    const refImages = specs ? specs.reference_images : [];
+    const qty = specs ? specs.qty : 1;
+    
+    const cardData = JSON.stringify({
+      custom_order_id: null,
+      product_name: prodName,
+      qty: qty,
+      specs: parsedSpecs,
+      ref_images: refImages,
+      draft_price: price,
+      status: 'finalized'
+    });
+    
+    await db.prepare(`
+      INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+      VALUES (?, ?, 'bot_as_seller', 'order_draft_card', ?, datetime('now'), 0)
+    `).run(id, conversation.seller_id, cardData);
+
+    // Send WhatsApp to buyer
+    const buyer = await db.prepare("SELECT phone FROM users WHERE id = ?").get(conversation.buyer_id);
+    if (buyer && buyer.phone) {
+      const specSummary = Object.keys(parsedSpecs).map(k => `${k}: ${parsedSpecs[k]}`).join(', ') || "custom details";
+      const payLink = `http://localhost:5001/buyer/chat.html?conversationId=${id}&payNow=true`;
+      
+      const whatsappMsg = `${sellerName} has finalized your custom order for ${prodName}!\n` +
+                          `Quantity: ${qty}\n` +
+                          `Specs: ${specSummary}\n` +
+                          `Delivery: ${delivery_days} days\n` +
+                          `Price: ₹${(price / 100).toFixed(2)}\n` +
+                          `Pay Link: ${payLink}`;
+      
+      const { sendWhatsAppTextMessage } = require('./services/whatsappService');
+      await sendWhatsAppTextMessage(buyer.phone, whatsappMsg);
+    }
+
+    return res.status(200).json({ success: true, message: "Order finalized and buyer notified", offer_id: offerId });
+  } catch (err) {
+    console.error('Error finalizing order:', err);
     return res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });

@@ -203,9 +203,9 @@
                 <span class="material-symbols-outlined text-[20px]">category</span>
                 <span>Category</span>
             </a>
-            <a href="./reels.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
-                <span class="material-symbols-outlined text-[20px]">movie</span>
-                <span>Reels</span>
+            <a href="./zipgift.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+                <span class="material-symbols-outlined text-[20px]">bolt</span>
+                <span>ZipGift</span>
             </a>
             <a href="./profile.html" class="flex items-center gap-1 text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
                 <span class="material-symbols-outlined text-[20px]">person</span>
@@ -326,7 +326,7 @@
         <div class="mt-12 border-b border-outline-variant flex gap-4 md:gap-8 overflow-x-auto scrollbar-hide select-none">
             <button id="tab-catalog" onclick="switchTab('catalog')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold flex-shrink-0">Catalog</button>
             <button id="tab-customised" onclick="switchTab('customised')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Customised</button>
-            <button id="tab-reels" onclick="switchTab('reels')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Reels</button>
+            
             <button id="tab-reviews" onclick="switchTab('reviews')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">Reviews</button>
             <button id="tab-about" onclick="switchTab('about')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary flex-shrink-0">About</button>
         </div>
@@ -373,15 +373,7 @@
                 </div>
             </div>
 
-            <!-- 3. Reels Tab Panel -->
-            <div id="panel-reels" class="tab-panel animate-fade-in hidden">
-                <div id="reels-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-gutter">
-                    <!-- Loaded dynamically -->
-                </div>
-                <div id="reels-empty" class="py-16 text-center text-on-surface-variant font-label-md hidden">
-                    No reels shared by this artisan yet.
-                </div>
-            </div>
+            
 
             <!-- 4. Reviews Tab Panel -->
             <div id="panel-reviews" class="tab-panel animate-fade-in hidden">
@@ -545,7 +537,7 @@
                 <ul class="flex flex-col gap-2 text-sm text-on-surface-variant">
                     <li><a class="hover:text-primary transition-colors" href="./our-story.html">Our Story</a></li>
                     <li><a class="hover:text-primary transition-colors" href="#">Artisans</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="./reels.html">Reels Feed</a></li>
+                    <li><a class="hover:text-primary transition-colors" href="./zipgift.html">ZipGift</a></li>
                 </ul>
             </div>
             <div class="md:col-span-3">
@@ -963,7 +955,7 @@
             activeTab = tabName;
             
             // Visual Active States
-            const tabs = ['catalog', 'customised', 'reels', 'reviews', 'about'];
+            const tabs = ['catalog', 'customised',  'reviews', 'about'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 if (el) {
@@ -987,8 +979,6 @@
                     await loadCatalog();
                 } else if (tabName === 'customised') {
                     await loadCustomisations();
-                } else if (tabName === 'reels') {
-                    await loadReels();
                 } else if (tabName === 'reviews') {
                     await loadReviews();
                 } else if (tabName === 'about') {
@@ -1338,51 +1328,7 @@
             }
         }
 
-        // 3. Reels Loader
-        async function loadReels() {
-            const grid = document.getElementById('reels-grid');
-            const empty = document.getElementById('reels-empty');
-            grid.innerHTML = '';
-            
-            const res = await apiClient.get(`/sellers/${sellerId}/reels`);
-            if (res.data && res.data.success) {
-                const reels = res.data.data.reels || [];
-                if (reels.length === 0) {
-                    empty.classList.remove('hidden');
-                    return;
-                }
-                empty.classList.add('hidden');
-                
-                reels.forEach(r => {
-                    const card = document.createElement('div');
-                    card.className = "group relative aspect-[9/16] bg-tertiary rounded-xl overflow-hidden cursor-pointer shadow-sm border border-outline-variant/20";
-                    card.onclick = () => window.location.href = `./reels.html?id=${r.id}`;
-                    
-                    card.innerHTML = `
-                        <img src="${r.thumbnail_url || 'https://placehold.co/360x640/2b2c29/ffffff?text=Reel'}" alt="${r.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 text-white">
-                            <h4 class="font-headline-sm text-sm text-white font-bold mb-1 line-clamp-1">${r.title || 'Artisan Reel'}</h4>
-                            <div class="flex items-center gap-3 text-[10px] opacity-90 font-label-sm">
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs fill-icon text-white">favorite</span>
-                                    <span>${formatCount(r.like_count)}</span>
-                                </span>
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs fill-icon text-white">visibility</span>
-                                    <span>${formatCount(r.view_count)}</span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div class="bg-white/20 backdrop-blur-md p-3 rounded-full text-white shadow-lg border border-white/30">
-                                <span class="material-symbols-outlined text-3xl fill-icon">play_arrow</span>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            }
-        }
+        
 
         // 4. Reviews Loader (With Searching)
         async function loadReviews(searchVal = '') {
