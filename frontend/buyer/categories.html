@@ -25,6 +25,62 @@
             background-color: #FFFFFF;
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8);
         }
+        /* Editorial category layout styles */
+        .dot-grid-overlay {
+            background-image: radial-gradient(circle, #255338 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.08;
+        }
+        .category-card-editorial {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+        .category-card-editorial:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(31, 27, 21, 0.14);
+        }
+        .category-card-editorial img {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .category-card-editorial:hover img {
+            transform: scale(1.08);
+        }
+        .bulk-card-editorial {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+        .bulk-card-editorial:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 48px rgba(4,12,8,0.35);
+        }
+        .bulk-card-editorial img {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .bulk-card-editorial:hover img {
+            transform: scale(1.06);
+        }
+        .bulk-gradient-overlay {
+            background: linear-gradient(145deg, rgba(4,12,8,0.88) 0%, rgba(10,26,17,0.68) 40%, rgba(26,48,37,0.38) 75%, transparent 100%);
+        }
+        .frosted-badge {
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.28);
+        }
+        .categories-editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 320px;
+            gap: 24px;
+        }
+        @media (max-width: 1024px) {
+            .categories-editorial-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .categories-editorial-grid { grid-template-columns: 1fr; grid-auto-rows: 260px; }
+            .bulk-span-2 { grid-column: span 1 !important; grid-row: span 1 !important; }
+            .wide-span-2 { grid-column: span 1 !important; }
+        }
     </style>
 </head>
 <body class="bg-white text-on-surface min-h-screen font-body-md overflow-x-hidden">
@@ -86,26 +142,55 @@
 </header>
 
     <main class="relative">
-        <!-- Hero Section -->
+        <!-- Hero Section — editorial style -->
         <section class="px-margin-desktop pt-xl pb-lg text-center relative overflow-hidden">
-
+            <div class="absolute inset-0 dot-grid-overlay pointer-events-none"></div>
             <div class="relative z-10">
-                <p class="font-label-caps text-label-caps text-[#C8973A] mb-sm">BROWSE BY CRAFT</p>
-                <h1 class="font-display-hero text-display-hero text-primary mb-md">Find your gift <span class="font-normal italic">✦</span></h1>
-                <p class="font-body-md text-body-md text-on-surface-variant max-w-lg mx-auto">Handmade with care, found with love.</p>
+                <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#C8973A;display:block;margin-bottom:12px;">BROWSE BY CRAFT</span>
+                <h1 style="font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,56px);font-style:italic;font-weight:700;color:#1f1b15;line-height:1.1;letter-spacing:-0.02em;margin-bottom:16px;">Find your gift ✦</h1>
+                <p style="font-family:'DM Sans',sans-serif;font-size:18px;color:#414942;max-width:480px;margin:0 auto;">Handmade with care, found with love.</p>
             </div>
         </section>
 
-        <!-- Category Grid Section -->
+        <!-- Category Editorial Grid — Bulk tile always first -->
         <section class="px-margin-desktop pb-xl">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg auto-rows-[320px]" id="categories-grid-container">
-                <!-- Loading State -->
-                <div class="col-span-full flex flex-col items-center justify-center py-20">
-                    <div class="relative w-10 h-10">
-                        <div class="absolute inset-0 border-4 border-primary/10 rounded-full"></div>
-                        <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <!-- Bulk Orders Hero Card -->
+            <div onclick="window.location.href='/buyer/bulk.html'" class="bulk-card-editorial relative rounded-2xl cursor-pointer mb-6" style="height:340px;border-radius:18px;">
+                <!-- Full-bleed background image -->
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-nKoLNKY0QI9MzRM1uw0JF089sUq7PQjGNR1pW7jfieV5gyAyGKtaCAbQ6oDqDrHd4YPk_ChLd3NFY2ctGe7R85F2P2-_0fXAzPTdyyhfMPtquaB1BPm9nCTURZeM5rJal8gJhAgIzikTUJrPSptlF4jbBZmYqw7p6Eu-Z2S2Cu4M76qCCK9LiF_FS-G1U1rFcRrj8rEKCN9M6wOL8DQ3UY_WmTr5TDwu6UhL-muiMX2z5jqlwjCGpR8Txk40c0ACp8vzpMuN11c"
+                  alt="Bulk Orders — Premium artisan gift boxes"
+                  style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:18px;"
+                >
+                <!-- Amber edge accent -->
+                <div style="position:absolute;top:0;bottom:0;left:0;width:5px;background:#C8973A;border-radius:18px 0 0 18px;z-index:20;"></div>
+                <!-- Gradient overlay -->
+                <div class="bulk-gradient-overlay" style="position:absolute;inset:0;border-radius:18px;z-index:10;"></div>
+                <!-- Content -->
+                <div style="position:relative;z-index:20;height:100%;padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;">
+                    <div>
+                        <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.2em;color:#C8973A;display:block;margin-bottom:16px;">✦ BULK ORDERS</span>
+                        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-style:italic;color:#fff;font-weight:700;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,0.4);margin-bottom:12px;">Bulk Orders</h2>
+                        <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,0.88);font-size:17px;">For large quantities &amp; gifting — studios, cafes &amp; corporate</p>
                     </div>
-                    <p class="mt-4 text-outline text-sm italic">Unveiling workshops...</p>
+                    <div>
+                        <button onclick="event.stopPropagation();window.location.href='/buyer/bulk.html'" style="background:#C8973A;color:#fff;border:none;padding:14px 32px;border-radius:999px;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s ease;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">
+                            Explore Category →
+                        </button>
+                        <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,0.55);margin-top:12px;">Available across all crafts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Categories Editorial Grid — populated by JS below -->
+            <div class="categories-editorial-grid" id="categories-grid-container">
+                <!-- Loading State -->
+                <div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 0;">
+                    <div style="position:relative;width:40px;height:40px;">
+                        <div style="position:absolute;inset:0;border:4px solid rgba(37,83,56,0.1);border-radius:50%;"></div>
+                        <div style="position:absolute;inset:0;border:4px solid #255338;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                    </div>
+                    <p style="margin-top:16px;font-family:'Playfair Display',serif;font-style:italic;color:#717972;font-size:14px;">Unveiling workshops...</p>
                 </div>
             </div>
         </section>
@@ -119,6 +204,9 @@
             </div>
         </div>
     </main>
+    <style>
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 
     <!-- Footer -->
     <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
@@ -145,8 +233,7 @@
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Careers</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Press &amp; Media</a></li>
+        
       </ul>
     </div>
     <!-- For Sellers -->
@@ -155,8 +242,7 @@
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller FAQs</a></li>
-        <li style="padding-top:8px;"><a href="#" style="font-family:'DM Sans',sans-serif;color:#C9972C;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:8px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><span class="material-symbols-outlined" style="font-size:18px;">verified</span>Become a Founding Seller</a></li>
+        
       </ul>
     </div>
     <!-- For Buyers -->
@@ -177,7 +263,7 @@
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Privacy Policy</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms of Service</a></li>
+        <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
     </div>
   </div>
@@ -374,118 +460,26 @@
                 }
 
                 const clickAction = `onclick="window.location.href='category.html?slug=${slugToUse}'"`;
-
-                if (slot.type === 'featured') {
-                  const countText = count !== null ? `${count} items` : '128 items';
-                  html += `
-                    <div ${clickAction} class="lg:col-span-2 lg:row-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                      <div class="absolute bottom-0 left-0 p-lg text-white">
-                        <span class="font-label-caps text-[10px] tracking-widest opacity-80 uppercase block mb-1">${slot.badge}</span>
-                        <h3 class="font-title-serif text-[32px] mb-md">${slot.displayName}</h3>
-                        <div class="flex items-center gap-md">
-                          <button class="bg-primary hover:bg-primary-container text-white px-lg py-sm rounded-full text-body-md transition-colors">Explore Collection</button>
-                          <span class="font-data-price text-white/80">${countText}</span>
-                        </div>
-                      </div>
+                // Unified editorial card for all slot types
+                let colSpan = 'grid-column:span 1;';
+                let rowSpan = '';
+                if (slot.type === 'featured') { colSpan = 'grid-column:span 2;'; rowSpan = 'grid-row:span 2;'; }
+                if (slot.type === 'wide' || slot.type === 'wide-split') { colSpan = 'grid-column:span 2;'; }
+                const countText = count !== null ? `${count} makes` : '';
+                html += `
+                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="${colSpan}${rowSpan}border-radius:14px;">
+                    <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.1) 55%,transparent 100%);border-radius:14px;"></div>
+                    ${slot.icon ? `<div style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.18);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#fff;font-size:18px;">${slot.icon}</span></div>` : ''}
+                    <div style="position:absolute;bottom:0;left:0;padding:${slot.type === 'featured' ? '32px' : '20px'};color:#fff;">
+                      ${slot.badge ? `<span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.75;display:block;margin-bottom:6px;">${slot.badge}</span>` : ''}
+                      <h3 style="font-family:'Playfair Display',serif;font-size:${slot.type === 'featured' ? '28px' : '20px'};font-style:italic;line-height:1.2;margin-bottom:${countText ? '6px' : '0'};">${slot.displayName}</h3>
+                      ${countText ? `<span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.72;">${countText}</span>` : ''}
+                      ${slot.type === 'featured' ? `<div style="margin-top:14px;"><button style="background:#255338;color:#fff;border:none;padding:10px 24px;border-radius:999px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Explore Collection</button></div>` : ''}
+                      ${(slot.type === 'wide' || slot.type === 'wide-split') && slot.description ? `<p style="font-family:'DM Sans',sans-serif;font-size:13px;opacity:0.82;margin-top:4px;max-width:400px;">${slot.description}</p>` : ''}
                     </div>
-                  `;
-                } else if (slot.type === 'wide') {
-                  const countText = count !== null ? `${count} available` : '32 available';
-                  html += `
-                    <div ${clickAction} class="lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <div class="absolute inset-0 paper-texture opacity-30"></div>
-                      <div class="grid grid-cols-2 h-full">
-                        <div class="p-lg flex flex-col justify-center">
-                          <h3 class="font-title-serif text-headline-lg text-primary mb-sm">${slot.displayName}</h3>
-                          <p class="font-body-md text-on-surface-variant mb-md leading-relaxed">${slot.description}</p>
-                          <span class="font-data-price text-secondary">${countText}</span>
-                        </div>
-                        <div class="relative overflow-hidden">
-                          <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                        </div>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 left-4 text-tertiary/20 text-4xl">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                } else if (slot.type === 'wide-split') {
-                  html += `
-                    <div ${clickAction} class="lg:col-span-2 relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-tertiary/5 cursor-pointer font-['DM_Sans']">
-                      <div class="absolute inset-0 paper-texture opacity-30"></div>
-                      <div class="flex h-full items-center p-xl gap-xl">
-                        <div class="w-1/2">
-                          <h3 class="font-headline-lg text-2xl text-primary italic mb-sm">${slot.displayName}</h3>
-                          <p class="font-body-md text-xs text-on-surface-variant mb-md leading-relaxed">${slot.description}</p>
-                          <button class="border border-primary text-primary hover:bg-primary hover:text-white px-lg py-xs rounded-full transition-all font-body-md text-xs">${slot.buttonText || 'Explore'}</button>
-                        </div>
-                        <div class="w-1/2 relative h-full">
-                          <img class="w-full h-full object-cover rounded-lg rotate-3 shadow-md group-hover:rotate-0 transition-transform duration-500" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                        </div>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute bottom-4 right-4 text-tertiary-container/30 text-6xl">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                } else if (slot.type === 'bottom-overlay') {
-                  const countText = count !== null ? `${count} makes` : '91 prints';
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                      <div class="absolute bottom-4 left-4 text-white">
-                        <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
-                        <p class="font-data-price text-[11px]">${countText}</p>
-                      </div>
-                    </div>
-                  `;
-                } else if (slot.type === 'gradient-overlay') {
-                  const countText = count !== null ? `${count} pieces` : '24 pieces';
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                      <div class="absolute inset-0 flex flex-col justify-end p-md bg-gradient-to-t from-primary/40 to-transparent">
-                        <h3 class="font-title-serif text-title-serif text-white">${slot.displayName}</h3>
-                        <p class="font-data-price text-[11px] text-white/80">${countText}</p>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute top-4 right-4 text-white/50 text-3xl">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                } else if (slot.type === 'skincare-badge') {
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                      <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                      <div class="absolute top-4 left-4">
-                        <div class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
-                          <h3 class="font-title-serif text-body-md text-primary">${slot.displayName}</h3>
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                } else if (slot.type === 'woodcraft-center') {
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-[#F7F3EC] cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                      <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <h3 class="font-title-serif text-title-serif text-white border-y border-white/30 py-2 px-4">${slot.displayName}</h3>
-                      </div>
-                    </div>
-                  `;
-                } else {
-                  // Standard card
-                  const countText = count !== null ? `${count} makes` : '84 makes';
-                  html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant ${slot.bg || 'bg-secondary-container/10'} cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
-                      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                      <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
-                        <h3 class="font-title-serif text-title-serif">${slot.displayName}</h3>
-                        <p class="font-data-price text-[11px] opacity-90 mt-1">${countText}</p>
-                      </div>
-                      ${slot.icon ? `<span class="material-symbols-outlined absolute top-4 right-4 text-white/40">${slot.icon}</span>` : ''}
-                    </div>
-                  `;
-                }
+                  </div>
+                `;
               });
 
               // Now append any other categories from the API that were not mapped to the main 10 slots
@@ -497,12 +491,12 @@
                   const imageToUse = cat.image_url || "https://placehold.co/400x400/f4ede3/516447?text=Handcrafted";
 
                   html += `
-                    <div ${clickAction} class="relative rounded-xl overflow-hidden group hover-lift border border-outline-variant bg-secondary-container/10 cursor-pointer font-['DM_Sans']">
-                      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="${imageToUse}" alt="${displayName}" loading="lazy">
-                      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                      <div class="absolute inset-0 flex flex-col justify-center items-center text-white">
-                        <h3 class="font-title-serif text-title-serif">${displayName}</h3>
-                        <p class="font-data-price text-[11px] opacity-90 mt-1">${count} makes</p>
+                    <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="border-radius:14px;">
+                      <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${displayName}" loading="lazy">
+                      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.70) 0%,transparent 55%);border-radius:14px;"></div>
+                      <div style="position:absolute;bottom:0;left:0;padding:20px;color:#fff;">
+                        <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;">${displayName}</h3>
+                        <span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.75;">${count} makes</span>
                       </div>
                     </div>
                   `;

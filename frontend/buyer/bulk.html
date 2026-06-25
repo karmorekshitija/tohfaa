@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <meta charset="utf-8"/>
+  <title>Bulk Orders | Tohfa — Artisan Gifting at Scale</title>
+  <meta name="description" content="Order handcrafted artisan products in bulk for studios, cafes, corporates and events. Bespoke tiered pricing and dedicated consultation."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #fff8f3; color: #1f1b15; }
+    .dot-grid { background-image: radial-gradient(#3d6b4f 0.5px, transparent 0.5px); background-size: 14px 14px; }
+    .bulk-hero-gradient { background: linear-gradient(135deg, #091510 0%, #1a3025 50%, #3d6b4f 100%); }
+    .ribbon-gradient { background: linear-gradient(135deg, #C8973A 0%, #8FAF82 100%); }
+    .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #8FAF82; border-radius: 10px; }
+    .cat-pill { transition: all 0.2s ease; cursor: pointer; }
+    .cat-pill:hover { background: #255338; color: #fff; }
+    .cat-pill.active { background: #255338; color: #fff; }
+    .product-card { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(31,27,21,0.12); }
+    .cta-btn { transition: all 0.2s ease; }
+    .cta-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 640px) { .bulk-hero-cols { flex-direction: column !important; } }
+  </style>
+</head>
+<body>
+  <!-- ══ TopNavBar ══ -->
+  <header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+    <div class="flex items-center flex-1">
+      <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">Tohfa<span class="text-[#C8973A]">.</span></a>
+    </div>
+    <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+      <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px]">
+        <span class="material-symbols-outlined text-[20px]">home</span><span>Home</span>
+      </a>
+      <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px]">
+        <span class="material-symbols-outlined text-[20px]">category</span><span>Category</span>
+      </a>
+      <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px]">
+        <span class="material-symbols-outlined text-[20px]">bolt</span><span>ZipGift</span>
+      </a>
+      <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px]">
+        <span class="material-symbols-outlined text-[20px]">person</span><span>Profile</span>
+      </a>
+    </nav>
+    <div class="flex items-center justify-end flex-1 gap-lg">
+      <a href="/buyer/categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+        <span class="material-symbols-outlined">search</span>
+      </a>
+      <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">favorite</span>
+        <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      </a>
+      <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+      </a>
+      <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+        <span class="material-symbols-outlined">notifications</span>
+        <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      </a>
+      <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+    </div>
+  </header>
+
+  <main style="max-width:1280px;margin:0 auto;padding:0 24px 80px;">
+
+    <!-- Breadcrumb -->
+    <div style="padding:20px 0 0;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#717972;">
+      <a href="/buyer/categories.html" style="color:#255338;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">← Categories</a>
+      <span>/</span>
+      <span style="color:#1f1b15;font-weight:500;">Bulk Orders</span>
+    </div>
+
+    <!-- ══ Hero Bulk Banner ══ -->
+    <section style="position:relative;height:220px;border-radius:20px;overflow:hidden;display:flex;align-items:center;margin-top:24px;" class="bulk-hero-gradient">
+      <!-- Dot grid -->
+      <div class="dot-grid" style="position:absolute;inset:0;opacity:0.12;transform:rotate(-8deg) scale(1.4);pointer-events:none;"></div>
+      <!-- Amber left accent -->
+      <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:#C8973A;z-index:10;"></div>
+      <!-- Glow -->
+      <div style="position:absolute;right:-60px;bottom:-60px;width:320px;height:320px;background:rgba(200,151,58,0.12);filter:blur(80px);border-radius:50%;pointer-events:none;"></div>
+      <!-- Inventory icon -->
+      <div style="position:absolute;right:32px;top:0;bottom:0;display:flex;align-items:center;opacity:0.08;pointer-events:none;">
+        <span class="material-symbols-outlined" style="font-size:180px;color:#fff;font-variation-settings:'FILL' 1;">inventory_2</span>
+      </div>
+      <!-- Content -->
+      <div style="position:relative;z-index:10;padding:0 56px;display:flex;justify-content:space-between;align-items:center;width:100%;" class="bulk-hero-cols" style="">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;color:#C8973A;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.2em;margin-bottom:14px;">
+            <span>✦</span><span>BULK ORDERS</span>
+          </div>
+          <h1 style="font-family:'Playfair Display',serif;font-size:clamp(28px,3.5vw,42px);font-style:italic;color:#fff;line-height:1.1;font-weight:700;margin-bottom:10px;">Bulk Orders</h1>
+          <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,0.75);font-size:16px;max-width:520px;">For studios, cafes, corporate events &amp; large-scale gifting. Bespoke artisan consultation &amp; tiered wholesale pricing.</p>
+        </div>
+        <button id="contact-btn" class="cta-btn" style="background:#C8973A;color:#fff;border:none;padding:14px 28px;border-radius:10px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0;">
+          Contact Our Team
+          <span class="material-symbols-outlined" style="font-size:18px;">arrow_right_alt</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ══ Why Bulk at Tohfa ══ -->
+    <section style="margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;" id="why-bulk-grid">
+      <div style="background:#fff;border:1px solid #e0dbd3;border-radius:16px;padding:24px;">
+        <span class="material-symbols-outlined" style="color:#C8973A;font-size:28px;font-variation-settings:'FILL' 1;">workspace_premium</span>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:#1f1b15;margin:12px 0 6px;">Tiered Pricing</h3>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:#717972;line-height:1.6;">Volume-based discounts across all categories. The more you order, the better your rate.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #e0dbd3;border-radius:16px;padding:24px;">
+        <span class="material-symbols-outlined" style="color:#C8973A;font-size:28px;font-variation-settings:'FILL' 1;">support_agent</span>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:#1f1b15;margin:12px 0 6px;">Dedicated Consultation</h3>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:#717972;line-height:1.6;">A personal artisan advisor to help curate the perfect collection for your event or brand.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #e0dbd3;border-radius:16px;padding:24px;">
+        <span class="material-symbols-outlined" style="color:#C8973A;font-size:28px;font-variation-settings:'FILL' 1;">verified</span>
+        <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:#1f1b15;margin:12px 0 6px;">Branded Packaging</h3>
+        <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:#717972;line-height:1.6;">Custom labels, ribbons, and packaging options to reflect your brand identity perfectly.</p>
+      </div>
+    </section>
+
+    <!-- ══ Category Filter Tabs ══ -->
+    <section style="margin-top:40px;position:sticky;top:80px;z-index:30;background:rgba(255,248,243,0.96);backdrop-filter:blur(10px);padding:16px 0;border-bottom:1px solid rgba(193,201,192,0.4);">
+      <div style="display:flex;align-items:center;gap:12px;overflow-x:auto;padding-bottom:4px;" class="custom-scrollbar no-scrollbar">
+        <button class="cat-pill active" id="pill-all" onclick="filterBulkProducts('all')" style="padding:8px 20px;border-radius:999px;border:1.5px solid #255338;background:#255338;color:#fff;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap;">All Crafts</button>
+        <div style="width:1px;height:24px;background:#c1c9c0;flex-shrink:0;"></div>
+        <div id="category-pills" style="display:flex;gap:10px;overflow-x:auto;" class="no-scrollbar"></div>
+        <div style="width:1px;height:24px;background:#c1c9c0;flex-shrink:0;"></div>
+        <select id="sort-select" style="appearance:none;background:transparent;border:1.5px solid #c1c9c0;border-radius:8px;padding:8px 32px 8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:#414942;cursor:pointer;outline:none;min-width:160px;">
+          <option>Sort: Featured</option>
+          <option>Price: Low to High</option>
+          <option>Newest First</option>
+          <option>Min. Quantity</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ══ Products Grid ══ -->
+    <section style="margin-top:32px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+        <span style="color:#C8973A;font-size:18px;">★</span>
+        <h2 style="font-family:'Playfair Display',serif;font-size:22px;color:#255338;">Available for Bulk</h2>
+      </div>
+      <div id="bulk-products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px;">
+        <!-- Loading -->
+        <div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:80px 0;">
+          <div style="position:relative;width:44px;height:44px;">
+            <div style="position:absolute;inset:0;border:4px solid rgba(37,83,56,0.12);border-radius:50%;"></div>
+            <div style="position:absolute;inset:0;border:4px solid #255338;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+          </div>
+          <p style="margin-top:16px;font-family:'Playfair Display',serif;font-style:italic;color:#717972;">Curating artisan makes...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Contact CTA ══ -->
+    <section style="margin-top:56px;background:linear-gradient(135deg,#091510,#1a3025);border-radius:20px;padding:48px 56px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;">
+      <div>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;color:#C8973A;letter-spacing:0.2em;display:block;margin-bottom:12px;">✦ GET STARTED</span>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,32px);font-style:italic;color:#fff;margin-bottom:8px;">Ready to place a bulk order?</h2>
+        <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,0.7);font-size:15px;">Our team will reach out within 24 hours to discuss your requirements.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;flex-shrink:0;">
+        <button id="contact-cta-btn" class="cta-btn" style="background:#C8973A;color:#fff;border:none;padding:14px 32px;border-radius:10px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:0.08em;cursor:pointer;">
+          Contact Our Team →
+        </button>
+        <a href="/buyer/categories.html" style="text-align:center;font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,0.5);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">
+          ← Back to all categories
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══ Footer (verbatim from categories.html) ══ -->
+  <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
+    <div style="position:absolute;bottom:-10%;right:-5%;opacity:0.04;pointer-events:none;user-select:none;">
+      <span class="material-symbols-outlined" style="font-size:600px;color:white;">local_florist</span>
+    </div>
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(1,1fr);gap:48px;margin-bottom:80px;position:relative;z-index:10;" class="tohfa-footer-grid">
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-style:italic;color:#C9972C;margin-bottom:16px;">Tohfa.</h2>
+        <p style="font-family:'DM Sans',sans-serif;color:#F7F2E8;margin-bottom:8px;font-weight:500;">Thoughtful Gifting, Made Effortless.</p>
+        <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;margin-bottom:32px;line-height:1.6;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+        <div style="display:flex;gap:16px;">
+          <a href="#" style="width:40px;height:40px;border:1px solid #C9972C;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C9972C;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.background='#C9972C';this.style.color='#1E3D0F'" onmouseout="this.style.background='transparent';this.style.color='#C9972C'"><span class="material-symbols-outlined" style="font-size:20px;">public</span></a>
+          <a href="#" style="width:40px;height:40px;border:1px solid #C9972C;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C9972C;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.background='#C9972C';this.style.color='#1E3D0F'" onmouseout="this.style.background='transparent';this.style.color='#C9972C'"><span class="material-symbols-outlined" style="font-size:20px;">work</span></a>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+          <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:32px;">
+      <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);position:relative;">
+        <div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);color:rgba(201,151,44,0.3);">
+          <span class="material-symbols-outlined" style="font-size:16px;">stars</span>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:10;" class="tohfa-footer-bottom">
+      <div style="font-family:'DM Sans',sans-serif;font-size:14px;color:#A8B89A;">&#169; 2025 Tohfa. Celebrating Indian Craftsmanship. All rights reserved.</div>
+    </div>
+    <style>
+      @media (min-width: 768px) {
+        .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
+        .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
+      }
+    </style>
+  </footer>
+
+  <script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
+    // ── Auth state ──
+    async function checkAuthState() {
+      const token = sessionStorage.getItem('tohfa_access_token');
+      const authContainer = document.getElementById('auth-buttons-container');
+      if (token) {
+        try {
+          const res = await apiClient.get('/profile/me');
+          if (res.data && res.data.success && authContainer) {
+            const name = res.data.data.full_name || 'A';
+            const initial = name.charAt(0).toUpperCase();
+            authContainer.innerHTML = `<a href="/buyer/profile.html" style="width:36px;height:36px;border-radius:50%;background:#3D6B4F;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;text-decoration:none;">${initial}</a>`;
+          }
+        } catch(e) {}
+      } else {
+        if (authContainer) authContainer.innerHTML = `
+          <a href="/auth/login.html" style="color:#3D6B4F;text-decoration:none;font-size:14px;font-weight:600;">Login</a>
+          <a href="/auth/signup-buyer.html" style="background:#3D6B4F;color:#fff;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;margin-left:12px;">Register</a>`;
+      }
+    }
+
+    // ── Load categories for pills ──
+    let allProducts = [];
+    let allCats = [];
+
+    async function loadCategoryPills() {
+      try {
+        const res = await apiClient.get('/categories');
+        if (res.data && res.data.success) {
+          allCats = res.data.data.categories || [];
+          const pillContainer = document.getElementById('category-pills');
+          pillContainer.innerHTML = allCats.map(c => `
+            <button class="cat-pill" onclick="filterBulkProducts('${c.slug}')"
+              style="padding:8px 20px;border-radius:999px;border:1.5px solid #c1c9c0;background:#fff;color:#414942;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap;cursor:pointer;transition:all 0.2s ease;">
+              ${c.display_name || c.name}
+            </button>`).join('');
+        }
+      } catch(e) { console.error('Failed to load categories:', e); }
+    }
+
+    // ── Load products for bulk page ──
+    async function loadBulkProducts(slug = null) {
+      const grid = document.getElementById('bulk-products-grid');
+      grid.innerHTML = `<div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:80px 0;">
+        <div style="position:relative;width:44px;height:44px;">
+          <div style="position:absolute;inset:0;border:4px solid rgba(37,83,56,0.12);border-radius:50%;"></div>
+          <div style="position:absolute;inset:0;border:4px solid #255338;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+        </div>
+        <p style="margin-top:16px;font-family:'Playfair Display',serif;font-style:italic;color:#717972;">Curating artisan makes...</p>
+      </div>`;
+
+      try {
+        let products = [];
+        if (slug && slug !== 'all') {
+          const res = await apiClient.get(`/categories/${slug}/products?limit=12&sort=newest`);
+          if (res.data && res.data.success) products = res.data.data.products || [];
+        } else {
+          // Load from multiple categories
+          const cats = allCats.slice(0, 4);
+          const results = await Promise.allSettled(cats.map(c => apiClient.get(`/categories/${c.slug}/products?limit=4`)));
+          results.forEach(r => { if (r.status === 'fulfilled' && r.value.data?.success) products.push(...(r.value.data.data.products || [])); });
+        }
+
+        allProducts = products;
+        renderBulkProducts(products);
+      } catch(e) {
+        grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:60px;font-family:'DM Sans',sans-serif;color:#717972;">Could not load products. <a href="#" onclick="loadBulkProducts()" style="color:#255338;">Retry</a></p>`;
+        console.error('Bulk products load error:', e);
+      }
+    }
+
+    function renderBulkProducts(products) {
+      const grid = document.getElementById('bulk-products-grid');
+      if (!products.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;">
+          <span class="material-symbols-outlined" style="font-size:48px;color:#c1c9c0;">inventory_2</span>
+          <p style="font-family:'Playfair Display',serif;font-style:italic;color:#717972;margin-top:12px;">No items found for this category.</p>
+        </div>`;
+        return;
+      }
+      grid.innerHTML = products.map(p => {
+        const name = p.title || p.name || 'Artisan Piece';
+        const price = p.price ? `₹${Number(p.price).toLocaleString('en-IN')}` : '—';
+        const img = p.image_url || p.images?.[0] || 'https://placehold.co/400x400/f4ede3/516447?text=Artisan';
+        const seller = p.seller_name || p.shop_name || 'Artisan Studio';
+        return `
+          <div class="product-card" style="background:#fff;border:1px solid #e8e2da;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;">
+            <div style="height:240px;background:#fdfaf5;overflow:hidden;position:relative;">
+              <img src="${img}" alt="${name}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+              <div style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.9);backdrop-filter:blur(6px);padding:4px 10px;border-radius:999px;">
+                <span style="font-family:'Space Mono',monospace;font-size:9px;color:#255338;font-weight:700;">BULK AVAILABLE</span>
+              </div>
+            </div>
+            <div style="padding:18px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;">
+              <div>
+                <p style="font-family:'Space Mono',monospace;font-size:10px;color:#8FAF82;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.08em;">${seller}</p>
+                <h4 style="font-family:'Playfair Display',serif;font-size:17px;color:#1f1b15;line-height:1.3;margin-bottom:6px;">${name}</h4>
+                <span style="font-family:'Space Mono',monospace;font-size:15px;color:#C8973A;font-weight:700;">${price}</span>
+              </div>
+              <button onclick="window.location.href='/buyer/product.html?id=${p.listing_id || p.id}'"
+                style="width:100%;padding:11px;background:#255338;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;justify-content:center;gap:6px;"
+                onmouseover="this.style.background='#3D6B4F'" onmouseout="this.style.background='#255338'">
+                <span class="material-symbols-outlined" style="font-size:16px;">shopping_bag</span>
+                Request Bulk Quote
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    window.filterBulkProducts = function(slug) {
+      // Update pill active state
+      document.querySelectorAll('.cat-pill').forEach(p => {
+        p.style.background = '#fff'; p.style.color = '#414942'; p.style.borderColor = '#c1c9c0';
+      });
+      const active = slug === 'all' ? document.getElementById('pill-all') : document.querySelector(`[onclick="filterBulkProducts('${slug}')"]`);
+      if (active) { active.style.background = '#255338'; active.style.color = '#fff'; active.style.borderColor = '#255338'; }
+      loadBulkProducts(slug);
+    };
+
+    // ── Contact CTA ──
+    function setupContactCTA() {
+      ['contact-btn','contact-cta-btn'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', () => {
+          window.location.href = 'mailto:bulk@tohfa.in?subject=Bulk Order Enquiry&body=Hi, I would like to place a bulk order. Please get in touch.';
+        });
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await checkAuthState();
+      await loadCategoryPills();
+      await loadBulkProducts();
+      setupContactCTA();
+    });
+  </script>
+</body>
+</html>
