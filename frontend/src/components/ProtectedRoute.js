@@ -168,6 +168,15 @@
           border-bottom: 1px solid #8FAF82 !important;
           box-shadow: 0 2px 12px rgba(61, 107, 79, 0.08) !important;
         }
+        #auth-buttons-container a[href*="profile.html"],
+        #auth-buttons-container img {
+          display: none !important;
+        }
+        #auth-buttons-container:has(a[href*="profile.html"]),
+        #auth-buttons-container:has(img) {
+          margin-left: 0 !important;
+          padding: 0 !important;
+        }
         #mobile-bottom-nav {
           background-color: #F7F3EC !important;
           border-top: 1px solid #8FAF82 !important;
