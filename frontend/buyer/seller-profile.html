@@ -535,8 +535,7 @@
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Careers</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Press &amp; Media</a></li>
+        
       </ul>
     </div>
     <!-- For Sellers -->
@@ -545,8 +544,7 @@
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller FAQs</a></li>
-        <li style="padding-top:8px;"><a href="#" style="font-family:'DM Sans',sans-serif;color:#C9972C;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:8px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><span class="material-symbols-outlined" style="font-size:18px;">verified</span>Become a Founding Seller</a></li>
+        
       </ul>
     </div>
     <!-- For Buyers -->
@@ -567,7 +565,7 @@
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Privacy Policy</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms of Service</a></li>
+        <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
     </div>
   </div>
@@ -1171,13 +1169,15 @@
                             ` : ''}
                         </div>
                         <div class="flex flex-col mb-4">
-                            <span class="font-bold text-lg text-[#C8973A] mb-1">${priceFormatted}</span>
-                            <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
-                            <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
-                                <span class="text-[#C8973A] font-bold">★</span>
-                                <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
-                                <span>(${parseInt(p.review_count || 0, 10)})</span>
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="font-bold text-lg text-[#C8973A]">${priceFormatted}</span>
+                                <div class="flex items-center gap-1 text-xs text-[#605e57]">
+                                    <span class="text-[#C8973A] font-bold">★</span>
+                                    <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                    <span>(${parseInt(p.review_count || 0, 10)})</span>
+                                </div>
                             </div>
+                            <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                             <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id || sellerId}'">By ${sellerProfile.shop_name}</span>
                         </div>
                     </div>
@@ -1339,13 +1339,15 @@
                                 <img src="${c.cover_image_url || 'https://placehold.co/300x300/f6f3f2/061b0e?text=Custom'}" alt="${c.product_name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl" loading="lazy" />
                             </div>
                             <div class="flex flex-col mb-4">
-                                <span class="font-bold text-lg text-[#C8973A] mb-1">${priceFormatted}</span>
-                                <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${c.product_name}</h4>
-                                <div class="flex items-center gap-1 text-xs text-[#605e57] mb-1">
-                                    <span class="text-[#C8973A] font-bold">★</span>
-                                    <span class="font-semibold text-on-surface">${parseFloat(c.avg_rating || 0).toFixed(1)}</span>
-                                    <span>(${parseInt(c.review_count || 0, 10)})</span>
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <span class="font-bold text-lg text-[#C8973A]">${priceFormatted}</span>
+                                    <div class="flex items-center gap-1 text-xs text-[#605e57]">
+                                        <span class="text-[#C8973A] font-bold">★</span>
+                                        <span class="font-semibold text-on-surface">${parseFloat(c.avg_rating || 0).toFixed(1)}</span>
+                                        <span>(${parseInt(c.review_count || 0, 10)})</span>
+                                    </div>
                                 </div>
+                                <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${c.product_name}</h4>
                                 <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='seller-profile.html?id=${sellerId}'">By ${sellerProfile.shop_name}</span>
                                 <span class="text-xs text-[#605e57] flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> ${c.lead_time_days} days</span>
                             </div>

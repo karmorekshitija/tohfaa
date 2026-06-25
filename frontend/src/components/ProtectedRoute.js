@@ -414,9 +414,41 @@
     setupAuthAndBadges();
   }
 
+  async function updateGlobalCartBadge() {
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (!token) {
+      const badge = document.getElementById('nav-cart-badge');
+      if (badge) badge.classList.add('hidden');
+      return;
+    }
+    try {
+      const res = await fetch(`${window.location.origin}/api/cart`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          const count = json.data.item_count || 0;
+          const badge = document.getElementById('nav-cart-badge');
+          if (badge) {
+            if (count > 0) {
+              badge.innerText = count;
+              badge.classList.remove('hidden');
+            } else {
+              badge.classList.add('hidden');
+            }
+          }
+        }
+      }
+    } catch(e) {}
+  }
+  window.updateCartBadge = updateGlobalCartBadge;
+  window.addEventListener('tohfa-cart-updated', updateGlobalCartBadge);
+
   // Let's run a check when page loads to show any toast from redirection
   function init() {
     setupBuyerNavbar();
+    updateGlobalCartBadge();
 
     const deniedReason = sessionStorage.getItem('access_denied_reason');
     if (deniedReason) {
@@ -478,6 +510,7 @@
 
   document.addEventListener('tohfa-navbar-loaded', () => {
     setupBuyerNavbar();
+    updateGlobalCartBadge();
 
     const userStr = sessionStorage.getItem('tohfa_user');
     let user = null;

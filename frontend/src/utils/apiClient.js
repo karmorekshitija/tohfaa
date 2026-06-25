@@ -50,7 +50,14 @@ const processQueue = (error, token = null) => {
 };
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const url = response.config?.url;
+    const method = response.config?.method;
+    if (url && (url.includes('/cart') || url.includes('/cart/items')) && ['post', 'put', 'patch', 'delete'].includes(method.toLowerCase())) {
+      window.dispatchEvent(new CustomEvent('tohfa-cart-updated'));
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {

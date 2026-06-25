@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Tohfa | Frequently Asked Questions</title>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Space+Mono&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .faq-accordion[open] .faq-icon {
+        transform: rotate(45deg);
+    }
+    .faq-accordion[open] {
+        border-left: 3px solid #C9972C !important;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    body {
+      min-height: max(884px, 100dvh);
+      background-color: #F0EBE0;
+    }
+  </style>
+</head>
+<body class="bg-background font-body-md text-on-surface transition-colors duration-300">
+
+<!-- Top AppBar (managed by ProtectedRoute) -->
+<header class="fixed top-0 w-full z-50 bg-[#F0EBE0] flex justify-between items-center px-margin-mobile h-16 border-b border-outline-variant/30">
+  <button class="text-primary p-2">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+  <h1 class="font-display-lg-mobile text-display-lg-mobile text-primary italic lowercase tracking-tight">Tohfa</h1>
+  <button class="text-primary p-2">
+    <span class="material-symbols-outlined">shopping_bag</span>
+  </button>
+</header>
+
+<main class="pt-24 pb-32 px-4 max-w-md mx-auto">
+  <!-- Header Section -->
+  <section class="text-center mb-8">
+    <h2 class="font-display-lg-mobile text-2xl text-primary italic mb-2 leading-tight" style="font-family: 'Playfair Display', serif;">Frequently Asked Questions</h2>
+    <p class="font-label-sm text-xs text-[#7A8C6E] tracking-widest uppercase" style="font-family: 'Space Mono', monospace;">Thoughtful Gifting, Made Effortless.</p>
+  </section>
+
+  <!-- Sticky Tab Switcher -->
+  <div class="sticky top-16 z-40 bg-background/95 backdrop-blur-sm py-4 flex gap-2 mb-6">
+    <button class="flex-1 py-3 rounded-full text-center transition-all duration-300 font-bold text-white bg-[#C9972C] shadow-sm" id="btn-buyers" onclick="switchTab('buyers')">
+      For Buyers
+    </button>
+    <button class="flex-1 py-3 rounded-full text-center transition-all duration-300 font-medium text-[#7A8C6E] border border-[#7A8C6E]/30 bg-background" id="btn-sellers" onclick="switchTab('sellers')">
+      For Sellers
+    </button>
+  </div>
+
+  <!-- FAQ Content: Buyers -->
+  <div class="space-y-4" id="content-buyers"></div>
+
+  <!-- FAQ Content: Sellers (Hidden by default) -->
+  <div class="hidden space-y-4" id="content-sellers"></div>
+
+  <!-- Contact Card -->
+  <section class="mt-12 bg-primary rounded-xl p-8 relative overflow-hidden text-center" style="background-color: #1E3D0F;">
+    <div class="absolute inset-0 opacity-[0.06] pointer-events-none flex items-center justify-center">
+      <span class="material-symbols-outlined text-[200px]">local_florist</span>
+    </div>
+    <div class="relative z-10">
+      <h3 class="font-headline-md text-white mb-2" style="font-family: 'Playfair Display', serif;">Still have questions?</h3>
+      <p class="font-body-md text-white/80 mb-8 max-w-[240px] mx-auto" style="font-family: 'DM Sans', sans-serif;">Our artisans and support team are here to guide your heritage journey.</p>
+      <button class="bg-[#C9972C] text-white px-8 py-3 rounded-full font-button-text font-bold uppercase tracking-wider hover:opacity-90 transition-opacity" style="font-family: 'DM Sans', sans-serif;">
+        Contact Us
+      </button>
+    </div>
+  </section>
+</main>
+
+<!-- Bottom Navigation (managed by ProtectedRoute) -->
+<nav class="fixed bottom-0 w-full z-50 bg-[#F0EBE0] border-t border-outline-variant/30 flex justify-around items-center px-4 py-2 h-20 shadow-sm">
+  <button class="flex flex-col items-center justify-center text-on-surface-variant gap-1">
+    <span class="material-symbols-outlined">home</span>
+    <span class="font-label-sm text-[10px]">Home</span>
+  </button>
+  <button class="flex flex-col items-center justify-center text-on-surface-variant gap-1">
+    <span class="material-symbols-outlined">explore</span>
+    <span class="font-label-sm text-[10px]">Discover</span>
+  </button>
+  <button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-2 gap-1">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">contact_support</span>
+    <span class="font-label-sm text-[10px] font-bold">Support</span>
+  </button>
+  <button class="flex flex-col items-center justify-center text-on-surface-variant gap-1">
+    <span class="material-symbols-outlined">person</span>
+    <span class="font-label-sm text-[10px]">Account</span>
+  </button>
+</nav>
+
+<script type="module">
+  import apiClient from '/src/utils/apiClient.js';
+  import { logout } from '/src/utils/auth.js';
+
+  const buyerFAQs = [
+      { q: "What is Tohfa?", a: "Tohfa is a curated marketplace dedicated to preserving Indian heritage through artisanal, handcrafted luxury goods." },
+      { q: "How do I order?", a: "Browse our collections, add items to your bag, and proceed to a secure checkout experience." },
+      { q: "Is it safe?", a: "Yes, we use industry-leading encryption to ensure your data and transactions are fully protected." },
+      { q: "Where do you ship?", a: "We ship worldwide, bringing the warmth of Indian craft to your doorstep." },
+      { q: "Can I track my gift?", a: "Absolutely. A tracking link is sent via email as soon as your heritage piece departs the studio." },
+      { q: "What is your return policy?", a: "Due to the artisanal nature of our products, we accept returns only for damaged or incorrect items within 7 days." }
+  ];
+
+  const sellerFAQs = [
+      { q: "How do I become a seller?", a: "Fill out our artisan application form. We review each applicant for heritage integrity and quality." },
+      { q: "Is it free to list?", a: "There are no upfront listing fees; we only take a commission when your work finds a home." },
+      { q: "How do I get paid?", a: "Payments are processed securely and deposited into your account 7 days after delivery confirmation." },
+      { q: "What are the quality standards?", a: "Products must be handmade or utilize traditional craft techniques to qualify." }
+  ];
+
+  function createFAQItem(item) {
+      return `
+          <details class="faq-accordion group bg-white rounded-xl border border-primary/10 overflow-hidden transition-all duration-300">
+              <summary class="flex justify-between items-center p-5 cursor-pointer list-none list-inside outline-none">
+                  <div class="flex-1 pr-4">
+                      <span class="font-body-md font-bold text-[#1E3D0F]">${item.q}</span>
+                      ${item.badge ? `<span class="ml-2 px-2 py-0.5 rounded-full border border-tertiary text-[8px] font-bold text-tertiary uppercase align-middle">${item.badge}</span>` : ''}
+                  </div>
+                  <span class="faq-icon material-symbols-outlined text-[#C9972C] transition-transform duration-300">add</span>
+              </summary>
+              <div class="px-5 pb-5 pt-0">
+                  <p class="font-body-md text-[#3B5E3F] leading-relaxed border-t border-outline-variant/20 pt-4">
+                      ${item.a}
+                  </p>
+              </div>
+          </details>
+      `;
+  }
+
+  window.switchTab = function(tab) {
+      const btnBuyers = document.getElementById('btn-buyers');
+      const btnSellers = document.getElementById('btn-sellers');
+      const contentBuyers = document.getElementById('content-buyers');
+      const contentSellers = document.getElementById('content-sellers');
+
+      if (tab === 'buyers') {
+          btnBuyers.className = "flex-1 py-3 rounded-full text-center transition-all duration-300 font-bold text-white bg-[#C9972C] shadow-sm";
+          btnSellers.className = "flex-1 py-3 rounded-full text-center transition-all duration-300 font-medium text-[#7A8C6E] border border-[#7A8C6E]/30 bg-background";
+          contentBuyers.classList.remove('hidden');
+          contentSellers.classList.add('hidden');
+      } else {
+          btnSellers.className = "flex-1 py-3 rounded-full text-center transition-all duration-300 font-bold text-white bg-[#C9972C] shadow-sm";
+          btnBuyers.className = "flex-1 py-3 rounded-full text-center transition-all duration-300 font-medium text-[#7A8C6E] border border-[#7A8C6E]/30 bg-background";
+          contentSellers.classList.remove('hidden');
+          contentBuyers.classList.add('hidden');
+      }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+      const buyersContainer = document.getElementById('content-buyers');
+      const sellersContainer = document.getElementById('content-sellers');
+      
+      buyersContainer.innerHTML = buyerFAQs.map(createFAQItem).join('');
+      sellersContainer.innerHTML = sellerFAQs.map(createFAQItem).join('');
+  });
+</script>
+</body>
+</html>

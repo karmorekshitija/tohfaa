@@ -161,24 +161,10 @@
               <span class="material-symbols-outlined text-white text-xl">photo_camera</span>
             </div>
           </div>
-          <div class="flex-1">
-            <button onclick="document.getElementById('input-avatar-file').click()"
-                    class="text-sm font-semibold text-primary hover:underline flex items-center gap-xs">
-              <span class="material-symbols-outlined text-sm">upload</span>
-              Upload photo
-            </button>
-            <p class="text-xs text-on-surface-variant mt-xs">JPG, PNG up to 5MB</p>
-          </div>
         </div>
+        <p class="text-xs text-on-surface-variant">JPG, PNG up to 5MB</p>
         <input type="file" id="input-avatar-file" class="hidden" accept="image/*"/>
 
-        <!-- OR URL input -->
-        <div class="w-full space-y-sm">
-          <label class="font-label-caps text-on-surface-variant">Or paste image URL (optional)</label>
-          <input id="input-avatar-url" class="input-field" type="url"
-                 placeholder="https://example.com/your-photo.jpg"/>
-          <p class="text-xs text-on-surface-variant">Paste a direct link to an image</p>
-        </div>
       </div>
 
       <!-- Fields Grid -->
@@ -204,11 +190,11 @@
         <div class="space-y-sm">
           <label class="font-label-caps text-on-surface-variant" for="input-phone">Phone Number</label>
           <div class="relative">
-            <span class="absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">
+            <span class="absolute top-1/2 -translate-y-1/2 text-on-surface-variant" style="left: 12px;">
               <span class="material-symbols-outlined text-[18px]">phone</span>
             </span>
             <input id="input-phone" class="input-field pl-10" type="tel"
-                   placeholder="+91 98765 43210"/>
+                   placeholder="+91 98765 43210" style="padding-left: 38px;"/>
           </div>
           <p id="error-phone" class="field-error">Please enter a valid 10-digit Indian mobile number.</p>
         </div>
@@ -293,7 +279,6 @@
         const displayName = document.getElementById('input-display-name').value;
         const email = document.getElementById('input-email').value;
         const phone = document.getElementById('input-phone').value;
-        const avatarUrl = document.getElementById('input-avatar-url').value;
 
         let hasErrors = false;
 
@@ -338,19 +323,7 @@
             const response = await apiClient.patch('/profile/me', payload);
 
             if (response.data && response.data.success) {
-                // If user provided an avatar URL, try to patch avatar_url
-                if (avatarUrl && avatarUrl.trim() && avatarUrl.trim().startsWith('http')) {
-                    try {
-                        // Direct DB update through API if supported — otherwise just update preview
-                        const avatarResp = await apiClient.patch('/profile/me', { avatar_url: avatarUrl.trim() }).catch(() => null);
-                        if (avatarResp && avatarResp.data && avatarResp.data.success) {
-                            const previewEl = document.getElementById('avatar-preview');
-                            const bgAvatarEl = document.getElementById('bg-user-avatar');
-                            if (previewEl) previewEl.src = avatarUrl.trim();
-                            if (bgAvatarEl) bgAvatarEl.src = avatarUrl.trim();
-                        }
-                    } catch (_) { /* silently ignore */ }
-                }
+
 
                 // Update sessionStorage
                 const userStr = sessionStorage.getItem('tohfa_user');
@@ -437,7 +410,6 @@
                 });
                 if (resp.data && resp.data.success) {
                     const newUrl = resp.data.data.avatar_url;
-                    document.getElementById('input-avatar-url').value = newUrl;
                     document.getElementById('avatar-preview').src = newUrl;
                     document.getElementById('bg-user-avatar').src = newUrl;
                     // Update session
@@ -455,15 +427,7 @@
             }
         });
 
-        // Avatar URL input → live preview
-        document.getElementById('input-avatar-url').addEventListener('input', (e) => {
-            const url = e.target.value.trim();
-            if (url.startsWith('http')) {
-                document.getElementById('avatar-preview').src = url;
-                document.getElementById('bg-user-avatar').src = url;
-            }
         });
-    });
 
     /* ── Close on scrim click ── */
     document.getElementById('edit-profile-scrim').addEventListener('click', (e) => {
