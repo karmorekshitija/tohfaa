@@ -458,7 +458,7 @@
                     ? `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='/buyer/profile.html'" loading="lazy" />`
                     : `<a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm">${initial}</a>`;
 
-                authContainer.innerHTML = '';
+                authContainer.innerHTML = avatarHtml;
             } catch (_) {}
         } else {
             authContainer.innerHTML = `

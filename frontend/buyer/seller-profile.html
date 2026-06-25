@@ -322,11 +322,11 @@
 
         <!-- Tabbed Navigation Bar -->
         <div class="mt-12 border-b border-outline-variant flex gap-8 md:gap-12 overflow-x-auto scrollbar-hide select-none">
-            <button id="tab-catalog" onclick="switchTab('catalog')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary">Catalog</button>
-            <button id="tab-customised" onclick="switchTab('customised')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Customised</button>
+            <button id="tab-catalog" onclick="switchTab('catalog')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold">Catalog</button>
+            <button id="tab-customised" onclick="switchTab('customised')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Customised</button>
             
-            <button id="tab-reviews" onclick="switchTab('reviews')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Reviews</button>
-            <button id="tab-about" onclick="switchTab('about')" class="pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">About</button>
+            <button id="tab-reviews" onclick="switchTab('reviews')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">Reviews</button>
+            <button id="tab-about" onclick="switchTab('about')" class="pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary">About</button>
         </div>
 
         <!-- Loader Spinner -->
@@ -987,9 +987,9 @@
                 const el = document.getElementById(`tab-${t}`);
                 if (el) {
                     if (t === tabName) {
-                        el.className = "pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold";
+                        el.className = "pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-primary text-primary font-bold";
                     } else {
-                        el.className = "pb-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary";
+                        el.className = "pb-4 px-4 border-b-2 font-label-md text-sm whitespace-nowrap transition-all border-transparent text-on-surface-variant hover:text-primary";
                     }
                 }
                 

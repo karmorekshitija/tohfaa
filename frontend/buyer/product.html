@@ -114,7 +114,8 @@
             <div class="lg:col-span-5 space-y-lg bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl">
                 <div class="space-y-sm">
                     <div id="product-tags-container" class="flex flex-wrap gap-2 mb-2"></div>
-                    <h1 id="product-name" class="font-headline-lg text-primary text-3xl leading-tight">Product Name</h1>
+                    <h1 id="product-name" class="font-headline-lg text-primary text-3xl leading-tight font-semibold">Product Name</h1>
+                    <div id="product-rating-container" class="flex items-center gap-1.5 text-amber-500 text-sm mt-1 hidden"></div>
                     <div class="flex items-center gap-md pt-sm">
                         <span class="text-2xl font-data-price text-secondary-fixed-variant font-bold" id="product-price">₹0.00</span>
                         <span class="text-xs bg-success-container/20 text-success border border-success/20 px-sm py-[2px] rounded font-semibold" id="product-stock-badge">In Stock</span>
@@ -415,7 +416,7 @@
                 }
 
                 if (authContainer) {
-                    authContainer.innerHTML = '';
+                    authContainer.innerHTML = avatarHtml;
                 }
             } catch(e) {
                 console.error("Failed to parse token:", e);
@@ -452,6 +453,27 @@
                     document.getElementById('product-description').innerText = product.description || 'No description available.';
                     document.getElementById('product-price').innerText = formatPaise(product.price_paise);
                     document.getElementById('product-seller').innerText = product.seller?.seller_name || 'Artisan';
+                    
+                    const ratingContainer = document.getElementById('product-rating-container');
+                    if (ratingContainer) {
+                        if (product.review_count > 0) {
+                            const avg = product.avg_rating || 0;
+                            ratingContainer.innerHTML = `
+                                <div class="flex items-center text-amber-500">
+                                    ${Array.from({ length: 5 }, (_, i) => `
+                                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' ${i < Math.round(avg) ? 1 : 0};">star</span>
+                                    `).join('')}
+                                </div>
+                                <span class="text-[#3D6B4F] text-xs font-semibold hover:underline cursor-pointer" onclick="document.getElementById('reviews-section').scrollIntoView({ behavior: 'smooth' })">
+                                    ${avg.toFixed(1)} (${product.review_count} reviews)
+                                </span>
+                            `;
+                            ratingContainer.classList.remove('hidden');
+                        } else {
+                            ratingContainer.innerHTML = '';
+                            ratingContainer.classList.add('hidden');
+                        }
+                    }
                     
                     const avatarEl = document.getElementById('seller-avatar');
                     if (product.seller?.avatar_url) {
@@ -746,20 +768,28 @@
             } else {
                 list.innerHTML = reviews.map(r => {
                     const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently';
+                    const initials = r.reviewer_name ? r.reviewer_name.charAt(0).toUpperCase() : 'A';
+                    const avatarHtml = r.reviewer_avatar ? 
+                        `<img src="${r.reviewer_avatar}" class="w-10 h-10 rounded-full object-cover border border-sage/20 flex-shrink-0" alt="Reviewer Avatar" />` :
+                        `<div class="w-10 h-10 rounded-full bg-[#8FAF82]/20 text-[#3D6B4F] flex items-center justify-center font-bold text-sm flex-shrink-0">${initials}</div>`;
+                    
                     return `
-                        <div class="bg-[#F7F3EC] p-md rounded-2xl border border-outline-variant/40 space-y-sm animate-fade-in">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <span class="font-semibold text-sm text-primary block">${r.reviewer_name}</span>
-                                    <span class="text-[10px] text-outline">${dateStr}</span>
+                        <div class="bg-[#F7F3EC] p-md rounded-2xl border border-outline-variant/40 space-y-sm animate-fade-in flex gap-md items-start">
+                            ${avatarHtml}
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="font-semibold text-sm text-primary block">${r.reviewer_name || 'Anonymous'}</span>
+                                        <span class="text-[10px] text-outline">${dateStr}</span>
+                                    </div>
+                                    <div class="flex items-center text-amber-500">
+                                        ${Array.from({ length: 5 }, (_, i) => `
+                                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${i < r.rating ? 1 : 0};">star</span>
+                                        `).join('')}
+                                    </div>
                                 </div>
-                                <div class="flex items-center text-amber-500">
-                                    ${Array.from({ length: 5 }, (_, i) => `
-                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${i < r.rating ? 1 : 0};">star</span>
-                                    `).join('')}
-                                </div>
+                                <p class="text-secondary text-sm leading-relaxed mt-2">${r.body || ''}</p>
                             </div>
-                            <p class="text-secondary text-sm leading-relaxed">${r.body || ''}</p>
                         </div>
                     `;
                 }).join('');
@@ -777,14 +807,20 @@
                 // Fetch user's delivered orders
                 const res = await apiClient.get('/orders', { params: { status: 'Delivered' } });
                 if (res.data && res.data.success) {
-                    const orders = res.data.data || [];
+                    let orders = res.data.data || [];
+                    if (orders && !Array.isArray(orders)) {
+                        orders = orders.orders || [];
+                    }
+                    if (!Array.isArray(orders)) {
+                        orders = [];
+                    }
                     
                     // Search for order item matching product
                     for (const order of orders) {
                         const detailRes = await apiClient.get(`/orders/${order.id}`);
                         if (detailRes.data && detailRes.data.success) {
                             const orderDetails = detailRes.data.data;
-                            const hasItem = orderDetails.items?.some(item => String(item.product_id) === String(productId));
+                            const hasItem = orderDetails.items?.some(item => String(item.product_id) === String(productId) && !item.is_reviewed);
                             if (hasItem) {
                                 matchedOrderId = order.id;
                                 break;
@@ -985,7 +1021,33 @@
                         }
                     });
                 });
+
+                btn.addEventListener('mouseenter', () => {
+                    const rating = parseInt(btn.getAttribute('data-rating'));
+                    stars.forEach((b, idx) => {
+                        const icon = b.querySelector('.material-symbols-outlined');
+                        if (idx < rating) {
+                            icon.style.fontVariationSettings = "'FILL' 1";
+                        } else {
+                            icon.style.fontVariationSettings = "'FILL' 0";
+                        }
+                    });
+                });
             });
+
+            const starContainer = document.getElementById('star-input-container');
+            if (starContainer) {
+                starContainer.addEventListener('mouseleave', () => {
+                    stars.forEach((b, idx) => {
+                        const icon = b.querySelector('.material-symbols-outlined');
+                        if (idx < selectedRating) {
+                            icon.style.fontVariationSettings = "'FILL' 1";
+                        } else {
+                            icon.style.fontVariationSettings = "'FILL' 0";
+                        }
+                    });
+                });
+            }
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();

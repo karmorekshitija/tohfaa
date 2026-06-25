@@ -1764,7 +1764,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
     
     // 5. Select 3 most recent reviews
     const recentReviews = await db.prepare(`
-      SELECT u.full_name AS reviewer_name, r.rating, r.body, r.created_at
+      SELECT COALESCE(u.display_name, u.full_name) AS reviewer_name, u.avatar_url AS reviewer_avatar, r.rating, r.body, r.created_at
       FROM reviews r
       JOIN users u ON r.reviewer_id = u.id
       WHERE r.product_id = ?
@@ -3355,6 +3355,13 @@ app.get('/api/orders/:id', rateLimit(120), authenticateToken, async (req, res) =
     
     // Fetch order items
     const items = await db.prepare('SELECT product_id, product_name, unit_price_paise, quantity, image_url FROM order_items WHERE order_id = ?').all(id);
+    const itemsWithReviewed = await Promise.all(items.map(async (item) => {
+      const review = await db.prepare('SELECT id FROM reviews WHERE order_id = ? AND product_id = ?').get(id, item.product_id);
+      return {
+        ...item,
+        is_reviewed: !!review
+      };
+    }));
     
     // Fetch address
     const address = await db.prepare('SELECT full_name, line1, line2, city, state, pincode FROM addresses WHERE id = ?').get(order.address_id);
@@ -3369,7 +3376,7 @@ app.get('/api/orders/:id', rateLimit(120), authenticateToken, async (req, res) =
         shipped_at: order.shipped_at,
         delivered_at: order.delivered_at,
         tracking_number: order.tracking_number,
-        items,
+        items: itemsWithReviewed,
         ship_to: address || null,
         subtotal_paise: order.subtotal_paise,
         shipping_paise: order.shipping_paise,
@@ -4844,18 +4851,18 @@ app.post('/api/reviews', rateLimit(30), authenticateToken, async (req, res) => {
   const authUserId = req.user.user_id;
   const { product_id, order_id, rating, body } = req.body;
 
-  if (!product_id || !rating || rating < 1 || rating > 5) {
+  if (!product_id || !order_id || !rating || rating < 1 || rating > 5) {
     return res.status(400).json({
       error: true,
-      message: "product_id and rating (1-5) required",
+      message: "product_id, order_id, and rating (1-5) required",
       code: "VALIDATION_ERROR"
     });
   }
 
   try {
-    // 1. Verify order belongs to user and status='Delivered'
-    const order = await db.prepare("SELECT id, status, buyer_id FROM orders WHERE id = ? AND buyer_id = ?").get(order_id, authUserId);
-    if (!order || order.status !== 'Delivered') {
+    // 1. Verify order belongs to user and status='Delivered' (case-insensitive)
+    const order = await db.prepare("SELECT id, status, buyer_id, seller_id, listing_id FROM orders WHERE id = ? AND buyer_id = ?").get(order_id, authUserId);
+    if (!order || !order.status || order.status.toLowerCase() !== 'delivered') {
       return res.status(403).json({
         error: true,
         message: "You can only review products you have ordered and received",
@@ -4873,8 +4880,8 @@ app.post('/api/reviews', rateLimit(30), authenticateToken, async (req, res) => {
       });
     }
 
-    // 2. Check no existing review for (reviewer_id, product_id) -> 409
-    const existingReview = await db.prepare("SELECT id FROM reviews WHERE reviewer_id = ? AND product_id = ?").get(authUserId, product_id);
+    // 2. Check no existing review for (reviewer_id, product_id, order_id) -> 409
+    const existingReview = await db.prepare("SELECT id FROM reviews WHERE reviewer_id = ? AND product_id = ? AND order_id = ?").get(authUserId, product_id, order_id);
     if (existingReview) {
       return res.status(409).json({
         error: true,
@@ -4883,18 +4890,32 @@ app.post('/api/reviews', rateLimit(30), authenticateToken, async (req, res) => {
       });
     }
 
+    // Lookup seller_id and listing_id
+    const product = await db.prepare("SELECT seller_id, name FROM products WHERE id = ?").get(product_id);
+    const seller_id = product ? product.seller_id : order.seller_id;
+    let listing_id = order.listing_id || null;
+    if (!listing_id && product) {
+      const listing = await db.prepare("SELECT id FROM listings WHERE seller_id = ? AND LOWER(TRIM(title)) = LOWER(TRIM(?))").get(seller_id, product.name);
+      if (listing) {
+        listing_id = listing.id;
+      }
+    }
+
     // 3. INSERT into reviews
     const insertReview = db.prepare(`
-      INSERT INTO reviews (product_id, reviewer_id, order_id, rating, body, created_at)
-      VALUES (?, ?, ?, ?, ?, datetime('now'))
+      INSERT INTO reviews (product_id, buyer_id, reviewer_id, order_id, rating, body, comment_text, seller_id, listing_id, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `);
-    const result = await insertReview.run(product_id, authUserId, order_id || null, rating, body || null);
+    const result = await insertReview.run(product_id, authUserId, authUserId, order_id, rating, body || null, body || null, seller_id, listing_id);
     const reviewId = result.lastInsertRowid;
 
     // 4. UPDATE products SET avg_rating, review_count (recalculate from all reviews)
     const stats = await db.prepare("SELECT COUNT(*) AS review_count, AVG(rating) AS avg_rating FROM reviews WHERE product_id = ?").get(product_id);
-    db.prepare("UPDATE products SET avg_rating = ?, review_count = ? WHERE id = ?")
-      .run(Math.round(stats.avg_rating * 10) / 10, stats.review_count, product_id);
+    const reviewCount = stats ? stats.review_count : 0;
+    const avgRating = stats && stats.avg_rating !== null ? Math.round(stats.avg_rating * 10) / 10 : 0.0;
+
+    await db.prepare("UPDATE products SET avg_rating = ?, review_count = ? WHERE id = ?")
+      .run(avgRating, reviewCount, product_id);
 
     // Fetch the inserted review
     const newReview = await db.prepare("SELECT id, product_id, rating, body, created_at FROM reviews WHERE id = ?").get(reviewId);
@@ -10307,7 +10328,7 @@ app.get(['/api/customizations/:listing_id', '/customizations/:listing_id'], asyn
 
     const reviewRows = await db.prepare(`
       SELECT 
-        users.full_name AS buyer_name,
+        COALESCE(users.display_name, users.full_name) AS buyer_name,
         users.avatar_url AS buyer_avatar_url,
         reviews.rating,
         reviews.body AS review_text,

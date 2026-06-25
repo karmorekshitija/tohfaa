@@ -87,8 +87,43 @@
           `;
         }
       } else {
-        // On desktop, we remove the rightmost acct logo besides notification
-        authContainer.innerHTML = '';
+        // On desktop, render the avatar link to /buyer/profile.html
+        if (!authContainer.innerHTML.trim() || authContainer.innerHTML === '') {
+          const userStr = sessionStorage.getItem('tohfa_user');
+          let initial = 'A';
+          let avatarUrl = '';
+          if (userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              avatarUrl = user.avatar_url || '';
+              if (user.display_name) {
+                initial = user.display_name.charAt(0).toUpperCase();
+              } else if (user.full_name) {
+                initial = user.full_name.charAt(0).toUpperCase();
+              } else if (user.name) {
+                initial = user.name.charAt(0).toUpperCase();
+              } else if (user.email) {
+                initial = user.email.charAt(0).toUpperCase();
+              }
+            } catch(e) {}
+          }
+          
+          let avatarHtml = '';
+          if (avatarUrl) {
+            avatarHtml = `
+              <a href="/buyer/profile.html" id="nav-avatar" class="w-10 h-10 rounded-full border border-[#8FAF82] overflow-hidden flex-shrink-0 cursor-pointer block select-none">
+                <img src="${avatarUrl}" alt="Profile" class="w-full h-full object-cover" loading="lazy" />
+              </a>
+            `;
+          } else {
+            avatarHtml = `
+              <a href="/buyer/profile.html" id="nav-avatar" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer select-none">
+                ${initial}
+              </a>
+            `;
+          }
+          authContainer.innerHTML = avatarHtml;
+        }
       }
     } else {
       if (!authContainer.innerHTML.trim()) {
@@ -148,7 +183,10 @@
     const headers = document.querySelectorAll('body > header, body > nav');
     headers.forEach(el => {
       if (el.id !== 'tohfa-desktop-header' && el.id !== 'mbt-topbar') {
-        el.remove();
+        // Only remove if it represents a top navigation bar (has sticky class, h-20 class, or contains the logo)
+        if (el.classList.contains('sticky') || el.classList.contains('h-20') || el.classList.contains('h-16') || el.querySelector('a[href*="home.html"]')) {
+          el.remove();
+        }
       }
     });
 

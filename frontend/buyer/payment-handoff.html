@@ -66,7 +66,7 @@
   </div>
 </header>
 <!-- Top App Bar -->
-<header class="flex justify-between items-center w-full px-margin-desktop bg-background relative z-20 py-4">
+<section class="flex justify-between items-center w-full px-margin-desktop bg-background relative z-20 py-4">
 <div class="flex-1">
 <span class="font-headline-lg text-primary italic">Tohfa<span class="text-[#C8973A]">.</span></span>
 </div>
@@ -79,7 +79,7 @@
 <span class="font-body-md">Back</span>
 </button>
 </div>
-</header>
+</section>
 <main class="relative flex flex-col items-center justify-start min-h-[calc(100vh-100px)] py-12 px-margin-desktop overflow-hidden">
 <!-- Ink Splatter Background Effect -->
 <div class="absolute inset-0 ink-splatter opacity-[0.04] pointer-events-none"></div>
@@ -203,7 +203,7 @@
                 }
 
                 if (authContainer) {
-                    authContainer.innerHTML = '';
+                    authContainer.innerHTML = avatarHtml;
                 }
             } catch(e) {
                 console.error("Failed to parse token:", e);

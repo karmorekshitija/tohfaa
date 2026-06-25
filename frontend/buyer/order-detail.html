@@ -256,12 +256,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    ${o.status === 'Delivered' ? `
+                                    ${(o.status && o.status.toLowerCase() === 'delivered') ? `
                                         <div class="border-t border-outline-variant/20 pt-2 mt-2 flex justify-between items-center">
                                             <span class="text-xs text-on-surface-variant">Share your feedback:</span>
-                                            <button onclick="openReviewModal(${item.product_id}, '${item.product_name.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-primary text-white text-xs font-bold uppercase rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all">
-                                                Write a Review
-                                            </button>
+                                            ${item.is_reviewed ? `
+                                                <button disabled class="px-3 py-1.5 bg-[#8FAF82]/20 text-[#3D6B4F]/50 text-xs font-bold uppercase rounded-lg cursor-not-allowed">
+                                                    Reviewed
+                                                </button>
+                                            ` : `
+                                                <button onclick="openReviewModal(${item.product_id}, '${item.product_name.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-primary text-white text-xs font-bold uppercase rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all">
+                                                    Write a Review
+                                                </button>
+                                            `}
                                         </div>
                                     ` : ''}
                                 </div>
@@ -498,12 +504,29 @@
         initOrderDetail();
 
         // Bind stars
+        const starContainer = document.getElementById('modal-rating-stars');
         document.querySelectorAll('#modal-rating-stars .star-input').forEach(star => {
             star.addEventListener('click', function() {
                 selectedRating = parseInt(this.getAttribute('data-val'), 10);
                 updateModalStars();
             });
+            star.addEventListener('mouseenter', function() {
+                const hoverVal = parseInt(this.getAttribute('data-val'), 10);
+                const starsList = document.querySelectorAll('#modal-rating-stars .star-input');
+                starsList.forEach((s, idx) => {
+                    if (idx < hoverVal) {
+                        s.style.fontVariationSettings = "'FILL' 1";
+                    } else {
+                        s.style.fontVariationSettings = "'FILL' 0";
+                    }
+                });
+            });
         });
+        if (starContainer) {
+            starContainer.addEventListener('mouseleave', function() {
+                updateModalStars();
+            });
+        }
 
         // Scrim click close
         const reviewModal = document.getElementById('reviewModal');
@@ -550,7 +573,7 @@
                 }
 
                 if (authContainer) {
-                    authContainer.innerHTML = '';
+                    authContainer.innerHTML = avatarHtml;
                 }
             } catch(e) {
                 console.error("Failed to parse token:", e);

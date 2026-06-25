@@ -2,13 +2,16 @@
 
 **Loop started:** 2026-06-21  
 **BASE_URL:** http://localhost:5173  
-**Status:** ✅ QA & Cleanup Completed (2026-06-24)
+**Status:** ✅ QA & Cleanup Completed (2026-06-25)
 
 ---
 
+## Resolved Bug Fixes
+- **Buyer Profile Navigation & Avatar Rendering:** Logged-in buyers previously had their navigation container (`auth-buttons-container`) set to an empty string on desktop, hiding the profile avatar/initial. This has been resolved in `ProtectedRoute.js` by rendering the avatar link to `/buyer/profile.html` dynamically for both mobile and desktop. Furthermore, header removal logic has been updated to be selective (targeting only sticky navigation headers), protecting cached pages from having their profile headers incorrectly stripped. The top header avatar link now successfully renders and links to `/buyer/profile.html`, allowing seamless access to `/buyer/edit-profile.html`.
+
 ## Workspace Cleanup Log
-- Redundant `.zip` files and their extracted folder counterparts have been successfully deleted from the root directory.
-- All `.DS_Store` files in the root, `frontend`, and `backend` directories have been removed.
+- Redundant `.zip` files and their extracted folder counterparts have been successfully verified as removed from the root directory.
+- All `.DS_Store` files in the root, `frontend`, and `backend` directories have been cleaned up recursively.
 
 ## Feature Testing & Verification
 
@@ -18,9 +21,9 @@
 - **Production Build:** Ran `npm run build` inside `frontend/` — compiled successfully with zero errors and all JS syntax checks clean.
 
 ### 2. Integration Test Suites
-- `checkout-contention.test.js` (E2E Checkout Contention & Loyalty Tiebreak) — **PASSED**
-- `concierge-chat.test.js` (E2E Concierge Chat & Offline Handoff) — **PASSED**
-- `customization-chat.test.js` (E2E Customization Request & Quote Flow) — **PASSED**
+- `checkout-contention.test.js` (E2E Checkout Contention & Loyalty Tiebreak) — **PASSED** (all assertions verified stock updates, contention queuing, and cart cleanup correctly).
+- `concierge-chat.test.js` (E2E Concierge Chat & Offline Handoff) — **PASSED** (verified chat start, chatbot intake, handoff status transitions, and final receipt generation).
+- `customization-chat.test.js` (E2E Customization Request & Quote Flow) — **PASSED** (verified chat initialization, quote submission, acceptance, and payment verification).
 
 ### 3. Buyer Portal Walkthrough (Desktop `/buyer/` & Mobile `/mobile-buyer/`)
 - [x] **Home Page:** Smooth scrolling verified, banners click to correct destinations, correct layout styling, all images load correctly.
@@ -30,7 +33,7 @@
 - [x] **Wishlist (Saved Makes):** Verified that adding a product dynamically increments the wishlist badge counter. Page `/buyer/saved` loads wishlist correctly. Item removal works.
 - [x] **Cart:** Quantity adjustment (increment/decrement) correctly updates individual item subtotals and the cart total. Item removal and empty cart states behave correctly.
 - [x] **Checkout:** Address selection and creation, mock payment method selections, and simulated Razorpay validation checkout flow verified successfully.
-- [x] **Profile:** Route `/buyer/profile` renders avatar/initial, user details, and tab navigation.
+- [x] **Profile & Edit Profile:** Route `/buyer/profile` renders avatar/initial, user details, and tab navigation. Avatar displays dynamically in the header navigation, clicking it navigates to the profile and edit profile pages successfully.
 - [x] **Notifications:** Notifications panel loads correctly, badge counts increment/decrement dynamically, and marking items as read works.
 - [x] **Mobile Layout:** Verified at 375px wide viewport simulation. No text overflows, flex/grid misalignment, or horizontal scrolls. Mobile bottom navigation bar links function correctly.
 
@@ -49,6 +52,12 @@
 - [x] **Store Configuration:** Store banner, announcement banner, FAQs, and vacation mode settings successfully load and update.
 - [x] **Messages & Disputes:** Live chat components load, and message histories are fully retrievable. Dispute logs and reviews summaries verified.
 - [x] **Mobile Layout:** Monitored on 375px viewport. Bottom navigation tabs and responsive layout grid flex/wrap properties work cleanly.
+
+### 5. Product Reviews & Ratings System
+- [x] **Order Detail Reviews Form:** Form to submit star ratings (1–5) and review body renders dynamically on the order details page (`order-detail.html`) only when order status is `Delivered`.
+- [x] **Product Detail Reviews Display:** Verified that reviews are loaded dynamically on the product page (`product.html`), showing average star rating, total review count, individual reviewer names, rating stars, and comments.
+- [x] **Mobile Reviews:** Mobile versions of order details and product pages are fully functional, wrapping cleanly down to 375px.
+- [x] **E2E Test Coverage:** Written and verified comprehensive integration tests in `backend/tests/product-reviews.test.js` checking authorization, status boundaries (orders must be delivered), recalculations, and duplicates. All tests passed.
 
 No active bugs were detected in the core user journeys or backend E2E flows during this test run.
 
