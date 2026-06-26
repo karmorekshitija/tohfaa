@@ -323,7 +323,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug') || 'ceramics-pottery';
-    let currentSub = 'All';
+    let selectedSubcategoryIds = [];
     let currentSort = 'newest';
     let activeFilters = {
       min_price: '',
@@ -422,7 +422,9 @@
       
       container.innerHTML = subs.map(sub => {
         const subValue = sub.id;
-        const isActive = String(subValue) === String(currentSub);
+        const isActive = subValue === 'All'
+          ? selectedSubcategoryIds.length === 0
+          : selectedSubcategoryIds.includes(parseInt(subValue, 10));
         const btnClass = isActive 
           ? "bg-[#8FAF82] text-white shadow-sm" 
           : "bg-[#F7F3EC] border border-[#c3c8c1] text-[#444840]";
@@ -431,7 +433,18 @@
 
       container.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', async () => {
-          currentSub = btn.getAttribute('data-sub');
+          const val = btn.getAttribute('data-sub');
+          if (val === 'All') {
+            selectedSubcategoryIds = [];
+          } else {
+            const numVal = parseInt(val, 10);
+            const subVal = isNaN(numVal) ? val : numVal;
+            if (selectedSubcategoryIds.includes(subVal)) {
+              selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== subVal);
+            } else {
+              selectedSubcategoryIds.push(subVal);
+            }
+          }
           renderSubcategories();
           await fetchProducts();
         });
@@ -514,8 +527,8 @@
         rating: activeFilters.rating,
         availability: activeFilters.availability
       };
-      if (currentSub !== 'All') {
-        params.subcategory_ids = currentSub;
+      if (selectedSubcategoryIds.length > 0) {
+        params.subcategory_ids = selectedSubcategoryIds.join(',');
       }
 
       try {

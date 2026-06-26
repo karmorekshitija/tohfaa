@@ -230,6 +230,7 @@
                 <div class="space-y-sm">
                     <h4 class="font-label-caps text-outline text-xs tracking-wider uppercase">Description</h4>
                     <p id="product-description" class="text-secondary text-sm leading-relaxed whitespace-pre-line">Loading details...</p>
+                    <div id="product-subcategories-container" class="flex flex-wrap gap-2 pt-2"></div>
                 </div>
 
                 <!-- Add to Cart Widget -->
@@ -567,6 +568,20 @@
                     // Update UI Info
                     document.getElementById('product-name').innerText = product.name;
                     document.getElementById('product-description').innerText = product.description || 'No description available.';
+                    
+                    const subcontainer = document.getElementById('product-subcategories-container');
+                    if (subcontainer) {
+                        subcontainer.innerHTML = '';
+                        if (product.subcategories && product.subcategories.length > 0) {
+                            product.subcategories.forEach(sub => {
+                                const span = document.createElement('span');
+                                span.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#E8F0E6] text-[#3D6B4F] border border-[#C5D9C2] font-body";
+                                span.textContent = sub.name;
+                                subcontainer.appendChild(span);
+                            });
+                        }
+                    }
+
                     document.getElementById('product-price').innerText = formatPaise(product.price_paise);
                     document.getElementById('product-seller').innerText = product.seller?.seller_name || 'Artisan';
                     

@@ -631,7 +631,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug') || 'ceramics-pottery';
-    let currentSub = 'All';
+    let selectedSubcategoryIds = [];
     let currentSort = 'newest';
 
     let activeFilters = {
@@ -811,8 +811,10 @@
       
       container.innerHTML = subs.map(sub => {
         const subValue = sub.id;
-        const isActive = String(subValue) === String(currentSub);
-        const activeClasses = "bg-primary-container text-white shadow-md";
+        const isActive = subValue === 'All'
+          ? selectedSubcategoryIds.length === 0
+          : selectedSubcategoryIds.includes(parseInt(subValue, 10));
+        const activeClasses = "bg-primary text-white shadow-md";
         const inactiveClasses = "bg-[#F7F3EC] border border-outline-variant text-on-surface-variant font-body-md text-sm hover:border-primary";
         return `
           <button class="flex-shrink-0 whitespace-nowrap px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-sub="${subValue}">
@@ -823,7 +825,18 @@
 
       container.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', async () => {
-          currentSub = btn.getAttribute('data-sub');
+          const val = btn.getAttribute('data-sub');
+          if (val === 'All') {
+            selectedSubcategoryIds = [];
+          } else {
+            const numVal = parseInt(val, 10);
+            const subVal = isNaN(numVal) ? val : numVal;
+            if (selectedSubcategoryIds.includes(subVal)) {
+              selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== subVal);
+            } else {
+              selectedSubcategoryIds.push(subVal);
+            }
+          }
           renderSubcategoryFilters(); // Re-render to update active styling
           await fetchProducts();
         });
@@ -928,8 +941,8 @@
           availability: activeFilters.availability,
           category_id: activeFilters.category_id
         };
-        if (currentSub !== 'All') {
-          params.subcategory_ids = currentSub;
+        if (selectedSubcategoryIds.length > 0) {
+          params.subcategory_ids = selectedSubcategoryIds.join(',');
         }
         const res = await apiClient.get(`/categories/${slug}/products`, { params });
         if (res.data && res.data.success) {

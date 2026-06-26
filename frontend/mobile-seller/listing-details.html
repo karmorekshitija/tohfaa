@@ -113,7 +113,7 @@
 </fieldset>
 <!-- END: Product Type -->
 <!-- BEGIN: Discovery Settings -->
-<div class="p-6 bg-forest/[0.03] border border-forest/10 rounded-2xl">
+<div class="p-6 bg-forest/[0.03] border border-forest/10 rounded-2xl hidden">
 <h2 class="text-xl font-playfair mb-2">Discovery Settings</h2>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Product Tags</label>
@@ -139,6 +139,13 @@
 <div class="space-y-4">
 <h2 class="text-xl font-playfair">Category Selection</h2>
 <div id="category-buttons-container" class="flex flex-wrap gap-2"></div>
+<!-- Subcategories Selector -->
+<div id="subcategories-wrapper" class="hidden space-y-2 mt-4">
+  <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Subcategories</label>
+  <div id="subcategories-container" class="flex flex-wrap gap-2 p-3 bg-white border border-forest/10 rounded-xl max-h-40 overflow-y-auto">
+    <!-- Populated dynamically -->
+  </div>
+</div>
 </div>
 <!-- END: Category Selection -->
 <!-- BEGIN: Dimensions & Weight -->
@@ -172,6 +179,25 @@
 <!-- END: Product Description -->
 </form>
 <!-- END: Listing Form -->
+
+<!-- BEGIN: Sticky Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden">
+  <div class="flex items-center gap-3">
+    <button id="btn-discard" class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-red-50 transition-all duration-200 active:scale-95">
+      Discard
+    </button>
+    <button id="btn-keep-draft" class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-forest/5 transition-all duration-200 active:scale-95">
+      Keep Draft
+    </button>
+    <button id="btn-continue" class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2 hover:bg-forest/90 transition-all duration-200 active:scale-95">
+      Continue
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+<!-- END: Sticky Actions Bar -->
 </main>
 <!-- BEGIN: Footer Actions -->
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
@@ -333,39 +359,108 @@
     titleCharCount.textContent = `${len}/80 characters`;
   });
 
+  let categoriesList = [];
+  let selectedSubcategoryIds = [];
+  let selectedCategoryId = '';
+
   async function fetchCategories() {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/categories`, {
-        headers: { 'Authorization': `Bearer ${getToken()}` }
-      });
+      const res = await fetch(`${API_BASE}/api/categories`);
       if (!res.ok) throw new Error('API failed');
       const data = await res.json();
-      const categories = data.data || data || [];
-      renderCategoryButtons(categories.map(c => typeof c === 'string' ? c : (c.name || '')));
+      categoriesList = data.data?.categories || [];
+      renderCategoryButtons(categoriesList);
+      
+      if (selectedCategoryId) {
+        renderSubcategories(selectedCategoryId);
+      } else if (selectedCategory) {
+        const catObj = categoriesList.find(c => (c.display_name || c.name).toLowerCase() === selectedCategory.toLowerCase());
+        if (catObj) {
+          selectedCategoryId = catObj.id;
+          renderSubcategories(catObj.id);
+        }
+      }
     } catch (err) {
-      console.warn('Failed to fetch categories, falling back to default list', err);
-      renderCategoryButtons(['Pressed Flowers', 'Cyanotypes', 'Handmade Paper', 'Artisan Kits']);
+      console.warn('Failed to fetch categories', err);
     }
   }
 
   function renderCategoryButtons(categories) {
     const container = document.getElementById('category-buttons-container');
     container.innerHTML = '';
-    categories.forEach(catName => {
+    categories.forEach(cat => {
+      const catName = cat.display_name || cat.name;
+      const isSelected = String(selectedCategory).toLowerCase() === catName.toLowerCase() || String(selectedCategoryId) === String(cat.id);
+      
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = catName;
       btn.className = `px-5 py-3 rounded-full text-sm font-sans transition-all duration-200 active:scale-95 ${
-        selectedCategory === catName 
+        isSelected 
           ? 'bg-forest text-white border-2 border-forest font-bold font-sans' 
           : 'bg-white border border-forest/10 hover:border-forest hover:bg-forest/5'
       }`;
       btn.addEventListener('click', () => {
         selectedCategory = catName;
+        selectedCategoryId = cat.id;
         renderCategoryButtons(categories);
+        renderSubcategories(cat.id);
       });
       container.appendChild(btn);
     });
+  }
+
+  function renderSubcategories(categoryId) {
+    const subwrapper = document.getElementById('subcategories-wrapper');
+    const subcontainer = document.getElementById('subcategories-container');
+    subcontainer.innerHTML = '';
+    
+    if (!categoryId) {
+      subwrapper.classList.add('hidden');
+      return;
+    }
+    
+    const cat = categoriesList.find(c => String(c.id) === String(categoryId));
+    if (cat && cat.subcategories && cat.subcategories.length > 0) {
+      subwrapper.classList.remove('hidden');
+      cat.subcategories.forEach(sub => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-2 px-3 py-1.5 bg-forest/5 hover:bg-forest/10 rounded-md border border-forest/20 cursor-pointer text-xs transition-all';
+        
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = sub.id;
+        cb.className = 'rounded border-forest text-forest focus:ring-forest';
+        if (selectedSubcategoryIds.includes(sub.id)) {
+          cb.checked = true;
+        }
+        
+        cb.addEventListener('change', () => {
+          const val = parseInt(cb.value, 10);
+          if (cb.checked) {
+            if (selectedSubcategoryIds.length >= 5) {
+              cb.checked = false;
+              showToast('You can select a maximum of 5 subcategories', 'error');
+              return;
+            }
+            if (!selectedSubcategoryIds.includes(val)) selectedSubcategoryIds.push(val);
+          } else {
+            selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== val);
+          }
+        });
+        
+        label.appendChild(cb);
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'text-forest font-medium';
+        nameSpan.textContent = sub.name;
+        label.appendChild(nameSpan);
+        
+        subcontainer.appendChild(label);
+      });
+    } else {
+      subwrapper.classList.add('hidden');
+    }
   }
 
   function init() {
@@ -384,7 +479,6 @@
     document.getElementById('input-title').value = draftData.title || '';
     titleInput.dispatchEvent(new Event('input'));
 
-    document.getElementById('input-tags').value = Array.isArray(draftData.tags) ? draftData.tags.join(', ') : (draftData.tags || '');
     document.getElementById('input-length').value = draftData.length_cm || '';
     document.getElementById('input-width').value = draftData.width_cm || '';
     document.getElementById('input-height').value = draftData.height_cm || '';
@@ -392,24 +486,25 @@
     document.getElementById('textarea-description').value = draftData.description || '';
 
     selectedCategory = draftData.category || '';
+    selectedCategoryId = draftData.category_id || '';
+    selectedSubcategoryIds = draftData.subcategory_ids || [];
     fetchCategories();
   }
 
   function gatherFormData() {
     const isCustom = document.getElementById('input-product-type-custom').checked;
-    const tagsRaw = document.getElementById('input-tags').value;
-    const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0);
 
     return {
       product_type: isCustom ? 'custom' : 'pre-made',
       title: document.getElementById('input-title').value.trim() || 'Untitled Draft',
-      tags: tags,
       length_cm: parseFloat(document.getElementById('input-length').value) || null,
       width_cm: parseFloat(document.getElementById('input-width').value) || null,
       height_cm: parseFloat(document.getElementById('input-height').value) || null,
       weight_g: parseFloat(document.getElementById('input-weight').value) || null,
       description: document.getElementById('textarea-description').value.trim(),
-      category: selectedCategory
+      category: selectedCategory,
+      category_id: selectedCategoryId ? parseInt(selectedCategoryId, 10) : null,
+      subcategory_ids: selectedSubcategoryIds
     };
   }
 
@@ -471,7 +566,7 @@
       showToast('Please enter a listing title', 'error');
       return;
     }
-    if (!local.category) {
+    if (!local.category_id && !local.category) {
       showToast('Please select a category', 'error');
       return;
     }

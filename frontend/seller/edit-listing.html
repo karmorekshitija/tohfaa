@@ -60,6 +60,13 @@
           <div class="grid grid-cols-1 gap-4" id="details-fields-container">
               <!-- Dynamically populated by JS -->
           </div>
+          <!-- Subcategories Wrapper -->
+          <div id="subcategories-wrapper" class="hidden mt-4">
+              <label class="block text-xs font-semibold text-on-surface-variant/80 mb-2">Subcategories</label>
+              <div id="subcategories-container" class="flex flex-wrap gap-2 p-3 bg-white border border-outline-variant/30 rounded-xl max-h-40 overflow-y-auto">
+                  <!-- Populated dynamically -->
+              </div>
+          </div>
       </section>
 
       <!-- Photos Section -->
@@ -231,6 +238,8 @@
             const detailsSectionLabel = document.getElementById('details-section-label');
             const detailsFieldsContainer = document.getElementById('details-fields-container');
             
+            selectedSubcategoryIds = (data.subcategories || []).map(sc => sc.id || sc);
+
             if (listingStatus === 'draft') {
                 // Draft status: customizable name and category
                 warningBanner.className = "mb-8 p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-950 rounded-r-xl shadow-sm flex items-start gap-3";
@@ -243,6 +252,10 @@
                 
                 detailsSectionLabel.textContent = "Product Details (Draft)";
                 detailsFieldsContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-6";
+                const optionsHtml = categoriesList.map(cat => `
+                    <option value="${cat.id}">${cat.display_name || cat.name}</option>
+                `).join('');
+
                 detailsFieldsContainer.innerHTML = `
                     <div>
                         <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Product Name</label>
@@ -251,18 +264,25 @@
                     <div>
                         <label class="block text-xs font-semibold text-on-surface-variant/80 mb-1">Category</label>
                         <select id="edit-product-category" class="w-full px-4 py-2.5 bg-surface border border-outline-variant/40 rounded-xl focus:border-forest focus:ring-forest text-sm font-medium">
-                            <option value="Art Print">Art Print</option>
-                            <option value="Curated Seeds">Curated Seeds</option>
-                            <option value="Organic Soap">Organic Soap</option>
-                            <option value="Textiles">Textiles</option>
-                            <option value="Home Decor">Home Decor</option>
-                            <option value="Jewellery">Jewellery</option>
-                            <option value="Ceramics">Ceramics</option>
+                            <option value="">Select a Category</option>
+                            ${optionsHtml}
                         </select>
                     </div>
                 `;
                 document.getElementById('edit-product-name').value = data.title || '';
-                document.getElementById('edit-product-category').value = data.category || '';
+                
+                let matchedCatId = data.category_id;
+                if (!matchedCatId && data.category) {
+                    const catObj = categoriesList.find(c => (c.display_name || c.name).toLowerCase() === data.category.toLowerCase());
+                    if (catObj) matchedCatId = catObj.id;
+                }
+                document.getElementById('edit-product-category').value = matchedCatId || '';
+                
+                renderSubcategories(matchedCatId || '');
+
+                document.getElementById('edit-product-category').addEventListener('change', (e) => {
+                    renderSubcategories(e.target.value);
+                });
             } else {
                 // Non-draft status: locked name and category
                 warningBanner.className = "mb-8 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-850 rounded-r-xl shadow-sm flex items-start gap-3";
@@ -298,6 +318,13 @@
                 `;
                 document.getElementById('locked-product-name').textContent = data.title || '';
                 document.getElementById('locked-product-category').textContent = data.category || '';
+
+                let matchedCatId = data.category_id;
+                if (!matchedCatId && data.category) {
+                    const catObj = categoriesList.find(c => (c.display_name || c.name).toLowerCase() === data.category.toLowerCase());
+                    if (catObj) matchedCatId = catObj.id;
+                }
+                renderSubcategories(matchedCatId || '');
             }
             document.getElementById('listing-price').value = data.price || (data.price_paise ? data.price_paise / 100 : 0) || data.base_price || '';
             document.getElementById('stock-count').value = data.stock !== undefined ? data.stock : (data.stock_count !== undefined ? data.stock_count : 1);
@@ -478,8 +505,12 @@
             patchBody.title = nameInput.value.trim();
         }
         if (categoryInput) {
-            patchBody.category = categoryInput.value;
+            const catIdVal = categoryInput.value;
+            patchBody.category_id = catIdVal ? parseInt(catIdVal, 10) : null;
+            const catObj = categoriesList.find(c => String(c.id) === String(catIdVal));
+            patchBody.category = catObj ? (catObj.display_name || catObj.name) : '';
         }
+        patchBody.subcategory_ids = selectedSubcategoryIds;
 
         const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
         try {
@@ -507,12 +538,81 @@
         }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
+    let categoriesList = [];
+    let selectedSubcategoryIds = [];
+
+    async function initCategories() {
+        try {
+            const res = await fetch(`${API_BASE}/api/categories`);
+            if (res.ok) {
+                const json = await res.json();
+                categoriesList = json.data?.categories || [];
+            }
+        } catch (err) {
+            console.error('Failed to load categories:', err);
+        }
+    }
+
+    function renderSubcategories(categoryId) {
+        const subwrapper = document.getElementById('subcategories-wrapper');
+        const subcontainer = document.getElementById('subcategories-container');
+        subcontainer.innerHTML = '';
+        
+        if (!categoryId) {
+            subwrapper.classList.add('hidden');
+            return;
+        }
+        
+        const cat = categoriesList.find(c => String(c.id) === String(categoryId));
+        if (cat && cat.subcategories && cat.subcategories.length > 0) {
+            subwrapper.classList.remove('hidden');
+            cat.subcategories.forEach(sub => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center gap-2 px-3 py-1.5 bg-sage/5 hover:bg-sage/10 rounded-md border border-sage/20 cursor-pointer text-xs transition-all';
+                
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.value = sub.id;
+                cb.className = 'rounded border-sage text-forest focus:ring-forest';
+                if (selectedSubcategoryIds.includes(sub.id)) {
+                    cb.checked = true;
+                }
+                
+                cb.addEventListener('change', () => {
+                    const val = parseInt(cb.value, 10);
+                    if (cb.checked) {
+                        if (selectedSubcategoryIds.length >= 5) {
+                            cb.checked = false;
+                            showToast('You can select a maximum of 5 subcategories', 'error');
+                            return;
+                        }
+                        if (!selectedSubcategoryIds.includes(val)) selectedSubcategoryIds.push(val);
+                    } else {
+                        selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== val);
+                    }
+                });
+                
+                label.appendChild(cb);
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'text-primary font-medium';
+                nameSpan.textContent = sub.name;
+                label.appendChild(nameSpan);
+                
+                subcontainer.appendChild(label);
+            });
+        } else {
+            subwrapper.classList.add('hidden');
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
         productId = getQueryParam('id');
         if (!productId) {
             window.location.href = '/seller/catalog.html';
             return;
         }
+        await initCategories();
         loadListingData();
     });
 </script>

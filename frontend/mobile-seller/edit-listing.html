@@ -18,202 +18,131 @@
 <seller-layout active-tab="catalog">
 <main class="px-4 py-6">
 <!-- BEGIN: Header Section -->
-<section class="mb-8" data-purpose="listing-header">
+<section class="mb-6" data-purpose="listing-header">
 <div class="flex items-center gap-4 mb-4">
-<button class="bg-white rounded-full p-2 border border-forest/20">
+<button id="btn-back" class="bg-white rounded-full p-2 border border-forest/20 transition-all hover:bg-forest/5 active:scale-95 duration-200" type="button">
 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
 </svg>
 </button>
-<h1 class="text-3xl font-playfair">Craft New Listing</h1>
+<h1 class="text-3xl font-playfair">Edit Listing</h1>
 </div>
-<!-- BEGIN: Progress Indicator -->
-<div class="relative py-4 overflow-x-auto scrollbar-hide" data-purpose="progress-stepper">
-<div class="flex items-center justify-between min-w-[500px] relative px-4">
-<div class="progress-line"></div>
-<div class="flex flex-col items-center gap-2 relative z-10">
-<div class="w-9 h-9 rounded-full flex items-center justify-center step-completed">
-<svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-<path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase">Photos</span>
-</div>
-<div class="flex flex-col items-center gap-2 relative z-10">
-<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-forest ring-4 ring-parchment">
-<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase border-b-2 border-forest pb-1">Details</span>
-</div>
-<div class="flex flex-col items-center gap-2 relative z-10">
-<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-forest/20">
-<svg class="h-5 w-5 opacity-40" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase opacity-40">Pricing</span>
-</div>
-<div class="flex flex-col items-center gap-2 relative z-10">
-<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-forest/20">
-<svg class="h-5 w-5 opacity-40" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6 0a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase opacity-40">Shipping</span>
-</div>
-<div class="flex flex-col items-center gap-2 relative z-10">
-<div class="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-forest/20">
-<svg class="h-5 w-5 opacity-40" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</div>
-<span class="text-[10px] font-mono tracking-widest uppercase opacity-40">Preview</span>
-</div>
-</div>
-</div>
-<!-- END: Progress Indicator -->
+<div id="warning-banner" class="hidden"></div>
 </section>
 <!-- END: Header Section -->
+
 <!-- BEGIN: Listing Form -->
-<form class="space-y-8" data-purpose="listing-form">
-<!-- BEGIN: Product Type -->
-<fieldset>
-<legend class="text-xl font-playfair mb-4">Product Type</legend>
-<div class="grid grid-cols-1 gap-4">
-<!-- Selection 1 -->
-<label class="relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer">
-<div class="flex items-start gap-4">
-<div class="mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center">
-</div>
-<div>
-<span class="block font-bold text-lg mb-1">Pre-made / Ready Inventory</span>
-<span class="text-sm opacity-70">Standard item ready to ship directly from inventory</span>
-</div>
-</div>
-<input class="hidden" name="product_type" type="radio" value="pre-made"/>
-</label>
-<!-- Selection 2 -->
-<label class="relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer">
-<div class="flex items-start gap-4">
-<div class="mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center">
-<div class="w-2.5 h-2.5 bg-forest rounded-full"></div>
-</div>
-<div>
-<span class="block font-bold text-lg mb-1">Customisable / Made-to-Order</span>
-<span class="text-sm opacity-70">Accept custom text, colors, photos, or special instructions</span>
-</div>
-</div>
-<input checked="" class="hidden" name="product_type" type="radio" value="custom"/>
-</label>
-</div>
-</fieldset>
-<!-- END: Product Type -->
-<!-- BEGIN: Discovery Settings -->
-<div class="p-6 bg-forest/[0.03] border border-forest/10 rounded-2xl">
-<h2 class="text-xl font-playfair mb-2">Discovery Settings</h2>
-<div class="space-y-2">
-<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Product Tags</label>
-<div class="relative">
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 font-sans focus:ring-forest focus:border-forest" placeholder="Add tags..." type="text"/>
-<span class="absolute right-4 top-1/2 -translate-y-1/2 text-forest/40">#</span>
-</div>
-</div>
-</div>
-<!-- END: Discovery Settings -->
-<!-- BEGIN: Listing Title -->
-<div class="space-y-2">
-<h2 class="text-xl font-playfair">Listing Title</h2>
-<div class="relative">
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
-<div class="text-right mt-2">
-<span class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
-</div>
-</div>
-</div>
-<!-- END: Listing Title -->
-<!-- BEGIN: Category Selection -->
-<div class="space-y-4">
-<h2 class="text-xl font-playfair">Category Selection</h2>
-<div class="flex flex-wrap gap-2">
-<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Pressed Flowers</button>
-<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Cyanotypes</button>
-<button class="px-5 py-3 rounded-full bg-white border border-forest/10 text-sm font-sans hover:border-forest transition-colors" type="button">Handmade Paper</button>
-<button class="px-5 py-3 rounded-full bg-white border-2 border-forest text-sm font-sans" type="button">Artisan Kits</button>
-</div>
-</div>
-<!-- END: Category Selection -->
-<!-- BEGIN: Dimensions & Weight -->
-<div class="space-y-4">
-<h2 class="text-xl font-playfair">Dimensions &amp; Weight</h2>
-<div class="grid grid-cols-2 gap-4">
-<div class="space-y-2">
-<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">L (CM)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
-</div>
-<div class="space-y-2">
-<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">W (CM)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
-</div>
-<div class="space-y-2">
-<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">H (CM)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
-</div>
-<div class="space-y-2">
-<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Weight (G)</label>
-<input class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
-</div>
-</div>
-</div>
-<!-- END: Dimensions & Weight -->
-<!-- BEGIN: Product Description -->
-<div class="space-y-4">
-<h2 class="text-xl font-playfair">Product Description</h2>
-<textarea class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
-</div>
-<!-- END: Product Description -->
-<!-- BEGIN: Customisation Options Section -->
-<div class="space-y-4" data-purpose="customisation-section">
-<div class="p-6 bg-white border border-forest/20 rounded-2xl space-y-6">
-<h2 class="text-xl font-playfair border-b border-forest/10 pb-2">Customisation Options</h2>
-<div class="space-y-4">
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="w-5 h-5" type="checkbox"/>
-<span class="text-forest font-sans">Allow Text Personalization</span>
-</label>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="w-5 h-5" type="checkbox"/>
-<span class="text-forest font-sans">Offer Color Choices</span>
-</label>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="w-5 h-5" type="checkbox"/>
-<span class="text-forest font-sans">Allow Image Upload</span>
-</label>
-<label class="flex items-center gap-3 cursor-pointer group">
-<input class="w-5 h-5" type="checkbox"/>
-<span class="text-forest font-sans">Allow Special Instructions/Additional Notes</span>
-</label>
-</div>
-<div class="space-y-2">
-<label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Customisation Fee (₹)</label>
-<div class="relative">
-<span class="absolute left-4 top-1/2 -translate-y-1/2 text-forest/40">₹</span>
-<input class="w-full bg-white border border-forest/10 rounded-xl pl-8 pr-4 py-3 font-sans focus:ring-forest focus:border-forest" placeholder="0" type="number"/>
-</div>
-<p class="text-[10px] opacity-60 italic mt-1">This fee will be added on top of the listing's base price when customisation is requested.</p>
-</div>
-</div>
-<!-- Preview Summary Box -->
-<div class="p-4 bg-gray-100/80 border border-forest/10 rounded-2xl">
-<h3 class="text-xs font-mono uppercase tracking-wider text-forest/60 mb-2">Customisation Preview Summary</h3>
-<p class="text-sm text-red-600 italic">No customisation options configured yet. Set some options above.</p>
-</div>
-</div>
-<!-- END: Customisation Options Section -->
+<form class="space-y-8 pb-24" data-purpose="listing-form">
+  <!-- BEGIN: Product Type -->
+  <fieldset>
+    <legend class="text-xl font-playfair mb-4">Product Type</legend>
+    <div class="grid grid-cols-1 gap-4">
+      <label id="label-product-type-premade" class="relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer">
+        <div class="flex items-start gap-4">
+          <div id="outer-product-type-premade" class="mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center">
+            <div id="dot-product-type-premade" class="w-2.5 h-2.5 bg-forest rounded-full hidden"></div>
+          </div>
+          <div>
+            <span class="block font-bold text-lg mb-1">Pre-made / Ready Inventory</span>
+            <span class="text-sm opacity-70">Standard item ready to ship directly from inventory</span>
+          </div>
+        </div>
+        <input class="hidden" name="product_type" type="radio" value="pre-made" id="input-product-type-premade"/>
+      </label>
+      <label id="label-product-type-custom" class="relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer">
+        <div class="flex items-start gap-4">
+          <div id="outer-product-type-custom" class="mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center">
+            <div id="dot-product-type-custom" class="w-2.5 h-2.5 bg-forest rounded-full"></div>
+          </div>
+          <div>
+            <span class="block font-bold text-lg mb-1">Customisable / Made-to-Order</span>
+            <span class="text-sm opacity-70">Accept custom text, colors, photos, or special instructions</span>
+          </div>
+        </div>
+        <input checked="" class="hidden" name="product_type" type="radio" value="custom" id="input-product-type-custom"/>
+      </label>
+    </div>
+  </fieldset>
+  <!-- END: Product Type -->
+
+  <!-- BEGIN: Dynamic Listing Details -->
+  <div class="space-y-4">
+    <h2 id="details-section-label" class="text-xl font-playfair">Product Details</h2>
+    <div id="details-fields-container" class="space-y-4">
+      <!-- Loaded dynamically based on draft status -->
+    </div>
+    
+    <!-- Subcategories wrapper -->
+    <div id="subcategories-wrapper" class="hidden space-y-2 mt-4">
+      <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Subcategories (max 5)</label>
+      <div id="subcategories-container" class="flex flex-wrap gap-2 p-3 bg-white border border-forest/10 rounded-xl max-h-40 overflow-y-auto">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+  <!-- END: Dynamic Listing Details -->
+
+  <!-- BEGIN: Price & Stock -->
+  <div class="p-6 bg-forest/[0.03] border border-forest/10 rounded-2xl space-y-4">
+    <h2 class="text-xl font-playfair">Price &amp; Stock</h2>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Base Price (₹)</label>
+        <input id="listing-price" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest font-sans" placeholder="Price" type="number" step="0.01"/>
+      </div>
+      <div class="space-y-2">
+        <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Stock Count</label>
+        <input id="stock-count" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest font-sans" placeholder="Stock" type="number"/>
+      </div>
+    </div>
+  </div>
+  <!-- END: Price & Stock -->
+
+  <!-- BEGIN: Dimensions & Weight -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-playfair">Dimensions &amp; Weight</h2>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">L (CM)</label>
+        <input id="dim-l" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest font-sans" placeholder="L" type="number"/>
+      </div>
+      <div class="space-y-2">
+        <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">W (CM)</label>
+        <input id="dim-w" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest font-sans" placeholder="W" type="number"/>
+      </div>
+      <div class="space-y-2">
+        <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">H (CM)</label>
+        <input id="dim-h" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest font-sans" placeholder="H" type="number"/>
+      </div>
+      <div class="space-y-2">
+        <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Weight (G)</label>
+        <input id="dim-weight" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest font-sans" placeholder="Weight" type="number"/>
+      </div>
+    </div>
+  </div>
+  <!-- END: Dimensions & Weight -->
+
+  <!-- BEGIN: Product Description -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-playfair">Product Description</h2>
+    <textarea id="product-bio" class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
+  </div>
+  <!-- END: Product Description -->
 </form>
 <!-- END: Listing Form -->
+
+<!-- BEGIN: Sticky Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden">
+  <div class="flex items-center gap-3">
+    <button id="cancel-btn" type="button" class="flex-1 bg-white border border-forest text-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-forest/5 transition-all duration-200 active:scale-95">
+      Cancel
+    </button>
+    <button id="save-btn" type="button" class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2 hover:bg-forest/90 transition-all duration-200 active:scale-95">
+      Save Changes
+    </button>
+  </div>
+</div>
+<!-- END: Sticky Actions Bar -->
 </main>
 <!-- BEGIN: Footer Actions -->
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
@@ -306,4 +235,377 @@
 </footer>
 <!-- END: Footer Actions -->
 </seller-layout>
+
+<script>
+(function() {
+  const API_BASE = window.location.origin;
+  let productId = null;
+  let categoriesList = [];
+  let selectedSubcategoryIds = [];
+  let selectedCategoryId = '';
+  let selectedCategoryName = '';
+  let isDraft = true;
+
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-edit');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-edit'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  }
+
+  async function initCategories() {
+    try {
+      const res = await fetch(`${API_BASE}/api/categories`);
+      if (res.ok) {
+        const json = await res.json();
+        categoriesList = json.data?.categories || [];
+      }
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    }
+  }
+
+  function renderCategoryFields(listingData) {
+    const container = document.getElementById('details-fields-container');
+    container.innerHTML = '';
+
+    if (isDraft) {
+      // Draft mode: editable title and category chips
+      container.innerHTML = `
+        <div class="space-y-2">
+          <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Listing Title</label>
+          <input id="edit-product-name" maxlength="80" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" type="text" />
+          <div class="text-right mt-1">
+            <span id="title-char-count" class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] font-mono uppercase tracking-widest opacity-60 font-sans">Category Selection</label>
+          <div id="category-buttons-container" class="flex flex-wrap gap-2"></div>
+        </div>
+      `;
+
+      const titleInput = document.getElementById('edit-product-name');
+      const titleCharCount = document.getElementById('title-char-count');
+      titleInput.value = listingData.title || '';
+      titleInput.addEventListener('input', () => {
+        titleCharCount.textContent = `${titleInput.value.length}/80 characters`;
+      });
+      titleCharCount.textContent = `${titleInput.value.length}/80 characters`;
+
+      renderCategoryButtons();
+    } else {
+      // Locked mode
+      container.innerHTML = `
+        <div class="space-y-2">
+          <label class="text-[10px] font-mono uppercase tracking-widest opacity-60 flex items-center gap-1">
+            Product Name <span class="material-symbols-outlined text-xs">lock</span>
+          </label>
+          <div class="flex items-center gap-2 px-4 py-3 bg-forest/[0.03] rounded-xl border border-forest/10 text-forest/70 font-medium text-sm">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span>${listingData.title || ''}</span>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] font-mono uppercase tracking-widest opacity-60 flex items-center gap-1">
+            Category <span class="material-symbols-outlined text-xs">lock</span>
+          </label>
+          <div class="flex items-center gap-2 px-4 py-3 bg-forest/[0.03] rounded-xl border border-forest/10 text-forest/70 font-medium text-sm">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span>${listingData.category || ''}</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function renderCategoryButtons() {
+    const container = document.getElementById('category-buttons-container');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    categoriesList.forEach(cat => {
+      const catName = cat.display_name || cat.name;
+      const isSelected = String(selectedCategoryName).toLowerCase() === catName.toLowerCase() || String(selectedCategoryId) === String(cat.id);
+      
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = catName;
+      btn.className = `px-4 py-2.5 rounded-full text-xs font-sans transition-all duration-200 active:scale-95 ${
+        isSelected 
+          ? 'bg-forest text-white border-2 border-forest font-bold' 
+          : 'bg-white border border-forest/10 hover:border-forest hover:bg-forest/5'
+      }`;
+      btn.addEventListener('click', () => {
+        selectedCategoryName = catName;
+        selectedCategoryId = cat.id;
+        renderCategoryButtons();
+        renderSubcategories(cat.id);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function renderSubcategories(categoryId) {
+    const subwrapper = document.getElementById('subcategories-wrapper');
+    const subcontainer = document.getElementById('subcategories-container');
+    subcontainer.innerHTML = '';
+    
+    if (!categoryId) {
+      subwrapper.classList.add('hidden');
+      return;
+    }
+    
+    const cat = categoriesList.find(c => String(c.id) === String(categoryId));
+    if (cat && cat.subcategories && cat.subcategories.length > 0) {
+      subwrapper.classList.remove('hidden');
+      cat.subcategories.forEach(sub => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-2 px-3 py-1.5 bg-forest/5 hover:bg-forest/10 rounded-md border border-forest/20 cursor-pointer text-xs transition-all';
+        
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = sub.id;
+        cb.className = 'rounded border-forest text-forest focus:ring-forest';
+        if (selectedSubcategoryIds.includes(sub.id)) {
+          cb.checked = true;
+        }
+        
+        cb.addEventListener('change', () => {
+          const val = parseInt(cb.value, 10);
+          if (cb.checked) {
+            if (selectedSubcategoryIds.length >= 5) {
+              cb.checked = false;
+              showToast('You can select a maximum of 5 subcategories', 'error');
+              return;
+            }
+            if (!selectedSubcategoryIds.includes(val)) selectedSubcategoryIds.push(val);
+          } else {
+            selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== val);
+          }
+        });
+        
+        label.appendChild(cb);
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'text-forest font-medium';
+        nameSpan.textContent = sub.name;
+        label.appendChild(nameSpan);
+        
+        subcontainer.appendChild(label);
+      });
+    } else {
+      subwrapper.classList.add('hidden');
+    }
+  }
+
+  async function loadListingData() {
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${productId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          sessionStorage.clear();
+          window.location.href = '/auth/login.html';
+          return;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const resp = await res.json();
+      const data = resp.data || resp;
+
+      isDraft = (data.status || 'draft') === 'draft';
+      
+      const warningBanner = document.getElementById('warning-banner');
+      if (isDraft) {
+        warningBanner.className = "mb-4 p-3 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-950 rounded-r-xl text-xs font-semibold leading-relaxed";
+        warningBanner.innerHTML = `You are editing a <strong>Draft</strong> listing. You can change any details, including the product name and category.`;
+        warningBanner.classList.remove('hidden');
+      } else {
+        warningBanner.className = "mb-4 p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-950 rounded-r-xl text-xs font-semibold leading-relaxed";
+        warningBanner.innerHTML = `You can only edit dimensions, description, price, and inventory. Name & category are locked.`;
+        warningBanner.classList.remove('hidden');
+      }
+
+      selectedSubcategoryIds = (data.subcategories || []).map(sc => sc.id || sc);
+      selectedCategoryId = data.category_id || '';
+      selectedCategoryName = data.category || '';
+
+      renderCategoryFields(data);
+
+      let matchedCatId = data.category_id;
+      if (!matchedCatId && data.category) {
+        const catObj = categoriesList.find(c => (c.display_name || c.name).toLowerCase() === data.category.toLowerCase());
+        if (catObj) matchedCatId = catObj.id;
+      }
+      renderSubcategories(matchedCatId || '');
+
+      document.getElementById('listing-price').value = data.price || (data.price_paise ? data.price_paise / 100 : 0) || data.base_price || '';
+      document.getElementById('stock-count').value = data.stock !== undefined ? data.stock : (data.stock_count !== undefined ? data.stock_count : 1);
+      
+      document.getElementById('dim-l').value = data.dimensions_l || data.length_cm || '';
+      document.getElementById('dim-w').value = data.dimensions_w || data.width_cm || '';
+      document.getElementById('dim-h').value = data.dimensions_h || data.height_cm || '';
+      document.getElementById('dim-weight').value = data.dimensions_weight || data.weight_g || data.weight_grams || '';
+      document.getElementById('product-bio').value = data.bio || data.description || '';
+
+      if (data.product_type === 'pre-made') {
+        document.getElementById('input-product-type-premade').checked = true;
+      } else {
+        document.getElementById('input-product-type-custom').checked = true;
+      }
+      updateProductTypeUI();
+
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to load listing details.', 'error');
+    }
+  }
+
+  function updateProductTypeUI() {
+    const isPremade = document.getElementById('input-product-type-premade').checked;
+    
+    const labelPremade = document.getElementById('label-product-type-premade');
+    const labelCustom = document.getElementById('label-product-type-custom');
+    
+    const outerPremade = document.getElementById('outer-product-type-premade');
+    const outerCustom = document.getElementById('outer-product-type-custom');
+    
+    const dotPremade = document.getElementById('dot-product-type-premade');
+    const dotCustom = document.getElementById('dot-product-type-custom');
+
+    if (isPremade) {
+      labelPremade.className = "relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer";
+      labelCustom.className = "relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer";
+      outerPremade.className = "mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center";
+      outerCustom.className = "mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center";
+      dotPremade.classList.remove('hidden');
+      dotCustom.classList.add('hidden');
+    } else {
+      labelPremade.className = "relative flex flex-col p-5 bg-white border border-forest/10 rounded-2xl cursor-pointer";
+      labelCustom.className = "relative flex flex-col p-5 bg-white border-2 border-forest rounded-2xl cursor-pointer";
+      outerPremade.className = "mt-1 w-5 h-5 border border-forest/30 rounded-full flex items-center justify-center";
+      outerCustom.className = "mt-1 w-5 h-5 border-2 border-forest rounded-full flex items-center justify-center";
+      dotPremade.classList.add('hidden');
+      dotCustom.classList.remove('hidden');
+    }
+  }
+
+  document.getElementById('input-product-type-premade').addEventListener('change', updateProductTypeUI);
+  document.getElementById('input-product-type-custom').addEventListener('change', updateProductTypeUI);
+
+  async function saveListing() {
+    const price = parseFloat(document.getElementById('listing-price').value) || 0.0;
+    const stock = parseInt(document.getElementById('stock-count').value) || 0;
+    
+    const dimensions_l = parseFloat(document.getElementById('dim-l').value) || null;
+    const dimensions_w = parseFloat(document.getElementById('dim-w').value) || null;
+    const dimensions_h = parseFloat(document.getElementById('dim-h').value) || null;
+    const dimensions_weight = parseFloat(document.getElementById('dim-weight').value) || null;
+    const bio = document.getElementById('product-bio').value.trim() || null;
+
+    const isCustom = document.getElementById('input-product-type-custom').checked;
+
+    const patchBody = {
+      product_type: isCustom ? 'custom' : 'pre-made',
+      price,
+      base_price: price,
+      price_paise: Math.round(price * 100),
+      stock,
+      stock_count: stock,
+      dimensions_l,
+      length_cm: dimensions_l,
+      dimensions_w,
+      width_cm: dimensions_w,
+      dimensions_h,
+      height_cm: dimensions_h,
+      dimensions_weight,
+      weight_g: dimensions_weight,
+      weight_grams: dimensions_weight,
+      bio,
+      description: bio,
+      subcategory_ids: selectedSubcategoryIds
+    };
+
+    if (isDraft) {
+      const nameInput = document.getElementById('edit-product-name');
+      if (nameInput) {
+        patchBody.title = nameInput.value.trim();
+        if (!patchBody.title) {
+          showToast('Title is required', 'error');
+          return;
+        }
+      }
+      patchBody.category_id = selectedCategoryId ? parseInt(selectedCategoryId, 10) : null;
+      patchBody.category = selectedCategoryName;
+      if (!patchBody.category_id) {
+        showToast('Category is required', 'error');
+        return;
+      }
+    }
+
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${productId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(patchBody)
+      });
+
+      if (res.ok) {
+        showToast('Changes saved successfully! 🌸');
+        setTimeout(() => {
+          window.location.href = '/mobile-seller/catalog.html';
+        }, 1500);
+      } else {
+        const err = await res.json();
+        showToast(err.message || 'Failed to save changes.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Backend connection error.', 'error');
+    }
+  }
+
+  document.getElementById('save-btn').addEventListener('click', saveListing);
+  
+  const goBack = () => {
+    window.location.href = '/mobile-seller/catalog.html';
+  };
+  document.getElementById('cancel-btn').addEventListener('click', goBack);
+  document.getElementById('btn-back').addEventListener('click', goBack);
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    productId = getQueryParam('id');
+    if (!productId) {
+      window.location.href = '/mobile-seller/catalog.html';
+      return;
+    }
+    await initCategories();
+    loadListingData();
+  });
+})();
+</script>
 </body></html>

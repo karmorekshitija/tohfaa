@@ -165,11 +165,11 @@
 <option value="draft">Draft</option>
 </select>
 </div>
-<div class="flex items-center gap-2">
+<div class="flex flex-wrap items-center gap-2">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Category:</span>
-<select data-filter="category" class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
-<option value="all">All Categories</option>
-</select>
+<div id="category-chips-container" class="flex flex-wrap gap-2 items-center">
+  <!-- Dynamically populated chips -->
+</div>
 </div>
 <div class="flex items-center gap-2 md:ml-auto">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Sort by:</span>
@@ -226,6 +226,7 @@
   let allListings = [];
   let filteredListings = [];
   let searchTimer = null;
+  let selectedCategory = 'all';
 
   function getTohfaToken() {
     try {
@@ -286,20 +287,34 @@
         discounted_price: l.discounted_price || null
       }));
 
-      // Populate Category filter options dynamically
-      const categorySelect = document.querySelector('[data-filter="category"]');
-      if (categorySelect) {
-        const currentCategory = categorySelect.value || 'all';
-        const categories = new Set();
-        allListings.forEach(l => {
-          if (l.category) categories.add(l.category);
-        });
-        let categoryOptions = '<option value="all">All Categories</option>';
-        categories.forEach(cat => {
-          categoryOptions += `<option value="${cat}">${cat}</option>`;
-        });
-        categorySelect.innerHTML = categoryOptions;
-        categorySelect.value = currentCategory;
+      // Dynamically update unique categories as chips
+      const categoriesContainer = document.getElementById('category-chips-container');
+      const categories = new Set();
+      allListings.forEach(l => {
+        if (l.category) categories.add(l.category);
+      });
+
+      if (categoriesContainer) {
+        window.renderCategoryChips = () => {
+          let chipsHtml = `<button type="button" class="category-chip transition-all duration-200 cursor-pointer px-4 py-1.5 text-xs font-semibold rounded-full border ${selectedCategory === 'all' ? 'bg-forest text-white border-forest shadow-sm' : 'bg-white text-forest border-sage/20 hover:bg-sage/10'}" data-category="all">All Categories</button>`;
+          
+          categories.forEach(cat => {
+            const isActive = selectedCategory === cat;
+            chipsHtml += `<button type="button" class="category-chip transition-all duration-200 cursor-pointer px-4 py-1.5 text-xs font-semibold rounded-full border ${isActive ? 'bg-forest text-white border-forest shadow-sm' : 'bg-white text-forest border-sage/20 hover:bg-sage/10'}" data-category="${cat}">${cat}</button>`;
+          });
+          
+          categoriesContainer.innerHTML = chipsHtml;
+
+          // Add event listeners
+          categoriesContainer.querySelectorAll('.category-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+              selectedCategory = btn.getAttribute('data-category');
+              window.renderCategoryChips();
+              applyFilters();
+            });
+          });
+        };
+        window.renderCategoryChips();
       }
     } catch (err) {
       console.warn('Catalog load failed:', err);
@@ -322,12 +337,11 @@
 
   function applyFilters() {
     const statusVal = document.querySelector('[data-filter="status"]')?.value || 'all';
-    const categoryVal = document.querySelector('[data-filter="category"]')?.value || 'all';
     const searchVal = (document.querySelector('[data-filter="search"]')?.value || '').toLowerCase();
 
     filteredListings = allListings.filter(l => {
       const matchStatus = statusVal === 'all' || l.status === statusVal;
-      const matchCategory = categoryVal === 'all' || l.category === categoryVal;
+      const matchCategory = selectedCategory === 'all' || l.category === selectedCategory;
       const matchSearch = !searchVal || (l.title || '').toLowerCase().includes(searchVal);
       return matchStatus && matchCategory && matchSearch;
     });
@@ -543,7 +557,6 @@
     searchTimer = setTimeout(applyFilters, 300);
   });
   document.querySelector('[data-filter="status"]')?.addEventListener('change', applyFilters);
-  document.querySelector('[data-filter="category"]')?.addEventListener('change', applyFilters);
   document.getElementById('sort-select')?.addEventListener('change', applyFilters);
 
   document.addEventListener('DOMContentLoaded', loadCatalog);

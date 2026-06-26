@@ -1825,8 +1825,21 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       paused_at: productData.paused_at || null,
       pause_reason: productData.pause_reason || null,
       resume_estimate_date: productData.resume_estimate_date || null,
-      remake_eligible: !!productData.remake_eligible
+      remake_eligible: !!productData.remake_eligible,
+      subcategories: []
     };
+
+    try {
+      const subcats = await db.prepare(`
+        SELECT sc.id, sc.category_id, sc.name, sc.slug, sc.description 
+        FROM subcategories sc
+        JOIN product_subcategories psc ON sc.id = psc.subcategory_id
+        WHERE psc.product_id = ?
+      `).all(numericId);
+      productResponse.subcategories = subcats;
+    } catch (err) {
+      console.warn("Error loading product subcategories:", err);
+    }
     
     return res.status(200).json({
       success: true,
@@ -5825,6 +5838,44 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
 
     const subcategoryIds = req.body.subcategory_ids || req.body.subcategories || [];
 
+    // Subcategories validation
+    if (subcategoryIds.length > 0 && !finalCategoryId) {
+      return res.status(400).json({
+        error: true,
+        code: "CATEGORY_REQUIRED",
+        message: "Category must be selected before selecting subcategories."
+      });
+    }
+
+    if (subcategoryIds.length > 5) {
+      return res.status(400).json({
+        error: true,
+        code: "SUBCATEGORIES_LIMIT_EXCEEDED",
+        message: "You can select a maximum of 5 subcategories."
+      });
+    }
+
+    if (subcategoryIds.length > 0 && finalCategoryId) {
+      for (const subId of subcategoryIds) {
+        const parsedSubId = parseInt(subId, 10);
+        if (isNaN(parsedSubId)) {
+          return res.status(400).json({
+            error: true,
+            code: "INVALID_SUBCATEGORY",
+            message: "One or more selected subcategories are invalid."
+          });
+        }
+        const subcatRow = await db.prepare('SELECT category_id FROM subcategories WHERE id = ?').get(parsedSubId);
+        if (!subcatRow || subcatRow.category_id !== finalCategoryId) {
+          return res.status(400).json({
+            error: true,
+            code: "INVALID_SUBCATEGORY",
+            message: "One or more selected subcategories do not belong to the selected category."
+          });
+        }
+      }
+    }
+
     const result = await db.prepare(`
       INSERT INTO listings (
         seller_id, title, description, story, base_price, listing_type,
@@ -6149,6 +6200,45 @@ const handleUpdateListing = async (req, res) => {
 
     const subcategoryIds = body.subcategory_ids || body.subcategories;
     if (subcategoryIds !== undefined && Array.isArray(subcategoryIds)) {
+      const finalCategoryId = fieldsToUpdate['category_id'] !== undefined ? fieldsToUpdate['category_id'] : listing.category_id;
+      
+      if (subcategoryIds.length > 0 && !finalCategoryId) {
+        return res.status(400).json({
+          error: true,
+          code: "CATEGORY_REQUIRED",
+          message: "Category must be selected before selecting subcategories."
+        });
+      }
+
+      if (subcategoryIds.length > 5) {
+        return res.status(400).json({
+          error: true,
+          code: "SUBCATEGORIES_LIMIT_EXCEEDED",
+          message: "You can select a maximum of 5 subcategories."
+        });
+      }
+
+      if (subcategoryIds.length > 0 && finalCategoryId) {
+        for (const subId of subcategoryIds) {
+          const parsedSubId = parseInt(subId, 10);
+          if (isNaN(parsedSubId)) {
+            return res.status(400).json({
+              error: true,
+              code: "INVALID_SUBCATEGORY",
+              message: "One or more selected subcategories are invalid."
+            });
+          }
+          const subcatRow = await db.prepare('SELECT category_id FROM subcategories WHERE id = ?').get(parsedSubId);
+          if (!subcatRow || subcatRow.category_id !== finalCategoryId) {
+            return res.status(400).json({
+              error: true,
+              code: "INVALID_SUBCATEGORY",
+              message: "One or more selected subcategories do not belong to the selected category."
+            });
+          }
+        }
+      }
+
       await db.prepare('DELETE FROM listing_subcategories WHERE listing_id = ?').run(listingId);
       const subcatInsertStmt = db.prepare(`
         INSERT INTO listing_subcategories (listing_id, subcategory_id) VALUES (?, ?)

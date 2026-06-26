@@ -253,7 +253,7 @@
 </div>
 
 <!-- Tags -->
-<div>
+<div class="hidden">
 <label class="block text-[10px] font-bold text-sage uppercase tracking-widest mb-2">Product Tags</label>
 <div class="relative">
 <input id="tag-input" class="w-full bg-white border border-sage/40 rounded-lg px-4 py-2 text-sm focus:border-forest outline-none" placeholder="Add tags..." type="text"/>
@@ -451,6 +451,11 @@
                 cb.addEventListener('change', () => {
                     const val = parseInt(cb.value, 10);
                     if (cb.checked) {
+                        if (selectedSubcategoryIds.length >= 5) {
+                            cb.checked = false;
+                            showToast('You can select a maximum of 5 subcategories', 'error');
+                            return;
+                        }
                         if (!selectedSubcategoryIds.includes(val)) selectedSubcategoryIds.push(val);
                     } else {
                         selectedSubcategoryIds = selectedSubcategoryIds.filter(id => id !== val);
