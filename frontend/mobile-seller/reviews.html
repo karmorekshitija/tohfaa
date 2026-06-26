@@ -151,7 +151,7 @@
         <!-- Review List (Full Width) -->
         <div class="lg:col-span-12 space-y-6">
             <!-- Filters -->
-            <div class="flex gap-6 border-b border-outline-variant pb-2 overflow-x-auto" id="filter-tabs">
+            <div class="flex gap-6 border-b border-outline-variant overflow-x-auto" id="filter-tabs">
                 <button data-filter="all" class="filter-tab-active pb-2 whitespace-nowrap font-label-caps text-xs">All Reviews</button>
                 <button data-filter="unreplied" class="text-on-surface-variant hover:text-primary pb-2 whitespace-nowrap font-label-caps text-xs transition-colors">Needs Reply</button>
                 <button data-filter="critical" class="text-on-surface-variant hover:text-primary pb-2 whitespace-nowrap font-label-caps text-xs transition-colors">Critical (1-2★)</button>
@@ -311,9 +311,10 @@
             let reviews = data.reviews || [];
             if (searchQuery) {
                 reviews = reviews.filter(r => 
-                    r.body.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    r.reviewer_handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    r.listing_title.toLowerCase().includes(searchQuery.toLowerCase())
+                    (r.body && r.body.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (r.reviewer_handle && r.reviewer_handle.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (r.buyer_name && r.buyer_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (r.listing_title && r.listing_title.toLowerCase().includes(searchQuery.toLowerCase()))
                 );
             }
 

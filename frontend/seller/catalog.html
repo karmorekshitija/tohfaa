@@ -158,10 +158,7 @@
       
       <!-- Right side: Actions & Search -->
       <div class="flex items-center gap-4 flex-wrap">
-        <!-- Download Report -->
-        <button id="download-report-btn" class="px-5 py-2 bg-white border border-[#F7F3EC] rounded-full text-xs font-bold text-on-surface-variant hover:bg-[#8FAF82]/10 transition-all flex items-center gap-1.5 active:scale-95">
-          <span class="material-symbols-outlined text-sm">download</span> Download Report
-        </button>
+
         <!-- New Listing Option -->
         <button id="header-create-listing-btn" class="px-5 py-2 bg-forest text-white rounded-full text-xs font-bold shadow-md hover:bg-forest/90 transition-all flex items-center gap-1 active:scale-95">
           <span class="material-symbols-outlined text-sm">add</span> New Listing
@@ -1119,10 +1116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateBulkBarUI();
     });
 
-    // Download Report Action
-    document.getElementById('download-report-btn')?.addEventListener('click', () => {
-        alert('Analytics report download initiated! The detailed report formatting will be configured in the next step.');
-    });
+
 
     // ── Logout ────────────────────────────────────────────────────
     document.getElementById('logout-btn')?.addEventListener('click', () => {

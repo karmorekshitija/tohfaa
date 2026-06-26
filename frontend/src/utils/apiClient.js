@@ -33,10 +33,56 @@ const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' }
 });
 
-// Attach access token to every request
+// Attach access token to every request or mock guest responses
 apiClient.interceptors.request.use((config) => {
   const token = sessionStorage.getItem('tohfa_access_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  }
+
+  // Guest user handling
+  const url = config.url || '';
+  const method = (config.method || 'get').toLowerCase();
+
+  // If method is GET, mock responses for protected endpoints called on public pages
+  if (method === 'get') {
+    if (url.includes('/cart')) {
+      return Promise.reject({
+        isMock: true,
+        mockResponse: { data: { success: true, data: { items: [], item_count: 0 } } }
+      });
+    }
+    if (url.includes('/wishlist')) {
+      return Promise.reject({
+        isMock: true,
+        mockResponse: { data: { success: true, data: { items: [], count: 0 } } }
+      });
+    }
+    if (url.includes('/profile/me')) {
+      return Promise.reject({
+        isMock: true,
+        mockResponse: { data: { success: false, message: 'Not logged in' } }
+      });
+    }
+    if (url.includes('/notifications')) {
+      return Promise.reject({
+        isMock: true,
+        mockResponse: { data: { success: true, unread_count: 0, notifications: [] } }
+      });
+    }
+  }
+
+  // Any other protected endpoint request from a guest user redirects to login
+  const isPublicEndpoint = url.includes('/products') || url.includes('/categories') || url.includes('/hero-slides') || url.includes('/auth/') || url.includes('/sellers/');
+  if (!isPublicEndpoint) {
+    window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+    // Abort/Cancel request
+    const cancelTokenSource = axios.CancelToken.source();
+    config.cancelToken = cancelTokenSource.token;
+    cancelTokenSource.cancel('Guest user redirected to login.');
+  }
+
   return config;
 });
 
@@ -59,8 +105,23 @@ apiClient.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (error.isMock) {
+      return Promise.resolve(error.mockResponse);
+    }
+    // If it's a cancelled request from a guest, don't show any error toast or attempt refresh
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
+    const refreshToken = sessionStorage.getItem('tohfa_refresh_token');
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    // Auto-refresh on 401 (only if refresh token exists)
+    if (error.response?.status === 401) {
+      if (!refreshToken) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -71,7 +132,6 @@ apiClient.interceptors.response.use(
       }
       originalRequest._retry = true;
       isRefreshing = true;
-      const refreshToken = sessionStorage.getItem('tohfa_refresh_token');
       try {
         const { data } = await axios.post('/api/auth/refresh', { refresh_token: refreshToken });
         sessionStorage.setItem('tohfa_access_token', data.data.access_token);

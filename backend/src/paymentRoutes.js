@@ -144,6 +144,33 @@ router.get('/api/payments/history/all', requireSeller, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
+    if (req.query.format === 'csv') {
+      const query = `
+        SELECT 
+          t.created_at as date,
+          o.razorpay_payment_id,
+          t.gross_amount as amount,
+          t.buyer_name,
+          t.order_id,
+          o.listing_id as product_id,
+          o.product_name
+        FROM transactions t
+        LEFT JOIN orders o ON t.order_id = o.id
+        WHERE t.seller_id = ? AND t.type = 'SALE'
+        ORDER BY t.created_at DESC
+      `;
+      const rows = await db.prepare(query).all(req.seller.user_id);
+      let csv = 'Date & Time,Buyer Name,Product ID,Product Name,Payment Method,Gross Amount (INR)\n';
+      rows.forEach(r => {
+        const method = r.razorpay_payment_id ? 'Card/UPI/NetBanking' : 'Direct Settlement';
+        const formattedDate = new Date(r.date).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        csv += `"${formattedDate}","${r.buyer_name}","${r.product_id || ''}","${r.product_name || 'Handcrafted Item'}","${method}",${r.amount / 100}\n`;
+      });
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="settlements.csv"');
+      return res.send(csv);
+    }
+
     const query = `
       SELECT 
         t.created_at as date,

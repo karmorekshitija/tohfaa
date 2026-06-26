@@ -51,7 +51,7 @@
 - [x] **Payouts & Payments:** Payout balance and pending payout totals match database state. Transaction log tables with search/filter work correctly.
 - [x] **Store Configuration:** Store banner, announcement banner, FAQs, and vacation mode settings successfully load and update.
 - [x] **Messages & Disputes:** Live chat components load, and message histories are fully retrievable. Dispute logs and reviews summaries verified.
-- [x] **Mobile Layout:** Monitored on 375px viewport. Bottom navigation tabs and responsive layout grid flex/wrap properties work cleanly.
+- [x] **Mobile Layout:** Monitored on 375 viewport. Bottom navigation tabs and responsive layout grid flex/wrap properties work cleanly.
 
 ### 5. Product Reviews & Ratings System
 - [x] **Order Detail Reviews Form:** Form to submit star ratings (1–5) and review body renders dynamically on the order details page (`order-detail.html`) only when order status is `Delivered`.
@@ -59,5 +59,16 @@
 - [x] **Mobile Reviews:** Mobile versions of order details and product pages are fully functional, wrapping cleanly down to 375px.
 - [x] **E2E Test Coverage:** Written and verified comprehensive integration tests in `backend/tests/product-reviews.test.js` checking authorization, status boundaries (orders must be delivered), recalculations, and duplicates. All tests passed.
 
-No active bugs were detected in the core user journeys or backend E2E flows during this test run.
+### 6. Full-Stack Seller Restrictions & Form Changes (2026-06-25)
+- [x] **Backend API Restrictions:** Implemented strict authorization checks in `backend/src/server.js` preventing sellers from buying, wishlisting, checking out, or starting chats with their own listings.
+- [x] **Frontend UI Restrictions:** Integrated global user state (`currentUser`) on product details and grid layouts (desktop and mobile) to disable or hide purchase, wishlist, chat, and customization request buttons for products owned by the logged-in seller.
+- [x] **Seller Profile Changes:** Surgically removed the "Working On Label" and "Workshop Video / Reel URL" fields, and reduced the Story Description character limit from 1000 to 500 characters across the desktop page (`profile.html`), mobile settings page (`profile-settings.html`), and mobile view page (`profile.html`).
+- [x] **E2E Integration Test:** Executed `backend/tests/seller-restrictions.test.js` verifying that all seller restriction boundary conditions return `403 Forbidden` with the correct JSON error codes. All tests passed.
 
+
+### 7. Seller Portal Footer Cleanup (2026-06-26)
+- [x] **Desktop Seller Footer Removal:** Completely removed the green marketing footer (replaced with an empty string) across 10 desktop portal files.
+- [x] **Mobile Seller Footer Removal:** Completely removed the mobile accordion style footer (replaced with an empty string) across 13 mobile portal files.
+- [x] **Exception Handling:** Left onboarding page templates (`become-seller.html`) untouched as requested.
+
+No active bugs were detected in the core user journeys or backend E2E flows during this test run.

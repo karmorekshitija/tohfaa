@@ -88,13 +88,20 @@
     </div>
 
     <!-- Header -->
-    <header class="mb-8 flex items-center gap-4">
-        <a href="/mobile-seller/payouts.html" class="p-2 hover:bg-sage/10 rounded-full transition-colors flex items-center justify-center">
-            <span class="material-symbols-outlined text-forest text-3xl">arrow_back</span>
-        </a>
+    <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <a href="/mobile-seller/payouts.html" class="p-2 hover:bg-sage/10 rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-forest text-3xl">arrow_back</span>
+            </a>
+            <div>
+                <h1 class="text-xl font-bold text-forest">Settlement History</h1>
+                <p class="text-base text-forest">View all direct payouts and payment methods associated with orders.</p>
+            </div>
+        </div>
         <div>
-            <h1 class="text-xl font-bold text-forest">Settlement History</h1>
-            <p class="text-base text-forest">View all direct payouts and payment methods associated with orders.</p>
+            <button id="download-payments-report" onclick="downloadPaymentsReport()" class="px-5 py-2.5 bg-forest text-white hover:bg-forest/90 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 shadow-md active:scale-95">
+                <span class="material-symbols-outlined text-sm">download</span> Download Report
+            </button>
         </div>
     </header>
 
@@ -225,6 +232,53 @@
     function changePage(dir) {
         currentPage += dir;
         loadPayments();
+    }
+
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        const icon = document.getElementById('toast-icon');
+        const text = document.getElementById('toast-msg');
+
+        if (!t || !icon || !text) return;
+        icon.textContent = type === 'success' ? 'check_circle' : 'error';
+        text.textContent = msg;
+
+        t.className = `fixed top-20 right-6 z-[2000] flex items-center gap-3 px-5 py-3 rounded-xl shadow-premium text-sm font-bold ${
+            type === 'success' ? 'bg-forest text-white border border-forest' : 'bg-error text-white border border-error'
+        }`;
+        
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    async function downloadPaymentsReport() {
+        const btn = document.getElementById('download-payments-report');
+        if (!btn) return;
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">sync</span> Downloading...`;
+        try {
+            const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}/api/payments/history/all?format=csv`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `payments_history_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showToast('Payments report downloaded successfully!', 'success');
+        } catch (err) {
+            showToast('Download failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {

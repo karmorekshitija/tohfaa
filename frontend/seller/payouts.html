@@ -289,9 +289,6 @@
                     <p class="text-sm text-forest/80">A summary of sales, refunds, and adjustments.</p>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="exportTransactions()" class="flex items-center gap-1 px-4 py-2 border border-sage text-forest hover:bg-sage/10 text-sm font-bold rounded-btn">
-                        <span class="material-symbols-outlined text-sm">download</span> Export Ledger
-                    </button>
                     <a href="/seller/all-transactions.html" class="flex items-center gap-1 px-4 py-2 bg-violet hover:bg-violet/90 text-white text-sm font-bold rounded-btn shadow-md">
                         View All Ledger
                     </a>
@@ -370,34 +367,17 @@
                         Save Tax Settings
                     </button>
                 </form>
-
-                <div class="pt-4 border-t border-sage/10">
-                    <label class="block text-sm font-bold text-forest mb-2">Tax Documents</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="downloadDoc('/api/payments/invoices/statement/2026-06')" class="py-2.5 border border-sage text-forest text-sm font-bold rounded-btn hover:bg-sage/10 transition-colors">GST Invoices</button>
-                        <button onclick="alert('Annual Statement is available inside Invoices & Documents below')" class="py-2.5 border border-sage text-forest text-sm font-bold rounded-btn hover:bg-sage/10 transition-colors">Tax Summary</button>
-                        <button onclick="downloadDoc('/api/payments/invoices/tds/2026-2027')" class="py-2.5 border border-sage text-forest text-sm font-bold rounded-btn hover:bg-sage/10 transition-colors">TDS Certificate</button>
-                    </div>
-                </div>
             </div>
 
             <!-- SECTION 6: Invoices & Documents -->
             <div class="bg-white p-6 rounded-card border border-sage/20 shadow-premium space-y-6">
                 <div>
                     <h3 class="text-xl font-bold text-forest" style="border-left: 4px solid #3D6B4F; padding-left: 10px;">Invoices & Statements</h3>
-                    <p class="text-sm text-forest/80">Download past order invoices and monthly summary sheets.</p>
+                    <p class="text-sm text-forest/80">Historical settlement logs.</p>
                 </div>
 
                 <div id="invoices-list" class="space-y-3 max-h-60 overflow-y-auto pr-2">
                     <!-- Loaded dynamically -->
-                </div>
-
-                <div class="pt-4 border-t border-sage/10">
-                    <label class="block text-sm font-bold text-forest mb-2 font-heading">Generate Monthly Statement</label>
-                    <div class="flex gap-2">
-                        <input type="month" id="statement-month-picker" class="flex-1 px-3 py-2 bg-parchment/20 border border-sage/30 rounded-btn text-sm text-forest focus:ring-1 focus:ring-forest outline-none font-medium" />
-                        <button onclick="downloadMonthlyStatement()" class="px-5 py-2.5 bg-forest hover:bg-forest/90 text-white text-sm font-bold rounded-btn shadow-md">Download PDF</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -420,89 +400,6 @@
         </section>
     </div>
 
-    <!-- Footer -->
-    <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
-<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
-  <!-- Ghost watermark -->
-  <div style="position:absolute;bottom:-10%;right:-5%;opacity:0.04;pointer-events:none;user-select:none;">
-    <span class="material-symbols-outlined" style="font-size:600px;color:white;">local_florist</span>
-  </div>
-  <!-- Main grid -->
-  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(1,1fr);gap:48px;margin-bottom:80px;position:relative;z-index:10;" class="tohfa-footer-grid">
-    <!-- Brand -->
-    <div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-style:italic;color:#C9972C;margin-bottom:16px;">Tohfa.</h2>
-      <p style="font-family:'DM Sans',sans-serif;color:#F7F2E8;margin-bottom:8px;font-weight:500;">Thoughtful Gifting, Made Effortless.</p>
-      <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;margin-bottom:32px;line-height:1.6;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
-      <div style="display:flex;gap:16px;">
-        <a href="#" style="width:40px;height:40px;border:1px solid #C9972C;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C9972C;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.background='#C9972C';this.style.color='#1E3D0F'" onmouseout="this.style.background='transparent';this.style.color='#C9972C'"><span class="material-symbols-outlined" style="font-size:20px;">public</span></a>
-        <a href="#" style="width:40px;height:40px;border:1px solid #C9972C;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C9972C;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.background='#C9972C';this.style.color='#1E3D0F'" onmouseout="this.style.background='transparent';this.style.color='#C9972C'"><span class="material-symbols-outlined" style="font-size:20px;">work</span></a>
-      </div>
-    </div>
-    <!-- Company -->
-    <div>
-      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Company</h3>
-      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
-        
-      </ul>
-    </div>
-    <!-- For Sellers -->
-    <div>
-      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
-      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
-        
-      </ul>
-    </div>
-    <!-- For Buyers -->
-    <div>
-      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
-      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
-      </ul>
-    </div>
-    <!-- Support -->
-    <div>
-      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
-      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Privacy Policy</a></li>
-        <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
-      </ul>
-    </div>
-  </div>
-  <!-- Divider -->
-  <div style="max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:32px;">
-    <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);position:relative;">
-      <div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);display:flex;gap:16px;color:rgba(201,151,44,0.3);">
-        <span class="material-symbols-outlined" style="font-size:16px;">stars</span>
-      </div>
-    </div>
-  </div>
-  <!-- Bottom bar -->
-  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:10;" class="tohfa-footer-bottom">
-    <div style="font-family:'DM Sans',sans-serif;font-size:14px;color:#A8B89A;">&#169; 2025 Tohfa. Celebrating Indian Craftsmanship. All rights reserved.</div>
-    <div style="display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:#F7F2E8;">
-      <span>Made with</span>
-      <span class="material-symbols-outlined" style="color:#C9972C;font-size:18px;font-variation-settings:'FILL' 1;">favorite</span>
-      <span>in India</span>
-    </div>
-  </div>
-  <style>
-    @media (min-width: 768px) {
-      .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
-      .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
-    }
-  </style>
-</footer>
 </seller-layout>
 
 <script>
@@ -626,13 +523,12 @@
 
         document.getElementById('invoices-list').innerHTML = `
             <div class="flex items-center justify-between p-3 border border-sage/10 rounded-btn bg-parchment/10">
-                <div>
-                    <p class="font-bold text-sm text-forest">June 2026 Settlement Summary</p>
-                    <p class="text-xs text-forest/50">1 Jun 2026</p>
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-forest text-lg">description</span>
+                    <div>
+                        <p class="font-bold text-sm text-forest">June 2026 Settlement Summary</p>
+                    </div>
                 </div>
-                <button class="p-1 text-forest hover:bg-sage/10 rounded-full transition-colors flex items-center justify-center">
-                    <span class="material-symbols-outlined text-sm">download</span>
-                </button>
             </div>
         `;
 
@@ -968,49 +864,8 @@
                         <p class="font-bold text-sm text-forest">${inv.month_name} Settlements</p>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="downloadDoc('${inv.statement_url}')" class="px-3 py-1.5 border border-sage text-forest text-xs font-bold rounded-btn hover:bg-sage/10 transition-colors flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">download</span> PDF Summary
-                    </button>
-                    <button onclick="downloadDoc('${inv.tds_url}')" class="px-3 py-1.5 border border-sage text-forest text-xs font-bold rounded-btn hover:bg-sage/10 transition-colors flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">download</span> TDS
-                    </button>
-                </div>
             </div>
         `).join('');
-    }
-
-    async function downloadDoc(url) {
-        try {
-            const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
-            const res = await fetchAPI(`${API_BASE}${url}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error();
-            const blob = await res.blob();
-            const filename = url.split('/').pop() + '.txt';
-
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(downloadUrl);
-            showToast("Document downloaded successfully.");
-        } catch (e) {
-            showToast("Failed to download document.", "error");
-        }
-    }
-
-    function downloadMonthlyStatement() {
-        const picker = document.getElementById('statement-month-picker').value;
-        if (!picker) {
-            showToast("Please choose a valid month.", "error");
-            return;
-        }
-        downloadDoc(`/api/payments/invoices/statement/${picker}`);
     }
 
     // Load recent disputes

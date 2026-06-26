@@ -69,9 +69,7 @@
                     <option value="90d">Last 90 Days</option>
                     <option value="all">All Time</option>
                 </select>
-                <button id="export-csv-btn" class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:opacity-90 transition-all flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[18px]">download</span> Export CSV
-                </button>
+
             </div>
         </div>
         
@@ -723,36 +721,7 @@
             });
         }
 
-        // Export CSV Button
-        const exportCsvBtn = document.getElementById('export-csv-btn');
-        if (exportCsvBtn) {
-            exportCsvBtn.addEventListener('click', async () => {
-                exportCsvBtn.disabled = true;
-                const oldHtml = exportCsvBtn.innerHTML;
-                exportCsvBtn.innerHTML = 'Exporting...';
-                try {
-                    const res = await fetch(`${API_BASE_URL}/api/seller/orders?tab=all&format=csv`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    const blob = await res.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `orders_${new Date().toISOString().slice(0, 10)}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                    showToast('CSV exported successfully!', 'success');
-                } catch (err) {
-                    showToast('Export failed: ' + err.message, 'error');
-                } finally {
-                    exportCsvBtn.disabled = false;
-                    exportCsvBtn.innerHTML = oldHtml;
-                }
-            });
-        }
+
 
         // Bulk Actions: Packed & Dispatched
         const handleBulkStatusUpdate = async (status) => {

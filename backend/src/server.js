@@ -6827,14 +6827,7 @@ app.get('/api/seller/orders', requireSeller, async (req, res) => {
 
     let rows;
     if (format === 'csv') {
-      rows = await db.prepare(fetchQuery).all(...params);
-      let csv = 'ID,Order Ref,Buyer,City,Product,Variant,Type,Status,Payment,Deadline\n';
-      rows.forEach(r => {
-        csv += `"${r.id}","${r.order_ref}","${r.buyer_name}","${r.buyer_city}","${r.product_title}","${r.variant_name || ''}","${r.order_type}","${r.status}","${r.payment_status}","${r.deadline_at || ''}"\n`;
-      });
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename="orders.csv"');
-      return res.send(csv);
+      return res.status(403).json({ error: true, message: 'CSV export disabled' });
     } else {
       fetchQuery += ` LIMIT ? OFFSET ?`;
       rows = await db.prepare(fetchQuery).all(...params, limit, offset);
@@ -7593,6 +7586,183 @@ app.post('/api/seller/review-settings', requireSeller, async (req, res) => {
   }
 });
 
+// DELETE /api/seller/account - Downgrade seller account to buyer and remove seller-specific data
+app.delete('/api/seller/account', requireSeller, async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    
+    const downgradeTransaction = db.transaction(async () => {
+      // 1. Update user role to 'buyer'
+      await db.prepare("UPDATE users SET role = 'buyer' WHERE id = ?").run(userId);
+      // 2. Delete seller profile (will cascade-delete related records if foreign keys match user_id/seller_id)
+      await db.prepare("DELETE FROM seller_profiles WHERE user_id = ?").run(userId);
+      // 3. Delete store config
+      await db.prepare("DELETE FROM store_config WHERE seller_id = ?").run(userId);
+      // 4. Delete listings associated with the seller
+      await db.prepare("DELETE FROM listings WHERE seller_id = ?").run(userId);
+    });
+    
+    await downgradeTransaction();
+    
+    return res.status(200).json({ success: true, message: 'Account closed/downgraded successfully' });
+  } catch (err) {
+    console.error('DELETE /api/seller/account error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
+// GET /api/seller/addresses - Get all seller addresses
+app.get('/api/seller/addresses', requireSeller, async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const rows = await db.prepare("SELECT id, full_name, line1, line2, city, state, pincode, phone, is_default FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC").all(userId);
+    
+    // Map database columns to the frontend expected keys (label, address_line)
+    const mapped = rows.map(r => ({
+      id: r.id,
+      _id: r.id,
+      label: r.full_name,
+      address_line: r.line1,
+      line2: r.line2,
+      city: r.city,
+      state: r.state,
+      pincode: r.pincode,
+      phone: r.phone,
+      is_default: !!r.is_default
+    }));
+    
+    return res.status(200).json({ success: true, data: mapped });
+  } catch (err) {
+    console.error('GET /api/seller/addresses error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
+// POST /api/seller/addresses - Add a new seller address
+app.post('/api/seller/addresses', requireSeller, async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const { label, address_line, city, state, pincode, phone, is_default } = req.body;
+    
+    if (!label || !address_line || !city || !state || !pincode) {
+      return res.status(400).json({ error: true, message: 'Label, address line, city, state, and pincode are required' });
+    }
+    
+    const isDefaultVal = is_default ? 1 : 0;
+    
+    const insertTransaction = db.transaction(async () => {
+      if (isDefaultVal === 1) {
+        await db.prepare('UPDATE addresses SET is_default = 0 WHERE user_id = ?').run(userId);
+      }
+      
+      const info = await db.prepare(`
+        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(userId, label, address_line, null, city, state, pincode, phone || null, isDefaultVal);
+      
+      return info.lastInsertRowid;
+    });
+    
+    const addressId = await insertTransaction();
+    
+    return res.status(201).json({
+      success: true,
+      data: {
+        id: addressId,
+        _id: addressId,
+        label,
+        address_line,
+        city,
+        state,
+        pincode,
+        phone,
+        is_default: isDefaultVal === 1
+      }
+    });
+  } catch (err) {
+    console.error('POST /api/seller/addresses error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
+// PUT /api/seller/addresses/:id - Update an existing seller address
+app.put('/api/seller/addresses/:id', requireSeller, async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const { id } = req.params;
+    const { label, address_line, city, state, pincode, phone, is_default } = req.body;
+    
+    if (!label || !address_line || !city || !state || !pincode) {
+      return res.status(400).json({ error: true, message: 'Label, address line, city, state, and pincode are required' });
+    }
+    
+    const address = await db.prepare('SELECT user_id FROM addresses WHERE id = ?').get(id);
+    if (!address) {
+      return res.status(404).json({ error: true, message: 'Address not found' });
+    }
+    if (address.user_id !== userId) {
+      return res.status(403).json({ error: true, message: 'Forbidden' });
+    }
+    
+    const isDefaultVal = is_default ? 1 : 0;
+    
+    const updateTransaction = db.transaction(async () => {
+      if (isDefaultVal === 1) {
+        await db.prepare('UPDATE addresses SET is_default = 0 WHERE user_id = ?').run(userId);
+      }
+      
+      await db.prepare(`
+        UPDATE addresses
+        SET full_name = ?, line1 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?, created_at = datetime('now')
+        WHERE id = ?
+      `).run(label, address_line, city, state, pincode, phone || null, isDefaultVal, id);
+    });
+    
+    await updateTransaction();
+    
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: parseInt(id, 10),
+        _id: parseInt(id, 10),
+        label,
+        address_line,
+        city,
+        state,
+        pincode,
+        phone,
+        is_default: isDefaultVal === 1
+      }
+    });
+  } catch (err) {
+    console.error('PUT /api/seller/addresses error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
+// DELETE /api/seller/addresses/:id - Delete a seller address
+app.delete('/api/seller/addresses/:id', requireSeller, async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const { id } = req.params;
+    
+    const address = await db.prepare('SELECT user_id FROM addresses WHERE id = ?').get(id);
+    if (!address) {
+      return res.status(404).json({ error: true, message: 'Address not found' });
+    }
+    if (address.user_id !== userId) {
+      return res.status(403).json({ error: true, message: 'Forbidden' });
+    }
+    
+    await db.prepare('DELETE FROM addresses WHERE id = ?').run(id);
+    
+    return res.status(200).json({ success: true, message: 'Address deleted' });
+  } catch (err) {
+    console.error('DELETE /api/seller/addresses error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error' });
+  }
+});
+
 // TASK 16: GET /api/seller/analytics
 // ============================================================
 app.get('/api/seller/analytics', requireSeller, async (req, res) => {
@@ -7894,26 +8064,7 @@ app.get('/api/seller/analytics', requireSeller, async (req, res) => {
 
 // GET /api/seller/analytics/export — CSV export (bonus sub-task per spec)
 app.get('/api/seller/analytics/export', requireSeller, async (req, res) => {
-  try {
-    const sellerId = req.user.user_id;
-    const rows = await db.prepare(`
-      SELECT o.order_ref, o.created_at, o.total_paise, 
-             COALESCE(l.title, (SELECT product_name FROM order_items WHERE order_id = o.id LIMIT 1)) as product_name
-      FROM orders o
-      LEFT JOIN listings l ON l.id = o.listing_id
-      WHERE o.seller_id = ? ORDER BY o.created_at DESC
-    `).all(sellerId);
-
-    let csv = 'Order Ref,Date,Product,Total (paise)\n';
-    rows.forEach(r => { csv += `"${r.order_ref}","${r.created_at}","${r.product_name}",${r.total_paise}\n`; });
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="analytics-export.csv"');
-    return res.send(csv);
-  } catch (err) {
-    console.error('GET /api/seller/analytics/export error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
-  }
+  return res.status(403).json({ error: true, message: 'Export disabled' });
 });
 
 // Inventory endpoints removed.
@@ -11878,8 +12029,48 @@ async function checkExpiredOffersBackground() {
   }
 }
 
+// Background scheduler to automatically request reviews after order delivery
+async function checkDeliveredOrdersForReviewRequests() {
+  try {
+    // Find all delivered orders for sellers who have automated review requests enabled
+    const query = `
+      SELECT o.id, o.order_ref, o.buyer_id, o.seller_id, o.delivered_at, o.conversation_id,
+             s.delay_days_after_del, s.enabled
+      FROM orders o
+      JOIN review_request_settings s ON s.seller_id = o.seller_id
+      LEFT JOIN notifications n ON n.user_id = o.buyer_id AND n.type = 'review_request' AND n.order_code = o.order_ref
+      WHERE o.status = 'delivered'
+        AND s.enabled = 1
+        AND n.id IS NULL
+        AND o.delivered_at IS NOT NULL
+    `;
+    const orders = await db.prepare(query).all();
+    
+    for (const order of orders) {
+      const deliveredTime = new Date(order.delivered_at).getTime();
+      const delayMs = (order.delay_days_after_del || 3) * 24 * 60 * 60 * 1000;
+      
+      if (Date.now() - deliveredTime >= delayMs) {
+        await db.prepare(`
+          INSERT INTO notifications (user_id, type, message, conversation_id, order_code, is_read, created_at)
+          VALUES (?, 'review_request', ?, ?, ?, 0, datetime('now'))
+        `).run(
+          order.buyer_id,
+          `Please share your feedback for order ${order.order_ref}. Your reviews help our artisans grow!`,
+          order.conversation_id || null,
+          order.order_ref
+        );
+      }
+    }
+  } catch (err) {
+    console.error("Error in checkDeliveredOrdersForReviewRequests background job:", err);
+  }
+}
+
 // Run background expiry check every 15 minutes
 setInterval(checkExpiredOffersBackground, 15 * 60 * 1000);
+// Run background review requests check every 15 minutes
+setInterval(checkDeliveredOrdersForReviewRequests, 15 * 60 * 1000);
 
 // PART A: SELLER CUSTOM QUESTIONS
 
@@ -12428,6 +12619,7 @@ app.post('/api/test/trigger-expiry-check', async (req, res) => {
   try {
     await checkExpiredOffersBackground();
     await runOverflowExpiryCheck();
+    await checkDeliveredOrdersForReviewRequests();
     return res.status(200).json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: err.message });

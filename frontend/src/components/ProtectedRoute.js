@@ -50,11 +50,27 @@
   }
 
   // Buyer routes guard
-  if (path.startsWith('/buyer/')) {
-    const token = sessionStorage.getItem('tohfa_access_token');
-    if (!token) {
-      window.location.replace('/auth/login.html');
-      return;
+  if (path.startsWith('/buyer/') || path.startsWith('/mobile-buyer/')) {
+    const pageSegment = path.split('/').pop() || '';
+    const cleanSegment = pageSegment.replace('.html', '');
+    const isPublic = [
+      '',
+      'home',
+      'categories',
+      'category',
+      'product',
+      'our-story',
+      'seller-profile',
+      'search',
+      'zipgift'
+    ].includes(cleanSegment);
+
+    if (!isPublic) {
+      const token = sessionStorage.getItem('tohfa_access_token');
+      if (!token) {
+        window.location.replace(`/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
+        return;
+      }
     }
   }
   function setupAuthAndBadges() {
