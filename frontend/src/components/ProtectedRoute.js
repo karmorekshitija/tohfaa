@@ -437,23 +437,25 @@
           </a>
         </nav>
         
-        <div class="flex items-center justify-end flex-1 gap-lg">
-          <a href="/buyer/categories.html" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
-            <span class="material-symbols-outlined">search</span>
-          </a>
-          <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
-            <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-            <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${wishlistHidden ? 'hidden' : ''}">${wishlistCount}</span>
-          </a>
-          <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
-            <span class="material-symbols-outlined">shopping_cart</span>
-            <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${cartHidden ? 'hidden' : ''}">${cartCount}</span>
-          </a>
-          <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
-            <span class="material-symbols-outlined">notifications</span>
-            <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full ${notifHidden ? 'hidden' : ''}"></span>
-            <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full ${notifBadgeHidden ? 'hidden' : ''}"></span>
-          </a>
+        <div class="flex items-center justify-end flex-1 gap-lg ml-xl">
+          <div class="flex items-center gap-md">
+            <a href="/buyer/categories.html" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+              <span class="material-symbols-outlined">search</span>
+            </a>
+            <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+              <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${wishlistHidden ? 'hidden' : ''}">${wishlistCount}</span>
+            </a>
+            <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+              <span class="material-symbols-outlined">shopping_cart</span>
+              <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${cartHidden ? 'hidden' : ''}">${cartCount}</span>
+            </a>
+            <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+              <span class="material-symbols-outlined">notifications</span>
+              <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full ${notifHidden ? 'hidden' : ''}"></span>
+              <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full ${notifBadgeHidden ? 'hidden' : ''}"></span>
+            </a>
+          </div>
           <div id="auth-buttons-container" class="flex items-center gap-md ml-4">${authHTML}</div>
         </div>
       `;
