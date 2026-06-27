@@ -1179,9 +1179,15 @@
                         </div>
                     </div>
                     <div class="w-full font-['DM_Sans']">
-                        <button onclick="addToCart(event, ${p.id})" class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}">
-                            Add to Cart
-                        </button>
+                        ${(p.listing_type === 'custom' || p.is_customized || p.tags?.includes('bulk')) ? `
+                            <button onclick="event.stopPropagation(); window.location.href='/buyer/product.html?id=${p.id}'" class="w-full bg-[#255338] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm">
+                                Request seller
+                            </button>
+                        ` : `
+                            <button onclick="addToCart(event, ${p.id})" class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}">
+                                Add to Cart
+                            </button>
+                        `}
                     </div>
                 `;
                 grid.appendChild(card);

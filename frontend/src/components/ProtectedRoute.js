@@ -310,8 +310,7 @@
           </a>
           <a href="/mobile-buyer/notifications.html" class="mbt-icon-btn">
             <span class="material-symbols-outlined text-[22px]">notifications</span>
-            <span id="nav-notifications-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifHidden ? 'hidden' : ''}">0</span>
-            <span id="nav-notif-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifBadgeHidden ? 'hidden' : ''}">0</span>
+            <span id="nav-notifications-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifHidden && notifBadgeHidden ? 'hidden' : ''}">0</span>
           </a>
         </div>
       `;
@@ -398,8 +397,7 @@
             </a>
             <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
               <span class="material-symbols-outlined">notifications</span>
-              <span id="nav-notifications-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifHidden ? 'hidden' : ''}">0</span>
-              <span id="nav-notif-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifBadgeHidden ? 'hidden' : ''}">0</span>
+              <span id="nav-notifications-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifHidden && notifBadgeHidden ? 'hidden' : ''}">0</span>
             </a>
           </div>
           <div id="auth-buttons-container" class="flex items-center gap-md ml-4">${authHTML}</div>

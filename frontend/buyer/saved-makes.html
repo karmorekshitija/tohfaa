@@ -332,9 +332,15 @@
                                     <p class="font-data-price text-data-price text-on-tertiary-fixed-variant">₹${(item.price_paise / 100).toLocaleString('en-IN')}</p>
                                 </div>
                             </div>
-                            <button class="w-full py-sm px-md border border-secondary text-secondary font-body-md text-body-md rounded-lg hover:bg-secondary hover:text-white transition-all active:scale-[0.98] add-to-cart-btn mt-auto ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" ${item.in_cart ? 'disabled' : ''}>
-                                ${item.in_cart ? 'Added ✦' : 'Add to cart'}
-                            </button>
+                            ${(item.listing_type === 'custom' || item.is_customized || item.category_slug === 'customized-gifts' || (item.tags && item.tags.includes('bulk'))) ? `
+                                <button class="w-full py-sm px-md border border-primary text-primary font-body-md text-body-md rounded-lg hover:bg-primary hover:text-white transition-all active:scale-[0.98] mt-auto font-semibold" onclick="event.stopPropagation(); window.location.href='/buyer/product.html?id=${item.product_id}'">
+                                    Request seller
+                                </button>
+                            ` : `
+                                <button class="w-full py-sm px-md border border-secondary text-secondary font-body-md text-body-md rounded-lg hover:bg-secondary hover:text-white transition-all active:scale-[0.98] add-to-cart-btn mt-auto ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" ${item.in_cart ? 'disabled' : ''}>
+                                    ${item.in_cart ? 'Added ✦' : 'Add to cart'}
+                                </button>
+                            `}
                         </div>
                     `;
                 }).join('');

@@ -689,9 +689,15 @@
                 </div>
             </div>
             <div class="w-full">
-                <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
-                    Add to Cart
-                </button>
+                ${(product.listing_type === 'custom' || product.is_customized || product.category?.slug === 'customized-gifts' || product.tags?.includes('bulk')) ? `
+                    <button class="w-full bg-[#255338] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm" onclick="event.stopPropagation(); window.location.href='./product.html?id=${product.id}'">
+                        Request seller
+                    </button>
+                ` : `
+                    <button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                        Add to Cart
+                    </button>
+                `}
             </div>
         `;
 

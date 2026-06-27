@@ -465,7 +465,8 @@
                         sellerLink.href = `/buyer/seller-profile.html?id=${product.seller.id}`;
                     }
 
-                    isCustomized = product.is_customized || product.category?.slug === 'customized-gifts';
+                    const isBulk = product.tags?.includes('bulk') || product.category?.slug === 'bulk-orders';
+                    isCustomized = product.is_customized || product.category?.slug === 'customized-gifts' || isBulk;
                     isSoldOut = !isCustomized && (product.status === 'sold_out' || maxStock === 0);
                     const isPaused = product.status === 'paused';
 
@@ -477,7 +478,7 @@
                         // Check Customized
                         if (isCustomized) {
                             const customTag = document.createElement('span');
-                            customTag.innerText = 'Customized';
+                            customTag.innerText = isBulk ? 'Bulk Available' : 'Customized';
                             customTag.className = 'font-data-price text-xs bg-[#3D6B4F] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
                             tagsContainer.appendChild(customTag);
                         }
@@ -506,7 +507,7 @@
                         if (qtySelector) qtySelector.style.display = 'none';
                         if (addToCartBtn) {
                             addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'chat';
-                            addToCartBtn.querySelector('span:last-child').innerText = isCustomized ? 'Talk to Seller' : 'Chat with Seller';
+                            addToCartBtn.querySelector('span:last-child').innerText = isSoldOut ? 'Chat with Seller' : 'Request seller';
                         }
                     } else {
                         if (qtySelector) qtySelector.style.display = 'flex';
@@ -883,9 +884,10 @@
                 btn.disabled = true;
                 btn.querySelector('span:last-child').innerText = 'Starting chat...';
                 try {
+                    const isBulk = product.tags?.includes('bulk') || product.category?.slug === 'bulk-orders';
                     const res = await apiClient.post('/requests', {
                         listing_id: Number(productId),
-                        request_type: 'customization',
+                        request_type: isBulk ? 'bulk' : 'customization',
                         quantity: qty
                     });
                     const convId = res.data.conversation_id;
@@ -895,7 +897,7 @@
                     window.Toast?.show("Failed to start chat. Please try again.", "error");
                 } finally {
                     btn.disabled = false;
-                    btn.querySelector('span:last-child').innerText = 'Talk to Seller';
+                    btn.querySelector('span:last-child').innerText = 'Request seller';
                 }
                 return;
             }
