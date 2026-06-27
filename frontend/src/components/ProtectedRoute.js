@@ -176,8 +176,8 @@
     const oldWishlistBadge = document.getElementById('nav-wishlist-badge');
     if (oldWishlistBadge) {
       wishlistCount = oldWishlistBadge.innerText || '0';
-      wishlistHidden = oldWishlistBadge.classList.contains('hidden') || oldWishlistBadge.style.display === 'none';
     }
+    wishlistHidden = false; // Always show wishlist badge
     const oldCartBadge = document.getElementById('nav-cart-badge');
     if (oldCartBadge) {
       cartCount = oldCartBadge.innerText || '0';
@@ -356,7 +356,7 @@
           </a>
           <a href="/mobile-buyer/saved-makes.html" class="mbt-icon-btn">
             <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
-            <span id="nav-wishlist-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${wishlistHidden ? 'hidden' : ''}">${wishlistCount}</span>
+            <span id="nav-wishlist-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
           </a>
           <a href="/mobile-buyer/cart.html" class="mbt-icon-btn">
             <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
@@ -364,8 +364,8 @@
           </a>
           <a href="/mobile-buyer/notifications.html" class="mbt-icon-btn">
             <span class="material-symbols-outlined text-[22px]">notifications</span>
-            <span id="nav-notifications-badge" class="absolute -top-1 -right-1 w-2 h-2 bg-[#C8973A] rounded-full ${notifHidden ? 'hidden' : ''}"></span>
-            <span id="nav-notif-badge" class="absolute -top-1 -right-1 w-2 h-2 bg-[#C8973A] rounded-full ${notifBadgeHidden ? 'hidden' : ''}"></span>
+            <span id="nav-notifications-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifHidden ? 'hidden' : ''}">0</span>
+            <span id="nav-notif-badge" class="absolute -top-0.5 -right-0.5 bg-[#C8973A] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifBadgeHidden ? 'hidden' : ''}">0</span>
           </a>
         </div>
       `;
@@ -444,7 +444,7 @@
             </a>
             <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
               <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
-              <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${wishlistHidden ? 'hidden' : ''}">${wishlistCount}</span>
+              <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
             </a>
             <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
               <span class="material-symbols-outlined">shopping_cart</span>
@@ -452,8 +452,8 @@
             </a>
             <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
               <span class="material-symbols-outlined">notifications</span>
-              <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full ${notifHidden ? 'hidden' : ''}"></span>
-              <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full ${notifBadgeHidden ? 'hidden' : ''}"></span>
+              <span id="nav-notifications-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifHidden ? 'hidden' : ''}">0</span>
+              <span id="nav-notif-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold ${notifBadgeHidden ? 'hidden' : ''}">0</span>
             </a>
           </div>
           <div id="auth-buttons-container" class="flex items-center gap-md ml-4">${authHTML}</div>
@@ -501,10 +501,36 @@
   window.updateCartBadge = updateGlobalCartBadge;
   window.addEventListener('tohfa-cart-updated', updateGlobalCartBadge);
 
+  async function updateGlobalWishlistBadge() {
+    const token = sessionStorage.getItem('tohfa_access_token');
+    const badge = document.getElementById('nav-wishlist-badge');
+    if (!badge) return;
+    if (!token) {
+      badge.classList.add('hidden');
+      return;
+    }
+    try {
+      const res = await fetch(`${window.location.origin}/api/wishlist`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          const items = json.data?.items || json.data || [];
+          badge.innerText = items.length || 0;
+          badge.classList.remove('hidden');
+        }
+      }
+    } catch(e) {}
+  }
+  window.updateWishlistBadge = updateGlobalWishlistBadge;
+  window.addEventListener('tohfa-wishlist-updated', updateGlobalWishlistBadge);
+
   // Let's run a check when page loads to show any toast from redirection
   function init() {
     setupBuyerNavbar();
     updateGlobalCartBadge();
+    updateGlobalWishlistBadge();
 
     const deniedReason = sessionStorage.getItem('access_denied_reason');
     if (deniedReason) {
@@ -718,7 +744,10 @@
           const count = data.unread_count || 0;
           ['nav-notifications-badge', 'nav-notif-badge'].forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.classList.toggle('hidden', count === 0);
+            if (el) {
+              el.innerText = count;
+              el.classList.toggle('hidden', count === 0);
+            }
           });
         }
       } catch(e) {}

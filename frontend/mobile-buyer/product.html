@@ -40,7 +40,7 @@
       width: 100% !important;
     }
     /* Product grids must be 2 columns */
-    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid,
+    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid, #recommended-products-grid,
     .product-grid, .search-results-grid, .category-product-grid {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -206,10 +206,7 @@
                         <span id="wishlist-icon" class="material-symbols-outlined text-2xl">favorite</span>
                     </button>
                 </div>
-                <!-- Swipe pagination dots -->
-                <div id="carousel-dots-container" class="flex justify-center items-center gap-2 py-2">
-                    <!-- Dynamically populated active/inactive dots -->
-                </div>
+
             </div>
 
             <!-- Right: Product Information -->
@@ -729,7 +726,7 @@
                                 <img class="max-w-full max-h-full object-contain" src="https://placehold.co/600x600/f4ede3/516447?text=Handcrafted" alt="Placeholder Image" />
                             </div>
                         `;
-                        dotsContainer.innerHTML = '';
+                        if (dotsContainer) dotsContainer.innerHTML = '';
                     } else {
                         // Render slides
                         carousel.innerHTML = productImages.map((img, idx) => `
@@ -739,35 +736,39 @@
                         `).join('');
 
                         // Render dots
-                        dotsContainer.innerHTML = productImages.map((img, idx) => {
-                            const activeClass = idx === 0 ? 'bg-primary' : 'bg-outline-variant/60';
-                            return `<button class="carousel-dot ${activeClass}" data-index="${idx}"></button>`;
-                        }).join('');
+                        if (dotsContainer) {
+                            dotsContainer.innerHTML = productImages.map((img, idx) => {
+                                const activeClass = idx === 0 ? 'bg-primary' : 'bg-outline-variant/60';
+                                return `<button class="carousel-dot ${activeClass}" data-index="${idx}"></button>`;
+                            }).join('');
 
-                        // Wire dots clicks
-                        dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
-                            dot.addEventListener('click', () => {
-                                const idx = Number(dot.getAttribute('data-index'));
-                                const slideWidth = carousel.offsetWidth;
-                                carousel.scrollTo({ left: idx * slideWidth, behavior: 'smooth' });
+                            // Wire dots clicks
+                            dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
+                                dot.addEventListener('click', () => {
+                                    const idx = Number(dot.getAttribute('data-index'));
+                                    const slideWidth = carousel.offsetWidth;
+                                    carousel.scrollTo({ left: idx * slideWidth, behavior: 'smooth' });
+                                });
                             });
-                        });
+                        }
 
                         // Sync scroll to update dots
                         carousel.addEventListener('scroll', () => {
                             const width = carousel.offsetWidth;
                             if (width <= 0) return;
                             const index = Math.round(carousel.scrollLeft / width);
-                            const dots = dotsContainer.querySelectorAll('.carousel-dot');
-                            dots.forEach((d, idx) => {
-                                if (idx === index) {
-                                    d.classList.add('bg-primary');
-                                    d.classList.remove('bg-outline-variant/60');
-                                } else {
-                                    d.classList.remove('bg-primary');
-                                    d.classList.add('bg-outline-variant/60');
-                                }
-                            });
+                            if (dotsContainer) {
+                                const dots = dotsContainer.querySelectorAll('.carousel-dot');
+                                dots.forEach((d, idx) => {
+                                    if (idx === index) {
+                                        d.classList.add('bg-primary');
+                                        d.classList.remove('bg-outline-variant/60');
+                                    } else {
+                                        d.classList.remove('bg-primary');
+                                        d.classList.add('bg-outline-variant/60');
+                                    }
+                                });
+                            }
                         });
                     }
 
@@ -1399,26 +1400,26 @@
                         }
 
                         return `
-                            <div class="group bg-white border border-[#c3c8c1] rounded-xl p-2.5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${p.id}'">
+                            <div class="bg-white border border-[#c3c8c1] rounded-xl overflow-hidden shadow-sm flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${p.id}'">
                                 <div>
-                                    <div class="relative aspect-square overflow-hidden rounded-xl bg-[#F7F3EC] mb-3">
+                                    <div class="relative aspect-square bg-[#F7F3EC]">
+                                        <img src="${p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted'}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
                                         ${badgeHtml}
-                                        <img class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src="${p.image_url || 'https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60'}" alt="${p.name}" loading="lazy">
                                     </div>
-                                    <div class="space-y-1 mb-3">
-                                        <div class="flex items-center justify-between">
-                                            <span class="font-bold text-sm text-[#C8973A]">${formattedPrice}</span>
-                                            <div class="flex items-center gap-0.5 text-xs text-[#605e57]">
-                                                <span class="text-[#C8973A] font-bold">★</span>
-                                                <span class="font-semibold text-primary">${ratingVal}</span>
+                                    <div class="p-2.5">
+                                        <div class="flex items-center justify-between mb-0.5">
+                                            <p class="text-[13px] font-bold text-[#C8973A] leading-tight" style="font-family: 'DM Sans', sans-serif;">${formattedPrice}</p>
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-[#C8973A] text-[11px] font-bold">★</span>
+                                                <span class="text-[11px] font-semibold text-[#1f1b15]">${ratingVal}</span>
                                             </div>
                                         </div>
-                                        <h4 class="font-headline-lg font-bold text-primary line-clamp-1 text-sm" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
-                                        <span class="text-[10px] text-[#605e57] hover:underline cursor-pointer block" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name}</span>
+                                        <h4 class="text-[13px] font-semibold text-[#1f1b15] leading-snug line-clamp-1 mb-0.5" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                                        <p class="text-[10px] text-[#605e57] mb-2">By ${p.seller_name}</p>
                                     </div>
                                 </div>
-                                <div class="w-full mt-auto">
-                                    <button class="w-full bg-[#3D6B4F] hover:bg-[#3D6B4F]/90 active:scale-[0.98] transition-all text-white py-1.5 rounded-lg font-semibold text-xs flex items-center justify-center gap-1" onclick="event.stopPropagation(); window.location.href='./product.html?id=${p.id}'">
+                                <div class="p-2.5 pt-0">
+                                    <button class="w-full bg-[#3D6B4F] text-white text-[11px] font-semibold py-1.5 rounded-lg active:scale-95 transition-transform" onclick="event.stopPropagation(); window.location.href='./product.html?id=${p.id}'">
                                         View Details
                                     </button>
                                 </div>

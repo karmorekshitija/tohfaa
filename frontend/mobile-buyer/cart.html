@@ -4,6 +4,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <script src="/src/components/DeviceRedirect.js"></script>
   <script src="/src/components/ProtectedRoute.js"></script>
+  <script src="/src/components/ReportWidget.js" defer></script>
   <meta charset="utf-8"/>
   <title>Basket | Tohfa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -130,15 +131,6 @@
   </style>
 </footer>
 <!-- END: Summary/Footer Action -->
-
-<!-- BEGIN: Report Floating Button -->
-<div class="fixed bottom-36 right-4 z-30">
-  <button onclick="window.location.href='/mobile-buyer/report-problem.html'" class="flex items-center gap-2 bg-[#3D6B4F] text-white px-4 py-2 rounded-full shadow-lg text-xs font-medium hover:bg-[#2A4B37] active:scale-95 transition-all">
-    <span class="material-symbols-outlined text-[16px]">flag</span>
-    Report a Problem
-  </button>
-</div>
-<!-- END: Report Floating Button -->
 
 <script type="module">
   import apiClient from '/src/utils/apiClient.js';
