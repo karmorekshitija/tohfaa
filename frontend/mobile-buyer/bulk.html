@@ -54,17 +54,21 @@
     <div style="position:absolute;left:0;top:0;bottom:0;width:5px;background:#C8973A;"></div>
     <!-- Ambient halo -->
     <div style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);width:160px;height:160px;background:rgba(200,151,58,0.15);filter:blur(60px);border-radius:50%;pointer-events:none;"></div>
-    <!-- Gift image -->
-    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvRYdWomJ2rT_t6DtY3CCP-w8l_2pbfQ7rLmoguWM8Ff0PkqGvxqCz4Mzs7xOuzT-xoYgR6wDk1woac8aoNhEv2pf2kJVCMam3luiJHMJdj0bzM7jT0eSKkG-HG9I1cdIq2vyRFaDMo9anB1x-1SiTVJdMWMcbYmTdIctulPlrNSH1r_8N31Jmcv00QHnfWjwmWlARYca__ybqYf13uWMwPwbQ4uSsklOQvUZp4_6AbhmJfROGV2Tm1vpv-zn48SY52QpUOe_yjec"
-      alt="Bulk artisan gift boxes"
-      style="position:absolute;right:-10px;bottom:0;width:140px;height:auto;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.5));transform:rotate(-3deg);">
+    <!-- SVG box outline (watermark) -->
+    <div style="position:absolute;right:16px;bottom:16px;width:120px;height:120px;pointer-events:none;display:flex;align-items:center;justify-content:center;">
+      <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 8H3V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2z" />
+        <path d="M21 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8" />
+        <path d="M10 12h4v2h-4z" />
+      </svg>
+    </div>
     <!-- Content -->
     <div style="position:relative;z-index:10;padding:28px 24px 28px 28px;width:68%;">
-      <span style="display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(200,151,58,0.16);color:#C8973A;font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.12em;margin-bottom:12px;">✦ BULK ORDERS</span>
-      <h2 style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:700;color:#fff;line-height:1.1;margin-bottom:8px;">Bulk Orders</h2>
-      <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,0.62);font-size:12px;line-height:1.5;margin-bottom:14px;">For studios, cafes, corporates &amp; events. Tiered pricing.</p>
+      <span style="display:inline-block;padding:4px 8px;border:1px solid rgba(200,151,58,0.4);border-radius:4px;color:#C8973A;font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.12em;margin-bottom:12px;">✦ BULK ORDERS</span>
+      <h2 style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:700;color:#fff;line-height:1.1;margin-bottom:8px;">Ordering in bulk?</h2>
+      <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,0.62);font-size:12px;line-height:1.5;margin-bottom:14px;">Contact our team — we'll handle the rest.</p>
       <button id="hero-contact-btn" style="background:#C8973A;color:#fff;border:none;padding:10px 20px;border-radius:999px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.08em;cursor:pointer;">
-        Contact Team →
+        Contact Our Team →
       </button>
     </div>
   </div>

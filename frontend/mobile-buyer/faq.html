@@ -108,25 +108,44 @@
   import { logout } from '/src/utils/auth.js';
 
   const buyerFAQs = [
-    { q: "What is Tohfa?", a: "Tohfa is India's premier curated marketplace dedicated to preserving Indian heritage by connecting buyers with independent artisans offering handcrafted, authentic goods." },
-    { q: "How do I place an order?", a: "Simply browse our collections, select your preferred handcrafted item, customize if options are available, and click 'Add to Cart'. Follow the secure checkout prompts to complete your purchase." },
-    { q: "What payment methods are accepted?", a: "We accept UPI, major credit/debit cards, Net Banking, and Cash on Delivery (COD) where available, processed securely via Razorpay." },
-    { q: "How long does shipping take and can I track it?", a: "Orders are typically dispatched within 2-3 business days and delivered within 5-9 business days depending on location. A tracking link is sent via email and SMS for real-time monitoring once shipped. You can also track orders under 'My Orders'." },
-    { q: "What is your return and cancellation policy?", a: "Unused items in original packaging can be returned within 7 days. Custom or personalized items are not eligible for returns. Orders can be cancelled free of charge before shipping; once shipped, returns apply." },
-    { q: "What if my product arrives damaged or incorrect?", a: "Please report the issue through our Support Chat within 48 hours of delivery along with photos of the damage. We will verify and arrange a replacement or refund immediately." },
-    { q: "Are the products genuinely handmade and ethically sourced?", a: "Yes, every product on Tohfa is listed by independent artisans and sellers. Every artisan partner is vetted for ethical labor practices, and listings include seller details so you know who made your purchase." },
-    { q: "Do you ship internationally?", a: "Currently, Tohfa ships within India only. International shipping options may be added in the near future." },
-    { q: "How do I contact the seller directly?", a: "You can message a seller directly from their product page. For order issues, using our Support Chat is recommended for faster assistance." }
+    { q: "What is Tohfa?", a: "Tohfa is a curated marketplace for artisanal, handcrafted heritage products from across India." },
+    { q: "How do I place an order?", a: "Browse our collections, add items to your cart, and proceed to checkout with our secure payment gateway." },
+    { q: "Are the products authentic?", a: "Yes, every product is sourced directly from verified master artisans and heritage craft clusters." },
+    { q: "What are the shipping charges?", a: "Shipping is calculated at checkout based on weight and destination. We offer free shipping on orders over ₹5000." },
+    { q: "Do you ship internationally?", a: "Currently, we ship within India. International shipping is in our immediate roadmap." },
+    { q: "How can I track my order?", a: "Once shipped, you will receive a tracking link via email and SMS." },
+    { q: "What is the return policy?", a: "We accept returns for damaged or defective items within 48 hours of delivery." },
+    { q: "Can I customize a gift?", a: "Many of our artisans offer personalization. Look for the 'Customize' tag on product pages." },
+    { q: "What payment methods are accepted?", a: "We accept UPI, Credit/Debit Cards, and Net Banking." },
+    { q: "Is cash on delivery available?", a: "Yes, COD is available for select pincodes for orders below ₹2000." },
+    { q: "How do I care for handcrafted products?", a: "Care instructions specifically for each craft are included in the product description and packaging." },
+    { q: "Do you offer gift wrapping?", a: "Yes, we offer premium, eco-friendly gift wrapping inspired by traditional textiles." },
+    { q: "Can I include a gift message?", a: "Absolutely. You can add a handwritten note during the checkout process." },
+    { q: "What if I receive a broken item?", a: "Please take a photo and contact our support team immediately for a replacement or refund." },
+    { q: "How long does delivery take?", a: "Standard delivery takes 5-7 business days. Custom items may take longer." },
+    { q: "Can I cancel my order?", a: "Orders can be cancelled within 12 hours of placement, before they are processed by artisans." },
+    { q: "Do you have a loyalty program?", a: "Our Patron Circle is coming soon, offering early access to limited collections.", badge: true },
+    { q: "Can I book an artisan workshop?", a: "We are preparing to launch virtual 'Meet the Maker' sessions soon.", badge: true },
+    { q: "Is there a Tohfa mobile app?", a: "Our mobile experience is currently being handcrafted for iOS and Android.", badge: true }
   ];
 
   const sellerFAQs = [
-    { q: "How do I become a Tohfa artisan / seller?", a: "Apply through our 'Become a Seller' page with your portfolio and details of your craft. Our curation team reviews all applicants for heritage integrity and quality before onboarding." },
-    { q: "What are the platform fees and commissions?", a: "Joining and listing products on Tohfa is completely free. We only charge a nominal commission on successful sales. There are no monthly listing or subscription fees." },
-    { q: "Do I handle my own shipping and packaging?", a: "You can choose to use Tohfa's integrated shipping and logistics network for easy pickups, or manage shipping yourself through verified courier partners." },
-    { q: "How and when do I get paid for my sales?", a: "Payouts are processed securely and deposited directly into your registered bank account 7 days after delivery confirmation of the order." },
-    { q: "What are the quality standards for products?", a: "Every listing must be handmade, hand-designed, or utilize traditional artisan craft techniques. Mass-manufactured or machine-made goods are strictly prohibited." },
-    { q: "Can I offer customization/personalization on my listings?", a: "Yes! Sellers can enable customization options for listings, allowing buyers to add personalized names, messages, or custom dimensions during checkout." },
-    { q: "What is the seller policy for returns and cancellations?", a: "Sellers are notified immediately of cancellations before shipping. In case of returns (within 7 days for eligible items), Tohfa coordinates reverse logistics. Custom products are protected from non-defective returns." }
+    { q: "How do I become a Tohfa seller?", a: "Apply through our Founding Sellers portal with photos of your craftwork." },
+    { q: "What crafts are eligible?", a: "We focus on GI-tagged crafts, heritage handlooms, and traditional Indian handicrafts." },
+    { q: "What is the commission fee?", a: "Tohfa charges a nominal commission on successful sales to maintain the platform and logistics." },
+    { q: "How do I get paid?", a: "Payments are settled directly to your registered bank account 7 days after successful delivery." },
+    { q: "Who handles the shipping?", a: "Tohfa provides integrated logistics. You just need to pack the item securely." },
+    { q: "What are the packaging guidelines?", a: "We require specific sustainable packaging standards to ensure product safety and brand consistency." },
+    { q: "Do I need a GST number?", a: "Yes, as per Indian e-commerce regulations, a valid GSTIN is required for all sellers." },
+    { q: "Can I sell personalized items?", a: "Yes, we encourage artisans to offer bespoke services through our customization tool." },
+    { q: "How do I manage my inventory?", a: "Our Seller Hub provides a simple dashboard to update stock and manage orders." },
+    { q: "Is there a registration fee?", a: "No, there is zero upfront cost to join Tohfa as an artisan." },
+    { q: "Can I list products on other platforms?", a: "Yes, we do not require exclusivity, though we encourage unique collections for Tohfa." },
+    { q: "What support do you offer artisans?", a: "We provide professional photography, story-writing, and digital marketing support." },
+    { q: "How are returns handled?", a: "In case of manufacturing defects, sellers are responsible. For other cases, Tohfa assists." },
+    { q: "Do you help with export?", a: "We are currently streamlining export documentation for our sellers." },
+    { q: "How do I update my artisan story?", a: "You can edit your profile and craft history via the Seller Hub at any time." },
+    { q: "Can I see sales analytics?", a: "Advanced insights and trend forecasting for artisans is launching next quarter.", badge: true }
   ];
 
   function createFAQItem(item) {
@@ -135,7 +154,7 @@
               <summary class="flex justify-between items-center p-5 cursor-pointer list-none list-inside outline-none">
                   <div class="flex-1 pr-4">
                       <span class="font-body-md font-bold text-[#1E3D0F]">${item.q}</span>
-                      ${item.badge ? `<span class="ml-2 px-2 py-0.5 rounded-full border border-tertiary text-[8px] font-bold text-tertiary uppercase align-middle">${item.badge}</span>` : ''}
+                      ${item.badge ? `<span class="ml-2 px-2 py-0.5 rounded-full border border-tertiary text-[8px] font-bold text-tertiary uppercase align-middle">Coming Soon</span>` : ''}
                   </div>
                   <span class="faq-icon material-symbols-outlined text-[#C9972C] transition-transform duration-300">add</span>
               </summary>

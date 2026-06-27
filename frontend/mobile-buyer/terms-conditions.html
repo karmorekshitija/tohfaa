@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=375, height=812, initial-scale=1.0" name="viewport">
+  <title>Terms &amp; Conditions | Tohfa</title>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .active-tab-indicator {
+        position: relative;
+    }
+    .active-tab-indicator::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 2px;
+        background-color: #C9A84C;
+    }
+    .custom-bullet::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: #C9A84C;
+        border-radius: 50%;
+        margin-right: 12px;
+        flex-shrink: 0;
+        margin-top: 8px;
+    }
+  </style>
+</head>
+<body class="bg-[#fcf9f8] text-[#1b1c1c] font-body-md selection:bg-[#a1d2ad]">
+  <!-- Top AppBar -->
+  <header class="fixed top-0 w-full z-50 shadow-sm bg-[#144227] h-16 flex items-center px-[20px]">
+    <div class="flex items-center justify-between w-full">
+      <span class="font-['Playfair_Display'] text-[24px] italic text-white font-semibold">Tohfa</span>
+      <a href="/mobile-buyer/home.html" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#224f33] transition-colors text-white">
+        <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="pt-16 pb-32">
+    <!-- Title Section -->
+    <section class="bg-[#F5F0E8] px-[20px] py-10 text-center">
+      <h1 class="font-['Playfair_Display'] text-[32px] font-semibold text-[#2C2C2C] mb-4">Terms &amp; Conditions</h1>
+      <div class="w-16 h-0.5 bg-[#C9A84C] mx-auto mb-6"></div>
+      <p class="font-medium text-[14px] text-[#717971]">
+        Last updated: June 2026 · Please read before using Tohfa.
+      </p>
+    </section>
+
+    <!-- Tab Switcher -->
+    <section class="px-[20px] -mt-6">
+      <div class="flex p-1.5 bg-white rounded-full border border-[#e4e2e1] shadow-sm max-w-sm mx-auto overflow-hidden">
+        <button class="flex-1 py-3 px-4 rounded-full font-bold text-[12px] transition-all duration-300 bg-[#2d5a3d] text-white active-tab-indicator" id="tab-sellers" onclick="switchTab('sellers')">
+          FOR SELLERS
+        </button>
+        <button class="flex-1 py-3 px-4 rounded-full font-bold text-[12px] transition-all duration-300 text-[#144227] bg-transparent" id="tab-buyers" onclick="switchTab('buyers')">
+          FOR BUYERS
+        </button>
+      </div>
+    </section>
+
+    <!-- Content Area -->
+    <section class="px-[20px] mt-8 space-y-6">
+      <!-- Content Container -->
+      <div id="content-container">
+        <!-- Seller Content (Default active) -->
+        <div id="content-sellers-section" class="space-y-6">
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">1. Who Can Join</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Must be an individual or small business selling genuinely handmade or customized gifts.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Sellers must maintain an active and authentic Instagram presence for brand verification.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Must be based in India and have a valid Indian bank account for payouts.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">2. What Sellers Agree To</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">All products listed must be genuinely handmade, hand-finished, or customized by the seller.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">No fakes, replicas, or mass-manufactured third-party items are permitted on the platform.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Sellers are solely responsible for fulfilling every order within the promised lead time.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="grid grid-cols-1 gap-4">
+            <div class="relative rounded-xl overflow-hidden h-40 bg-[#e4e2e1]">
+              <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBqK4AkcTtafVD-weMbRkNwB5g69LcPxIWC-fCE7-h_K8T_rO5y64ezUakPRtU_Z0kn-Pvft6rKIRskAri_tWlVMYSlPnpI9SQ0bkzaGbfgAcqRHnAd03w0IVHKdm9zLDnB99lKR5fkOhojVsbZhFoXZ8jLWMEVnbDW_41lLSGEvTa7H0Goy3R6kzHKyixKlDjx_-7yJIdyXJqby65JeTu1kWnLwcAgPs_AvAWWtJQm_vABsjqBAnIoMnayFvOfBu2cYkGYsvZx1sA')"></div>
+              <div class="absolute inset-0 bg-black/30 flex items-center justify-center p-6 text-center">
+                <p class="text-white font-['Playfair_Display'] text-[20px] italic">"Supporting the human hands behind every thoughtful gift."</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">3. What Tohfa Promises</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">A curated marketplace to list products and reach a niche audience of gifting enthusiasts.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Connections with genuine buyers who value the artisanal process.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Secure, end-to-end payment handling via our partner Razorpay.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">4. If Rules Are Broken</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Tohfa reserves the right to remove listings that do not meet our quality standards.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Immediate account suspension for providing false information or listing inauthentic products.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">5. Liability</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Tohfa is a marketplace facilitator, not the manufacturer or artisan of the products.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">The seller is fully responsible for product quality, defects, and shipping insurance.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Buyer Content (Hidden by default) -->
+        <div id="content-buyers-section" class="space-y-6 hidden">
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">1. What Buyers Agree To</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">All purchases are final once the order is confirmed by the artisan.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">No cancellations once the handcrafting process has begun.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Ensuring correct shipping and contact details are provided at checkout.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">2. Payments</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Secure payment processing handled via Razorpay.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Full payment required at the time of order placement.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Prices are inclusive of all applicable taxes unless stated otherwise.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">3. Delivery</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Timelines vary by artisan as products are often made-to-order.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Tohfa is not liable for delays caused by third-party logistics partners.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Failed delivery due to incorrect address is the buyer's responsibility.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">4. Refunds &amp; Disputes</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Items are non-refundable unless received in a damaged condition.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Disputes must be raised within 48 hours of delivery with photo evidence.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Tohfa will provide fair mediation between buyer and seller.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-[0_4px_16px_rgba(45,90,61,0.04)] border-l-4 border-[#C9A84C]">
+            <h2 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#144227] mb-3">5. What Tohfa Is Not Responsible For</h2>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Final product quality is the sole responsibility of the individual artisan.</p>
+              </li>
+              <li class="flex items-start">
+                <span class="custom-bullet"></span>
+                <p class="text-[#2C2C2C] text-[16px]">Tohfa serves as a marketplace connector to discover artisan stories.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function switchTab(type) {
+        const sellersBtn = document.getElementById('tab-sellers');
+        const buyersBtn = document.getElementById('tab-buyers');
+        const sellersSection = document.getElementById('content-sellers-section');
+        const buyersSection = document.getElementById('content-buyers-section');
+        
+        if (type === 'sellers') {
+            sellersBtn.className = "flex-1 py-3 px-4 rounded-full font-bold text-[12px] transition-all duration-300 bg-[#2d5a3d] text-white active-tab-indicator";
+            buyersBtn.className = "flex-1 py-3 px-4 rounded-full font-bold text-[12px] transition-all duration-300 text-[#144227] bg-transparent";
+            sellersSection.classList.remove('hidden');
+            buyersSection.classList.add('hidden');
+        } else {
+            buyersBtn.className = "flex-1 py-3 px-4 rounded-full font-bold text-[12px] transition-all duration-300 bg-[#2d5a3d] text-white active-tab-indicator";
+            sellersBtn.className = "flex-1 py-3 px-4 rounded-full font-bold text-[12px] transition-all duration-300 text-[#144227] bg-transparent";
+            buyersSection.classList.remove('hidden');
+            sellersSection.classList.add('hidden');
+        }
+    }
+  </script>
+</body>
+</html>
