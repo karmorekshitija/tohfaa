@@ -67,6 +67,15 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.28);
         }
+        .text-shadow-premium {
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .bulk-gradient {
+            background: linear-gradient(145deg, rgba(4,12,8,0.85) 0%, rgba(10,26,17,0.65) 40%, rgba(26,48,37,0.35) 75%, transparent 100%);
+        }
+        .bulk-card:hover img {
+            transform: scale(1.06);
+        }
         .categories-editorial-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -154,33 +163,6 @@
 
         <!-- Category Editorial Grid — Bulk tile always first -->
         <section class="px-margin-desktop pb-xl">
-            <!-- Bulk Orders Hero Card -->
-            <div onclick="window.location.href='/buyer/bulk.html'" class="bulk-card-editorial relative rounded-2xl cursor-pointer mb-6" style="height:340px;border-radius:18px;">
-                <!-- Full-bleed background image -->
-                <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-nKoLNKY0QI9MzRM1uw0JF089sUq7PQjGNR1pW7jfieV5gyAyGKtaCAbQ6oDqDrHd4YPk_ChLd3NFY2ctGe7R85F2P2-_0fXAzPTdyyhfMPtquaB1BPm9nCTURZeM5rJal8gJhAgIzikTUJrPSptlF4jbBZmYqw7p6Eu-Z2S2Cu4M76qCCK9LiF_FS-G1U1rFcRrj8rEKCN9M6wOL8DQ3UY_WmTr5TDwu6UhL-muiMX2z5jqlwjCGpR8Txk40c0ACp8vzpMuN11c"
-                  alt="Bulk Orders — Premium artisan gift boxes"
-                  style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:18px;"
-                >
-                <!-- Amber edge accent -->
-                <div style="position:absolute;top:0;bottom:0;left:0;width:5px;background:#C8973A;border-radius:18px 0 0 18px;z-index:20;"></div>
-                <!-- Gradient overlay -->
-                <div class="bulk-gradient-overlay" style="position:absolute;inset:0;border-radius:18px;z-index:10;"></div>
-                <!-- Content -->
-                <div style="position:relative;z-index:20;height:100%;padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;">
-                    <div>
-                        <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.2em;color:#C8973A;display:block;margin-bottom:16px;">✦ BULK ORDERS</span>
-                        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-style:italic;color:#fff;font-weight:700;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,0.4);margin-bottom:12px;">Bulk Orders</h2>
-                        <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,0.88);font-size:17px;">For large quantities &amp; gifting — studios, cafes &amp; corporate</p>
-                    </div>
-                    <div>
-                        <button onclick="event.stopPropagation();window.location.href='/buyer/bulk.html'" style="background:#C8973A;color:#fff;border:none;padding:14px 32px;border-radius:999px;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s ease;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">
-                            Explore Category →
-                        </button>
-                        <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,0.55);margin-top:12px;">Available across all crafts</p>
-                    </div>
-                </div>
-            </div>
 
             <!-- All Categories Editorial Grid — populated by JS below -->
             <div class="categories-editorial-grid" id="categories-grid-container">
@@ -443,7 +425,26 @@
               }
 
               const displayedSlugs = new Set();
-              let html = '';
+              let html = `
+                <!-- Slot 1: Bulk Orders (Full-bleed Photographic Anchor) -->
+                <div onclick="window.location.href='/buyer/bulk.html'" class="md:col-span-2 md:row-span-2 relative rounded-xl overflow-hidden group category-card bulk-card cursor-pointer">
+                  <img alt="Premium artisan gift boxes stack" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-nKoLNKY0QI9MzRM1uw0JF089sUq7PQjGNR1pW7jfieV5gyAyGKtaCAbQ6oDqDrHd4YPk_ChLd3NFY2ctGe7R85F2P2-_0fXAzPTdyyhfMPtquaB1BPm9nCTURZeM5rJal8gJhAgIzikTUJrPSptlF4jbBZmYqw7p6Eu-Z2S2Cu4M76qCCK9LiF_FS-G1U1rFcRrj8rEKCN9M6wOL8DQ3UY_WmTr5TDwu6UhL-muiMX2z5jqlwjCGpR8Txk40c0ACp8vzpMuN11c"/>
+                  <div class="absolute inset-0 bg-[#C8973A]/5 pointer-events-none"></div>
+                  <div class="absolute inset-y-0 left-0 w-1 bg-[#C8973A] z-20"></div>
+                  <div class="absolute inset-0 bulk-gradient z-10"></div>
+                  <div class="relative z-20 h-full p-6 md:p-10 flex flex-col justify-between">
+                    <div>
+                      <span class="font-label-sm text-label-sm text-[#C8973A] tracking-[0.2em] block mb-4">✦ BULK ORDERS</span>
+                      <h2 class="font-display-lg text-4xl italic text-white mb-2 leading-tight text-shadow-premium">Bulk Orders</h2>
+                      <p class="font-body-md text-white/90">For large quantities & gifting</p>
+                    </div>
+                    <div>
+                      <button class="bg-[#C8973A] text-white px-8 py-3 rounded-full font-label-md text-sm hover:brightness-110 transition-all mb-4">Explore Category →</button>
+                      <p class="font-label-sm text-xs text-white/60">Available across all crafts</p>
+                    </div>
+                  </div>
+                </div>
+              `;
 
               GRID_SLOTS.forEach(slot => {
                 // Find matching category in the API list

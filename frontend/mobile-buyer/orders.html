@@ -20,7 +20,19 @@
             transform: scale(0.97);
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        .hide-scrollbar button {
+            flex-shrink: 0 !important;
+            white-space: nowrap !important;
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface font-dm-sans min-h-screen pb-24">
@@ -36,7 +48,7 @@
 
 <main class="px-4 py-6 space-y-6 max-w-md mx-auto">
     <!-- Filter Pills (Horizontal Scrollable) -->
-    <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
+    <div class="flex flex-nowrap items-center gap-2 overflow-x-auto hide-scrollbar py-1">
         <button id="pill-all" onclick="filterStatus('all')" class="bg-primary text-white px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">All</button>
         <button id="pill-active" onclick="filterStatus('active')" class="bg-white border border-[#8FAF82]/30 text-on-surface-variant px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">Active</button>
         <button id="pill-delivered" onclick="filterStatus('Delivered')" class="bg-white border border-[#8FAF82]/30 text-on-surface-variant px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap artisan-card-hover">Delivered</button>

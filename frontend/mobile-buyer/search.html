@@ -287,9 +287,11 @@
 
             <!-- Trending Searches -->
             <section>
-                <h2 class="font-label-caps text-[11px] text-gold tracking-widest mb-md uppercase">Trending Now 🔥</h2>
-                <div id="trending-container" class="grid grid-rows-3 grid-flow-col gap-sm overflow-x-auto scrollbar-hide pb-2" style="grid-template-rows: repeat(3, auto); -ms-overflow-style: none; scrollbar-width: none;">
-                    <!-- Dynamically populated -->
+                <h2 class="font-label-caps text-[11px] text-[#C8973A] tracking-widest mb-md uppercase">Trending Now 🔥</h2>
+                <div id="trending-scroll-container" class="flex flex-col gap-2 overflow-x-auto scrollbar-hide pb-2">
+                    <div id="trending-row-1" class="flex gap-2 whitespace-nowrap"></div>
+                    <div id="trending-row-2" class="flex gap-2 whitespace-nowrap"></div>
+                    <div id="trending-row-3" class="flex gap-2 whitespace-nowrap"></div>
                 </div>
             </section>
 
@@ -526,13 +528,29 @@
                 const res = await apiClient.get('/products/trending-searches');
                 if (res.data && res.data.success) {
                     const tags = res.data.data;
-                    const container = document.getElementById('trending-container');
-                    container.innerHTML = tags.map(tag => `
-                        <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200 whitespace-nowrap">${tag}</button>
-                    `).join('');
+                    const row1 = document.getElementById('trending-row-1');
+                    const row2 = document.getElementById('trending-row-2');
+                    const row3 = document.getElementById('trending-row-3');
+                    
+                    row1.innerHTML = '';
+                    row2.innerHTML = '';
+                    row3.innerHTML = '';
+                    
+                    tags.forEach((tag, idx) => {
+                        const btnHTML = `
+                            <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-body-md text-[14px] text-on-surface hover:border-[#3d6b4f] hover:bg-white transition-all duration-200 whitespace-nowrap">${tag}</button>
+                        `;
+                        if (idx % 3 === 0) {
+                            row1.innerHTML += btnHTML;
+                        } else if (idx % 3 === 1) {
+                            row2.innerHTML += btnHTML;
+                        } else {
+                            row3.innerHTML += btnHTML;
+                        }
+                    });
 
                     // Wire dynamic trending chips clicks
-                    container.querySelectorAll('.trending-chip').forEach(chip => {
+                    document.querySelectorAll('.trending-chip').forEach(chip => {
                         chip.addEventListener('click', () => {
                             const text = chip.innerText;
                             searchInput.value = text;

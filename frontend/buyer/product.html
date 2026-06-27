@@ -109,10 +109,7 @@
                         <span id="wishlist-icon" class="material-symbols-outlined text-2xl">favorite</span>
                     </button>
                 </div>
-                <!-- Swipe pagination dots -->
-                <div id="carousel-dots-container" class="flex justify-center items-center gap-2 py-2">
-                    <!-- Dynamically populated active/inactive dots -->
-                </div>
+
             </div>
 
             <!-- Right: Product Information -->
@@ -562,7 +559,7 @@
                                 <img class="max-w-full max-h-full object-contain" src="https://placehold.co/600x600/f4ede3/516447?text=Handcrafted" alt="Placeholder Image" />
                             </div>
                         `;
-                        dotsContainer.innerHTML = '';
+                        if (dotsContainer) dotsContainer.innerHTML = '';
                     } else {
                         // Render slides
                         carousel.innerHTML = productImages.map((img, idx) => `
@@ -572,35 +569,39 @@
                         `).join('');
 
                         // Render dots
-                        dotsContainer.innerHTML = productImages.map((img, idx) => {
-                            const activeClass = idx === 0 ? 'bg-primary' : 'bg-outline-variant/60';
-                            return `<button class="carousel-dot ${activeClass}" data-index="${idx}"></button>`;
-                        }).join('');
+                        if (dotsContainer) {
+                            dotsContainer.innerHTML = productImages.map((img, idx) => {
+                                const activeClass = idx === 0 ? 'bg-primary' : 'bg-outline-variant/60';
+                                return `<button class="carousel-dot ${activeClass}" data-index="${idx}"></button>`;
+                            }).join('');
 
-                        // Wire dots clicks
-                        dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
-                            dot.addEventListener('click', () => {
-                                const idx = Number(dot.getAttribute('data-index'));
-                                const slideWidth = carousel.offsetWidth;
-                                carousel.scrollTo({ left: idx * slideWidth, behavior: 'smooth' });
+                            // Wire dots clicks
+                            dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
+                                dot.addEventListener('click', () => {
+                                    const idx = Number(dot.getAttribute('data-index'));
+                                    const slideWidth = carousel.offsetWidth;
+                                    carousel.scrollTo({ left: idx * slideWidth, behavior: 'smooth' });
+                                });
                             });
-                        });
+                        }
 
                         // Sync scroll to update dots
                         carousel.addEventListener('scroll', () => {
                             const width = carousel.offsetWidth;
                             if (width <= 0) return;
                             const index = Math.round(carousel.scrollLeft / width);
-                            const dots = dotsContainer.querySelectorAll('.carousel-dot');
-                            dots.forEach((d, idx) => {
-                                if (idx === index) {
-                                    d.classList.add('bg-primary');
-                                    d.classList.remove('bg-outline-variant/60');
-                                } else {
-                                    d.classList.remove('bg-primary');
-                                    d.classList.add('bg-outline-variant/60');
-                                }
-                            });
+                            if (dotsContainer) {
+                                const dots = dotsContainer.querySelectorAll('.carousel-dot');
+                                dots.forEach((d, idx) => {
+                                    if (idx === index) {
+                                        d.classList.add('bg-primary');
+                                        d.classList.remove('bg-outline-variant/60');
+                                    } else {
+                                        d.classList.remove('bg-primary');
+                                        d.classList.add('bg-outline-variant/60');
+                                    }
+                                });
+                            }
                         });
                     }
 
