@@ -193,6 +193,16 @@
             -webkit-text-stroke: 1.5px #ef4444 !important;
             color: #ef4444 !important;
         }
+        .occasion-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 16px !important;
+        }
+        @media (min-width: 768px) {
+            .occasion-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-white min-h-screen relative overflow-x-hidden text-ink font-body-md antialiased">
@@ -273,38 +283,20 @@
         
         <!-- ==================== STATE 1: IDLE VIEW ==================== -->
         <div id="idle-view" class="space-y-xl">
-            <!-- Mascot Greeting Block -->
-            <section class="flex items-center justify-center gap-xl my-lg">
-                <div class="relative w-[180px] h-[180px] flex-shrink-0">
-                    <img alt="Tohfa Mascot Greeting" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY" loading="lazy" />
-                </div>
-                <div class="speech-bubble relative bg-ivory border border-sage p-lg rounded-xl max-w-md">
-                    <h1 class="font-title-serif italic text-[22px] text-ink mb-2 leading-tight">
-                        What would you like to gift today? ✦
-                    </h1>
-                    <p class="font-body-md text-[14px] text-on-surface-variant">
-                        Search by product name, category, description, or seller.
-                    </p>
-                </div>
-            </section>
+
 
             <!-- Trending Searches -->
             <section>
                 <h2 class="font-label-caps text-[11px] text-gold tracking-widest mb-md uppercase">Trending Now 🔥</h2>
-                <div class="flex flex-wrap gap-sm">
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">handmade candles</button>
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">ceramics</button>
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">wildflower jewelry</button>
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">leather journal</button>
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">woodworking</button>
-                    <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200">custom portrait</button>
+                <div id="trending-container" class="grid grid-rows-3 grid-flow-col gap-sm overflow-x-auto scrollbar-hide pb-2" style="grid-template-rows: repeat(3, auto); -ms-overflow-style: none; scrollbar-width: none;">
+                    <!-- Dynamically populated -->
                 </div>
             </section>
 
             <!-- Shop by Occasion -->
             <section>
                 <h2 class="font-label-caps text-[11px] text-gold tracking-widest mb-md uppercase">Shop by Occasion</h2>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-md">
+                <div class="occasion-grid">
                     <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="gift">
                         <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">cake</span>
                         <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">BIRTHDAY</span>
@@ -317,9 +309,33 @@
                         <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">celebration</span>
                         <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">WEDDING</span>
                     </div>
+                    <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="haldi">
+                        <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">spa</span>
+                        <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">HALDI</span>
+                    </div>
+                    <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="sangeet">
+                        <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">music_note</span>
+                        <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">SANGEET</span>
+                    </div>
+                    <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="diwali">
+                        <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">flare</span>
+                        <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">DIWALI</span>
+                    </div>
                     <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="festival">
                         <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">festival</span>
                         <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">FESTIVAL</span>
+                    </div>
+                    <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="housewarming">
+                        <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">home</span>
+                        <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">HOUSEWARMING</span>
+                    </div>
+                    <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="baby-shower">
+                        <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">child_care</span>
+                        <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">BABY SHOWER</span>
+                    </div>
+                    <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="congratulations">
+                        <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">workspace_premium</span>
+                        <span class="font-label-caps text-[12px] text-ink group-hover:text-primary transition-colors">CONGRATS</span>
                     </div>
                     <div class="occasion-card h-[100px] bg-ivory border border-outline-variant rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-primary-container cursor-pointer transition-all duration-300" data-occasion="handmade">
                         <span class="material-symbols-outlined text-primary-container mb-2 text-[26px]" style="font-variation-settings: 'FILL' 0;">volunteer_activism</span>
@@ -487,14 +503,8 @@
                 });
             });
 
-            // Wire trending chips clicks
-            document.querySelectorAll('.trending-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    const text = chip.innerText;
-                    searchInput.value = text;
-                    executeSearch(text);
-                });
-            });
+            // Load trending searches from backend
+            loadTrendingSearches();
 
             // Handle URL Parameters
             if (queryParam) {
@@ -509,6 +519,30 @@
 
             // Setup Infinite Scroll
             window.addEventListener('scroll', handleScroll);
+        }
+
+        async function loadTrendingSearches() {
+            try {
+                const res = await apiClient.get('/products/trending-searches');
+                if (res.data && res.data.success) {
+                    const tags = res.data.data;
+                    const container = document.getElementById('trending-container');
+                    container.innerHTML = tags.map(tag => `
+                        <button class="trending-chip px-md py-xs bg-ivory border border-outline-variant rounded-full font-body-md text-[14px] text-on-surface hover:border-primary-container hover:bg-white transition-all duration-200 whitespace-nowrap">${tag}</button>
+                    `).join('');
+
+                    // Wire dynamic trending chips clicks
+                    container.querySelectorAll('.trending-chip').forEach(chip => {
+                        chip.addEventListener('click', () => {
+                            const text = chip.innerText;
+                            searchInput.value = text;
+                            executeSearch(text);
+                        });
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load trending searches:", err);
+            }
         }
 
         // States navigation logic

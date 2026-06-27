@@ -152,16 +152,6 @@
             </div>
         </div>
 
-        <div class="p-4 border border-[#8FAF82]/20 rounded-xl bg-white shadow-sm flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-secondary">credit_card</span>
-                <div>
-                    <p class="font-space-mono text-sm text-on-surface">•••• •••• •••• 4291</p>
-                    <p class="text-[10px] text-secondary">Expires 09/27</p>
-                </div>
-            </div>
-            <span class="material-symbols-outlined text-secondary text-sm">settings</span>
-        </div>
     </section>
 
     <!-- Join Studio Card -->
@@ -385,7 +375,6 @@
         document.getElementById('edit-display-name').value = profileData.display_name || profileData.full_name || '';
         document.getElementById('edit-email').value = profileData.email || '';
         document.getElementById('edit-phone').value = profileData.phone || '';
-        document.getElementById('edit-avatar-url').value = '';
 
         const previewImg = document.getElementById('edit-avatar-preview');
         if (previewImg) {
@@ -436,21 +425,13 @@
         reader.readAsDataURL(file);
     });
 
-    // Avatar URL live preview
-    document.getElementById('edit-avatar-url')?.addEventListener('input', (e) => {
-        const url = e.target.value.trim();
-        if (url.startsWith('http')) {
-            const previewImg = document.getElementById('edit-avatar-preview');
-            if (previewImg) previewImg.src = url;
-        }
-    });
+
 
     // Save profile handler
     window.handleEditProfileSave = async function() {
         const displayName = document.getElementById('edit-display-name').value.trim();
         const email = document.getElementById('edit-email').value.trim();
         const phone = document.getElementById('edit-phone').value.trim();
-        const avatarUrlVal = document.getElementById('edit-avatar-url').value.trim();
 
         let hasErrors = false;
 
@@ -511,8 +492,6 @@
                 } catch (uploadErr) {
                     console.warn("Avatar upload failed:", uploadErr);
                 }
-            } else if (avatarUrlVal && avatarUrlVal.startsWith('http')) {
-                finalAvatarUrl = avatarUrlVal;
             }
 
             // Save display name, email, phone, and optional avatar_url
@@ -604,11 +583,7 @@
                 <p class="text-[10px] text-[#6B6B6B]">Tap photo to upload (JPG, PNG up to 5MB)</p>
                 <input type="file" id="edit-avatar-file" class="hidden" accept="image/*">
 
-                <!-- Image URL paste -->
-                <div class="w-full space-y-1">
-                    <label class="font-sans text-xs font-semibold text-[#6B6B6B] uppercase tracking-wider">Or paste image URL (optional)</label>
-                    <input id="edit-avatar-url" class="edit-input-field" type="url" placeholder="https://example.com/photo.jpg">
-                </div>
+
             </div>
 
             <!-- Full Name -->
