@@ -62,6 +62,12 @@
       padding: 4px 0 !important;
       text-align: left !important;
     }
+    #makes-grid .grid-cols-2 {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      flex-direction: row !important;
+      width: auto !important;
+    }
   }
 </style>
 
@@ -420,7 +426,7 @@
                            </button>`;
 
                     return `
-                        <div class="bg-[#F7F3EC] p-4 rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${item.product_id}'">
+                        <div class="bg-[#F7F3EC] p-2.5 md:p-4 rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${item.product_id}'">
                             <div>
                                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imgUrl}" alt="${item.name}" loading="lazy">

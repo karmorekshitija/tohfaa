@@ -367,6 +367,15 @@ async function initDb() {
       )
     `);
 
+    // Create trending_searches table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS trending_searches (
+        query TEXT PRIMARY KEY,
+        search_count INTEGER DEFAULT 1,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     // ─── Phase 2: Pause/Resume fields on products ──────────────────────────────
     await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
     await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS pause_reason TEXT');

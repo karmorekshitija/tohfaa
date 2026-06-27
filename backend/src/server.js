@@ -1405,6 +1405,22 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
   try {
     const userId = req.user ? req.user.user_id : null;
 
+    // Log search query in trending_searches
+    if (q && q.trim().length > 1) {
+      const cleanQ = q.trim().toLowerCase();
+      try {
+        await db.prepare(`
+          INSERT INTO trending_searches (query, search_count, updated_at)
+          VALUES (?, 1, CURRENT_TIMESTAMP)
+          ON CONFLICT (query) DO UPDATE SET 
+            search_count = trending_searches.search_count + 1,
+            updated_at = CURRENT_TIMESTAMP
+        `).run(cleanQ);
+      } catch (logErr) {
+        console.error('Error logging trending search:', logErr);
+      }
+    }
+
     // Build sort clause — cursor pagination only works with 'newest' (ORDER BY p.id DESC)
     const sortMap = {
       newest:     'p.id DESC',
@@ -1571,6 +1587,39 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
       error: true,
       message: "Internal server error",
       code: "INTERNAL_SERVER_ERROR"
+    });
+  }
+});
+
+// GET /api/products/trending-searches
+app.get('/api/products/trending-searches', rateLimit(120), async (req, res) => {
+  try {
+    const trending = await db.prepare(`
+      SELECT query FROM trending_searches 
+      ORDER BY search_count DESC, updated_at DESC 
+      LIMIT 24
+    `).all();
+
+    const dbTags = trending.map(t => t.query);
+    const fallbacks = [
+      'resin art', 'organic soap', 'pottery', 'knitted wear', 'handwoven bags',
+      'terracotta', 'clay earrings', 'pressed flowers', 'wall art', 'personalized cups',
+      'crochet toys', 'scented wax', 'handmade cards', 'leather wallet', 'wooden spoons',
+      'handmade candles', 'ceramics', 'wildflower jewelry', 'leather journal', 'woodworking',
+      'custom portrait'
+    ];
+
+    const combined = Array.from(new Set([...dbTags, ...fallbacks]));
+
+    return res.status(200).json({
+      success: true,
+      data: combined
+    });
+  } catch (err) {
+    console.error('Error fetching trending searches:', err);
+    return res.status(500).json({
+      error: true,
+      message: "Internal server error"
     });
   }
 });
@@ -6397,10 +6446,12 @@ app.get('/api/products/:id/similar', rateLimit(120), optionalAuthenticateToken, 
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN store_config sc ON p.seller_id = sc.seller_id
       WHERE p.category_id = ?
         AND p.id != ?
         AND p.status = 'active'
         AND p.stock_qty > 0
+        AND COALESCE(sc.vacation_mode, 0) = 0
       ORDER BY p.avg_rating DESC, p.review_count DESC, p.id DESC
       LIMIT ?
     `).all(srcProduct.category_id, productId, limit);

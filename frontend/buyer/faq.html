@@ -112,108 +112,14 @@
 <main class="max-w-[960px] mx-auto px-6 pb-24 flex-grow">
   <!-- Buyers Section -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="buyers-grid">
-    <div class="flex flex-col gap-4">
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">How do I place an order?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          Simply browse our collection, select your preferred item, and click 'Add to Cart'. Follow the checkout prompts to finalize your purchase.
-        </div>
-      </div>
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">What payment methods are accepted?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          We accept all major credit cards, UPI, and digital wallets to ensure a seamless transaction experience.
-        </div>
-      </div>
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">Can I track my order in real-time?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          Yes, once your order is dispatched, a tracking link will be sent via email and SMS for real-time monitoring.
-        </div>
-      </div>
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">What is your return policy?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          Items can be returned within 7 days of delivery if they are unused and in original packaging. Custom items are non-returnable.
-        </div>
-      </div>
-    </div>
-    <div class="flex flex-col gap-4">
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">Are the products ethically sourced?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          Yes, every artisan partner on Tohfa is vetted for ethical labor practices and sustainable material usage.
-        </div>
-      </div>
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">What if my item arrives damaged?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          Contact us within 48 hours of delivery with photos of the damage. We will arrange a replacement or full refund immediately.
-        </div>
-      </div>
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">Is my personal information secure?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          We use bank-level encryption and industry-leading security protocols to protect your personal and financial data.
-        </div>
-      </div>
-    </div>
+    <div class="flex flex-col gap-4" id="buyers-col-left"></div>
+    <div class="flex flex-col gap-4" id="buyers-col-right"></div>
   </div>
 
   <!-- Sellers Section -->
   <div class="hidden grid grid-cols-1 md:grid-cols-2 gap-4" id="sellers-grid">
-    <div class="flex flex-col gap-4">
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">How do I become a Tohfa artisan?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          Apply through our 'Artisan Portal' with a portfolio of your work. Our curation team will review and contact you.
-        </div>
-      </div>
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">What are the platform fees?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          We charge a nominal commission on successful sales. There are no monthly listing fees for our standard artisan plan.
-        </div>
-      </div>
-    </div>
-    <div class="flex flex-col gap-4">
-      <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-start">
-          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">Do I handle my own shipping?</h3>
-          <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
-        </div>
-        <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
-          You can choose to use Tohfa's logistics network or manage shipping yourself through verified partners.
-        </div>
-      </div>
-    </div>
+    <div class="flex flex-col gap-4" id="sellers-col-left"></div>
+    <div class="flex flex-col gap-4" id="sellers-col-right"></div>
   </div>
 
   <!-- Contact Banner -->
@@ -307,6 +213,56 @@
   import apiClient from '/src/utils/apiClient.js';
   import { logout } from '/src/utils/auth.js';
 
+  const buyerFAQs = [
+    { q: "What is Tohfa?", a: "Tohfa is India's premier curated marketplace dedicated to preserving Indian heritage by connecting buyers with independent artisans offering handcrafted, authentic goods." },
+    { q: "How do I place an order?", a: "Simply browse our collections, select your preferred handcrafted item, customize if options are available, and click 'Add to Cart'. Follow the secure checkout prompts to complete your purchase." },
+    { q: "What payment methods are accepted?", a: "We accept UPI, major credit/debit cards, Net Banking, and Cash on Delivery (COD) where available, processed securely via Razorpay." },
+    { q: "How long does shipping take and can I track it?", a: "Orders are typically dispatched within 2-3 business days and delivered within 5-9 business days depending on location. A tracking link is sent via email and SMS for real-time monitoring once shipped. You can also track orders under 'My Orders'." },
+    { q: "What is your return and cancellation policy?", a: "Unused items in original packaging can be returned within 7 days. Custom or personalized items are not eligible for returns. Orders can be cancelled free of charge before shipping; once shipped, returns apply." },
+    { q: "What if my product arrives damaged or incorrect?", a: "Please report the issue through our Support Chat within 48 hours of delivery along with photos of the damage. We will verify and arrange a replacement or refund immediately." },
+    { q: "Are the products genuinely handmade and ethically sourced?", a: "Yes, every product on Tohfa is listed by independent artisans and sellers. Every artisan partner is vetted for ethical labor practices, and listings include seller details so you know who made your purchase." },
+    { q: "Do you ship internationally?", a: "Currently, Tohfa ships within India only. International shipping options may be added in the near future." },
+    { q: "How do I contact the seller directly?", a: "You can message a seller directly from their product page. For order issues, using our Support Chat is recommended for faster assistance." }
+  ];
+
+  const sellerFAQs = [
+    { q: "How do I become a Tohfa artisan / seller?", a: "Apply through our 'Become a Seller' page with your portfolio and details of your craft. Our curation team reviews all applicants for heritage integrity and quality before onboarding." },
+    { q: "What are the platform fees and commissions?", a: "Joining and listing products on Tohfa is completely free. We only charge a nominal commission on successful sales. There are no monthly listing or subscription fees." },
+    { q: "Do I handle my own shipping and packaging?", a: "You can choose to use Tohfa's integrated shipping and logistics network for easy pickups, or manage shipping yourself through verified courier partners." },
+    { q: "How and when do I get paid for my sales?", a: "Payouts are processed securely and deposited directly into your registered bank account 7 days after delivery confirmation of the order." },
+    { q: "What are the quality standards for products?", a: "Every listing must be handmade, hand-designed, or utilize traditional artisan craft techniques. Mass-manufactured or machine-made goods are strictly prohibited." },
+    { q: "Can I offer customization/personalization on my listings?", a: "Yes! Sellers can enable customization options for listings, allowing buyers to add personalized names, messages, or custom dimensions during checkout." },
+    { q: "What is the seller policy for returns and cancellations?", a: "Sellers are notified immediately of cancellations before shipping. In case of returns (within 7 days for eligible items), Tohfa coordinates reverse logistics. Custom products are protected from non-defective returns." }
+  ];
+
+  function renderFAQGrid(faqs, gridPrefix) {
+      const leftCol = document.getElementById(`${gridPrefix}-col-left`);
+      const rightCol = document.getElementById(`${gridPrefix}-col-right`);
+      if (!leftCol || !rightCol) return;
+      
+      leftCol.innerHTML = '';
+      rightCol.innerHTML = '';
+
+      faqs.forEach((item, index) => {
+          const cardHtml = `
+              <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
+                  <div class="flex justify-between items-start">
+                      <h3 class="font-body font-medium text-[#1E3D0F] pr-8">${item.q}</h3>
+                      <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
+                  </div>
+                  <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
+                      ${item.a}
+                  </div>
+              </div>
+          `;
+          if (index % 2 === 0) {
+              leftCol.insertAdjacentHTML('beforeend', cardHtml);
+          } else {
+              rightCol.insertAdjacentHTML('beforeend', cardHtml);
+          }
+      });
+  }
+
   window.toggleFaq = function(card) {
       const content = card.querySelector('.faq-content');
       const icon = card.querySelector('.icon-rotate');
@@ -345,6 +301,11 @@
           buyersGrid.classList.add('hidden');
       }
   };
+
+  document.addEventListener('DOMContentLoaded', () => {
+      renderFAQGrid(buyerFAQs, 'buyers');
+      renderFAQGrid(sellerFAQs, 'sellers');
+  });
 </script>
 </body>
 </html>
