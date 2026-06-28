@@ -164,13 +164,13 @@
   </section>
 
   <!-- Empty State Demo Section -->
-  <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto text-center hidden" id="empty-state">
+  <section class="py-lg px-md max-w-[1440px] mx-auto text-center hidden" id="empty-state">
     <div class="border-t border-outline-variant pt-xl flex flex-col items-center">
       <div class="relative mb-lg">
         <!-- Chibi Bunny Mascot + Bouquet -->
-        <div class="w-48 h-48 bg-surface-container-low rounded-full flex items-center justify-center relative">
-          <span class="text-7xl">🐰</span>
-          <div class="absolute -bottom-2 -right-4 text-4xl">🪴</div>
+        <div class="w-36 h-36 bg-surface-container-low rounded-full flex items-center justify-center relative">
+          <span class="text-5xl">🐰</span>
+          <div class="absolute -bottom-2 -right-4 text-3xl">🪴</div>
           <!-- Decorative bouquet motif -->
           <div class="absolute -top-4 -left-6 opacity-20">
             <span class="material-symbols-outlined text-6xl text-primary">spa</span>
@@ -422,9 +422,24 @@
         const emptyState = document.getElementById('empty-state');
         const countBadge = document.getElementById('saved-makes-count');
 
+        // Show loading skeleton while API call is in flight
+        gridSection.classList.add('hidden');
+        emptyState.classList.add('hidden');
+        // Insert a temporary loading placeholder into the main content area
+        const loadingPlaceholder = document.createElement('div');
+        loadingPlaceholder.id = 'wishlist-loading';
+        loadingPlaceholder.className = 'flex flex-col items-center justify-center py-xl text-center';
+        loadingPlaceholder.innerHTML = `
+          <span class="material-symbols-outlined animate-spin text-[32px] text-primary mb-sm">sync</span>
+          <p class="font-body-md text-on-surface-variant text-sm">Loading your saved makes...</p>
+        `;
+        // Insert before emptyState
+        emptyState.parentNode.insertBefore(loadingPlaceholder, emptyState);
+
         try {
             const res = await apiClient.get('/wishlist');
             if (res.data && res.data.success) {
+                document.getElementById('wishlist-loading')?.remove();
                 const items = res.data.data.items || [];
                 countBadge.innerText = `(${items.length} saved)`;
 
@@ -550,9 +565,18 @@
                         await handleTalkToSeller(id, btn);
                     });
                 });
+            } else {
+                // Response came back but success flag was missing or false — show empty state
+                document.getElementById('wishlist-loading')?.remove();
+                gridSection.classList.add('hidden');
+                emptyState.classList.remove('hidden');
             }
         } catch (err) {
             console.error('Error loading wishlist items:', err);
+            document.getElementById('wishlist-loading')?.remove();
+            // Always fall back to showing the empty state — never leave the page blank
+            gridSection.classList.add('hidden');
+            emptyState.classList.remove('hidden');
         }
     }
 

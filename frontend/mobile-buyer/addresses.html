@@ -183,6 +183,9 @@
       <div class="space-y-xs relative">
         <label class="font-sans text-[10px] font-semibold text-gold-brand uppercase tracking-widest flex justify-between">Postal Code <span class="text-[8px] opacity-50">REQUIRED</span></label>
         <input id="pincode-input" class="w-full bg-[#F7F3EC] border border-sage px-md py-sm rounded-lg text-body-md focus:outline-none focus:border-gold-brand" type="text" placeholder="Postal Code" autocomplete="off" />
+        <p id="pincode-error" style="display:none; font-family:'DM Sans',sans-serif; font-size:12px; color:#C0392B; margin-top:4px; font-weight:500;">
+          ✕ This PIN code doesn't match the city entered. Please check and correct either field.
+        </p>
       </div>
       <div class="space-y-xs">
         <label class="font-sans text-[10px] font-semibold text-gold-brand uppercase tracking-widest flex justify-between">Country</label>
@@ -279,6 +282,33 @@
             }, 3000);
         }
     };
+
+    async function validatePincodeMatchesCity(pincode, cityTyped) {
+      try {
+        const res = await apiClient.get(`/addresses/pincode/${pincode}`);
+        if (res.data && res.data.success) {
+          const apiCity = (res.data.data.city || '').trim().toLowerCase();
+          const enteredCity = (cityTyped || '').trim().toLowerCase();
+          return apiCity === enteredCity;
+        }
+        return null; // invalid pincode
+      } catch (e) {
+        return null; // network/API error
+      }
+    }
+
+    function showPincodeError(show) {
+      const errEl = document.getElementById('pincode-error');
+      const pinEl = document.getElementById('pincode-input');
+      if (!errEl || !pinEl) return;
+      if (show) {
+        errEl.style.display = 'block';
+        pinEl.style.borderColor = '#C0392B';
+      } else {
+        errEl.style.display = 'none';
+        pinEl.style.borderColor = ''; // resets to CSS class
+      }
+    }
 
     function getAddressType(fullName) {
         const name = (fullName || '').toLowerCase();
@@ -526,6 +556,20 @@
             return;
         }
 
+        // Pincode–city validation before saving
+        if (/^\d{6}$/.test(pincode) && city) {
+          const match = await validatePincodeMatchesCity(pincode, city);
+          if (match === false) {
+            showPincodeError(true);
+            document.getElementById('pincode-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          } else if (match === null) {
+            Toast.show('Invalid PIN code — please check and try again.', 'error');
+            return;
+          }
+          showPincodeError(false);
+        }
+
         const addressType = document.getElementById('address-type-input').value;
         let line2Val = '';
         if (addressType === 'other') {
@@ -704,6 +748,7 @@
                         const info = res.data.data;
                         stateInput.value = info.state || "";
                         cityInput.value = info.city || "";
+                        showPincodeError(false); // auto-fill always produces a valid match
                     } else {
                         Toast.show("Invalid PIN code details not found.", "error");
                     }
@@ -713,6 +758,14 @@
                     Toast.show(err.response?.data?.message || "Failed to fetch PIN code details.", "error");
                 }
             }
+        });
+
+        cityInput.addEventListener('blur', async () => {
+            const pin = pincodeInput.value.trim();
+            const city = cityInput.value.trim();
+            if (!/^\d{6}$/.test(pin) || !city) return; // don't validate incomplete input
+            const match = await validatePincodeMatchesCity(pin, city);
+            showPincodeError(match === false);
         });
 
         function showPincodeLoading(isLoading) {

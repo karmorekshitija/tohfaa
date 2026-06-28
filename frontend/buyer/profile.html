@@ -375,6 +375,29 @@
     import { logout } from '/src/utils/auth.js';
     import { initSearchOverlay } from '/buyer/searchOverlay.js';
 
+    let profileData = null;
+
+    async function handleSellerEntryPoint(e) {
+        if (e) e.preventDefault();
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html?next=become-seller';
+            return;
+        }
+        try {
+            const res = await apiClient.get('/profile/me');
+            if (res.data?.success) {
+                const role = res.data.data.role;
+                if (role === 'seller') {
+                    window.location.href = '/seller/dashboard.html';
+                    return;
+                }
+            }
+        } catch(err) {}
+        window.location.href = '/buyer/become-seller.html';
+    }
+    window.handleSellerEntryPoint = handleSellerEntryPoint;
+
     // Check if token exists, if not redirect
     const token = sessionStorage.getItem('tohfa_access_token');
     if (!token) {
@@ -505,8 +528,10 @@
 
         const joinCard = document.getElementById('join-studio-card');
         if (joinCard) {
-            if (profile.role !== 'seller') {
+            if (profile.role === 'seller') {
                 joinCard.remove();
+            } else {
+                joinCard.addEventListener('click', handleSellerEntryPoint);
             }
         }
     }
