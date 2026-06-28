@@ -107,6 +107,29 @@ function convertDatesToStrings(obj) {
   }
   return obj;
 }
+function fallbackAvatars(obj) {
+  if (!obj) return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(fallbackAvatars);
+  }
+  if (typeof obj === 'object') {
+    const avatarKeys = ['avatar_url', 'reviewer_avatar', 'buyer_avatar_url', 'seller_avatar_url', 'avatar'];
+    for (const key of Object.keys(obj)) {
+      if (avatarKeys.includes(key)) {
+        if (obj[key] === null || obj[key] === undefined || obj[key] === '' || String(obj[key]).includes('ui-avatars.com')) {
+          obj[key] = '/uploads/avatars/default-avatar.png';
+        }
+      } else if (key === 'banner_url') {
+        if (obj[key] === null || obj[key] === undefined || obj[key] === '') {
+          obj[key] = '/uploads/banners/default-banner.png';
+        }
+      } else if (typeof obj[key] === 'object') {
+        fallbackAvatars(obj[key]);
+      }
+    }
+  }
+  return obj;
+}
 
 const db = {
   prepare: (sql) => {
@@ -121,7 +144,8 @@ const db = {
         const executor = getQueryExecutor();
         const flatArgs = args.length === 1 && Array.isArray(args[0]) ? args[0] : args;
         const promise = executor.query(pgSql, flatArgs).then(res => {
-          const row = convertDatesToStrings(res.rows[0]) || null;
+          let row = convertDatesToStrings(res.rows[0]) || null;
+          row = fallbackAvatars(row);
           if (row && pluckEnabled) {
             const keys = Object.keys(row);
             return keys.length > 0 ? row[keys[0]] : null;
@@ -142,7 +166,8 @@ const db = {
         const executor = getQueryExecutor();
         const flatArgs = args.length === 1 && Array.isArray(args[0]) ? args[0] : args;
         const promise = executor.query(pgSql, flatArgs).then(res => {
-          const rows = convertDatesToStrings(res.rows) || [];
+          let rows = convertDatesToStrings(res.rows) || [];
+          rows = fallbackAvatars(rows);
           if (pluckEnabled) {
             return rows.map(row => {
               if (!row) return null;
@@ -254,18 +279,20 @@ async function initDb() {
     if (parseInt(catCheck.rows[0].count) === 0) {
       console.log('PostgreSQL: Seeding default categories...');
       const seedCats = [
-        ['Textile Arts', 'textile-arts', 'Crochet, knitting, weaving & loom work', '🧶'],
-        ['Jewellery', 'jewellery', 'Handcrafted rings, necklaces & bangles', '💍'],
-        ['Ceramics & Pottery', 'ceramics-pottery', 'Wheel-thrown stoneware & hand-built clay', '🏺'],
-        ['Journals & Stationery', 'journals-stationery', 'Notebooks, journals & hand-pressed cards', '📓'],
-        ['Candles & Fragrance', 'candles-fragrance', 'Soy candles, incense & botanical wax', '🕯️'],
-        ['Paintings', 'paintings', 'Original artwork & hand-illustrated prints', '🖼️'],
         ['Customized Gifts', 'customized-gifts', 'Personalised & bespoke handmade pieces', '🎁'],
-        ['Home Decor', 'home-decor', 'Hand-carved, woven & crafted home objects', '🏡']
+        ['Jewellery', 'jewellery', 'Handcrafted rings, necklaces & bangles', '💍'],
+        ['Hampers', 'hampers', 'Curated gift hampers for all occasions', '🧺'],
+        ['Wedding & Rituals', 'wedding-rituals', 'Traditional wedding essentials & decor', '🔱'],
+        ['Crochet', 'crochet', 'Hand-stitched crochet yarn creations', '🧶'],
+        ['Fabric Crafts', 'fabric-crafts', 'Handmade bags, totes & embroidery', '👜'],
+        ['Festivals', 'festivals', 'Festive decorations & handmade gifts', '🎉'],
+        ['Couples', 'couples', 'Curated & matching gifts for couples', '👩‍❤️‍👨'],
+        ['Home Decor', 'home-decor', 'Hand-carved, woven & crafted home objects', '🏡'],
+        ['Art & Portraits', 'art-portraits', 'Custom digital drawings, paintings & sketches', '🎨']
       ];
       for (const cat of seedCats) {
         await pool.query(
-          'INSERT INTO categories (name, slug, description, icon_emoji, item_count) VALUES ($1, $2, $3, $4, 0)',
+          'INSERT INTO categories (name, slug, description, icon_emoji, item_count, is_active) VALUES ($1, $2, $3, $4, 0, 1)',
           cat
         );
       }
@@ -469,6 +496,30 @@ async function initDb() {
     `);
     
     await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_seller_status ON conversations(seller_id, status)');
+
+    // ─── Delayed courier pickup columns and constraints on orders ──────────────
+    await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_eligible_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');
+    await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS scheduled_pickup_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');
+    await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_status TEXT DEFAULT NULL');
+    
+    await pool.query('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check');
+    await pool.query(`
+      ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (
+        status IN (
+          'awaiting_payment', 'processing', 'in_production',
+          'packed', 'ready_for_pickup', 'dispatched', 'delivered', 'cancelled', 'rto',
+          'Awaiting Payment', 'Processing', 'Dispatched', 'Delivered', 'Cancelled',
+          'in_transit', 'on_hold'
+        )
+      )
+    `);
+
+    await pool.query('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_pickup_status_check');
+    await pool.query(`
+      ALTER TABLE orders ADD CONSTRAINT orders_pickup_status_check CHECK (
+        pickup_status IS NULL OR pickup_status IN ('pending', 'queued', 'scheduled', 'picked_up')
+      )
+    `);
 
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);

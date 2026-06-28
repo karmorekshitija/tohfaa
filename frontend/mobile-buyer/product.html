@@ -580,11 +580,21 @@
 
                     // Update UI Info
                     document.getElementById('product-name').innerText = product.name;
-                    document.getElementById('product-description').innerText = product.description || 'No description available.';
+                    document.getElementById('product-description').innerText = product.description || 'Crafted with love and care, this piece is a heartfelt creation by an independent artisan.\nEvery detail is thoughtfully made by hand — a little treasure, made just for you.';
                     
                     const subcontainer = document.getElementById('product-subcategories-container');
                     if (subcontainer) {
                         subcontainer.innerHTML = '';
+                        
+                        // Render Category first
+                        if (product.category && product.category.name) {
+                            const catSpan = document.createElement('span');
+                            catSpan.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary text-white border border-primary/20 font-body";
+                            catSpan.textContent = `Category: ${product.category.name}`;
+                            subcontainer.appendChild(catSpan);
+                        }
+                        
+                        // Render Subcategories
                         if (product.subcategories && product.subcategories.length > 0) {
                             product.subcategories.forEach(sub => {
                                 const span = document.createElement('span');
@@ -1089,11 +1099,14 @@
             btn.querySelector('span:last-child').innerText = 'Starting chat...';
 
             try {
-                const res = await apiClient.post('/conversations', {
+                const productListingType = product?.listing_type || product?.product_type_tag || '';
+                const isBulkProduct = productListingType === 'bulk' || product?.tags?.includes('bulk') || product?.category?.slug === 'bulk-orders';
+                const requestType = isBulkProduct ? 'bulk' : 'customization';
+
+                const res = await apiClient.post('/requests', {
                     listing_id: Number(productId),
-                    product_type_tag: 'overflow',
-                    quantity: qty,
-                    bypass_intake: true
+                    request_type: requestType,
+                    quantity: qty || 1
                 });
                 const convId = res.data.conversation_id;
                 window.location.href = `./chat.html?conversationId=${convId}`;
@@ -1121,10 +1134,13 @@
                 btn.disabled = true;
                 btn.querySelector('span:last-child').innerText = 'Starting chat...';
                 try {
-                    const isBulk = product.tags?.includes('bulk') || product.category?.slug === 'bulk-orders';
+                    const productListingType = product?.listing_type || product?.product_type_tag || '';
+                    const isBulkProduct = productListingType === 'bulk' || product?.tags?.includes('bulk') || product?.category?.slug === 'bulk-orders';
+                    const requestType = isBulkProduct ? 'bulk' : 'customization';
+
                     const res = await apiClient.post('/requests', {
                         listing_id: Number(productId),
-                        request_type: isBulk ? 'bulk' : 'customization',
+                        request_type: requestType,
                         quantity: qty
                     });
                     const convId = res.data.conversation_id;

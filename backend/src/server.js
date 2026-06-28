@@ -26,6 +26,9 @@ try { db.exec("ALTER TABLE orders ADD COLUMN amount_paid INTEGER;"); } catch (e)
 try { db.exec("ALTER TABLE orders ADD COLUMN delivery_date TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE orders ADD COLUMN tracking_url TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE orders ADD COLUMN unit_price INTEGER;"); } catch (e) {}
+try { db.exec("UPDATE users SET avatar_url = '/uploads/avatars/default-avatar.png' WHERE avatar_url IS NULL OR avatar_url = '';"); } catch (e) {}
+try { db.exec("UPDATE store_config SET banner_url = '/uploads/banners/default-banner.png' WHERE banner_url IS NULL OR banner_url = '';"); } catch (e) {}
+try { db.exec("UPDATE seller_profiles SET banner_url = '/uploads/banners/default-banner.png' WHERE banner_url IS NULL OR banner_url = '';"); } catch (e) {}
 
 try { db.exec("ALTER TABLE custom_offers ADD COLUMN product_name TEXT;"); } catch(e) {}
 try { db.exec("ALTER TABLE custom_offers ADD COLUMN custom_notes TEXT;"); } catch(e) {}
@@ -58,6 +61,82 @@ const sellerAboutDir = path.join(__dirname, '..', 'uploads', 'about');
 fs.mkdirSync(avatarsDir, { recursive: true });
 fs.mkdirSync(sellerBannerDir, { recursive: true });
 fs.mkdirSync(sellerAboutDir, { recursive: true });
+
+const cleanupDummyFiles = async () => {
+  try {
+    const users = await db.prepare("SELECT id, avatar_url FROM users WHERE avatar_url IS NOT NULL AND avatar_url != ''").all();
+    for (const u of users) {
+      if (u.avatar_url) {
+        let localPath = u.avatar_url;
+        if (localPath.startsWith('http')) {
+          try {
+            const urlObj = new URL(localPath);
+            localPath = urlObj.pathname;
+          } catch(e) {}
+        }
+        const absolutePath = path.join(__dirname, '..', localPath);
+        if (fs.existsSync(absolutePath)) {
+          const stats = fs.statSync(absolutePath);
+          if (stats.size <= 100) {
+            try { fs.unlinkSync(absolutePath); } catch(_) {}
+            await db.prepare("UPDATE users SET avatar_url = NULL WHERE id = ?").run(u.id);
+          }
+        } else {
+          await db.prepare("UPDATE users SET avatar_url = NULL WHERE id = ?").run(u.id);
+        }
+      }
+    }
+
+    const profiles = await db.prepare("SELECT user_id, banner_url FROM seller_profiles WHERE banner_url IS NOT NULL AND banner_url != ''").all();
+    for (const p of profiles) {
+      if (p.banner_url) {
+        let localPath = p.banner_url;
+        if (localPath.startsWith('http')) {
+          try {
+            const urlObj = new URL(localPath);
+            localPath = urlObj.pathname;
+          } catch(e) {}
+        }
+        const absolutePath = path.join(__dirname, '..', localPath);
+        if (fs.existsSync(absolutePath)) {
+          const stats = fs.statSync(absolutePath);
+          if (stats.size <= 100) {
+            try { fs.unlinkSync(absolutePath); } catch(_) {}
+            await db.prepare("UPDATE seller_profiles SET banner_url = NULL WHERE user_id = ?").run(p.user_id);
+          }
+        } else {
+          await db.prepare("UPDATE seller_profiles SET banner_url = NULL WHERE user_id = ?").run(p.user_id);
+        }
+      }
+    }
+
+    const configs = await db.prepare("SELECT seller_id, banner_url FROM store_config WHERE banner_url IS NOT NULL AND banner_url != ''").all();
+    for (const c of configs) {
+      if (c.banner_url) {
+        let localPath = c.banner_url;
+        if (localPath.startsWith('http')) {
+          try {
+            const urlObj = new URL(localPath);
+            localPath = urlObj.pathname;
+          } catch(e) {}
+        }
+        const absolutePath = path.join(__dirname, '..', localPath);
+        if (fs.existsSync(absolutePath)) {
+          const stats = fs.statSync(absolutePath);
+          if (stats.size <= 100) {
+            try { fs.unlinkSync(absolutePath); } catch(_) {}
+            await db.prepare("UPDATE store_config SET banner_url = NULL WHERE seller_id = ?").run(c.seller_id);
+          }
+        } else {
+          await db.prepare("UPDATE store_config SET banner_url = NULL WHERE seller_id = ?").run(c.seller_id);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error in cleanupDummyFiles:', err);
+  }
+};
+cleanupDummyFiles();
 
 const app = express();
 app.disable('x-powered-by');
@@ -936,7 +1015,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
     });
     
     // Query all categories
-    const categories = await db.prepare("SELECT * FROM categories ORDER BY item_count DESC").all();
+    const categories = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY item_count DESC").all();
     
     return res.status(200).json({
       success: true,
@@ -1776,7 +1855,9 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         p.id, p.seller_id, p.category_id, p.name, p.description, p.price_paise, p.stock_qty, p.ships_in_days, p.avg_rating, p.review_count, p.status,
         p.paused_at, p.pause_reason, p.resume_estimate_date, COALESCE(p.remake_eligible, FALSE) AS remake_eligible,
         c.name AS category_name, c.slug AS category_slug,
-        COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline
+        COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline,
+        COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
+        COALESCE((SELECT tags FROM listings WHERE title = p.name LIMIT 1), '[]') AS listing_tags
     `;
     if (userId) {
       query += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1875,6 +1956,8 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       pause_reason: productData.pause_reason || null,
       resume_estimate_date: productData.resume_estimate_date || null,
       remake_eligible: !!productData.remake_eligible,
+      listing_type: productData.listing_type || 'pre-made',
+      tags: (() => { try { return productData.listing_tags ? JSON.parse(productData.listing_tags) : []; } catch (e) { return []; } })(),
       subcategories: []
     };
 
@@ -2666,9 +2749,8 @@ async function checkCapacityExceeded(productId, quantity) {
   const dailyProductCap = listing ? listing.daily_product_cap : null;
   
   // Get seller limits from seller_profile
-  const sellerProfile = await db.prepare('SELECT daily_order_limit, weekly_production_capacity FROM seller_profiles WHERE user_id = ?').get(sellerId);
+  const sellerProfile = await db.prepare('SELECT daily_order_limit FROM seller_profiles WHERE user_id = ?').get(sellerId);
   const dailyOrderLimit = sellerProfile ? sellerProfile.daily_order_limit : null;
-  const weeklyProductionCapacity = sellerProfile ? sellerProfile.weekly_production_capacity : null;
   
   // 1. Check Listing Daily Cap
   if (dailyProductCap !== null && dailyProductCap >= 0) {
@@ -2723,32 +2805,7 @@ async function checkCapacityExceeded(productId, quantity) {
       };
     }
   }
-  
-  // 3. Check Seller Weekly Production Capacity
-  if (weeklyProductionCapacity !== null && weeklyProductionCapacity >= 0) {
-    const standardUnits = await db.prepare(`
-      SELECT COALESCE(SUM(oi.quantity), 0) as qty
-      FROM order_items oi
-      JOIN orders o ON oi.order_id = o.id
-      WHERE o.seller_id = ? AND o.created_at >= date('now', '-6 days') AND o.status != 'Cancelled'
-    `).get(sellerId).qty;
-    
-    const customUnits = await db.prepare(`
-      SELECT COALESCE(SUM(quantity), 0) as qty
-      FROM orders
-      WHERE seller_id = ? AND created_at >= date('now', '-6 days') AND status != 'Cancelled' AND order_type = 'custom'
-    `).get(sellerId).qty;
-    
-    const sellerWeeklyUnits = standardUnits + customUnits;
-    if (sellerWeeklyUnits + quantity > weeklyProductionCapacity) {
-      return {
-        exceeded: true,
-        reason: `Seller weekly capacity of ${weeklyProductionCapacity} units exceeded.`,
-        listing,
-        sellerId
-      };
-    }
-  }
+
   
   return { exceeded: false, reason: '', listing, sellerId };
 }
@@ -3884,8 +3941,13 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
         const seqStr = String(seqCount).padStart(4, '0');
         order_code = `TF-${dateStr}-${seqStr}`;
 
-        const listing = await db.prepare("SELECT title FROM listings WHERE id = ?").get(conversation.listing_id);
+        const listing = await db.prepare("SELECT title, processing_time, ships_in_days FROM listings WHERE id = ?").get(conversation.listing_id);
         product_name = listing ? listing.title : 'Custom Customization';
+
+        // Calculate pickup eligibility date based on listing processing time
+        const { parseProcessingDays } = require('./services/logisticsUtils');
+        const processingDays = parseProcessingDays(listing ? listing.processing_time : null, listing ? listing.ships_in_days : null);
+        const pickupEligibleAt = new Date(Date.now() + processingDays * 24 * 60 * 60 * 1000);
 
         const sellerProfile = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(conversation.seller_id);
         const sellerUser = await db.prepare("SELECT full_name FROM users WHERE id = ?").get(conversation.seller_id);
@@ -3910,18 +3972,21 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
             order_ref, conversation_id, offer_id, buyer_id, seller_id, listing_id,
             product_name, customization_summary, amount_paid, delivery_date,
             razorpay_order_id, razorpay_payment_id, status, order_type,
-            total_paise, total_amount, unit_price, quantity, payment_status, created_at, updated_at
+            total_paise, total_amount, unit_price, quantity, payment_status,
+            pickup_eligible_at, pickup_status, created_at, updated_at
           ) VALUES (
             ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?,
             ?, ?, ?, ?,
-            ?, ?, ?, 1, ?, datetime('now'), datetime('now')
+            ?, ?, ?, 1, ?,
+            ?, ?, datetime('now'), datetime('now')
           )
         `).run(
           order_code, conversation_id, offer_id, conversation.buyer_id, conversation.seller_id, conversation.listing_id,
           product_name, customization_summary, offer.price, offer.delivery_date,
-          razorpay_order_id, razorpay_payment_id, 'in_production', 'custom',
-          total_paise, total_amount, total_paise, 'paid'
+          razorpay_order_id, razorpay_payment_id, 'processing', 'custom',
+          total_paise, total_amount, total_paise, 'paid',
+          pickupEligibleAt.toISOString(), 'pending'
         );
 
         // Increment daily_order_tracking for custom order
@@ -3972,7 +4037,7 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
         seller_name,
         amount_paid: offer.price,
         delivery_date: offer.delivery_date,
-        status: "in_production",
+        status: "processing",
         customization_summary: parsedSummary
       });
 
@@ -4160,6 +4225,7 @@ app.get('/api/wishlist', rateLimit(60), authenticateToken, async (req, res) => {
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         (SELECT 1 FROM cart_items ci WHERE ci.user_id = ? AND ci.product_id = p.id) IS NOT NULL AS in_cart,
+        COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
         p.avg_rating,
         p.review_count
       FROM wishlists w
@@ -5113,7 +5179,7 @@ async function buildListingDetail(listingId) {
     processing_time: l.processing_time,
     gift_wrap_available: l.gift_wrap_available === 1,
     gift_wrap_price_paise: l.gift_wrap_price_paise,
-    handwritten_note: l.handwritten_note === 1,
+    handwritten_note: false,
     weight_grams: l.weight_grams,
     length_cm: l.length_cm,
     width_cm: l.width_cm,
@@ -5424,12 +5490,13 @@ app.get('/api/seller/dashboard', rateLimit(60), requireSeller, async (req, res) 
     const dateLabel = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     const oldLowStock = await db.prepare("SELECT id as listing_id, title, stock_count FROM listings WHERE seller_id = ? AND status != 'deleted' AND stock_count <= 5 ORDER BY stock_count ASC LIMIT 5").all(sellerId);
     const oldRecentOrders = await db.prepare(`
-      SELECT o.order_ref as order_id, 
+      SELECT o.id, o.order_ref as order_id, 
              COALESCE(l.title, (SELECT product_name FROM order_items WHERE order_id = o.id LIMIT 1)) as item_title,
              COALESCE((SELECT image_url FROM order_items WHERE order_id = o.id LIMIT 1), l.cover_photo_url) as item_image,
              u.full_name as buyer_name, 
              COALESCE(o.total_amount, o.total_paise) as amount_paise,
-             o.status
+             o.status,
+             o.tracking_id
       FROM orders o
       LEFT JOIN listings l ON l.id = o.listing_id
       JOIN users u ON u.id = o.buyer_id
@@ -6170,6 +6237,19 @@ const handleUpdateListing = async (req, res) => {
 
     const body = req.body;
 
+    if (body.status === 'active') {
+      const photosCount = await db.prepare('SELECT COUNT(*) AS count FROM listing_photos WHERE listing_id = ?').get(listingId);
+      const imagesCount = await db.prepare('SELECT COUNT(*) AS count FROM listing_images WHERE listing_id = ?').get(listingId);
+      const totalPhotos = (photosCount ? (photosCount.count || 0) : 0) + (imagesCount ? (imagesCount.count || 0) : 0);
+      if (totalPhotos === 0) {
+        return res.status(400).json({
+          error: true,
+          code: 'PHOTO_REQUIRED',
+          message: 'At least one photo is required to publish a listing.'
+        });
+      }
+    }
+
     // Enforce base_price vs price_paise mapping
     const basePriceVal = body.base_price !== undefined ? body.base_price : body.price_paise;
 
@@ -6180,7 +6260,7 @@ const handleUpdateListing = async (req, res) => {
       'daily_max_slots', 'weekly_cap', 'monthly_ceiling', 'prebooking_window', 'min_order_qty',
       'max_order_qty', 'weight_g', 'length_cm', 'width_cm', 'height_cm', 'shipping_method',
       'packaging_type', 'return_policy', 'status', 'category', 'stock_count', 'product_tag',
-      'daily_product_cap'
+      'daily_product_cap', 'pickup_address_type'
     ];
 
     allowedFields.forEach(f => {
@@ -6355,6 +6435,31 @@ const handleUpdateListing = async (req, res) => {
       }
     }
 
+    if (body.photos !== undefined && Array.isArray(body.photos)) {
+      await db.prepare('DELETE FROM listing_photos WHERE listing_id = ?').run(listingId);
+      const photoStmt = db.prepare(`
+        INSERT INTO listing_photos (listing_id, url, is_cover, is_video, sort_order)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+      for (const p of body.photos) {
+        const url = p.url;
+        const isCover = p.is_cover ? 1 : 0;
+        const isVideo = p.is_video ? 1 : 0;
+        const sortOrder = parseInt(p.sort_order) || 0;
+        await photoStmt.run(listingId, url, isCover, isVideo, sortOrder);
+      }
+      
+      const coverPhoto = body.photos.find(p => p.is_cover) || body.photos[0];
+      if (coverPhoto) {
+        await db.prepare('UPDATE listings SET cover_photo_url = ? WHERE id = ?').run(coverPhoto.url, listingId);
+      }
+      
+      // Update listing score
+      const photoCount = body.photos.length;
+      const score = computeListingScore(listing, photoCount);
+      await db.prepare('UPDATE listings SET listing_score = ? WHERE id = ?').run(score, listingId);
+    }
+
     await syncListingCategoryToProduct(listingId);
 
     const updated = await db.prepare('SELECT * FROM listings WHERE id = ?').get(listingId);
@@ -6464,6 +6569,109 @@ app.get('/api/products/:id/similar', rateLimit(120), optionalAuthenticateToken, 
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
+
+// ============================================================
+// GET /api/products/:id/recommendations
+// Returns up to 10 recommended products:
+// - Recommend products sharing same category OR at least one overlapping subcategory tag
+// - Exclude current product
+// - Exclude paused (status = 'paused') or sold-out (stock_qty = 0 or status = 'sold_out')
+// - Sorted by: bestseller (is_bestseller = true first), avg_rating DESC, review_count DESC, id DESC
+// ============================================================
+app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticateToken, async (req, res) => {
+  const productId = parseInt(req.params.id, 10);
+  const userId = req.user ? req.user.user_id : null;
+
+  if (isNaN(productId)) {
+    return res.status(400).json({ error: true, message: 'Invalid product id', code: 'VALIDATION_ERROR' });
+  }
+
+  try {
+    // 1. Find category and subcategories of current product
+    const srcProduct = await db.prepare('SELECT category_id FROM products WHERE id = ? AND status != \'archived\'').get(productId);
+    if (!srcProduct) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
+    const subcats = await db.prepare('SELECT subcategory_id FROM product_subcategories WHERE product_id = ?').all(productId);
+    const subcatIds = subcats.map(s => s.subcategory_id);
+
+    // 2. Build the matching query
+    let query = `
+      SELECT
+        p.id, p.name, p.price_paise, p.avg_rating, p.review_count, p.status, p.stock_qty, p.seller_id,
+        COALESCE(
+          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
+          (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+        ) AS image_url,
+        COALESCE(sp.shop_name, u.full_name) AS seller_name,
+        COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
+        (p.id IN (
+          SELECT oi.product_id
+          FROM order_items oi
+          JOIN products p2 ON oi.product_id = p2.id
+          JOIN orders o ON oi.order_id = o.id
+          WHERE p2.seller_id = p.seller_id
+            AND p2.status = 'active'
+            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+          GROUP BY oi.product_id
+          HAVING SUM(oi.quantity) > 0
+          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+          LIMIT 5
+        )) AS is_bestseller
+    `;
+
+    if (userId) {
+      query += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
+    } else {
+      query += `, 0 AS is_wishlisted`;
+    }
+
+    query += `
+      FROM products p
+      JOIN users u ON p.seller_id = u.id
+      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      WHERE p.status = 'active'
+        AND p.stock_qty > 0
+        AND p.id != ?
+        AND (
+          p.category_id = ?
+    `;
+
+    const params = [];
+    if (userId) {
+      params.push(userId);
+    }
+    params.push(productId, srcProduct.category_id);
+
+    if (subcatIds.length > 0) {
+      const placeholders = subcatIds.map(() => '?').join(', ');
+      query += ` OR p.id IN (SELECT product_id FROM product_subcategories WHERE subcategory_id IN (${placeholders}))`;
+      params.push(...subcatIds);
+    }
+
+    query += `
+        )
+      ORDER BY is_bestseller DESC, p.avg_rating DESC, p.review_count DESC, p.id DESC
+      LIMIT 10
+    `;
+
+    const rows = await db.prepare(query).all(...params);
+
+    // Convert is_bestseller and is_wishlisted to proper booleans
+    const formattedRows = rows.map(r => ({
+      ...r,
+      is_bestseller: !!r.is_bestseller,
+      is_wishlisted: !!r.is_wishlisted
+    }));
+
+    return res.status(200).json({ success: true, data: formattedRows });
+  } catch (err) {
+    console.error('GET /api/products/:id/recommendations error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
 
 // ============================================================
 // PHASE 2: PATCH /api/seller/products/:id/pause
@@ -6762,8 +6970,16 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     if (listing.seller_id !== req.user.user_id) return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
     if (!req.file) return res.status(400).json({ error: true, message: 'File required', code: 'VALIDATION_ERROR' });
 
+    // Video size validation: max 20MB
+    if (req.file.mimetype.startsWith('video/') && req.file.size > 20 * 1024 * 1024) {
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      return res.status(400).json({ error: true, message: 'Video file size must not exceed 20MB', code: 'VALIDATION_ERROR' });
+    }
+
     const isCover = req.body.is_cover === 'true';
-    const isVideo = req.body.is_video === 'true';
+    const isVideo = req.body.is_video === 'true' || req.file.mimetype.startsWith('video/');
     const sortOrder = parseInt(req.body.sort_order) || 0;
     const url = `/uploads/listings/${listingId}/${req.file.filename}`;
 
@@ -6787,6 +7003,54 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     return res.status(201).json({ success: true, data: { photo_id: photoId, url, is_cover: isCover, is_video: isVideo, sort_order: sortOrder } });
   } catch (err) {
     console.error('POST /api/seller/listings/:id/photos error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// DELETE /api/seller/listings/:id/photos/:photoId
+app.delete('/api/seller/listings/:id/photos/:photoId', rateLimit(20), requireSeller, async (req, res) => {
+  try {
+    const listingId = parseInt(req.params.id);
+    const photoId = parseInt(req.params.photoId);
+
+    const listing = await db.prepare('SELECT * FROM listings WHERE id = ?').get(listingId);
+    if (!listing) return res.status(404).json({ error: true, message: 'Listing not found', code: 'NOT_FOUND' });
+    if (listing.seller_id !== req.user.user_id) return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
+
+    const photo = await db.prepare('SELECT * FROM listing_photos WHERE id = ? AND listing_id = ?').get(photoId, listingId);
+    if (!photo) return res.status(404).json({ error: true, message: 'Photo not found', code: 'NOT_FOUND' });
+
+    // Delete file if it exists locally
+    const filePath = path.join(__dirname, '..', photo.url);
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (e) {
+        console.warn('Could not delete photo file:', e);
+      }
+    }
+
+    await db.prepare('DELETE FROM listing_photos WHERE id = ?').run(photoId);
+
+    // If we deleted the cover photo, pick the next photo as the cover
+    if (photo.is_cover) {
+      const nextPhoto = await db.prepare('SELECT * FROM listing_photos WHERE listing_id = ? ORDER BY sort_order LIMIT 1').get(listingId);
+      if (nextPhoto) {
+        await db.prepare('UPDATE listing_photos SET is_cover = 1 WHERE id = ?').run(nextPhoto.id);
+        await db.prepare('UPDATE listings SET cover_photo_url = ? WHERE id = ?').run(nextPhoto.url, listingId);
+      } else {
+        await db.prepare('UPDATE listings SET cover_photo_url = NULL WHERE id = ?').run(listingId);
+      }
+    }
+
+    // Update listing score
+    const photoCount = await db.prepare('SELECT COUNT(*) as c FROM listing_photos WHERE listing_id = ?').get(listingId).c;
+    const score = computeListingScore(listing, photoCount);
+    await db.prepare('UPDATE listings SET listing_score = ? WHERE id = ?').run(score, listingId);
+
+    return res.json({ success: true, message: 'Photo deleted successfully' });
+  } catch (err) {
+    console.error('DELETE /api/seller/listings/:id/photos/:photoId error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -7173,7 +7437,7 @@ const handleOrderStatusUpdate = async (req, res) => {
     // Enforce transition matrix
     const current = order.status;
     const target = targetStatus;
-    const nonTerminal = ['awaiting_payment', 'processing', 'in_production', 'packed', 'dispatched'];
+    const nonTerminal = ['awaiting_payment', 'processing', 'in_production', 'packed', 'ready_for_pickup', 'dispatched'];
 
     let isValid = false;
     if (current === target) {
@@ -7184,9 +7448,17 @@ const handleOrderStatusUpdate = async (req, res) => {
       isValid = true;
     } else if (current === 'processing' && target === 'in_production') {
       isValid = true;
+    } else if (current === 'processing' && target === 'ready_for_pickup') {
+      isValid = true;
     } else if (current === 'in_production' && target === 'packed') {
       isValid = true;
     } else if (current === 'packed' && target === 'dispatched') {
+      isValid = true;
+    } else if (current === 'packed' && target === 'ready_for_pickup') {
+      isValid = true;
+    } else if (current === 'ready_for_pickup' && target === 'dispatched') {
+      isValid = true;
+    } else if (current === 'ready_for_pickup' && target === 'packed') {
       isValid = true;
     } else if (current === 'dispatched' && target === 'delivered') {
       isValid = true;
@@ -7263,6 +7535,243 @@ const handleOrderStatusUpdate = async (req, res) => {
 
 app.patch('/api/seller/orders/:id/status', requireSeller, handleOrderStatusUpdate);
 app.put('/api/seller/orders/:id/status', requireSeller, handleOrderStatusUpdate);
+
+// GET /api/seller/orders/:id/label
+app.get('/api/seller/orders/:id/label', requireSeller, async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.id);
+    const sellerId = req.user.user_id;
+
+    const order = await db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+    if (!order) {
+      return res.status(404).json({ error: true, message: 'Order not found', code: 'NOT_FOUND' });
+    }
+
+    if (order.seller_id !== sellerId) {
+      return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
+    }
+
+    if (!order.tracking_id) {
+      return res.status(400).json({ error: true, message: 'Shipping label not available. Pickup must be scheduled first.', code: 'BAD_REQUEST' });
+    }
+
+    // Retrieve address details
+    let address = null;
+    if (order.address_id) {
+      address = await db.prepare('SELECT * FROM addresses WHERE id = ?').get(order.address_id);
+    }
+
+    // Retrieve seller details
+    const sellerUser = await db.prepare('SELECT * FROM users WHERE id = ?').get(sellerId);
+    const sellerProfile = await db.prepare('SELECT * FROM seller_profiles WHERE seller_id = ?').get(sellerId);
+
+    // Build the mock iThinkLogistics shipping label HTML
+    const labelHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shipping Label - ${order.order_ref}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+    
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: #1E3D0F;
+      background: #FFFFFF;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .label-card {
+      width: 450px;
+      border: 3px solid #3D6B4F;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(61, 107, 79, 0.08);
+      background: #F7F3EC;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed #3D6B4F;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #3D6B4F;
+      font-style: italic;
+    }
+
+    .logistics-partner {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      background: #C8973A;
+      color: #FFFFFF;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .barcode-section {
+      text-align: center;
+      margin: 20px 0;
+      padding: 12px;
+      background: #FFFFFF;
+      border: 1px solid #8FAF82;
+      border-radius: 8px;
+    }
+
+    .barcode {
+      width: 100%;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .awb-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 8px;
+      letter-spacing: 2px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      font-size: 12px;
+      border-bottom: 2px dashed #3D6B4F;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .info-block h4 {
+      margin: 0 0 6px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #C8973A;
+    }
+
+    .info-block p {
+      margin: 0;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .print-btn {
+      position: absolute;
+      top: -60px;
+      right: 0;
+      background: #3D6B4F;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(61, 107, 79, 0.2);
+      transition: background 0.2s;
+    }
+
+    .print-btn:hover {
+      background: #8FAF82;
+    }
+
+    @media print {
+      .print-btn {
+        display: none;
+      }
+      body {
+        padding: 0;
+        background: #FFFFFF;
+      }
+      .label-card {
+        box-shadow: none;
+        border: 2px solid #000000;
+        background: #FFFFFF;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="label-card">
+    <button class="print-btn" onclick="window.print()">Print Label</button>
+    <div class="header">
+      <span class="brand">Tohfa.</span>
+      <span class="logistics-partner">iThinkLogistics</span>
+    </div>
+    
+    <div class="barcode-section">
+      <img class="barcode" src="https://bwipjs-api.metafloor.com/?bcid=code128&text=${order.tracking_id}&scale=2&rotate=N" alt="Barcode" onerror="this.style.display='none';">
+      <div class="awb-number">${order.tracking_id}</div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-block">
+        <h4>Ship To (Buyer)</h4>
+        <p><strong>${address?.name || order.buyer_name || 'Artisan Gift Lover'}</strong></p>
+        <p>${address?.address_line1 || 'No address line 1'}</p>
+        <p>${address?.address_line2 || ''}</p>
+        <p>${address?.city || 'City'}, ${address?.state || 'State'} - ${address?.postal_code || 'Pin'}</p>
+        <p>Phone: ${address?.phone || 'N/A'}</p>
+      </div>
+      <div class="info-block">
+        <h4>Ship From (Seller)</h4>
+        <p><strong>${sellerProfile?.studio_name || sellerUser?.name || 'Tohfa Creator'}</strong></p>
+        <p>${sellerProfile?.address_line1 || 'No studio line 1'}</p>
+        <p>${sellerProfile?.address_line2 || ''}</p>
+        <p>${sellerProfile?.city || 'City'}, ${sellerProfile?.state || 'State'} - ${sellerProfile?.postal_code || 'Pin'}</p>
+        <p>Email: ${sellerUser?.email || 'N/A'}</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>
+        <strong>Order Ref:</strong> ${order.order_ref}<br>
+        <strong>Date:</strong> ${new Date(order.created_at).toLocaleDateString('en-IN')}
+      </div>
+      <div style="text-align: right;">
+        <strong>Weight:</strong> 0.5 kg<br>
+        <strong>Payment:</strong> Prepaid
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Disposition', `attachment; filename="label-${order.order_ref}.html"`);
+    return res.send(labelHtml);
+  } catch (err) {
+    console.error('GET /api/seller/orders/:id/label error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
 
 // Compatibility POST /api/seller/orders/:id/tracking
 app.post('/api/seller/orders/:id/tracking', requireSeller, async (req, res) => {
@@ -10428,6 +10937,89 @@ app.post(['/api/reports', '/reports'], async (req, res) => {
   }
 });
 
+// GET /api/admin/payments/ledger/all
+app.get('/api/admin/payments/ledger/all', authenticateAdminToken, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const { start_date, end_date, type, search } = req.query;
+
+    let queryStr = `
+      SELECT t.*, sp.shop_name 
+      FROM transactions t
+      LEFT JOIN seller_profiles sp ON t.seller_id = sp.user_id
+      WHERE 1=1
+    `;
+    let countStr = `
+      SELECT COUNT(*) as count 
+      FROM transactions t
+      LEFT JOIN seller_profiles sp ON t.seller_id = sp.user_id
+      WHERE 1=1
+    `;
+    const params = [];
+
+    if (start_date) {
+      queryStr += ` AND t.created_at >= ?`;
+      countStr += ` AND t.created_at >= ?`;
+      params.push(start_date);
+    }
+    if (end_date) {
+      queryStr += ` AND t.created_at <= ?`;
+      countStr += ` AND t.created_at <= ?`;
+      params.push(end_date + ' 23:59:59');
+    }
+    if (type) {
+      queryStr += ` AND t.type = ?`;
+      countStr += ` AND t.type = ?`;
+      params.push(type);
+    }
+    if (search) {
+      const searchWild = `%${search}%`;
+      queryStr += ` AND (CAST(t.order_id AS TEXT) LIKE ? OR t.buyer_name LIKE ? OR t.product_name LIKE ? OR sp.shop_name LIKE ?)`;
+      countStr += ` AND (CAST(t.order_id AS TEXT) LIKE ? OR t.buyer_name LIKE ? OR t.product_name LIKE ? OR sp.shop_name LIKE ?)`;
+      params.push(searchWild, searchWild, searchWild, searchWild);
+    }
+
+    queryStr += ` ORDER BY t.created_at DESC LIMIT ? OFFSET ?`;
+    
+    const rows = await db.prepare(queryStr).all(...params, limit, offset);
+    const countRow = await db.prepare(countStr).get(...params);
+    const totalCount = countRow ? countRow.count : 0;
+
+    const items = rows.map(r => ({
+      id: r.id,
+      date: r.created_at,
+      order_id: r.order_id,
+      product_name: r.product_name,
+      buyer_name: r.buyer_name,
+      shop_name: r.shop_name || 'Tohfa Seller',
+      type: r.type,
+      gross_amount: r.gross_amount / 100,
+      platform_fee: r.platform_fee / 100,
+      tax_amount: r.tax_amount / 100,
+      net_amount: r.net_amount / 100,
+      status: r.status
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        items,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          pages: Math.ceil(totalCount / limit)
+        }
+      }
+    });
+  } catch (err) {
+    console.error('GET /api/admin/payments/ledger/all error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
 // GET /api/admin/reports
 app.get('/api/admin/reports', authenticateAdminToken, async (req, res) => {
   try {
@@ -10859,8 +11451,8 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
     // Check if open conversation exists
     let existing = await db.prepare(`
       SELECT * FROM conversations 
-      WHERE buyer_id = ? AND seller_id = ? AND product_type_tag = ? AND status NOT IN ('completed', 'closed')
-    `).get(buyer_id, seller_id, product_type_tag);
+      WHERE buyer_id = ? AND seller_id = ? AND listing_id = ? AND product_type_tag = ? AND status NOT IN ('completed', 'closed')
+    `).get(buyer_id, seller_id, listing_id, product_type_tag);
     
     const questionCountRow = await db.prepare(`
       SELECT COUNT(*) as count FROM intake_question_templates 
@@ -13346,11 +13938,10 @@ app.post(['/api/buyer/overflow-requests/:id/cancel', '/api/overflow/requests/:id
 app.get('/api/seller/capacity-settings', rateLimit(60), requireSeller, async (req, res) => {
   const sellerId = req.user.user_id;
   try {
-    const profile = await db.prepare('SELECT weekly_production_capacity, daily_order_limit FROM seller_profiles WHERE user_id = ?').get(sellerId);
+    const profile = await db.prepare('SELECT daily_order_limit FROM seller_profiles WHERE user_id = ?').get(sellerId);
     return res.status(200).json({
       success: true,
       data: {
-        weekly_production_capacity: profile ? profile.weekly_production_capacity : null,
         daily_order_limit: profile ? profile.daily_order_limit : null
       }
     });
@@ -13363,16 +13954,14 @@ app.get('/api/seller/capacity-settings', rateLimit(60), requireSeller, async (re
 // Capacity settings PUT / POST
 app.put('/api/seller/capacity-settings', rateLimit(30), requireSeller, async (req, res) => {
   const sellerId = req.user.user_id;
-  const { weekly_production_capacity, daily_order_limit } = req.body;
+  const { daily_order_limit } = req.body;
   
   try {
     await db.prepare(`
       UPDATE seller_profiles
-      SET weekly_production_capacity = ?,
-          daily_order_limit = ?
+      SET daily_order_limit = ?
       WHERE user_id = ?
     `).run(
-      weekly_production_capacity !== undefined ? weekly_production_capacity : null,
       daily_order_limit !== undefined ? daily_order_limit : null,
       sellerId
     );
@@ -13381,7 +13970,6 @@ app.put('/api/seller/capacity-settings', rateLimit(30), requireSeller, async (re
       success: true,
       message: "Capacity settings updated successfully",
       data: {
-        weekly_production_capacity,
         daily_order_limit
       }
     });
@@ -13393,16 +13981,14 @@ app.put('/api/seller/capacity-settings', rateLimit(30), requireSeller, async (re
 
 app.post('/api/seller/capacity-settings', rateLimit(30), requireSeller, async (req, res) => {
   const sellerId = req.user.user_id;
-  const { weekly_production_capacity, daily_order_limit } = req.body;
+  const { daily_order_limit } = req.body;
   
   try {
     await db.prepare(`
       UPDATE seller_profiles
-      SET weekly_production_capacity = ?,
-          daily_order_limit = ?
+      SET daily_order_limit = ?
       WHERE user_id = ?
     `).run(
-      weekly_production_capacity !== undefined ? weekly_production_capacity : null,
       daily_order_limit !== undefined ? daily_order_limit : null,
       sellerId
     );
@@ -13411,7 +13997,6 @@ app.post('/api/seller/capacity-settings', rateLimit(30), requireSeller, async (r
       success: true,
       message: "Capacity settings updated successfully",
       data: {
-        weekly_production_capacity,
         daily_order_limit
       }
     });
@@ -13611,6 +14196,151 @@ cron.schedule('0 16 * * *', async () => {
   }
 });
 
+// Logistics Batch Scheduling Cron Job (Hourly)
+const { createPickupRequest } = require('./services/iThinkLogisticsService');
+
+async function scheduleLogisticsPickups() {
+  console.log('[LOGISTICS CRON] Running delayed courier pickup scheduling...');
+  try {
+    const maxSlots = parseInt(process.env.MAX_PICKUP_SLOTS_PER_SELLER_PER_DAY) || 1;
+    const nowIso = new Date().toISOString();
+    
+    // Fetch orders with 'processing' status that are pickup-eligible and not fully scheduled/picked up
+    const eligibleOrders = await db.prepare(`
+      SELECT * 
+      FROM orders 
+      WHERE status = 'processing' 
+        AND pickup_eligible_at <= ? 
+        AND (pickup_status = 'pending' OR pickup_status = 'queued')
+    `).all(nowIso);
+    
+    if (eligibleOrders.length === 0) {
+      console.log('[LOGISTICS CRON] No eligible orders to schedule.');
+      return;
+    }
+    
+    // Group eligible orders by seller_id
+    const sellerGroups = {};
+    for (const order of eligibleOrders) {
+      if (!sellerGroups[order.seller_id]) {
+        sellerGroups[order.seller_id] = [];
+      }
+      sellerGroups[order.seller_id].push(order);
+    }
+    
+    const todayStr = getLocalDateString();
+    const istStart = new Date(`${todayStr}T00:00:00.000+05:30`);
+    const istEnd = new Date(`${todayStr}T23:59:59.999+05:30`);
+    
+    for (const sellerId of Object.keys(sellerGroups)) {
+      const candidates = sellerGroups[sellerId];
+      
+      // Sort candidates: queued first, then pending. Tiebreaker: oldest pickup_eligible_at first.
+      candidates.sort((a, b) => {
+        if (a.pickup_status === 'queued' && b.pickup_status !== 'queued') return -1;
+        if (a.pickup_status !== 'queued' && b.pickup_status === 'queued') return 1;
+        return new Date(a.pickup_eligible_at) - new Date(b.pickup_eligible_at);
+      });
+      
+      // Check already scheduled today
+      const scheduledToday = await db.prepare(`
+        SELECT COUNT(*) as count 
+        FROM orders 
+        WHERE seller_id = ? 
+          AND scheduled_pickup_at >= ? 
+          AND scheduled_pickup_at <= ? 
+          AND pickup_status IN ('scheduled', 'picked_up')
+      `).get(parseInt(sellerId), istStart.toISOString(), istEnd.toISOString());
+      
+      const slotsUsed = scheduledToday?.count || 0;
+      const remainingSlots = Math.max(0, maxSlots - slotsUsed);
+      
+      console.log(`[LOGISTICS CRON] Seller ${sellerId}: used=${slotsUsed}, max=${maxSlots}, remaining=${remainingSlots}, eligible=${candidates.length}`);
+      
+      if (remainingSlots === 0) {
+        // All candidates must be queued (or remain queued)
+        for (const order of candidates) {
+          if (order.pickup_status !== 'queued') {
+            await db.prepare("UPDATE orders SET pickup_status = 'queued', updated_at = datetime('now') WHERE id = ?").run(order.id);
+            console.log(`[LOGISTICS CRON] Order ${order.order_ref} queued due to daily slot limit.`);
+          }
+        }
+        continue;
+      }
+      
+      // We can schedule up to remainingSlots candidates
+      const toSchedule = candidates.slice(0, remainingSlots);
+      const toQueue = candidates.slice(remainingSlots);
+      
+      // Queue the overflow ones
+      for (const order of toQueue) {
+        if (order.pickup_status !== 'queued') {
+          await db.prepare("UPDATE orders SET pickup_status = 'queued', updated_at = datetime('now') WHERE id = ?").run(order.id);
+          console.log(`[LOGISTICS CRON] Order ${order.order_ref} queued (overflow).`);
+        }
+      }
+      
+      if (toSchedule.length > 0) {
+        // Fetch default seller address
+        const address = await db.prepare("SELECT id FROM seller_addresses WHERE seller_id = ? ORDER BY is_default DESC LIMIT 1").get(parseInt(sellerId));
+        const pickupAddressId = address ? String(address.id) : `ADDR-${sellerId}`;
+        
+        // Prepare shipments array
+        const shipments = [];
+        for (const order of toSchedule) {
+          const listing = await db.prepare("SELECT weight_g, weight_grams, length_cm, width_cm, height_cm FROM listings WHERE id = ?").get(order.listing_id);
+          const weight = (listing?.weight_grams || listing?.weight_g || 500) / 1000;
+          const length = listing?.length_cm || 10;
+          const width = listing?.width_cm || 10;
+          const height = listing?.height_cm || 10;
+          
+          shipments.push({
+            order_id: order.order_ref,
+            payment_mode: 'prepaid',
+            total_amount: order.total_amount ? order.total_amount / 100 : order.amount_paid,
+            weight,
+            length,
+            width,
+            height
+          });
+        }
+        
+        const payload = {
+          pickup_address_id: pickupAddressId,
+          shipments
+        };
+        
+        // Call mock logistics service
+        const result = await createPickupRequest(payload);
+        if (result.success) {
+          // Update order statuses
+          const nowDbStr = new Date().toISOString();
+          for (const order of toSchedule) {
+            await db.prepare(`
+              UPDATE orders 
+              SET status = 'ready_for_pickup', 
+                  pickup_status = 'scheduled', 
+                  scheduled_pickup_at = ?, 
+                  tracking_id = ?,
+                  updated_at = datetime('now')
+              WHERE id = ?
+            `).run(nowDbStr, result.awb, order.id);
+            console.log(`[LOGISTICS CRON] Order ${order.order_ref} scheduled for pickup. AWB: ${result.awb}`);
+          }
+        } else {
+          console.error(`[LOGISTICS CRON] iThink Logistics API call failed for seller ${sellerId}`);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[LOGISTICS CRON ERROR] Scheduling process failed:', err);
+  }
+}
+
+cron.schedule('0 * * * *', async () => {
+  await scheduleLogisticsPickups();
+});
+
 // ==========================================
 // Customize & Bulk Order Chat (Gemini Bot) Routes
 // ==========================================
@@ -13678,8 +14408,9 @@ app.post('/api/requests', authenticateToken, async (req, res) => {
     // Check if open request exists
     let existing = await db.prepare(`
       SELECT * FROM conversations 
-      WHERE buyer_id = ? AND seller_id = ? AND request_type = ? AND status NOT IN ('completed', 'closed', 'accepted_paid')
-    `).get(buyer_id, seller_id, request_type);
+      WHERE buyer_id = ? AND seller_id = ? AND listing_id = ? AND request_type = ?
+      AND status NOT IN ('completed', 'closed', 'accepted_paid')
+    `).get(buyer_id, seller_id, listing_id, request_type);
 
     if (existing) {
       return res.status(200).json({
@@ -13688,6 +14419,10 @@ app.post('/api/requests', authenticateToken, async (req, res) => {
         intake_complete: existing.intake_complete === 1
       });
     }
+
+    const initialFields = request_type === 'customization'
+      ? { quantity: qtyVal, _phase: 'awaiting_details' }
+      : { quantity: qtyVal, _phase: 'awaiting_customization_choice' };
 
     // Create new conversation
     const info = await db.prepare(`
@@ -13699,7 +14434,7 @@ app.post('/api/requests', authenticateToken, async (req, res) => {
       listing_id,
       request_type === 'customization' ? 'custom' : 'bulk',
       request_type,
-      JSON.stringify({ quantity: qtyVal })
+      JSON.stringify(initialFields)
     );
     const new_id = info.lastInsertRowid;
 
@@ -13720,15 +14455,19 @@ app.post('/api/requests', authenticateToken, async (req, res) => {
     // Initial bot question
     let initialBotMsg = "";
     if (request_type === 'customization') {
-      initialBotMsg = `Hi! I see you want to customize "${listing.title}". I'll help you get the details sorted. First, what kind of customization are you looking for? (e.g. engraving, hand-painted pattern, custom embroidery)`;
+      initialBotMsg = `Namaste! Tell me everything you have in mind for your customization — color, material, design, any text to add, inspiration — all in one message. Take your time! 🌿`;
     } else {
-      initialBotMsg = `Hi! I see you are interested in a bulk order of "${listing.title}". Let's get the details sorted. When is your needed-by date?`;
+      initialBotMsg = `Hi! For your bulk order of "${listing.title}" — do you need any customization (engraving, branding, colors), or would you like the standard product?`;
     }
 
-    await db.prepare(`
-      INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content)
-      VALUES (?, ?, 'bot_as_seller', 'text', ?)
-    `).run(new_id, seller_id, initialBotMsg);
+    try {
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at)
+        VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'))
+      `).run(new_id, seller_id, initialBotMsg);
+    } catch (botMsgErr) {
+      console.error('[CRITICAL] Failed to insert initial bot message:', botMsgErr);
+    }
 
     // Notify the seller
     await db.prepare(`
@@ -14137,6 +14876,13 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
         WHERE id = ?
       `).run(JSON.stringify(finalFields), nextStatus, intakeCompleteVal, intakeSummaryVal, id);
 
+      if (botResult.botResponse !== null) {
+        await db.prepare(`
+          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+          VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'), 0)
+        `).run(id, conversation.seller_id, botResult.botResponse);
+      }
+
       if (botResult.isComplete) {
         // Create a row in custom_orders
         const qty = finalFields.quantity || 1;
@@ -14153,13 +14899,6 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
         `).run(id, qty, JSON.stringify(specs), refImages);
 
         const customOrderId = ordInfo.lastInsertRowid;
-
-        // Bot message: Order drafted
-        const botAlert = `I've put together a custom order based on what you shared — this'll be reviewed by ${listing.title}'s artisan and they'll get back to you shortly.`;
-        await db.prepare(`
-          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
-          VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'), 0)
-        `).run(id, conversation.seller_id, botAlert);
 
         // Render card
         const cardData = JSON.stringify({
@@ -14182,13 +14921,6 @@ app.post('/api/requests/:id/messages', authenticateToken, uploadChatMiddleware, 
           INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
           VALUES (?, 'new_customize_request', 'A buyer completed the custom request details', ?, 0, datetime('now'))
         `).run(conversation.seller_id, id);
-
-      } else {
-        // Just reply next question
-        await db.prepare(`
-          INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
-          VALUES (?, ?, 'bot_as_seller', 'text', ?, datetime('now'), 0)
-        `).run(id, conversation.seller_id, botResult.botResponse);
       }
     } else {
       await db.prepare("UPDATE conversations SET updated_at = datetime('now') WHERE id = ?").run(id);
@@ -14587,4 +15319,4 @@ const server = app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-module.exports = { app, server };
+module.exports = { app, server, scheduleLogisticsPickups };

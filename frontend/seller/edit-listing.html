@@ -104,6 +104,22 @@
           </div>
       </section>
 
+      <!-- Video Section -->
+      <section class="border-b border-sage/15 pb-6 space-y-4 relative z-10">
+          <label class="block text-xs font-bold uppercase tracking-wider text-forest">Product Video (Optional)</label>
+          <div id="video-drag-zone" class="border-2 border-dashed border-outline-variant/50 rounded-lg h-32 flex flex-col items-center justify-center relative cursor-pointer hover:border-forest transition-colors bg-parchment/30 overflow-hidden">
+            <input accept="video/*" class="hidden" id="video-file-input" type="file"/>
+            <div id="video-upload-prompt" class="flex flex-col items-center justify-center text-center">
+              <span class="material-symbols-outlined text-outline-variant text-2xl">videocam</span>
+              <span class="text-[10px] text-on-surface-variant mt-1">Upload Video (Max 10s, 20MB)</span>
+            </div>
+            <div id="video-preview-container" class="hidden absolute inset-0 bg-white flex items-center justify-center">
+              <video id="video-preview" class="w-full h-full object-cover rounded-lg" autoplay loop muted playsinline></video>
+              <button id="remove-video-btn" type="button" class="absolute top-1 right-1 w-6 h-6 bg-error text-white rounded-full flex items-center justify-center text-xs font-bold" onclick="event.stopPropagation(); removeSelectedVideo();">&times;</button>
+            </div>
+          </div>
+      </section>
+
       <!-- Pricing & Stock -->
       <section class="border-b border-sage/15 pb-6 space-y-6 relative z-10">
           <label class="block text-xs font-bold uppercase tracking-wider text-forest">Pricing & Stock</label>
@@ -190,6 +206,91 @@
     // Photos state (up to 4 slots)
     let photoFiles = [null, null, null, null];
     let photoUrls = ['', '', '', ''];
+    let selectedVideoFile = null;
+    let videoUrl = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const videoInput = document.getElementById('video-file-input');
+        const videoDragZone = document.getElementById('video-drag-zone');
+
+        if (videoDragZone && videoInput) {
+            videoDragZone.addEventListener('click', () => videoInput.click());
+            
+            videoDragZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                videoDragZone.classList.add('bg-sage/10');
+            });
+            videoDragZone.addEventListener('dragleave', () => {
+                videoDragZone.classList.remove('bg-sage/10');
+            });
+            videoDragZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                videoDragZone.classList.remove('bg-sage/10');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleVideoSelect(files[0]);
+                }
+            });
+
+            videoInput.addEventListener('change', (e) => {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    handleVideoSelect(files[0]);
+                }
+            });
+        }
+    });
+
+    function handleVideoSelect(file) {
+        if (!file.type.startsWith('video/')) {
+            showToast('Please select a valid video file.', 'error');
+            return;
+        }
+        if (file.size > 20 * 1024 * 1024) {
+            showToast('Video size must not exceed 20MB.', 'error');
+            return;
+        }
+
+        const videoElement = document.createElement('video');
+        videoElement.preload = 'metadata';
+        videoElement.src = URL.createObjectURL(file);
+        videoElement.onloadedmetadata = () => {
+            window.URL.revokeObjectURL(videoElement.src);
+            if (videoElement.duration > 10) {
+                showToast('Video duration must be 10 seconds or less.', 'error');
+            } else {
+                selectedVideoFile = file;
+                videoUrl = URL.createObjectURL(file);
+                renderVideoPreview(videoUrl);
+            }
+        };
+        videoElement.onerror = () => {
+            showToast('Failed to load video metadata.', 'error');
+        };
+    }
+
+    function renderVideoPreview(url) {
+        const preview = document.getElementById('video-preview');
+        const container = document.getElementById('video-preview-container');
+        const prompt = document.getElementById('video-upload-prompt');
+        
+        if (url) {
+            preview.src = url;
+            container.classList.remove('hidden');
+            prompt.classList.add('hidden');
+        } else {
+            preview.src = '';
+            container.classList.add('hidden');
+            prompt.classList.remove('hidden');
+        }
+    }
+
+    window.removeSelectedVideo = function() {
+        selectedVideoFile = null;
+        videoUrl = '';
+        renderVideoPreview(null);
+        if (videoInput) videoInput.value = '';
+    };
 
     function getQueryParam(param) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -349,12 +450,19 @@
 
             // Photos
             if (data.photos && data.photos.length > 0) {
-                data.photos.forEach((photo, index) => {
+                const imagePhotos = data.photos.filter(photo => photo.is_video !== 1 && photo.is_video !== 'true');
+                const videoPhoto = data.photos.find(photo => photo.is_video === 1 || photo.is_video === 'true');
+                
+                imagePhotos.forEach((photo, index) => {
                     if (index < 4) {
                         photoUrls[index] = photo.url;
                         updatePhotoSlotUI(index, photo.url);
                     }
                 });
+                
+                if (videoPhoto) {
+                    renderVideoPreview(videoPhoto.url);
+                }
             }
 
         } catch (err) {
@@ -386,12 +494,12 @@
         }
     }
 
-    // Prebooking Toggle click binding
-    const prebookBtn = document.getElementById('prebook-toggle');
-    const prebookCircle = document.getElementById('prebook-toggle-circle');
-    const prebookLimitBox = document.getElementById('prebook-limit-container');
+    // Prebooking Toggle references
+    let prebookBtn;
+    let prebookCircle;
+    let prebookLimitBox;
 
-    prebookBtn.addEventListener('click', (e) => {
+    function handlePrebookClick(e) {
         e.preventDefault();
         prebookEnabled = !prebookEnabled;
         if (prebookEnabled) {
@@ -405,49 +513,45 @@
             prebookCircle.className = 'w-4 h-4 bg-white rounded-full transition-transform transform translate-x-0';
             prebookLimitBox.classList.add('hidden');
         }
-    });
+    }
 
-    // Photos interactive binding
-    document.querySelectorAll('.photo-slot').forEach(slot => {
-        const input = slot.querySelector('.photo-input');
-        const img = slot.querySelector('img');
-        const removeBtn = slot.querySelector('.remove-photo-btn');
-        const index = parseInt(slot.dataset.slot);
+    function setupPhotosInteractivity() {
+        document.querySelectorAll('.photo-slot').forEach(slot => {
+            const input = slot.querySelector('.photo-input');
+            const img = slot.querySelector('img');
+            const removeBtn = slot.querySelector('.remove-photo-btn');
+            const index = parseInt(slot.dataset.slot);
 
-        slot.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-photo-btn')) return;
-            input.click();
+            slot.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-photo-btn')) return;
+                input.click();
+            });
+
+            input.addEventListener('change', () => {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        updatePhotoSlotUI(index, e.target.result);
+                        photoFiles[index] = file;
+                        photoUrls[index] = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                updatePhotoSlotUI(index, null);
+                input.value = '';
+                photoFiles[index] = null;
+                photoUrls[index] = '';
+            });
         });
-
-        input.addEventListener('change', () => {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    updatePhotoSlotUI(index, e.target.result);
-                    photoFiles[index] = file;
-                    photoUrls[index] = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            updatePhotoSlotUI(index, null);
-            input.value = '';
-            photoFiles[index] = null;
-            photoUrls[index] = '';
-        });
-    });
-
-    // Cancel Action
-    document.getElementById('cancel-btn').addEventListener('click', () => {
-        window.location.href = '/seller/catalog.html';
-    });
+    }
 
     // Save changes (PATCH API)
-    document.getElementById('save-btn').addEventListener('click', async () => {
+    async function handleSaveClick() {
         const price = parseFloat(document.getElementById('listing-price').value) || 0.0;
         const stock = parseInt(document.getElementById('stock-count').value) || 0;
         const prebook_limit = parseInt(document.getElementById('prebook-limit').value) || null;
@@ -459,21 +563,55 @@
         const dimensions_weight = parseFloat(document.getElementById('dim-weight').value) || null;
         const bio = document.getElementById('product-bio').value.trim() || null;
 
+        // Video upload first if selected
+        if (selectedVideoFile) {
+            const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+            const formData = new FormData();
+            formData.append('file', selectedVideoFile);
+            formData.append('is_video', 'true');
+            formData.append('sort_order', '0');
+            
+            try {
+                const uploadRes = await fetch(`${API_BASE}/api/seller/listings/${productId}/photos`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (uploadRes.ok) {
+                    const resp = await uploadRes.json();
+                    const videoData = resp.data || resp;
+                    videoUrl = videoData.url;
+                    selectedVideoFile = null;
+                }
+            } catch (err) {
+                console.error('Video upload error:', err);
+            }
+        }
+
         // Photo payloads
         const photosPayload = [];
         photoUrls.forEach((url, idx) => {
             if (url) {
-                // If it's base64, mock a backend unsplash URL
                 const actualUrl = url.startsWith('data:image') 
                     ? `https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500` 
                     : url;
                 photosPayload.push({
                     url: actualUrl,
                     sort_order: idx,
-                    is_cover: idx === 0
+                    is_cover: idx === 0,
+                    is_video: 0
                 });
             }
         });
+
+        if (videoUrl) {
+            photosPayload.push({
+                url: videoUrl,
+                sort_order: 99,
+                is_cover: false,
+                is_video: 1
+            });
+        }
 
         const patchBody = {
             price,
@@ -536,36 +674,182 @@
             console.error(err);
             showToast('Studio backend server connection error.', 'error');
         }
-    });
+    }
 
     let categoriesList = [];
     let selectedSubcategoryIds = [];
 
+    const FALLBACK_CATEGORIES = [
+        {
+            id: 2,
+            display_name: "Jewellery",
+            name: "Jewellery",
+            subcategories: [
+                { id: 14, name: "Bracelets & Kada" },
+                { id: 15, name: "Earrings" },
+                { id: 16, name: "Necklace & Pendants" },
+                { id: 17, name: "Rings" }
+            ]
+        },
+        {
+            id: 7,
+            display_name: "Customized Gifts",
+            name: "Customized Gifts",
+            subcategories: [
+                { id: 2, name: "3D Hologram Lamps" },
+                { id: 3, name: "Acrylic Frames" },
+                { id: 4, name: "Explosion Boxes" },
+                { id: 5, name: "Keychains" },
+                { id: 6, name: "Lamps" },
+                { id: 7, name: "Letters & Cards" },
+                { id: 8, name: "Mugs" },
+                { id: 9, name: "Photo Albums" },
+                { id: 10, name: "Plates" },
+                { id: 11, name: "Scrapbooks & Memory Books" },
+                { id: 12, name: "Wallets & Clutches" },
+                { id: 13, name: "Wooden Plaques" }
+            ]
+        },
+        {
+            id: 8,
+            display_name: "Home Decor",
+            name: "Home Decor",
+            subcategories: [
+                { id: 25, name: "Wall Art" },
+                { id: 26, name: "Dreamcatchers" },
+                { id: 27, name: "Nameplates" },
+                { id: 28, name: "Resin Art" },
+                { id: 29, name: "Macrame" },
+                { id: 30, name: "Clocks" },
+                { id: 31, name: "Organizers & Boxes" },
+                { id: 32, name: "Miniature Models" },
+                { id: 33, name: "Lamps" }
+            ]
+        },
+        {
+            id: 9,
+            display_name: "Hampers",
+            name: "Hampers",
+            subcategories: [
+                { id: 34, name: "Birthday Hampers" },
+                { id: 35, name: "Corporate Hampers" },
+                { id: 36, name: "Festive Hampers" },
+                { id: 37, name: "Wedding Hampers" }
+            ]
+        },
+        {
+            id: 10,
+            display_name: "Wedding & Rituals",
+            name: "Wedding & Rituals",
+            subcategories: [
+                { id: 43, name: "Shagun Envelopes" },
+                { id: 44, name: "Wedding Cards" }
+            ]
+        },
+        {
+            id: 11,
+            display_name: "Crochet",
+            name: "Crochet",
+            subcategories: [
+                { id: 55, name: "Bouquets" },
+                { id: 56, name: "Soft Toys" },
+                { id: 57, name: "Sunflowers" }
+            ]
+        },
+        {
+            id: 12,
+            display_name: "Fabric Crafts",
+            name: "Fabric Crafts",
+            subcategories: [
+                { id: 62, name: "Embroidery" },
+                { id: 61, name: "Knitted Items" },
+                { id: 60, name: "Tote Bags" }
+            ]
+        },
+        {
+            id: 13,
+            display_name: "Festivals",
+            name: "Festivals",
+            subcategories: [
+                { id: 67, name: "Christmas" },
+                { id: 64, name: "Diwali" },
+                { id: 68, name: "Eid" },
+                { id: 66, name: "Holi" },
+                { id: 69, name: "Karwa Chauth" },
+                { id: 65, name: "Navratri" },
+                { id: 63, name: "Rakhi" }
+            ]
+        },
+        {
+            id: 14,
+            display_name: "Couples",
+            name: "Couples",
+            subcategories: [
+                { id: 82, name: "Anniversary Gifts" },
+                { id: 80, name: "Anniversary Gifts" },
+                { id: 71, name: "Customized Gifts" },
+                { id: 76, name: "Flowers" },
+                { id: 70, name: "Hampers" },
+                { id: 79, name: "Home Decor" },
+                { id: 72, name: "Jewellery" },
+                { id: 78, name: "Keychains" },
+                { id: 77, name: "Lamps" },
+                { id: 75, name: "Letters & Cards" },
+                { id: 83, name: "Matching Accessories" },
+                { id: 73, name: "Portraits" },
+                { id: 81, name: "Proposal Gifts" },
+                { id: 74, name: "Scrapbooks & Memory Books" }
+            ]
+        },
+        {
+            id: 15,
+            display_name: "Art & Portraits",
+            name: "Art & Portraits",
+            subcategories: [
+                { id: 97, name: "Caricatures" },
+                { id: 92, name: "Couple Portraits" },
+                { id: 91, name: "Digital Portraits" },
+                { id: 93, name: "Family Portraits" },
+                { id: 95, name: "Paintings" },
+                { id: 96, name: "Sketches" }
+            ]
+        }
+    ];
+
     async function initCategories() {
+        let loaded = false;
         try {
             const res = await fetch(`${API_BASE}/api/categories`);
             if (res.ok) {
                 const json = await res.json();
-                categoriesList = json.data?.categories || [];
+                categoriesList = json.data?.categories || json.categories || (Array.isArray(json.data) ? json.data : []) || [];
+                if (categoriesList && categoriesList.length > 0) {
+                    loaded = true;
+                }
             }
         } catch (err) {
             console.error('Failed to load categories:', err);
+        }
+
+        if (!loaded) {
+            categoriesList = FALLBACK_CATEGORIES;
         }
     }
 
     function renderSubcategories(categoryId) {
         const subwrapper = document.getElementById('subcategories-wrapper');
         const subcontainer = document.getElementById('subcategories-container');
+        if (!subcontainer) return;
         subcontainer.innerHTML = '';
         
         if (!categoryId) {
-            subwrapper.classList.add('hidden');
+            if (subwrapper) subwrapper.classList.add('hidden');
             return;
         }
         
         const cat = categoriesList.find(c => String(c.id) === String(categoryId));
         if (cat && cat.subcategories && cat.subcategories.length > 0) {
-            subwrapper.classList.remove('hidden');
+            if (subwrapper) subwrapper.classList.remove('hidden');
             cat.subcategories.forEach(sub => {
                 const label = document.createElement('label');
                 label.className = 'flex items-center gap-2 px-3 py-1.5 bg-sage/5 hover:bg-sage/10 rounded-md border border-sage/20 cursor-pointer text-xs transition-all';
@@ -602,11 +886,34 @@
                 subcontainer.appendChild(label);
             });
         } else {
-            subwrapper.classList.add('hidden');
+            if (subwrapper) subwrapper.classList.add('hidden');
         }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
+        // Resolve DOM elements
+        prebookBtn = document.getElementById('prebook-toggle');
+        prebookCircle = document.getElementById('prebook-toggle-circle');
+        prebookLimitBox = document.getElementById('prebook-limit-container');
+
+        if (prebookBtn) {
+            prebookBtn.addEventListener('click', handlePrebookClick);
+        }
+
+        setupPhotosInteractivity();
+
+        const cancelBtn = document.getElementById('cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                window.location.href = '/seller/catalog.html';
+            });
+        }
+
+        const saveBtn = document.getElementById('save-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', handleSaveClick);
+        }
+
         productId = getQueryParam('id');
         if (!productId) {
             window.location.href = '/seller/catalog.html';

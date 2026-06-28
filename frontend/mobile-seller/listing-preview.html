@@ -21,40 +21,40 @@
 <section class="mt-16 lg:mt-24 px-4 py-8 max-w-5xl mx-auto overflow-x-auto no-scrollbar" data-purpose="stepper">
 <div class="relative flex justify-between items-start min-w-[600px] lg:min-w-0">
 <div class="step-connector"></div>
-<!-- Step 1: Photos -->
-<div class="relative z-10 flex flex-col items-center gap-2">
-<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
-<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</div>
-<span class="font-mono text-[10px] uppercase tracking-widest font-bold">Photos</span>
-</div>
-<!-- Step 2: Details -->
-<div class="relative z-10 flex flex-col items-center gap-2">
+<!-- Step 1: Details -->
+<a href="/mobile-seller/listing-details.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
 <div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
 <svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
 <span class="font-mono text-[10px] uppercase tracking-widest font-bold">Details</span>
-</div>
-<!-- Step 3: Pricing -->
-<div class="relative z-10 flex flex-col items-center gap-2">
+</a>
+<!-- Step 2: Pricing -->
+<a href="/mobile-seller/listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
 <div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
 <svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
 <span class="font-mono text-[10px] uppercase tracking-widest font-bold">Pricing</span>
+</a>
+<!-- Step 3: Photos -->
+<a href="/mobile-seller/listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
+<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold">Photos</span>
+</a>
 <!-- Step 4: Shipping -->
-<div class="relative z-10 flex flex-col items-center gap-2">
+<a href="/mobile-seller/listing-shipping.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
 <div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
 <svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
 <span class="font-mono text-[10px] uppercase tracking-widest font-bold">Shipping</span>
-</div>
+</a>
 <!-- Step 5: Preview (Active) -->
 <div class="relative z-10 flex flex-col items-center gap-2">
-<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center ring-2 ring-forest/30">
 <svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
-<span class="font-mono text-[10px] uppercase tracking-widest font-bold border-b-2 border-forest">Preview</span>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold border-b-2 border-forest pb-0.5">Preview</span>
 </div>
 <!-- Step 6: Publish -->
 <div class="relative z-10 flex flex-col items-center gap-2">
@@ -126,10 +126,7 @@
 <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
 <div><span class="text-sage font-medium">Price:</span> <span id="preview-price" class="text-sage font-semibold">—</span></div>
 <div><span class="text-sage font-medium">Stock:</span> <span id="preview-stock" class="text-sage font-semibold">—</span></div>
-<div class="col-span-2">
-<span class="text-sage font-medium">Pre-booking Limit:</span>
-<span class="font-bold text-sage">Disabled</span>
-</div>
+
 </div>
 </div>
 <!-- 04. Pickup Address -->
@@ -211,23 +208,29 @@
 </div>
 </div>
 </div>
-<!-- ZAI TIP Card -->
-<div class="bg-violet/5 border border-violet/20 rounded-[2rem] p-8 flex items-start gap-4">
-<div class="text-violet mt-1">
-<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-<path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
-</svg>
+
+<!-- BEGIN: Sticky Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden">
+  <div class="flex items-center gap-3">
+    <button id="btn-discard-mobile" class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-red-50 transition-all duration-200 active:scale-95">
+      Discard
+    </button>
+    <button id="btn-draft-mobile" class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-forest/5 transition-all duration-200 active:scale-95">
+      Keep Draft
+    </button>
+    <button id="btn-publish-mobile" class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2 hover:bg-forest/90 transition-all duration-200 active:scale-95">
+      Publish Listing
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+    </button>
+  </div>
 </div>
-<div class="space-y-2">
-<span class="font-mono text-[10px] font-bold uppercase tracking-widest text-violet">Zai Tip</span>
-<p class="text-xs text-violet/70 leading-relaxed">
-            This listing has a high completeness score. Adding a <span class="font-bold underline cursor-pointer">process video</span> could boost engagement by 18%.
-          </p>
-</div>
-</div>
-</aside>
+<!-- END: Sticky Actions Bar -->
+
 </main>
 <!-- END: Main Content Container -->
+
 <!-- BEGIN: Persistent Mobile Action Bar -->
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
 <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
@@ -315,17 +318,14 @@
   </style>
 </footer>
 <!-- END: Persistent Mobile Action Bar -->
+
 </seller-layout>
 
 <script>
 (function() {
   const DRAFT_ID = sessionStorage.getItem('draft_id');
-  if (!DRAFT_ID) {
-    window.location.href = '/mobile-seller/catalog.html';
-    return;
-  }
-
   const API_BASE = window.location.origin;
+  let globalPhotos = [];
 
   function getToken() {
     try {
@@ -360,11 +360,15 @@
   }
 
   async function loadPreview() {
-    let draftData = {};
-    try {
-      draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
-    } catch {}
+    if (!DRAFT_ID) {
+      showToast('No active draft found. Please start from Details step.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return;
+    }
 
+    let draftData = {};
     // Pull fresh data from API to align images and other fields
     try {
       const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
@@ -372,18 +376,53 @@
       });
       if (res.ok) {
         const body = await res.json();
-        const apiData = body.data || body;
-        if (apiData) {
-          draftData = { ...draftData, ...apiData };
-          sessionStorage.setItem('draft_data', JSON.stringify(draftData));
-        }
+        draftData = body.data || body;
+      } else {
+        throw new Error('Failed to load draft details.');
       }
     } catch (err) {
       console.warn('Could not sync with backend draft, using local session state.', err);
+      try {
+        draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
+      } catch {}
     }
+
+    // Step Validation Guards
+    if (!draftData.title || !draftData.category) {
+      showToast('Please complete the Details step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return;
+    }
+    if (!draftData.price_paise || draftData.price_paise <= 0) {
+      showToast('Please complete the Pricing step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-pricing-a.html';
+      }, 1500);
+      return;
+    }
+    if (!draftData.photos || draftData.photos.length === 0) {
+      showToast('Please upload at least one photo first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-photos.html';
+      }, 1500);
+      return;
+    }
+    if (!draftData.shipping_method) {
+      showToast('Please complete the Shipping step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-shipping.html';
+      }, 1500);
+      return;
+    }
+
+    sessionStorage.setItem('draft_data', JSON.stringify(draftData));
 
     // Render 01. Photos count
     const photos = draftData.photos || [];
+    globalPhotos = photos;
+    togglePublishGuard(photos.length);
     document.getElementById('preview-photo-count').textContent = `${photos.length} Photo${photos.length === 1 ? '' : 's'}`;
 
     // Render Cover Image
@@ -432,7 +471,28 @@
     document.getElementById('preview-stock').textContent = draftData.stock_count !== undefined ? draftData.stock_count : '—';
 
     // Render 04. Pickup Address
-    document.getElementById('preview-pickup-address').textContent = "Kshitija's Studio";
+    let addressName = "Kshitija's Studio";
+    if (draftData.pickup_address_type === 'warehouse') {
+      addressName = "Tohfa Main Warehouse";
+    } else if (draftData.pickup_address_type && draftData.pickup_address_type !== 'studio') {
+      try {
+        const token = getToken();
+        const addrRes = await fetch(`${API_BASE}/api/addresses`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (addrRes.ok) {
+          const addrBody = await addrRes.json();
+          const addresses = addrBody.data || addrBody || [];
+          const found = addresses.find(a => String(a.id) === String(draftData.pickup_address_type));
+          if (found) {
+            addressName = found.full_name;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to resolve address name', err);
+      }
+    }
+    document.getElementById('preview-pickup-address').textContent = addressName;
 
     // Render 05. Dimensions
     document.getElementById('preview-length').textContent = draftData.length_cm ? `${draftData.length_cm} cm` : 'N/A';
@@ -473,7 +533,45 @@
     document.getElementById('preview-score-bar').style.width = `${percent}%`;
   }
 
+  // Toggle publish buttons state and warning badge
+  function togglePublishGuard(photoCount) {
+    const mainPublishBtn = document.getElementById('btn-publish-main');
+    const mobilePublishBtn = document.getElementById('btn-publish-mobile');
+    
+    document.querySelectorAll('.publish-warning-msg').forEach(el => el.remove());
+    
+    if (photoCount === 0) {
+      if (mainPublishBtn) {
+        mainPublishBtn.disabled = true;
+        mainPublishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // Add a warning message below the main publish button
+        const warningMsg = document.createElement('p');
+        warningMsg.className = 'text-xs text-[#BA1A1A] font-medium mt-2 text-center publish-warning-msg';
+        warningMsg.textContent = '⚠ Upload at least 1 photo to publish';
+        mainPublishBtn.parentNode.insertBefore(warningMsg, mainPublishBtn.nextSibling);
+      }
+      if (mobilePublishBtn) {
+        mobilePublishBtn.disabled = true;
+        mobilePublishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    } else {
+      if (mainPublishBtn) {
+        mainPublishBtn.disabled = false;
+        mainPublishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+      if (mobilePublishBtn) {
+        mobilePublishBtn.disabled = false;
+        mobilePublishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+  }
+
   async function handlePublish(btn) {
+    if (globalPhotos.length === 0) {
+      showToast('Please upload at least one product photo before publishing.', 'error');
+      return;
+    }
     // Navigate straight to publishing handler step which commits the status = active
     btn.disabled = true;
     btn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;

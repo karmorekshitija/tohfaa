@@ -49,28 +49,28 @@
   <div class="max-w-4xl mx-auto relative flex justify-between items-center px-4">
     <!-- Connecting Line -->
     <div class="absolute top-1/2 left-8 right-8 h-[2px] bg-sage/20 -translate-y-1/2 z-0"></div>
-    <div class="absolute top-1/2 left-8 w-[0%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
-    <!-- Step 1: Photos (Current) -->
+    <div class="absolute top-1/2 left-8 w-[40%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
+    <!-- Step 1: Details (Completed) -->
+    <a href="listing-details.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
+      <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
+        <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Details</span>
+    </a>
+    <!-- Step 2: Pricing (Completed) -->
+    <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
+      <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
+        <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Pricing</span>
+    </a>
+    <!-- Step 3: Photos (Current) -->
     <div class="relative z-10 flex flex-col items-center gap-2 text-primary">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center ring-2 ring-primary">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest border-b-2 border-primary pb-0.5">Photos</span>
     </div>
-    <!-- Step 2: Details (Future) -->
-    <a href="listing-details.html" class="relative z-10 flex flex-col items-center gap-2 opacity-40 text-on-surface-variant cursor-pointer hover:opacity-80 transition-opacity">
-      <div class="w-10 h-10 rounded-full bg-white border border-sage/40 flex items-center justify-center">
-        <span class="material-symbols-outlined text-lg">description</span>
-      </div>
-      <span class="text-[10px] font-bold uppercase tracking-widest">Details</span>
-    </a>
-    <!-- Step 3: Pricing (Future) -->
-    <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 opacity-40 text-on-surface-variant cursor-pointer hover:opacity-80 transition-opacity">
-      <div class="w-10 h-10 rounded-full bg-white border border-sage/40 flex items-center justify-center">
-        <span class="material-symbols-outlined text-lg">payments</span>
-      </div>
-      <span class="text-[10px] font-bold uppercase tracking-widest">Pricing</span>
-    </a>
     <!-- Step 4: Shipping (Future) -->
     <div class="relative z-10 flex flex-col items-center gap-2 opacity-40 text-on-surface-variant">
       <div class="w-10 h-10 rounded-full bg-white border border-sage/40 flex items-center justify-center">
@@ -151,6 +151,26 @@
 </div>
 
 </div>
+
+<!-- Video Upload Section -->
+<div class="mt-8">
+  <label class="block font-headline-sm text-sm text-primary mb-2">Product Video (Optional)</label>
+  <div id="video-drag-zone" class="border-2 border-dashed border-sage/60 rounded-2xl p-6 flex flex-col items-center justify-center bg-sage/5 hover:bg-sage/10 transition-all group relative cursor-pointer overflow-hidden min-h-[140px]">
+    <input type="file" id="video-file-input" accept="video/*" class="hidden"/>
+    <div id="video-upload-prompt" class="flex flex-col items-center justify-center text-center">
+      <span class="material-symbols-outlined text-3xl text-forest mb-2 group-hover:scale-110 transition-transform">videocam</span>
+      <span class="text-[11px] font-bold text-forest uppercase tracking-widest">Upload Video (Max 10s, 20MB)</span>
+      <span class="text-[9px] text-on-surface-variant font-medium mt-1 leading-normal">MP4, WebM, OGG</span>
+    </div>
+    <div id="video-preview-container" class="hidden absolute inset-0 bg-white flex items-center justify-center">
+      <video id="video-preview" class="w-full h-full object-cover rounded-xl" autoplay loop muted playsinline></video>
+      <button id="remove-video-btn" type="button" class="absolute top-2 right-2 bg-error text-white p-1 rounded-full shadow-md hover:bg-error-container hover:text-on-error-container transition-all flex items-center justify-center" onclick="event.stopPropagation(); removeSelectedVideo();">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Identification Field -->
 <div class="mt-12 flex flex-col gap-4">
 <label class="font-headline-sm text-sm text-primary">Primary Identification Name</label>
@@ -164,7 +184,9 @@
 </div>
 </div>
 </div>
+
 <!-- (5) Footer Style - Full Modal -->
+
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
 <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
   <!-- Ghost watermark -->
@@ -244,6 +266,7 @@
     }
   </style>
 </footer>
+
 <!-- Character Accent -->
 <div class="fixed bottom-0 right-10 z-[70] pointer-events-none transform translate-y-2">
 <div class="relative w-24 h-24">
@@ -252,6 +275,8 @@
 </div>
 </div>
 </div>
+
+
 </div>
 </seller-layout>
 <script>
@@ -274,6 +299,8 @@
         setTimeout(() => toast.style.display = 'none', 3500);
     }
 
+    let selectedVideoFile = null;
+
     const fileInput = document.getElementById('photo-file-input');
     const dragZone = document.getElementById('drag-drop-zone');
 
@@ -286,9 +313,108 @@
         });
     }
 
+    const videoInput = document.getElementById('video-file-input');
+    const videoDragZone = document.getElementById('video-drag-zone');
+
+    if (videoDragZone && videoInput) {
+        videoDragZone.addEventListener('click', () => videoInput.click());
+        
+        videoDragZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            videoDragZone.classList.add('bg-sage/10');
+        });
+        videoDragZone.addEventListener('dragleave', () => {
+            videoDragZone.classList.remove('bg-sage/10');
+        });
+        videoDragZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            videoDragZone.classList.remove('bg-sage/10');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleVideoSelect(files[0]);
+            }
+        });
+
+        videoInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleVideoSelect(files[0]);
+            }
+        });
+    }
+
+    function handleVideoSelect(file) {
+        if (!file.type.startsWith('video/')) {
+            showToast('Please select a valid video file.', 'error');
+            return;
+        }
+        if (file.size > 20 * 1024 * 1024) {
+            showToast('Video size must not exceed 20MB.', 'error');
+            return;
+        }
+
+        const videoElement = document.createElement('video');
+        videoElement.preload = 'metadata';
+        videoElement.src = URL.createObjectURL(file);
+        videoElement.onloadedmetadata = () => {
+            window.URL.revokeObjectURL(videoElement.src);
+            if (videoElement.duration > 10) {
+                showToast('Video duration must be 10 seconds or less.', 'error');
+            } else {
+                selectedVideoFile = file;
+                renderVideoPreview();
+            }
+        };
+        videoElement.onerror = () => {
+            showToast('Failed to load video metadata.', 'error');
+        };
+    }
+
+    function renderVideoPreview(url) {
+        const preview = document.getElementById('video-preview');
+        const container = document.getElementById('video-preview-container');
+        const prompt = document.getElementById('video-upload-prompt');
+        
+        if (url || selectedVideoFile) {
+            preview.src = url || URL.createObjectURL(selectedVideoFile);
+            container.classList.remove('hidden');
+            prompt.classList.add('hidden');
+        } else {
+            preview.src = '';
+            container.classList.add('hidden');
+            prompt.classList.remove('hidden');
+        }
+    }
+
+    window.removeSelectedVideo = function() {
+        selectedVideoFile = null;
+        renderVideoPreview();
+        if (videoInput) videoInput.value = '';
+        
+        const existingVideo = existingPhotos.find(p => p.is_video === 1 || p.is_video === 'true');
+        if (existingVideo) {
+            const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
+            const draftId = sessionStorage.getItem('draft_id');
+            if (draftId && token) {
+                fetch(`${API_BASE}/api/seller/listings/${draftId}/photos/${existingVideo.photo_id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => {
+                    if (res.ok) {
+                        existingPhotos = existingPhotos.filter(p => p.photo_id !== existingVideo.photo_id);
+                        showToast('Video removed successfully.', 'success');
+                    }
+                })
+                .catch(err => console.error('Error removing video:', err));
+            }
+        }
+    };
+
     function renderPreviews() {
+        const imagePhotos = existingPhotos.filter(p => p.is_video !== 1 && p.is_video !== 'true');
         const allUrls = [
-            ...existingPhotos.map(p => p.url),
+            ...imagePhotos.map(p => p.url),
             ...selectedFiles.map(f => URL.createObjectURL(f))
         ];
 
@@ -310,11 +436,15 @@
                 }
             }
         }
-    }
-
-    async function loadDraft() {
+    }    async function loadListingDraft() {
         const draftId = sessionStorage.getItem('draft_id');
-        if (!draftId) return;
+        if (!draftId) {
+            showToast('Please complete the Details step first.', 'error');
+            setTimeout(() => {
+                window.location.href = 'listing-details.html';
+            }, 1500);
+            return;
+        }
 
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         try {
@@ -324,11 +454,36 @@
             if (res.ok) {
                 const resp = await res.json();
                 const listing = resp.data || resp;
+
+                if (!listing.title || !listing.category) {
+                    showToast('Please complete the Details step first.', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'listing-details.html';
+                    }, 1500);
+                    return;
+                }
+                if (!listing.price_paise || listing.price_paise <= 0) {
+                    showToast('Please complete the Pricing step first.', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'listing-pricing-a.html';
+                    }, 1500);
+                    return;
+                }
+
                 if (listing.title) {
                     document.getElementById('listing-title').value = listing.title;
                 }
                 existingPhotos = listing.photos || [];
+                const videoPhoto = existingPhotos.find(p => p.is_video === 1 || p.is_video === 'true');
+                if (videoPhoto) {
+                    renderVideoPreview(videoPhoto.url);
+                }
                 renderPreviews();
+            } else {
+                showToast('Failed to load draft details.', 'error');
+                setTimeout(() => {
+                    window.location.href = 'listing-details.html';
+                }, 1500);
             }
         } catch (err) {
             console.error('Error loading draft listing:', err);
@@ -403,16 +558,33 @@
                 selectedFiles = []; // Clear uploaded files list
             }
 
+            if (selectedVideoFile) {
+                const formData = new FormData();
+                formData.append('file', selectedVideoFile);
+                formData.append('is_video', 'true');
+                formData.append('sort_order', '0');
+                const uploadRes = await fetch(`${API_BASE}/api/seller/listings/${finalId}/photos`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (!uploadRes.ok) {
+                    const errData = await uploadRes.json();
+                    throw new Error(errData.message || 'Video upload failed');
+                }
+                selectedVideoFile = null;
+            }
+
             showToast('Draft saved successfully!', 'success');
 
             if (shouldRedirect) {
-                window.location.href = 'listing-details.html';
+                window.location.href = 'listing-shipping.html';
             }
         } catch (err) {
             showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
             if (shouldRedirect) {
                 setTimeout(() => {
-                    window.location.href = 'listing-details.html';
+                    window.location.href = 'listing-shipping.html';
                 }, 1000);
             }
         }
@@ -420,10 +592,14 @@
 
     document.getElementById('save-draft-btn').addEventListener('click', () => saveListingDraft(false));
     document.getElementById('next-step-btn').addEventListener('click', () => {
+        if (existingPhotos.length + selectedFiles.length === 0) {
+            showToast('Please upload at least one product photo before continuing.', 'error');
+            return;
+        }
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         if (!token) {
             // No backend — just navigate to next step directly
-            window.location.href = 'listing-details.html';
+            window.location.href = 'listing-shipping.html';
             return;
         }
         saveListingDraft(true);
@@ -439,9 +615,13 @@
     const headerNextBtn = document.getElementById('header-next-step-btn');
     if (headerNextBtn) {
         headerNextBtn.addEventListener('click', () => {
+            if (existingPhotos.length + selectedFiles.length === 0) {
+                showToast('Please upload at least one product photo before continuing.', 'error');
+                return;
+            }
             const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
             if (!token) {
-                window.location.href = 'listing-details.html';
+                window.location.href = 'listing-shipping.html';
                 return;
             }
             saveListingDraft(true);
@@ -449,7 +629,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        loadDraft();
+        loadListingDraft();
 
         const sidebar = document.querySelector('seller-sidebar');
         if (sidebar) {

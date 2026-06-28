@@ -144,6 +144,7 @@
 </div>
 <!-- END: Sticky Actions Bar -->
 </main>
+
 <!-- BEGIN: Footer Actions -->
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
 <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
@@ -230,6 +231,7 @@
     }
   </style>
 </footer>
+
 <!-- END: Footer Actions -->
 </seller-layout>
 
@@ -266,15 +268,160 @@
     setTimeout(() => { t.style.opacity = '0'; }, 3500);
   }
 
+  const FALLBACK_CATEGORIES = [
+    {
+      id: 2,
+      display_name: "Jewellery",
+      name: "Jewellery",
+      subcategories: [
+        { id: 14, name: "Bracelets & Kada" },
+        { id: 15, name: "Earrings" },
+        { id: 16, name: "Necklace & Pendants" },
+        { id: 17, name: "Rings" }
+      ]
+    },
+    {
+      id: 7,
+      display_name: "Customized Gifts",
+      name: "Customized Gifts",
+      subcategories: [
+        { id: 2, name: "3D Hologram Lamps" },
+        { id: 3, name: "Acrylic Frames" },
+        { id: 4, name: "Explosion Boxes" },
+        { id: 5, name: "Keychains" },
+        { id: 6, name: "Lamps" },
+        { id: 7, name: "Letters & Cards" },
+        { id: 8, name: "Mugs" },
+        { id: 9, name: "Photo Albums" },
+        { id: 10, name: "Plates" },
+        { id: 11, name: "Scrapbooks & Memory Books" },
+        { id: 12, name: "Wallets & Clutches" },
+        { id: 13, name: "Wooden Plaques" }
+      ]
+    },
+    {
+      id: 8,
+      display_name: "Home Decor",
+      name: "Home Decor",
+      subcategories: [
+        { id: 25, name: "Wall Art" },
+        { id: 26, name: "Dreamcatchers" },
+        { id: 27, name: "Nameplates" },
+        { id: 28, name: "Resin Art" },
+        { id: 29, name: "Macrame" },
+        { id: 30, name: "Clocks" },
+        { id: 31, name: "Organizers & Boxes" },
+        { id: 32, name: "Miniature Models" },
+        { id: 33, name: "Lamps" }
+      ]
+    },
+    {
+      id: 9,
+      display_name: "Hampers",
+      name: "Hampers",
+      subcategories: [
+        { id: 34, name: "Birthday Hampers" },
+        { id: 35, name: "Corporate Hampers" },
+        { id: 36, name: "Festive Hampers" },
+        { id: 37, name: "Wedding Hampers" }
+      ]
+    },
+    {
+      id: 10,
+      display_name: "Wedding & Rituals",
+      name: "Wedding & Rituals",
+      subcategories: [
+        { id: 43, name: "Shagun Envelopes" },
+        { id: 44, name: "Wedding Cards" }
+      ]
+    },
+    {
+      id: 11,
+      display_name: "Crochet",
+      name: "Crochet",
+      subcategories: [
+        { id: 55, name: "Bouquets" },
+        { id: 56, name: "Soft Toys" },
+        { id: 57, name: "Sunflowers" }
+      ]
+    },
+    {
+      id: 12,
+      display_name: "Fabric Crafts",
+      name: "Fabric Crafts",
+      subcategories: [
+        { id: 62, name: "Embroidery" },
+        { id: 61, name: "Knitted Items" },
+        { id: 60, name: "Tote Bags" }
+      ]
+    },
+    {
+      id: 13,
+      display_name: "Festivals",
+      name: "Festivals",
+      subcategories: [
+        { id: 67, name: "Christmas" },
+        { id: 64, name: "Diwali" },
+        { id: 68, name: "Eid" },
+        { id: 66, name: "Holi" },
+        { id: 69, name: "Karwa Chauth" },
+        { id: 65, name: "Navratri" },
+        { id: 63, name: "Rakhi" }
+      ]
+    },
+    {
+      id: 14,
+      display_name: "Couples",
+      name: "Couples",
+      subcategories: [
+        { id: 82, name: "Anniversary Gifts" },
+        { id: 80, name: "Anniversary Gifts" },
+        { id: 71, name: "Customized Gifts" },
+        { id: 76, name: "Flowers" },
+        { id: 70, name: "Hampers" },
+        { id: 79, name: "Home Decor" },
+        { id: 72, name: "Jewellery" },
+        { id: 78, name: "Keychains" },
+        { id: 77, name: "Lamps" },
+        { id: 75, name: "Letters & Cards" },
+        { id: 83, name: "Matching Accessories" },
+        { id: 73, name: "Portraits" },
+        { id: 81, name: "Proposal Gifts" },
+        { id: 74, name: "Scrapbooks & Memory Books" }
+      ]
+    },
+    {
+      id: 15,
+      display_name: "Art & Portraits",
+      name: "Art & Portraits",
+      subcategories: [
+        { id: 97, name: "Caricatures" },
+        { id: 92, name: "Couple Portraits" },
+        { id: 91, name: "Digital Portraits" },
+        { id: 93, name: "Family Portraits" },
+        { id: 95, name: "Paintings" },
+        { id: 96, name: "Sketches" }
+      ]
+    }
+  ];
+
   async function initCategories() {
+    let loaded = false;
     try {
       const res = await fetch(`${API_BASE}/api/categories`);
       if (res.ok) {
         const json = await res.json();
-        categoriesList = json.data?.categories || [];
+        categoriesList = json.data?.categories || json.categories || (Array.isArray(json.data) ? json.data : []) || [];
+        if (categoriesList && categoriesList.length > 0) {
+          loaded = true;
+        }
       }
     } catch (err) {
       console.error('Failed to load categories:', err);
+    }
+
+    if (!loaded) {
+      categoriesList = FALLBACK_CATEGORIES;
     }
   }
 
@@ -359,27 +506,28 @@
     });
   }
 
-  function renderSubcategories(categoryId) {
+    function renderSubcategories(categoryId) {
     const subwrapper = document.getElementById('subcategories-wrapper');
     const subcontainer = document.getElementById('subcategories-container');
+    if (!subcontainer) return;
     subcontainer.innerHTML = '';
     
     if (!categoryId) {
-      subwrapper.classList.add('hidden');
+      if (subwrapper) subwrapper.classList.add('hidden');
       return;
     }
     
     const cat = categoriesList.find(c => String(c.id) === String(categoryId));
     if (cat && cat.subcategories && cat.subcategories.length > 0) {
-      subwrapper.classList.remove('hidden');
+      if (subwrapper) subwrapper.classList.remove('hidden');
       cat.subcategories.forEach(sub => {
         const label = document.createElement('label');
-        label.className = 'flex items-center gap-2 px-3 py-1.5 bg-forest/5 hover:bg-forest/10 rounded-md border border-forest/20 cursor-pointer text-xs transition-all';
+        label.className = 'flex items-center gap-2 px-3 py-1.5 bg-sage/5 hover:bg-sage/10 rounded-md border border-sage/20 cursor-pointer text-[10px] font-sans transition-all';
         
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.value = sub.id;
-        cb.className = 'rounded border-forest text-forest focus:ring-forest';
+        cb.className = 'rounded border-sage text-forest focus:ring-forest';
         if (selectedSubcategoryIds.includes(sub.id)) {
           cb.checked = true;
         }
@@ -401,14 +549,14 @@
         label.appendChild(cb);
         
         const nameSpan = document.createElement('span');
-        nameSpan.className = 'text-forest font-medium';
+        nameSpan.className = 'text-primary font-medium';
         nameSpan.textContent = sub.name;
         label.appendChild(nameSpan);
         
         subcontainer.appendChild(label);
       });
     } else {
-      subwrapper.classList.add('hidden');
+      if (subwrapper) subwrapper.classList.add('hidden');
     }
   }
 
@@ -507,9 +655,6 @@
     }
   }
 
-  document.getElementById('input-product-type-premade').addEventListener('change', updateProductTypeUI);
-  document.getElementById('input-product-type-custom').addEventListener('change', updateProductTypeUI);
-
   async function saveListing() {
     const price = parseFloat(document.getElementById('listing-price').value) || 0.0;
     const stock = parseInt(document.getElementById('stock-count').value) || 0;
@@ -586,15 +731,35 @@
     }
   }
 
-  document.getElementById('save-btn').addEventListener('click', saveListing);
-  
   const goBack = () => {
     window.location.href = '/mobile-seller/catalog.html';
   };
-  document.getElementById('cancel-btn').addEventListener('click', goBack);
-  document.getElementById('btn-back').addEventListener('click', goBack);
 
   window.addEventListener('DOMContentLoaded', async () => {
+    const premadeInput = document.getElementById('input-product-type-premade');
+    if (premadeInput) {
+      premadeInput.addEventListener('change', updateProductTypeUI);
+    }
+    const customInput = document.getElementById('input-product-type-custom');
+    if (customInput) {
+      customInput.addEventListener('change', updateProductTypeUI);
+    }
+
+    const saveBtn = document.getElementById('save-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', saveListing);
+    }
+
+    const cancelBtn = document.getElementById('cancel-btn');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', goBack);
+    }
+
+    const btnBack = document.getElementById('btn-back');
+    if (btnBack) {
+      btnBack.addEventListener('click', goBack);
+    }
+
     productId = getQueryParam('id');
     if (!productId) {
       window.location.href = '/mobile-seller/catalog.html';

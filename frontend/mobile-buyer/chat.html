@@ -288,6 +288,7 @@
       </div>
     </div>
 
+
     <!-- Input Bar -->
     <div class="p-4 bg-white border-t border-outline-variant shrink-0">
       <div class="flex items-center gap-3">
@@ -354,6 +355,7 @@
   let sidebarPollingInterval = null;
   let selectedFiles = [];
   let countdownIntervals = [];
+
 
   function getAuthToken() {
     return localStorage.getItem('token') || getTohfaToken() || getTohfaToken();
@@ -704,12 +706,10 @@
     
     let filtered = conversations;
     
-    if (sidebarFilter !== 'all') {
-      if (sidebarFilter === 'custom') {
-        filtered = conversations.filter(c => c.product_type_tag !== 'overflow');
-      } else {
-        filtered = conversations.filter(c => c.product_type_tag === sidebarFilter);
-      }
+    if (sidebarFilter === 'overflow') {
+      filtered = conversations.filter(c => c.product_type_tag === 'overflow');
+    } else {
+      filtered = conversations.filter(c => c.product_type_tag !== 'overflow');
     }
     
     if (searchQuery) {
@@ -818,6 +818,8 @@
       const data = await res.json();
       
       updateChatInputState(data.status);
+
+
       
       document.getElementById('chat-name').textContent = data.other_party.name;
       const initials = data.other_party.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
@@ -835,7 +837,12 @@
       const badgesContainer = document.getElementById('chat-context-badges');
       const isAccepted = data.status === 'completed' || data.status === 'accepted_paid';
       const typeLabel = isAccepted ? 'ACCEPTED & PAID' : data.status.replace(/_/g, ' ').toUpperCase();
-      const typeBadgeClass = isAccepted ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
+      let typeBadgeClass = 'bg-primary/10 text-primary';
+      if (isAccepted) {
+        typeBadgeClass = 'bg-green-100 text-green-800';
+      } else if (data.status === 'bot_collecting') {
+        typeBadgeClass = 'bg-[#7B5EA7]/10 text-[#7B5EA7]';
+      }
       
       badgesContainer.innerHTML = `
         <span class="text-[9px] font-eyebrow font-bold ${typeBadgeClass} px-2.5 py-0.5 rounded">${typeLabel}</span>
@@ -902,6 +909,8 @@
         const data = await res.json();
         
         updateChatInputState(data.status);
+
+
         
         const container = document.getElementById('messages-container');
         const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 120;
@@ -1598,6 +1607,8 @@
     const input = document.getElementById('message-input');
     const content = input.value.trim();
     if (!content && selectedFiles.length === 0) return;
+
+
 
     const token = getAuthToken();
     const sendBtn = document.getElementById('send-msg-btn');

@@ -115,6 +115,27 @@
     }
     input:checked + .slider { background-color: #3D6B4F; }
     input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Override global label/input styling from responsive.css for switch and inputs */
+    label.switch {
+      display: inline-block !important;
+      width: 40px !important;
+      height: 20px !important;
+      margin-bottom: 0 !important;
+    }
+    label.switch input {
+      width: 0 !important;
+      height: 0 !important;
+      min-height: 0 !important;
+      opacity: 0 !important;
+      position: absolute !important;
+    }
+    input[id^="disc-input-"] {
+      width: 48px !important;
+      height: 32px !important;
+      min-height: 0 !important;
+      font-size: 12px !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col lg:flex-row">
@@ -165,11 +186,11 @@
 <option value="draft">Draft</option>
 </select>
 </div>
-<div class="flex flex-wrap items-center gap-2">
+<div class="flex items-center gap-2">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Category:</span>
-<div id="category-chips-container" class="flex flex-wrap gap-2 items-center">
-  <!-- Dynamically populated chips -->
-</div>
+<select id="category-select" class="border-none bg-transparent font-semibold text-forest p-0 focus:ring-0">
+  <option value="all">All Categories</option>
+</select>
 </div>
 <div class="flex items-center gap-2 md:ml-auto">
 <span class="uppercase font-mono text-[10px] tracking-widest text-gray-400">Sort by:</span>
@@ -287,34 +308,24 @@
         discounted_price: l.discounted_price || null
       }));
 
-      // Dynamically update unique categories as chips
-      const categoriesContainer = document.getElementById('category-chips-container');
+      // Dynamically update unique categories dropdown
+      const categorySelect = document.getElementById('category-select');
       const categories = new Set();
       allListings.forEach(l => {
         if (l.category) categories.add(l.category);
       });
 
-      if (categoriesContainer) {
-        window.renderCategoryChips = () => {
-          let chipsHtml = `<button type="button" class="category-chip transition-all duration-200 cursor-pointer px-4 py-1.5 text-xs font-semibold rounded-full border ${selectedCategory === 'all' ? 'bg-forest text-white border-forest shadow-sm' : 'bg-white text-forest border-sage/20 hover:bg-sage/10'}" data-category="all">All Categories</button>`;
-          
-          categories.forEach(cat => {
-            const isActive = selectedCategory === cat;
-            chipsHtml += `<button type="button" class="category-chip transition-all duration-200 cursor-pointer px-4 py-1.5 text-xs font-semibold rounded-full border ${isActive ? 'bg-forest text-white border-forest shadow-sm' : 'bg-white text-forest border-sage/20 hover:bg-sage/10'}" data-category="${cat}">${cat}</button>`;
-          });
-          
-          categoriesContainer.innerHTML = chipsHtml;
+      if (categorySelect) {
+        let optionsHtml = `<option value="all" ${selectedCategory === 'all' ? 'selected' : ''}>All Categories</option>`;
+        categories.forEach(cat => {
+          optionsHtml += `<option value="${cat}" ${selectedCategory === cat ? 'selected' : ''}>${cat}</option>`;
+        });
+        categorySelect.innerHTML = optionsHtml;
 
-          // Add event listeners
-          categoriesContainer.querySelectorAll('.category-chip').forEach(btn => {
-            btn.addEventListener('click', () => {
-              selectedCategory = btn.getAttribute('data-category');
-              window.renderCategoryChips();
-              applyFilters();
-            });
-          });
+        categorySelect.onchange = (e) => {
+          selectedCategory = e.target.value;
+          applyFilters();
         };
-        window.renderCategoryChips();
       }
     } catch (err) {
       console.warn('Catalog load failed:', err);
@@ -417,11 +428,6 @@
                   : formatPaise(l.price_paise)
                 }
               </div>
-              <!-- Stock -->
-              <div class="text-center">
-                <span class="lg:hidden text-[10px] text-gray-400 block mb-0.5">STOCK</span>
-                <span class="${stockColor} text-sm">${l.stock_count}</span>
-              </div>
               <!-- Discount toggle -->
               <div class="flex flex-col gap-1" onclick="event.stopPropagation();">
                 <span class="lg:hidden text-[10px] text-gray-400 block font-mono font-bold tracking-wider">DISCOUNT</span>
@@ -434,6 +440,11 @@
                     <span class="slider"></span>
                   </label>
                 </div>
+              </div>
+              <!-- Stock -->
+              <div class="text-center">
+                <span class="lg:hidden text-[10px] text-gray-400 block mb-0.5">STOCK</span>
+                <span class="${stockColor} text-sm">${l.stock_count}</span>
               </div>
               <!-- Action buttons + status badge -->
               <div class="flex items-center gap-2">
@@ -498,7 +509,7 @@
 
     if (status === 'draft') {
       sessionStorage.setItem('draft_id', id);
-      window.location.href = '/mobile-seller/listing-photos.html';
+      window.location.href = '/mobile-seller/listing-details.html';
     } else {
       window.location.href = `/mobile-seller/edit-listing.html?id=${id}`;
     }
@@ -583,7 +594,7 @@
         if (!draftId) throw new Error('No draft ID returned');
         sessionStorage.setItem('draft_id', String(draftId));
         sessionStorage.removeItem('draft_data');
-        window.location.href = '/mobile-seller/listing-photos.html';
+        window.location.href = '/mobile-seller/listing-details.html';
       } catch (err) {
         showToast('Could not create listing: ' + err.message, 'error');
         btn.disabled = false;

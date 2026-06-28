@@ -296,45 +296,7 @@
             </div>
         </section>
 
-        <!-- SECTION 3: Transaction History -->
-        <section class="bg-white p-6 rounded-card border border-sage/20 shadow-premium">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div>
-                    <h3 class="text-xl font-bold text-forest" style="border-left: 4px solid #3D6B4F; padding-left: 10px;">Recent Transaction Ledger</h3>
-                    <p class="text-sm text-forest/80">A summary of sales, refunds, and adjustments.</p>
-                </div>
-                <div class="flex gap-3">
-                    <a href="/mobile-seller/all-transactions.html" class="flex items-center gap-1 px-4 py-2 bg-violet hover:bg-violet/90 text-white text-sm font-bold rounded-btn shadow-md">
-                        View All Ledger
-                    </a>
-                </div>
-            </div>
 
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="text-sm font-bold uppercase tracking-wider text-forest border-b border-sage/10">
-                        <tr>
-                            <th class="py-3 px-4">Date</th>
-                            <th class="py-3 px-4">Transaction Reference</th>
-                            <th class="py-3 px-4">Type</th>
-                            <th class="py-3 px-4">Gross Amt</th>
-                            <th class="py-3 px-4">Platform Fee</th>
-                            <th class="py-3 px-4">Tax (TDS)</th>
-                            <th class="py-3 px-4">Net Amt</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tx-tbody" class="divide-y divide-sage/10 text-sm font-medium text-forest">
-                        <!-- Dynamic items -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="tx-empty-state" class="hidden text-center py-12">
-                <span class="material-symbols-outlined text-4xl text-sage mb-2">receipt_long</span>
-                <p class="text-sm text-forest">No transactions match the selected criteria.</p>
-            </div>
-        </section>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- SECTION 5: Tax & GST -->
@@ -352,7 +314,7 @@
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" id="tax-gst-registered" class="sr-only peer" onchange="toggleGstinField()" />
-                            <div class="w-11 h-6 bg-parchment peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-sage/40 after:border after:rounded-full after:height-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
+                            <div class="w-11 h-6 bg-parchment peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-sage/40 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
                         </label>
                     </div>
 
@@ -374,7 +336,7 @@
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" id="tax-tds-applicable" class="sr-only peer" />
-                            <div class="w-11 h-6 bg-parchment peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-sage/40 after:border after:rounded-full after:height-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
+                            <div class="w-11 h-6 bg-parchment peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-sage/40 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
                         </label>
                     </div>
 
@@ -415,18 +377,8 @@
         </section>
 
     <!-- Footer -->
-    <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
-<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
-  <!-- Ghost watermark -->
-  <div style="position:absolute;bottom:-5%;right:-10%;opacity:0.03;pointer-events:none;user-select:none;">
-    <span class="material-symbols-outlined" style="font-size:320px;color:white;">local_florist</span>
-  </div>
-  <!-- Brand -->
-  <div>
-    <h2 style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#C9972C;margin-bottom:12px;">Tohfa.</h2>
-    <p style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#F7F2E8;margin-bottom:8px;text-transform:uppercase;">Thoughtful Gifting, Made Effortless.</p>
-    <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;font-size:13px;line-height:1.6;margin-bottom:24px;max-width:320px;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
     
+
   </div>
   <!-- Accordions -->
   <div style="border-top:1px solid rgba(255,255,255,0.1);margin-bottom:32px;">
@@ -500,6 +452,7 @@
     }
   </style>
 </footer>
+
 </seller-layout>
 
 <script>
@@ -609,17 +562,7 @@
             </tr>
         `;
 
-        document.getElementById('tx-tbody').innerHTML = `
-            <tr>
-                <td class="py-3 px-4">12 Jun 2026</td>
-                <td class="py-3 px-4 font-mono">TXN-0412</td>
-                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-xs bg-forest/10 text-forest">SALE</span></td>
-                <td class="py-3 px-4 font-mono">₹1,400.00</td>
-                <td class="py-3 px-4 font-mono">₹112.00</td>
-                <td class="py-3 px-4 font-mono">₹14.00</td>
-                <td class="py-3 px-4 font-mono">₹1,274.00</td>
-            </tr>
-        `;
+
 
         document.getElementById('invoices-list').innerHTML = `
             <div class="flex items-center justify-between p-3 border border-sage/10 rounded-btn bg-parchment/10">
@@ -657,7 +600,6 @@
                 loadGraphData('7d'),
                 loadReceivingDetails(),
                 loadRecentPayments(),
-                loadTransactions(),
                 loadTaxInfo(),
                 loadInvoices(),
                 loadRefundDisputes()
@@ -843,40 +785,7 @@
         `).join('');
     }
 
-    // Load transactions ledger
-    async function loadTransactions() {
-        const res = await fetchAPI(`${API_BASE}/api/payments/ledger/all?limit=5`, { headers: getAuthHeaders() });
-        if (!res.ok) throw new Error();
-        const resp = await res.json();
-        const list = resp.data.items || [];
 
-        const tbody = document.getElementById('tx-tbody');
-        const empty = document.getElementById('tx-empty-state');
-
-        if (list.length === 0) {
-            tbody.innerHTML = '';
-            empty.classList.remove('hidden');
-            return;
-        }
-
-        empty.classList.add('hidden');
-        tbody.innerHTML = list.map(tx => `
-            <tr class="hover:bg-parchment/10 transition-colors">
-                <td class="py-3 px-4 text-sm text-forest">${formatDate(tx.date)}</td>
-                <td class="py-3 px-4 font-mono text-sm text-forest/80">${tx.order_id || tx.id}</td>
-                <td class="py-3 px-4">
-                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${
-                        tx.type === 'SALE' ? 'bg-forest/10 text-forest' : 
-                        tx.type === 'REFUND' ? 'bg-error/10 text-error' : 'bg-violet/10 text-violet'
-                    }">${tx.type}</span>
-                </td>
-                <td class="py-3 px-4 font-mono text-sm text-forest font-bold">${formatINR(tx.gross_amount)}</td>
-                <td class="py-3 px-4 font-mono text-sm text-forest/80">${formatINR(tx.platform_fee)}</td>
-                <td class="py-3 px-4 font-mono text-sm text-forest/80">${formatINR(tx.tax_amount)}</td>
-                <td class="py-3 px-4 font-mono text-sm font-bold ${tx.type === 'SALE' ? 'text-forest' : 'text-error'}">${formatINR(tx.net_amount)}</td>
-            </tr>
-        `).join('');
-    }
 
     // Load Tax Settings
     async function loadTaxInfo() {
@@ -998,11 +907,7 @@
         `).join('');
     }
 
-    // Export Transactions CSV
-    function exportTransactions() {
-        window.open(`${API_BASE}/api/payments/ledger/all?limit=1000`, '_blank');
-        showToast("Exporting ledger data.");
-    }
+
 
     // Init
     document.addEventListener('DOMContentLoaded', () => {

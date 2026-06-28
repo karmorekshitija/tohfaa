@@ -21,7 +21,7 @@
 <!-- Header Section -->
 <header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
 <div class="flex items-center gap-4">
-<button class="w-10 h-10 rounded-full border border-forest/20 flex items-center justify-center hover:bg-forest hover:text-white transition-colors">
+<button onclick="window.location.href='/mobile-seller/listing-pricing-a.html'" class="w-10 h-10 rounded-full border border-forest/20 flex items-center justify-center hover:bg-forest hover:text-white transition-colors">
 <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 <path clip-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" fill-rule="evenodd"></path>
 </svg>
@@ -30,24 +30,19 @@
 </div>
 <div class="hidden md:flex gap-3">
 <button class="px-6 py-2 rounded-full border border-forest text-forest hover:bg-forest/5 font-medium">Save as Draft</button>
-<button class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium">Continue →</button>
+<button onclick="window.location.href='/mobile-seller/listing-photos.html'" class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium">Continue →</button>
 <button class="px-6 py-2 rounded-full border border-red-200 text-red-500 hover:bg-red-50 font-medium">Discard Draft</button>
 </div>
 </header>
 <!-- Progress Indicator -->
 <div class="flex justify-between items-center mb-10 overflow-x-auto pb-4 no-scrollbar">
 <div class="flex flex-col items-center min-w-[70px] opacity-60">
-<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center text-forest bg-white mb-2">
-<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
-</div>
-<span class="font-mono text-[10px] tracking-widest uppercase">Photos</span>
-</div>
-<div class="flex-grow h-[1px] bg-forest/30 mx-2 min-w-[20px]"></div>
-<div class="flex flex-col items-center min-w-[70px] opacity-60">
+<a href="/mobile-seller/listing-details.html" class="flex flex-col items-center">
 <div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center text-forest bg-white mb-2">
 <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
 </div>
 <span class="font-mono text-[10px] tracking-widest uppercase">Details</span>
+</a>
 </div>
 <div class="flex-grow h-[1px] bg-forest/30 mx-2 min-w-[20px]"></div>
 <div class="flex flex-col items-center min-w-[70px]">
@@ -55,6 +50,13 @@
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
 <span class="font-mono text-[10px] tracking-widest uppercase font-bold text-forest">Pricing</span>
+</div>
+<div class="flex-grow h-[1px] bg-slate-300 mx-2 min-w-[20px]"></div>
+<div class="flex flex-col items-center min-w-[70px] opacity-30">
+<div class="w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center mb-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Photos</span>
 </div>
 <div class="flex-grow h-[1px] bg-slate-300 mx-2 min-w-[20px]"></div>
 <div class="flex flex-col items-center min-w-[70px] opacity-30">
@@ -69,6 +71,13 @@
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </div>
 <span class="font-mono text-[10px] tracking-widest uppercase">Preview</span>
+</div>
+<div class="flex-grow h-[1px] bg-slate-300 mx-2 min-w-[20px]"></div>
+<div class="flex flex-col items-center min-w-[70px] opacity-30">
+<div class="w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center mb-2 bg-white">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Publish</span>
 </div>
 </div>
 <!-- BEGIN: Pricing & Stock Section -->
@@ -86,7 +95,7 @@
 <label class="block font-serif text-lg">Retail Price</label>
 <div class="relative group">
 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-serif">₹</span>
-<input class="w-full pl-10 pr-16 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" placeholder="0.00" type="number"/>
+<input id="input-price" class="w-full pl-10 pr-16 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" placeholder="0.00" type="number" step="0.01" min="0"/>
 <span class="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-100 px-2 py-1 rounded text-[10px] font-bold text-slate-500 uppercase tracking-tighter">INR</span>
 </div>
 </div>
@@ -98,121 +107,36 @@
 <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">
 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </span>
-<input class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" type="number" value="1"/>
+<input id="input-stock" class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest text-lg" type="number" value="1" min="0"/>
 </div>
 </div>
 <!-- SKU / Reference -->
 <div class="space-y-2">
-<label class="block font-serif text-lg">SKU / Reference</label>
+<label class="block font-serif text-lg">SKU / Reference (Optional)</label>
 <div class="relative">
 <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">
 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </span>
-<input class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest font-mono text-lg uppercase" type="text" value="MJ-AS-001"/>
+<input id="input-sku" class="w-full pl-12 pr-4 py-3 rounded-xl border-slate-200 bg-white focus:ring-forest focus:border-forest font-mono text-lg uppercase" type="text" value=""/>
 </div>
-</div>
-</div>
-<!-- Taxes Toggle -->
-<div class="flex items-center justify-between p-4 card">
-<div class="flex items-start gap-4">
-<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-<svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</div>
-<div>
-<p class="font-bold text-forest">Inclusive of all taxes</p>
-<p class="text-xs text-slate-500">Retail price includes GST and regional duties.</p>
-</div>
-</div>
-<label class="relative inline-flex items-center cursor-pointer">
-<input checked="" class="sr-only peer" type="checkbox"/>
-<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest"></div>
-</label>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<!-- Artisan Variants -->
-<div class="p-6 card">
-<div class="flex justify-between items-center mb-10">
-<div class="flex items-center gap-2">
-<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.172-1.172a4 4 0 115.656 5.656L17 13" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<h4 class="font-serif font-semibold">Artisan Variants</h4>
-</div>
-<button class="text-xs font-mono uppercase tracking-widest flex items-center gap-1 text-slate-500 hover:text-forest">
-<span class="w-4 h-4 rounded-full border border-current flex items-center justify-center text-[10px]">+</span>
-                Add Variant
-              </button>
-</div>
-<div class="h-24 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg">
-<p class="text-slate-400 text-sm">No variants added yet</p>
-</div>
-</div>
-<!-- Production Limits -->
-<div class="p-6 card">
-<div class="flex items-center gap-2 mb-4">
-<svg class="w-4 h-4 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<h4 class="font-serif font-semibold">Production Limits &amp; Prebooking</h4>
-</div>
-<div class="grid grid-cols-3 gap-2 mb-4">
-<div class="text-center p-2 rounded-lg border border-slate-200 bg-white">
-<p class="text-[8px] font-mono uppercase tracking-widest text-slate-400 mb-1">Daily Cap</p>
-<p class="text-slate-300">None</p>
-</div>
-<div class="text-center p-2 rounded-lg border border-slate-200 bg-white">
-<p class="text-[8px] font-mono uppercase tracking-widest text-slate-400 mb-1">Weekly Cap</p>
-<p class="text-slate-300">None</p>
-</div>
-<div class="text-center p-2 rounded-lg border border-slate-200 bg-white">
-<p class="text-[8px] font-mono uppercase tracking-widest text-slate-400 mb-1">Monthly Cap</p>
-<p class="text-slate-300">None</p>
-</div>
-</div>
-<label class="flex items-center gap-3 cursor-pointer">
-<input class="w-5 h-5 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
-<span class="text-sm font-bold text-forest">Allow Prebooking</span>
-</label>
 </div>
 </div>
 <!-- Add-on Options -->
-<div class="space-y-4">
+<div class="space-y-4 pt-4">
 <h4 class="font-serif text-lg">Add-on Options</h4>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="flex items-center gap-4 p-4 rounded-xl border-2 border-forest bg-forest/5">
-<input checked="" class="w-6 h-6 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
+<input id="gift-wrap-checkbox" class="w-6 h-6 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
 <div class="flex flex-col">
 <span class="font-bold text-forest leading-tight">Gift Wrapping</span>
 <span class="text-xs text-forest/70">+ ₹ 50</span>
 </div>
 </div>
-<div class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 bg-white">
-<input class="w-6 h-6 rounded border-slate-300 text-forest focus:ring-forest" type="checkbox"/>
-<div class="flex flex-col">
-<span class="font-bold text-slate-500 leading-tight">Handwritten Note</span>
-<span class="text-xs text-slate-400 italic">Included</span>
 </div>
-</div>
-</div>
-</div>
-</div>
-<!-- Pricing Strategy Help Card -->
-<div class="mt-8 p-6 rounded-2xl bg-violet/5 border border-violet/20 flex gap-4">
-<div class="w-10 h-10 rounded-full bg-violet/10 flex items-center justify-center shrink-0">
-<svg class="w-5 h-5 text-violet" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</div>
-<div>
-<h5 class="font-mono text-[10px] uppercase tracking-widest text-violet font-bold mb-1">Pricing Strategy</h5>
-<p class="text-xs text-violet/80 leading-relaxed">Securely manage your artisan stock levels and regional pricing strategies to maintain value. Consider seasonal demand.</p>
 </div>
 </div>
 </div>
 <!-- END: Pricing & Stock Section -->
-<!-- Mobile Help / Rabbit Avatar -->
-<div class="fixed bottom-32 right-6 md:bottom-12 md:right-12 z-50 flex flex-col items-end">
-<div class="bg-white px-4 py-2 rounded-t-2xl rounded-bl-2xl shadow-lg border border-parchment mb-2 max-w-[140px]">
-<p class="text-[10px] italic font-medium leading-tight">"Pricing looks good!"</p>
-</div>
-<div class="w-14 h-14 rounded-full border-4 border-white overflow-hidden shadow-xl bg-slate-200">
-<img alt="Assistant" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo_sellSAMOsss3ngsgehlhqBCQWa3Hk2Lp4_Nlk1uB_I3RNVMXkJbI66j8QRaV41AErk9LoShASdY0Fj1cptpG8cE6ondYGIZXBoTjwflTrdSqfB5RaKOKMi2ZEJvx7xReVSaxPTiFiavLwbxqkBysdk96Ifw2MSUc6hO_Qsd69bXL-jzmj_BapLgUb3uGUNh8LI5hIjz6Wk4h_jZmld5kcUmtDdZPk4cg80DKqjOrzYxJuB_CBR52DWXaRTzegt3W5EVSxnp4w" loading="lazy" />
-</div>
-</div>
 <!-- Security Info -->
 <div class="mt-12 p-4 flex items-center justify-center gap-3 opacity-60">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
@@ -220,7 +144,26 @@
 </div>
 </main>
 <!-- END: Main Content Area -->
-<!-- BEGIN: Fixed Mobile Action Buttons -->
+
+<!-- BEGIN: Sticky Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden">
+  <div class="flex items-center gap-3">
+    <button id="btn-discard-mobile" class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-red-50 transition-all duration-200 active:scale-95">
+      Discard
+    </button>
+    <button id="btn-draft-mobile" class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-forest/5 transition-all duration-200 active:scale-95">
+      Keep Draft
+    </button>
+    <button id="btn-continue-mobile" class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2 hover:bg-forest/90 transition-all duration-200 active:scale-95">
+      Continue
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+<!-- END: Sticky Actions Bar -->
+
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
 <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
   <!-- Ghost watermark -->
@@ -307,5 +250,247 @@
   </style>
 </footer>
 <!-- END: Fixed Mobile Action Buttons -->
+
+
+
 </seller-layout>
+<script>
+(function() {
+  const API_BASE = window.location.origin;
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-pricing');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-pricing'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.display = 'block';
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => { t.style.display = 'none'; }, 300); }, 3500);
+  }
+
+  async function loadPricingDraft() {
+    const draftId = sessionStorage.getItem('draft_id');
+    if (!draftId) {
+      showToast('Please complete the Details step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return;
+    }
+
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const resp = await res.json();
+        const listing = resp.data || resp;
+
+        if (!listing.title || !listing.category) {
+          showToast('Please complete the Details step first.', 'error');
+          setTimeout(() => {
+            window.location.href = '/mobile-seller/listing-details.html';
+          }, 1500);
+          return;
+        }
+
+        // Pre-fill inputs
+        if (listing.base_price) {
+          document.getElementById('input-price').value = (listing.base_price / 100).toFixed(0);
+        }
+        document.getElementById('input-stock').value = listing.stock_count || 1;
+        document.getElementById('input-sku').value = listing.sku || '';
+        document.getElementById('gift-wrap-checkbox').checked = !!listing.gift_wrap_available;
+      } else {
+        showToast('Failed to load draft details.', 'error');
+        setTimeout(() => {
+          window.location.href = '/mobile-seller/listing-details.html';
+        }, 1500);
+      }
+    } catch (err) {
+      console.error('Error loading pricing draft:', err);
+    }
+  }
+
+  function gatherFormData() {
+    const priceDisplay = parseFloat(document.getElementById('input-price').value) || 0;
+    const stockVal = parseInt(document.getElementById('input-stock').value) || 0;
+    const skuVal = document.getElementById('input-sku').value.trim();
+    const giftWrapVal = document.getElementById('gift-wrap-checkbox').checked ? 1 : 0;
+    const giftWrapPricePaiseVal = giftWrapVal ? 5000 : 0;
+
+    return {
+      base_price: Math.round(priceDisplay * 100),
+      price_paise: Math.round(priceDisplay * 100),
+      stock_count: stockVal,
+      sku: skuVal,
+      gift_wrap_available: giftWrapVal,
+      gift_wrap_price_paise: giftWrapPricePaiseVal
+    };
+  }
+
+  async function savePricing(shouldRedirect) {
+    const local = gatherFormData();
+    
+    // Retail Price is required to proceed
+    if (shouldRedirect && (isNaN(local.price_paise) || local.price_paise <= 0)) {
+      showToast('Please enter a valid retail price.', 'error');
+      return false;
+    }
+
+    const token = getToken();
+    const draftId = sessionStorage.getItem('draft_id');
+    if (!token) {
+      showToast('Pricing validated! (Offline mode)', 'success');
+      if (shouldRedirect) {
+        window.location.href = '/mobile-seller/listing-photos.html';
+      }
+      return true;
+    }
+
+    if (!draftId) {
+      showToast('No active draft found. Please start from Step 1.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return false;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          base_price: local.base_price,
+          price_paise: local.price_paise,
+          stock_count: local.stock_count,
+          sku: local.sku,
+          gift_wrap_available: local.gift_wrap_available,
+          gift_wrap_price_paise: local.gift_wrap_price_paise,
+          status: 'draft'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to save pricing details');
+
+      showToast('Pricing saved successfully!', 'success');
+      if (shouldRedirect) {
+        window.location.href = '/mobile-seller/listing-photos.html';
+      }
+      return true;
+    } catch (err) {
+      showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
+      if (shouldRedirect) {
+        setTimeout(() => {
+          window.location.href = '/mobile-seller/listing-photos.html';
+        }, 1000);
+      }
+      return false;
+    }
+  }
+
+  // Update back button click to go to listing-pricing-a.html
+  const backBtn = document.getElementById('btn-back') || document.querySelector('header button');
+  if (backBtn) {
+    backBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await savePricing(false);
+      window.location.href = '/mobile-seller/listing-pricing-a.html';
+    });
+  }
+
+  async function handleSaveDraft(btn) {
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-forest border-t-transparent rounded-full animate-spin"></span>`;
+
+    const success = await savePricing(false);
+    if (success) {
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } else {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+
+  async function handleContinue(btn) {
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+
+    const success = await savePricing(true);
+    if (!success) {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  async function handleDiscard(btn) {
+    const draftId = sessionStorage.getItem('draft_id');
+    if (!draftId) {
+      window.location.href = '/mobile-seller/catalog.html';
+      return;
+    }
+    if (!confirm('Are you sure you want to discard this draft? This will permanently delete it.')) return;
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete draft');
+      sessionStorage.removeItem('draft_id');
+      showToast('Draft discarded', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  const btnDraftDesktop = document.getElementById('btn-draft-desktop') || document.querySelector('header button:first-of-type');
+  if (btnDraftDesktop) btnDraftDesktop.addEventListener('click', function() { handleSaveDraft(this); });
+  
+  const btnDraftMobile = document.getElementById('btn-draft-mobile');
+  if (btnDraftMobile) btnDraftMobile.addEventListener('click', function() { handleSaveDraft(this); });
+
+  const btnContinueDesktop = document.getElementById('btn-continue-desktop') || document.querySelector('header button:nth-of-type(2)');
+  if (btnContinueDesktop) btnContinueDesktop.addEventListener('click', function() { handleContinue(this); });
+  
+  const btnContinueMobile = document.getElementById('btn-continue-mobile');
+  if (btnContinueMobile) btnContinueMobile.addEventListener('click', function() { handleContinue(this); });
+
+  const btnDiscardDesktop = document.getElementById('btn-discard-desktop') || document.querySelector('header button:last-of-type');
+  if (btnDiscardDesktop) btnDiscardDesktop.addEventListener('click', function() { handleDiscard(this); });
+  
+  const btnDiscardMobile = document.getElementById('btn-discard-mobile');
+  if (btnDiscardMobile) btnDiscardMobile.addEventListener('click', function() { handleDiscard(this); });
+
+  loadPricingDraft();
+})();
+</script>
 </body></html>

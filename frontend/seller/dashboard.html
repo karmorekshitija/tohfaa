@@ -155,6 +155,7 @@
               <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant/60">Buyer</th>
               <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant/60">Amount</th>
               <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant/60">Status</th>
+              <th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant/60">Label</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/20" id="recent-orders-body">
@@ -490,6 +491,17 @@
                     <td class="px-lg py-md font-data-price text-on-surface">${formatPaise(order.amount_paise)}</td>
                     <td class="px-lg py-md">
                         ${statusBadge(order.status)}
+                    </td>
+                    <td class="px-lg py-md" onclick="event.stopPropagation();">
+                        ${order.tracking_id ? `
+                            <a href="/api/seller/orders/${order.id || order.internal_id}/label" download class="flex items-center gap-1 bg-[#3D6B4F] text-white hover:bg-[#8FAF82] text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider transition-all duration-200 active:scale-95 w-max">
+                                <span class="material-symbols-outlined text-xs">download</span> Label
+                            </a>
+                        ` : `
+                            <button disabled class="flex items-center gap-1 bg-gray-100 text-gray-400 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider cursor-not-allowed opacity-50 w-max">
+                                <span class="material-symbols-outlined text-xs">download</span> Label
+                            </button>
+                        `}
                     </td>
                 </tr>
             `).join('');

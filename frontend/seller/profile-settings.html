@@ -280,31 +280,7 @@
         </div>
       </div>
 
-      <!-- Weekly Limit -->
-      <div class="bg-surface-bright rounded-xl p-5 border border-outline-variant/25">
-        <label class="field-label" for="weekly-limit">Weekly Limit</label>
-        <div class="flex items-center gap-3 mt-1">
-          <input type="number" id="weekly-limit" class="field-input w-28 text-center text-lg font-bold" min="1" value="200" placeholder="200"/>
-          <span class="text-sm text-on-surface-variant">Max orders per week</span>
-        </div>
-        <p class="field-error" id="err-weekly-limit"></p>
-        <div class="mt-4">
-          <div class="flex items-center justify-between text-xs text-on-surface-variant mb-1">
-            <span id="weekly-usage-label">— sold this week</span>
-            <span id="weekly-usage-pct">—%</span>
-          </div>
-          <div class="progress-bar-track">
-            <div class="progress-bar-fill" id="weekly-progress-bar" style="width:0%"></div>
-          </div>
-        </div>
-      </div>
     </div>
-
-    <!-- Weekly >= Daily validation hint -->
-    <p class="text-xs text-on-surface-variant mt-3 flex items-center gap-1.5">
-      <span class="material-symbols-outlined text-sm">info</span>
-      Weekly limit must be greater than or equal to the daily limit.
-    </p>
 
     <div class="flex justify-end pt-6 mt-4 border-t border-outline-variant/30">
       <button id="save-limits-btn" type="button" class="bg-primary text-on-primary py-2.5 px-10 rounded-full font-semibold text-sm hover:opacity-90 transition-all shadow-sm flex items-center gap-2">
@@ -422,6 +398,7 @@
 
 </div>
 
+
 <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
 <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
   <!-- Ghost watermark -->
@@ -502,6 +479,7 @@
   </style>
 </footer>
 
+
 </seller-layout>
 
 <script>
@@ -548,7 +526,6 @@ if (unsavedLeaveBtn) {
 // Track input changes
 const trackedInputs = [
   'daily-limit',
-  'weekly-limit',
   'bank-account-holder',
   'bank-name',
   'bank-account-number',
@@ -698,37 +675,25 @@ function setProgressBar(id, value, max) {
 function populateSettings(limits, usage = {}) {
   // Set limit inputs
   const daily  = limits.daily_order_limit  || 50;
-  const weekly = limits.weekly_production_capacity || 200;
   document.getElementById('daily-limit').value  = daily;
-  document.getElementById('weekly-limit').value = weekly;
 
   // Usage
   const soldToday = usage.sold_today || 0;
-  const soldWeek  = usage.sold_week || 0;
 
   document.getElementById('daily-usage-label').textContent  = `${soldToday} / ${daily} sold today`;
-  document.getElementById('weekly-usage-label').textContent = `${soldWeek} / ${weekly} sold this week`;
 
   const dpct = setProgressBar('daily-progress-bar', soldToday, daily);
-  const wpct = setProgressBar('weekly-progress-bar', soldWeek, weekly);
 
   document.getElementById('daily-usage-pct').textContent  = `${dpct}%`;
-  document.getElementById('weekly-usage-pct').textContent = `${wpct}%`;
 }
 
 document.getElementById('save-limits-btn').addEventListener('click', async () => {
   // Clear errors
   document.getElementById('err-daily-limit').textContent  = '';
-  document.getElementById('err-weekly-limit').textContent = '';
 
   const daily  = parseInt(document.getElementById('daily-limit').value, 10);
-  const weekly = parseInt(document.getElementById('weekly-limit').value, 10);
   let valid = true;
   if (!daily || daily < 1)  { document.getElementById('err-daily-limit').textContent  = 'Must be at least 1.'; valid = false; }
-  if (!weekly || weekly < 1) { document.getElementById('err-weekly-limit').textContent = 'Must be at least 1.'; valid = false; }
-  if (valid && weekly < daily) {
-    document.getElementById('err-weekly-limit').textContent = 'Weekly limit must be ≥ daily limit.'; valid = false;
-  }
   if (!valid) return;
 
   const btn = document.getElementById('save-limits-btn');
@@ -738,7 +703,7 @@ document.getElementById('save-limits-btn').addEventListener('click', async () =>
     const res = await fetch(`${API}/api/seller/capacity-settings`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-      body: JSON.stringify({ daily_order_limit: daily, weekly_production_capacity: weekly })
+      body: JSON.stringify({ daily_order_limit: daily })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Save failed');

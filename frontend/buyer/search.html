@@ -902,13 +902,18 @@
                            <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                        </button>`;
 
+                const isCustomized = p.listing_type === 'custom';
                 const addToCartBtnHtml = isOwner
                     ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
                            Own Product
                        </button>`
-                    : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
-                           Add to Cart
-                       </button>`;
+                    : isCustomized
+                        ? `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm talk-to-seller-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                               Talk to Seller
+                           </button>`
+                        : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                               Add to Cart
+                           </button>`;
 
                 return `
                     <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='/buyer/product.html?id=${p.id}'" data-product-id="${p.id}">
@@ -944,6 +949,14 @@
                     e.stopPropagation();
                     const id = btn.getAttribute('data-id');
                     await handleAddToCart(id);
+                });
+            });
+
+            resultsGrid.querySelectorAll('.talk-to-seller-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    await handleTalkToSeller(id, btn);
                 });
             });
 
@@ -1019,13 +1032,18 @@
                                    <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                                </button>`;
 
+                        const isCustomized = p.listing_type === 'custom';
                         const addToCartBtnHtml = isOwner
                             ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
                                    Own Product
                                </button>`
-                            : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
-                                   Add to Cart
-                               </button>`;
+                            : isCustomized
+                                ? `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm talk-to-seller-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                                       Talk to Seller
+                                   </button>`
+                                : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                                       Add to Cart
+                                   </button>`;
 
                         return `
                             <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='/buyer/product.html?id=${p.id}'">
@@ -1064,6 +1082,14 @@
                         });
                     });
 
+                    grid.querySelectorAll('.talk-to-seller-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            await handleTalkToSeller(id, btn);
+                        });
+                    });
+
                     grid.querySelectorAll('.toggle-wishlist-btn').forEach(btn => {
                         btn.addEventListener('click', async (e) => {
                             e.stopPropagation();
@@ -1080,6 +1106,38 @@
         }
 
         // Cart and Wishlist operations
+        // Cart and Wishlist operations
+        async function handleTalkToSeller(productId, btn) {
+            const token = sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            btn.disabled = true;
+            const originalText = btn.innerText;
+            btn.innerText = 'Starting chat...';
+
+            try {
+                const res = await apiClient.post('/requests', {
+                    listing_id: Number(productId),
+                    request_type: 'customization',
+                    quantity: 1
+                });
+                if (res.data && res.data.success) {
+                    const convId = res.data.conversation_id;
+                    window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+                } else {
+                    throw new Error("Invalid response");
+                }
+            } catch (err) {
+                console.error("Failed to start customization request:", err);
+                showToast("Failed to start chat. Please try again.", "error");
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
         async function handleAddToCart(productId) {
             const token = sessionStorage.getItem('tohfa_access_token');
             if (!token) {

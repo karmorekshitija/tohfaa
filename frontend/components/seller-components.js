@@ -338,7 +338,7 @@ class SellerTopBar extends HTMLElement {
               <p class="text-[9px] text-[#6B6B6B] uppercase tracking-wider">Artisan Partner</p>
             </div>
             <div class="w-9 h-9 rounded-full overflow-hidden border border-[#E8E2D9] flex-shrink-0 bg-gray-50">
-              <img loading="lazy" id="sidebar-avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Seller" alt="Avatar"/>
+              <img loading="lazy" id="sidebar-avatar" class="w-full h-full object-cover" src="/uploads/avatars/default-avatar.png" alt="Avatar"/>
             </div>
           </div>
           <!-- Hamburger Button: visible only on mobile/tablet (< 1024px) -->

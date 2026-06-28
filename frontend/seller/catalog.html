@@ -104,6 +104,7 @@
     [id^="discount-input-"] {
       width: 48px !important;
       height: 32px !important;
+      min-height: 0 !important;
       font-size: 14px !important;
     }
 
@@ -197,11 +198,11 @@
           </div>
 
           <!-- Category Filter -->
-          <div class="flex flex-wrap items-center gap-sm">
+          <div class="flex items-center gap-sm">
             <span class="font-label-caps text-on-surface-variant text-[11px] font-bold tracking-wider uppercase">Category:</span>
-            <div id="category-chips-container" class="flex flex-wrap gap-2 items-center">
-              <!-- Dynamically populated chips -->
-            </div>
+            <select id="category-select" class="bg-transparent border-none font-body-md text-[#3D6B4F] font-semibold focus:ring-0 cursor-pointer pr-8 py-1 rounded hover:bg-[#8FAF82]/10 transition-colors">
+              <option value="all">All Categories</option>
+            </select>
           </div>
         </div>
 
@@ -837,35 +838,25 @@ async function loadListings(forceFetch = false) {
         }
 
         // Dynamically update unique categories
-        const categoriesContainer = document.getElementById('category-chips-container');
+        const categorySelect = document.getElementById('category-select');
         const categories = new Set();
         allListings.forEach(l => {
             if (l.category) categories.add(l.category);
         });
 
-        if (categoriesContainer) {
-            window.renderCategoryChips = () => {
-                let chipsHtml = `<button type="button" class="category-chip transition-all duration-200 cursor-pointer px-4 py-1.5 text-xs font-semibold rounded-full border ${selectedCategory === 'all' ? 'bg-[#3D6B4F] text-[#F7F3EC] border-[#3D6B4F] hover:bg-[#3D6B4F]/90 shadow-sm' : 'bg-[#F7F3EC]/50 text-[#3D6B4F] border-[#3D6B4F]/20 hover:bg-[#8FAF82]/10 hover:border-[#3D6B4F]/40'}" data-category="all">All Categories</button>`;
-                
-                categories.forEach(cat => {
-                    const isActive = selectedCategory === cat;
-                    chipsHtml += `<button type="button" class="category-chip transition-all duration-200 cursor-pointer px-4 py-1.5 text-xs font-semibold rounded-full border ${isActive ? 'bg-[#3D6B4F] text-[#F7F3EC] border-[#3D6B4F] hover:bg-[#3D6B4F]/90 shadow-sm' : 'bg-[#F7F3EC]/50 text-[#3D6B4F] border-[#3D6B4F]/20 hover:bg-[#8FAF82]/10 hover:border-[#3D6B4F]/40'}" data-category="${cat}">${cat}</button>`;
-                });
-                
-                categoriesContainer.innerHTML = chipsHtml;
+        if (categorySelect) {
+            let optionsHtml = `<option value="all" ${selectedCategory === 'all' ? 'selected' : ''}>All Categories</option>`;
+            categories.forEach(cat => {
+                optionsHtml += `<option value="${cat}" ${selectedCategory === cat ? 'selected' : ''}>${cat}</option>`;
+            });
+            categorySelect.innerHTML = optionsHtml;
 
-                // Add event listeners
-                categoriesContainer.querySelectorAll('.category-chip').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        selectedCategory = btn.getAttribute('data-category');
-                        currentPage = 1;
-                        dismissBulkBar();
-                        window.renderCategoryChips();
-                        applyFiltersAndRender();
-                    });
-                });
+            categorySelect.onchange = (e) => {
+                selectedCategory = e.target.value;
+                currentPage = 1;
+                dismissBulkBar();
+                applyFiltersAndRender();
             };
-            window.renderCategoryChips();
         }
     }
 
@@ -953,7 +944,7 @@ function attachCardListeners() {
                 const listing = allListings.find(l => String(l.listing_id) === String(id));
                 if (listing && listing.status === 'draft') {
                     sessionStorage.setItem('draft_id', id);
-                    window.location.href = '/seller/listing-photos.html';
+                    window.location.href = '/seller/listing-details.html';
                 } else {
                     window.location.href = `/seller/edit-listing.html?id=${id}`;
                 }
@@ -968,7 +959,7 @@ function attachCardListeners() {
             const listing = allListings.find(l => String(l.listing_id) === String(id));
             if (listing && listing.status === 'draft') {
                 sessionStorage.setItem('draft_id', id);
-                window.location.href = '/seller/listing-photos.html';
+                window.location.href = '/seller/listing-details.html';
             } else {
                 window.location.href = `/seller/edit-listing.html?id=${id}`;
             }
@@ -1049,7 +1040,7 @@ async function deleteListing(id, title) {
 // ── Modal helpers ─────────────────────────────────────────────
 function openCreateModal() {
     sessionStorage.removeItem('draft_id');
-    window.location.href = '/seller/listing-photos.html';
+    window.location.href = '/seller/listing-details.html';
 }
 
 // ── Filter change listeners ───────────────────────────────────

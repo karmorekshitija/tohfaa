@@ -16,7 +16,8 @@
       { name: 'Our Story', href: '/admin/our-story.html', icon: 'auto_stories' },
       { name: 'Reports', href: '/admin/reports.html', icon: 'flag' },
       { name: 'Audit Logs', href: '/admin/audit-logs.html', icon: 'history_edu' },
-      { name: 'Payment Health', href: '/admin/payment-health.html', icon: 'health_and_safety' }
+      { name: 'Payment Health', href: '/admin/payment-health.html', icon: 'health_and_safety' },
+      { name: 'Ledger', href: '/admin/ledger.html', icon: 'receipt_long' }
     ];
 
     let navHtml = '';

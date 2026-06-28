@@ -180,13 +180,13 @@
         </div>
         
         <!-- Custom Tabs -->
-        <div class="flex items-center border-b border-outline-variant gap-8 overflow-x-auto no-scrollbar" id="status-tabs">
-            <button data-status="all" class="filter-btn pb-3 px-1 border-b-2 border-primary text-primary font-bold whitespace-nowrap">All</button>
-            <button data-status="pending" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Pending</button>
-            <button data-status="crafting" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Crafting</button>
-            <button data-status="shipped" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Shipped</button>
-            <button data-status="delivered" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Delivered</button>
-            <button data-status="cancelled" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Cancelled</button>
+        <div class="flex flex-nowrap items-center border-b border-outline-variant gap-8 overflow-x-auto no-scrollbar" id="status-tabs" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
+            <button data-status="all" class="filter-btn pb-3 px-1 border-b-2 border-primary text-primary font-bold whitespace-nowrap flex-shrink-0">All</button>
+            <button data-status="pending" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap flex-shrink-0">Pending</button>
+            <button data-status="crafting" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap flex-shrink-0">Crafting</button>
+            <button data-status="shipped" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap flex-shrink-0">Shipped</button>
+            <button data-status="delivered" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap flex-shrink-0">Delivered</button>
+            <button data-status="cancelled" class="filter-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap flex-shrink-0">Cancelled</button>
         </div>
     </header>
 
@@ -244,16 +244,6 @@
 
     <!-- Orders Table/Grid Wrap -->
     <section id="orders-table-wrap" class="flex flex-col gap-4 hidden">
-        <!-- Table Header -->
-        <div class="hidden md:grid grid-cols-12 px-6 py-2 font-label-caps text-on-surface-variant opacity-60 text-xs tracking-wider">
-            <div class="col-span-1 flex justify-center"><input type="checkbox" id="select-all-checkbox" class="rounded border-sage text-primary focus:ring-primary"/></div>
-            <div class="col-span-2">Order Date</div>
-            <div class="col-span-1">Order ID</div>
-            <div class="col-span-2">Buyer</div>
-            <div class="col-span-3">Product Title</div>
-            <div class="col-span-1 text-center">Amount</div>
-            <div class="col-span-2 text-center">Status</div>
-        </div>
         <!-- Order Rows Container -->
         <div id="orders-tbody" class="flex flex-col gap-3"></div>
     </section>
@@ -485,6 +475,18 @@
                     <div class="flex items-center gap-3 text-xs text-on-surface-variant border-t border-outline-variant/20 pt-2">
                         <span class="font-bold text-primary" style="font-family:'Space Mono',monospace">${formatPaise(o.total_paise)}</span>
                         <span class="ml-auto text-[10px]">${formatDate(o.order_date)}</span>
+                    </div>
+                    <!-- Row 4: Label action button -->
+                    <div class="flex items-center justify-end mt-1 pt-2 border-t border-outline-variant/10" onclick="event.stopPropagation();">
+                        ${o.tracking_id ? `
+                            <a href="/api/seller/orders/${o.internal_id}/label" download class="flex items-center gap-1 bg-[#3D6B4F] text-white hover:bg-[#8FAF82] text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider transition-all duration-200 active:scale-95">
+                                <span class="material-symbols-outlined text-[14px]">download</span> Download Label
+                            </a>
+                        ` : `
+                            <button disabled class="flex items-center gap-1 bg-gray-100 text-gray-400 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider cursor-not-allowed opacity-50">
+                                <span class="material-symbols-outlined text-[14px]">download</span> Label Not Ready
+                            </button>
+                        `}
                     </div>
                 </div>
             `).join('');

@@ -434,32 +434,64 @@
     const banner = document.getElementById('intake-summary-banner');
     if (!banner) return;
 
-    const fields = data.collected_fields || {};
+    // Prefer intake_summary if intake is complete; fall back to collected_fields
+    let fields = {};
+    let useLabel = data.request_type || 'customization';
+
+    if (data.intake_summary) {
+      try {
+        const summary = typeof data.intake_summary === 'string'
+          ? JSON.parse(data.intake_summary)
+          : data.intake_summary;
+        // Build display-fields from questions_and_answers array if present
+        if (Array.isArray(summary.questions_and_answers)) {
+          summary.questions_and_answers.forEach(qa => {
+            if (qa.answer !== null && qa.answer !== undefined && qa.answer !== '') {
+              fields[qa.question] = qa.answer;
+            }
+          });
+        } else {
+          fields = data.collected_fields || {};
+        }
+      } catch (e) {
+        fields = data.collected_fields || {};
+      }
+    } else {
+      fields = data.collected_fields || {};
+    }
+
     const hasFields = Object.keys(fields).length > 0;
 
-    if (hasFields) {
-      banner.classList.remove('hidden');
-      document.getElementById('intake-summary-type').textContent = (data.request_type || 'customization').toUpperCase();
-
-      const fieldsContainer = document.getElementById('intake-summary-fields');
-      fieldsContainer.innerHTML = Object.entries(fields).map(([key, val]) => {
-        let label = key.replace(/_/g, ' ');
-        label = label.charAt(0).toUpperCase() + label.slice(1);
-
-        let displayVal = val;
-        if (Array.isArray(val)) {
-          displayVal = val.join(', ');
-        }
-        return `
-          <div class="flex flex-col">
-            <span class="text-[10px] text-gray-400 font-medium">${label}</span>
-            <span class="text-xs font-semibold text-[#3D6B4F]">${displayVal}</span>
-          </div>
-        `;
-      }).join('');
-    } else {
+    if (!hasFields) {
       banner.classList.add('hidden');
+      return;
     }
+
+    banner.classList.remove('hidden');
+    document.getElementById('intake-summary-type').textContent = useLabel.toUpperCase();
+
+    // Human-readable label map
+    const FIELD_LABELS = {
+      quantity: 'Qty',
+      customization_type: 'Customization',
+      color_material: 'Color / Material',
+      inspiration_reference: 'Reference',
+      other_notes: 'Notes',
+      needed_by_date: 'Needed By'
+    };
+
+    const fieldsContainer = document.getElementById('intake-summary-fields');
+    fieldsContainer.innerHTML = Object.entries(fields).map(([key, val]) => {
+      const label = FIELD_LABELS[key] || (key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+      let displayVal = Array.isArray(val) ? val.join(', ') : String(val);
+      if (displayVal.length > 60) displayVal = displayVal.slice(0, 60) + '…';
+      return `
+        <div class="flex flex-col">
+          <span class="text-[10px] text-gray-400 font-medium">${label}</span>
+          <span class="text-xs font-semibold text-[#3D6B4F]">${displayVal}</span>
+        </div>
+      `;
+    }).join('');
   }
 
   function getDecodedToken() {

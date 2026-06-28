@@ -498,6 +498,39 @@
 
     const isWishlistUpdating = {};
 
+    async function handleTalkToSeller(productId, btn) {
+        if (!isLoggedIn) {
+            window.Toast?.show("Please log in to contact the seller", "error");
+            setTimeout(() => {
+                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            }, 1500);
+            return;
+        }
+
+        btn.disabled = true;
+        const originalText = btn.innerText;
+        btn.innerText = 'Starting chat...';
+
+        try {
+            const res = await apiClient.post('/requests', {
+                listing_id: Number(productId),
+                request_type: 'customization',
+                quantity: 1
+            });
+            if (res.data && res.data.success) {
+                const convId = res.data.conversation_id;
+                window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+            } else {
+                throw new Error("Invalid response");
+            }
+        } catch (err) {
+            console.error("Failed to start customization request:", err);
+            window.Toast?.show("Failed to start chat. Please try again.", "error");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+
     async function handleAddToCart(productId) {
         if (!isLoggedIn) {
             window.Toast?.show("Please log in to purchase items", "error");
@@ -619,13 +652,18 @@
                    <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
                </button>`;
 
+        const isCustomized = product.listing_type === 'custom';
         const addToCartBtnHtml = isOwner
             ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
                    Own Product
                </button>`
-            : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
-                   Add to Cart
-               </button>`;
+            : isCustomized
+                ? `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm talk-to-seller-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                       Talk to Seller
+                   </button>`
+                : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                       Add to Cart
+                   </button>`;
 
         card.innerHTML = `
             <div>
@@ -667,6 +705,14 @@
             addToCartBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 await handleAddToCart(product.id);
+            });
+        }
+
+        const talkToSellerBtn = card.querySelector('.talk-to-seller-btn');
+        if (talkToSellerBtn) {
+            talkToSellerBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await handleTalkToSeller(product.id, talkToSellerBtn);
             });
         }
 

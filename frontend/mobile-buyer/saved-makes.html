@@ -383,6 +383,39 @@
         } catch(e){}
     }
 
+    async function handleTalkToSeller(productId, btn) {
+        if (!isLoggedIn) {
+            Toast.show("Please log in to contact the seller", "error");
+            setTimeout(() => {
+                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            }, 1500);
+            return;
+        }
+
+        btn.disabled = true;
+        const originalText = btn.innerText;
+        btn.innerText = 'Starting chat...';
+
+        try {
+            const res = await apiClient.post('/requests', {
+                listing_id: Number(productId),
+                request_type: 'customization',
+                quantity: 1
+            });
+            if (res.data && res.data.success) {
+                const convId = res.data.conversation_id;
+                window.location.href = `./chat.html?conversationId=${convId}`;
+            } else {
+                throw new Error("Invalid response");
+            }
+        } catch (err) {
+            console.error("Failed to start customization request:", err);
+            Toast.show("Failed to start chat. Please try again.", "error");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+
     async function loadWishlist() {
         const gridSection = document.getElementById('makes-grid-section');
         const grid = document.getElementById('makes-grid');
@@ -417,13 +450,18 @@
                                <span class="material-symbols-outlined active-heart text-[14px] sm:text-[16px] md:text-[20px] text-red-500 transition-all" style="font-variation-settings: 'FILL' 1;">favorite</span>
                            </button>`;
 
+                    const isCustomized = item.listing_type === 'custom';
                     const addToCartBtnHtml = isOwner
                         ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
                                Own Product
                            </button>`
-                        : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" onclick="event.stopPropagation();" ${item.in_cart ? 'disabled' : ''}>
-                               ${item.in_cart ? 'Added ✦' : 'Add to cart'}
-                           </button>`;
+                        : isCustomized
+                            ? `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm talk-to-seller-btn" data-id="${item.product_id}" onclick="event.stopPropagation();">
+                                   Talk to Seller
+                               </button>`
+                            : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn ${item.in_cart ? 'bg-secondary text-white border-transparent cursor-default font-semibold' : ''}" data-id="${item.product_id}" onclick="event.stopPropagation();" ${item.in_cart ? 'disabled' : ''}>
+                                   ${item.in_cart ? 'Added ✦' : 'Add to cart'}
+                               </button>`;
 
                     return `
                         <div class="bg-[#F7F3EC] p-2.5 md:p-4 rounded-xl border border-outline-variant hover:shadow-[0_8px_30px_rgb(58,51,40,0.08)] transition-all group flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${item.product_id}'">
@@ -501,6 +539,15 @@
                             btn.innerText = 'Add to cart';
                             console.error('Error adding to cart:', err);
                         }
+                    });
+                });
+
+                grid.querySelectorAll('.talk-to-seller-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const id = btn.getAttribute('data-id');
+                        await handleTalkToSeller(id, btn);
                     });
                 });
             }

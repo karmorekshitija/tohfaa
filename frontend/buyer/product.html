@@ -238,6 +238,14 @@
             </div>
         </section>
 
+        <!-- You May Also Like Section -->
+        <section class="mt-16 border-t border-outline-variant/30 pt-12 hidden" id="recommendations-section">
+            <h2 class="font-headline-lg text-primary text-2xl mb-8" style="font-family: 'Playfair Display', serif;">You May Also Like</h2>
+            <div id="recommendations-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+                <!-- Dynamically rendered products -->
+            </div>
+        </section>
+
         <!-- Product Error State -->
         <div id="product-error-container" class="hidden text-center py-24">
             <span class="material-symbols-outlined text-6xl text-error mb-4">error</span>
@@ -349,6 +357,125 @@
       .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
       .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
     }
+
+    /* Recommendations Ribbon Styles */
+    .ribbon-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 20;
+    }
+    .ribbon-tag {
+        position: absolute;
+        top: 22px;
+        left: -32px;
+        width: 160px;
+        transform: rotate(-45deg);
+        text-align: center;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #ffffff;
+        line-height: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+    .ribbon-tag::before, .ribbon-tag::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        border-top: 3px solid rgba(0,0,0,0.4);
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+    }
+    .ribbon-tag::before { left: 0; }
+    .ribbon-tag::after { right: 0; }
+
+    .ribbon-sponsored {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .ribbon-bestseller {
+        background: #C85A32;
+    }
+    .ribbon-custom {
+        background: #B492B7;
+    }
+    .ribbon-bestseller-double {
+        top: 13px !important;
+        left: -41px !important;
+    }
+    .ribbon-custom-double {
+        top: 30px !important;
+        left: -24px !important;
+    }
+
+    /* Redefine Ribbon to Flat top-left pills */
+    .ribbon-wrapper {
+        position: absolute !important;
+        top: 8px !important;
+        left: 8px !important;
+        width: auto !important;
+        height: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        z-index: 20 !important;
+        overflow: visible !important;
+        pointer-events: none !important;
+    }
+
+    @media (min-width: 640px) {
+        .ribbon-wrapper {
+            top: 12px !important;
+            left: 12px !important;
+        }
+    }
+
+    .ribbon-tag {
+        position: static !important;
+        width: auto !important;
+        transform: none !important;
+        text-align: center !important;
+        font-size: 9px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.05em !important;
+        color: #ffffff !important;
+        line-height: 1 !important;
+        padding: 4px 8px !important;
+        border-radius: 9999px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        display: inline-block !important;
+        white-space: nowrap !important;
+    }
+
+    .ribbon-tag::before,
+    .ribbon-tag::after {
+        display: none !important;
+    }
+
+    .ribbon-bestseller-double,
+    .ribbon-custom-double {
+        top: auto !important;
+        left: auto !important;
+        position: static !important;
+    }
+
+    /* Force Filled White Heart with Green Border style for card wishlist buttons */
+    .toggle-rec-wishlist-btn .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1 !important;
+        -webkit-text-stroke: 1.5px #3D6B4F !important;
+        color: #ffffff !important;
+    }
+
+    .toggle-rec-wishlist-btn[data-wishlisted="true"] .material-symbols-outlined,
+    .toggle-rec-wishlist-btn .text-red-500 {
+        -webkit-text-stroke: 1.5px #ef4444 !important;
+        color: #ef4444 !important;
+    }
   </style>
 </footer>
 
@@ -452,11 +579,21 @@
 
                     // Update UI Info
                     document.getElementById('product-name').innerText = product.name;
-                    document.getElementById('product-description').innerText = product.description || 'No description available.';
+                    document.getElementById('product-description').innerText = product.description || 'Crafted with love and care, this piece is a heartfelt creation by an independent artisan.\nEvery detail is thoughtfully made by hand — a little treasure, made just for you.';
                     
                     const subcontainer = document.getElementById('product-subcategories-container');
                     if (subcontainer) {
                         subcontainer.innerHTML = '';
+                        
+                        // Render Category first
+                        if (product.category && product.category.name) {
+                            const catSpan = document.createElement('span');
+                            catSpan.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary text-white border border-primary/20 font-body";
+                            catSpan.textContent = `Category: ${product.category.name}`;
+                            subcontainer.appendChild(catSpan);
+                        }
+                        
+                        // Render Subcategories
                         if (product.subcategories && product.subcategories.length > 0) {
                             product.subcategories.forEach(sub => {
                                 const span = document.createElement('span');
@@ -1185,6 +1322,7 @@
         function showErrorState() {
             document.getElementById('product-details-container').classList.add('hidden');
             document.getElementById('reviews-section')?.classList.add('hidden');
+            document.getElementById('recommendations-section')?.classList.add('hidden');
             document.getElementById('product-error-container').classList.remove('hidden');
         }
 
@@ -1294,11 +1432,250 @@
                 }
             }
         }
+        // ── Recommendations ("You May Also Like") Helper Functions ──────────────
+        function isProductOwned(sellerId) {
+            try {
+                const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
+                return user && Number(user.id) === Number(sellerId);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function getRecommendationCardHtml(p) {
+            const imageUrl = p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
+            const price = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
+
+            let ribbonHtml = '';
+            if (p.product_tag === 'Sponsored' || p.type === 'sponsored') {
+                ribbonHtml = `
+                    <div class="ribbon-wrapper">
+                        <div class="ribbon-tag ribbon-sponsored">Sponsored</div>
+                    </div>
+                `;
+            } else if (p.is_bestseller && p.listing_type === 'custom') {
+                ribbonHtml = `
+                    <div class="ribbon-wrapper">
+                        <div class="ribbon-tag ribbon-bestseller ribbon-bestseller-double">BEST SELLER</div>
+                        <div class="ribbon-tag ribbon-custom ribbon-custom-double">CUSTOM</div>
+                    </div>
+                `;
+            } else if (p.is_bestseller) {
+                ribbonHtml = `
+                    <div class="ribbon-wrapper">
+                        <div class="ribbon-tag ribbon-bestseller">BEST SELLER</div>
+                    </div>
+                `;
+            } else if (p.listing_type === 'custom') {
+                ribbonHtml = `
+                    <div class="ribbon-wrapper">
+                        <div class="ribbon-tag ribbon-custom">CUSTOM</div>
+                    </div>
+                `;
+            }
+
+            const isOwner = isProductOwned(p.seller_id);
+            const wishlistBtnHtml = isOwner
+                ? `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent opacity-50 cursor-not-allowed flex items-center justify-center z-10" disabled onclick="event.stopPropagation();">
+                       <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] text-secondary" style="font-variation-settings: 'FILL' 0;">favorite</span>
+                   </button>`
+                : `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-rec-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${p.id}" data-wishlisted="${p.is_wishlisted}" onclick="event.stopPropagation();">
+                       <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${p.is_wishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${p.is_wishlisted ? 1 : 0};">favorite</span>
+                   </button>`;
+
+            const isCustomized = p.listing_type === 'custom';
+            const addToCartBtnHtml = isOwner
+                ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
+                       Own Product
+                   </button>`
+                : isCustomized
+                    ? `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm talk-to-seller-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                           Talk to Seller
+                       </button>`
+                    : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-rec-to-cart-btn" data-id="${p.id}" onclick="event.stopPropagation();">
+                           Add to Cart
+                       </button>`;
+
+            return `
+                <div class="group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer relative" onclick="window.location.href='product.html?id=${p.id}'">
+                    <div>
+                        <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                            ${ribbonHtml}
+                            <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${imageUrl}" alt="${p.name}" loading="lazy">
+                            ${wishlistBtnHtml}
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="font-bold text-lg text-[#C8973A]">${price}</span>
+                                <div class="flex items-center gap-1 text-xs text-[#605e57]">
+                                    <span class="text-[#C8973A] font-bold">★</span>
+                                    <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                    <span>(${parseInt(p.review_count || 0, 10)})</span>
+                                </div>
+                            </div>
+                            <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                            <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
+                        </div>
+                    </div>
+                    <div class="w-full font-['DM_Sans']">
+                        ${addToCartBtnHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleRecommendationTalkToSeller(productId, btn) {
+            const token = sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            btn.disabled = true;
+            const originalText = btn.innerText;
+            btn.innerText = 'Starting chat...';
+
+            try {
+                const res = await apiClient.post('/requests', {
+                    listing_id: Number(productId),
+                    request_type: 'customization',
+                    quantity: 1
+                });
+                if (res.data && res.data.success) {
+                    const convId = res.data.conversation_id;
+                    window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+                } else {
+                    throw new Error("Invalid response");
+                }
+            } catch (err) {
+                console.error("Failed to start customization request:", err);
+                window.Toast?.show("Failed to start chat. Please try again.", "error");
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        async function handleRecommendationAddToCart(productId) {
+            const token = sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            try {
+                const res = await apiClient.post('/cart/items', { product_id: Number(productId), quantity: 1 });
+                if (res.data && res.data.success) {
+                    window.Toast?.show("Added to cart successfully!", "success");
+                }
+            } catch (err) {
+                console.error("Cart error:", err);
+            }
+        }
+
+        async function handleRecommendationToggleWishlist(productId, isWishlisted, btn) {
+            const token = sessionStorage.getItem('tohfa_access_token');
+            if (!token) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            try {
+                const iconEl = btn.querySelector('.material-symbols-outlined');
+                if (isWishlisted) {
+                    const res = await apiClient.delete(`/wishlist/${productId}`);
+                    if (res.data && res.data.success) {
+                        btn.setAttribute('data-wishlisted', 'false');
+                        if (iconEl) {
+                            iconEl.classList.remove('fill-icon', 'text-red-500');
+                            iconEl.classList.add('text-secondary');
+                            iconEl.style.fontVariationSettings = "'FILL' 0";
+                        }
+                        window.Toast?.show("Removed from wishlist!", "success");
+                    }
+                } else {
+                    const res = await apiClient.post(`/wishlist/${productId}`);
+                    if (res.data && res.data.success) {
+                        btn.setAttribute('data-wishlisted', 'true');
+                        if (iconEl) {
+                            iconEl.classList.add('fill-icon', 'text-red-500');
+                            iconEl.classList.remove('text-secondary');
+                            iconEl.style.fontVariationSettings = "'FILL' 1";
+                        }
+                        window.Toast?.show("Added to wishlist!", "success");
+                    }
+                }
+            } catch (err) {
+                console.error("Wishlist error:", err);
+            }
+        }
+
+        async function loadRecommendations() {
+            const section = document.getElementById('recommendations-section');
+            const grid = document.getElementById('recommendations-grid');
+            if (!section || !grid || !productId) return;
+
+            section.classList.remove('hidden');
+            grid.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-20">
+                    <div class="relative w-10 h-10">
+                        <div class="absolute inset-0 border-4 border-primary/10 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                    <p class="mt-4 text-outline text-sm italic">Gathering recommendations...</p>
+                </div>
+            `;
+
+            try {
+                const res = await apiClient.get(`/products/${productId}/recommendations`);
+                if (res.data && res.data.success) {
+                    const products = res.data.data || [];
+                    if (products.length === 0) {
+                        section.classList.add('hidden');
+                        return;
+                    }
+
+                    grid.innerHTML = products.map(p => getRecommendationCardHtml(p)).join('');
+
+                    grid.querySelectorAll('.add-rec-to-cart-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            await handleRecommendationAddToCart(id);
+                        });
+                    });
+
+                    grid.querySelectorAll('.talk-to-seller-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            await handleRecommendationTalkToSeller(id, btn);
+                        });
+                    });
+
+                    grid.querySelectorAll('.toggle-rec-wishlist-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            const wishlisted = btn.getAttribute('data-wishlisted') === 'true';
+                            await handleRecommendationToggleWishlist(id, wishlisted, btn);
+                        });
+                    });
+                } else {
+                    section.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error("Failed to load recommendations:", err);
+                section.classList.add('hidden');
+            }
+        }
         // ─────────────────────────────────────────────────────────────────────────
 
         window.addEventListener('DOMContentLoaded', async () => {
             await checkAuthState();
             await loadProduct();
+            if (product) {
+                await loadRecommendations();
+            }
             setupQuantityControls();
             setupReviewForm();
 

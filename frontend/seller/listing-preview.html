@@ -58,26 +58,26 @@
     <!-- Connecting Line -->
     <div class="absolute top-1/2 left-8 right-8 h-[2px] bg-sage/20 -translate-y-1/2 z-0"></div>
     <div class="absolute top-1/2 left-8 w-[80%] h-[2px] bg-forest -translate-y-1/2 z-0 transition-all duration-500"></div>
-    <!-- Step 1: Photos (Completed) -->
-    <a href="listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
-      <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
-        <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
-      </div>
-      <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Photos</span>
-    </a>
-    <!-- Step 2: Details (Completed) -->
+    <!-- Step 1: Details (Completed) -->
     <a href="listing-details.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Details</span>
     </a>
-    <!-- Step 3: Pricing (Completed) -->
+    <!-- Step 2: Pricing (Completed) -->
     <a href="listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
       <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
         <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
       </div>
       <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Pricing</span>
+    </a>
+    <!-- Step 3: Photos (Completed) -->
+    <a href="listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
+      <div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-forest">
+        <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Photos</span>
     </a>
     <!-- Step 4: Shipping (Completed) -->
     <a href="listing-shipping.html" class="relative z-10 flex flex-col items-center gap-2 text-primary cursor-pointer hover:opacity-80 transition-opacity">
@@ -167,7 +167,6 @@
       <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
         <div><span class="text-on-surface-variant">Price:</span> <span id="summary-price" class="font-bold text-primary"></span></div>
         <div><span class="text-on-surface-variant">Stock:</span> <span id="summary-stock" class="font-bold"></span></div>
-        <div><span class="text-on-surface-variant">Pre-booking Limit:</span> <span id="summary-prebooking" class="font-bold">Disabled</span></div>
       </div>
     </div>
 
@@ -230,18 +229,7 @@
 </div>
 </div>
 </div>
-<div class="p-5 bg-tertiary-container/10 border border-tertiary-container/30 rounded-2xl relative overflow-hidden">
-<div class="flex items-start gap-3 relative z-10">
-<span class="material-symbols-outlined text-tertiary text-[20px]">smart_toy</span>
-<div>
-<p class="text-xs font-bold text-tertiary mb-1 uppercase tracking-tight">ZAI Tip</p>
-<p class="text-xs leading-relaxed text-on-tertiary-container">
-                                This listing has a high completeness score. Adding a <span class="font-bold underline">process video</span> could boost engagement by <span class="font-data-mono font-bold">15%</span>.
-                            </p>
-</div>
-</div>
-<div class="absolute -bottom-4 -right-4 w-20 h-20 bg-tertiary/5 rounded-full blur-xl"></div>
-</div>
+
 <div class="mt-auto p-4 border border-outline-variant/40 rounded-xl bg-white/60 flex items-center gap-3">
 <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
 <span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
@@ -251,15 +239,7 @@
 </aside>
 </div>
 <!-- Actions Footer Bar Removed -->
-<!-- Character Accent -->
-<div class="absolute bottom-[80px] right-[40px] pointer-events-none z-50">
-<div class="relative">
-<img alt="Decorative bunny illustration" class="w-16 h-16 object-cover rounded-full border-2 border-white shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4_x2wIjDdteYrWgD93YTSJPuEX7z1rKlywbqeFpuuK5Sow4SS1bAOmkJVsyvqqrZwwR4RmeoXGJW7s6Hk8BH4O9uQAT50ZRoif3mOlnFlfA4FrhlIVzQ8zUiWLQk_9ZZeccuJFTDF8IgdYwHqKP36gisDJZdp6qHL9wdtnTXZ8loRASALTJu_O881MuINZ-ePN5smkEzyeWrg-lOMcdalDoNb4TlxVnMlfDs995Xd1ChbLYDK064H7mS3dbcKJd0Vl3NnhFfDj5Y" loading="lazy" />
-<div class="absolute -top-10 -right-8 bg-white px-3 py-1 rounded-full shadow-sm border border-secondary/20">
-<p class="text-[10px] font-bold text-secondary italic">"Almost there!"</p>
-</div>
-</div>
-</div>
+
 </div>
 </seller-layout>
 <script>
@@ -276,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
   const draftId = sessionStorage.getItem('draft_id');
   const API_BASE = window.location.origin;
+  let currentListing = null;
   
   // 1. Auth check: if no token is found, redirect to login
   if (!token && (window.location.protocol.startsWith('http'))) {
@@ -432,6 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadDraftDetails() {
     if (!draftId) {
       showToast('No active draft found. Please start from Step 1.', 'error');
+      setTimeout(() => {
+        window.location.href = 'listing-details.html';
+      }, 1500);
       return;
     }
     try {
@@ -441,6 +425,35 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error('Failed to fetch draft details');
       const resp = await res.json();
       const listing = resp.data || resp;
+
+      if (!listing.title || !listing.category) {
+        showToast('Please complete the Details step first.', 'error');
+        setTimeout(() => {
+          window.location.href = 'listing-details.html';
+        }, 1500);
+        return;
+      }
+      if (!listing.price_paise || listing.price_paise <= 0) {
+        showToast('Please complete the Pricing step first.', 'error');
+        setTimeout(() => {
+          window.location.href = 'listing-pricing-a.html';
+        }, 1500);
+        return;
+      }
+      if (!listing.photos || listing.photos.length === 0) {
+        showToast('Please upload at least one product photo first.', 'error');
+        setTimeout(() => {
+          window.location.href = 'listing-photos.html';
+        }, 1500);
+        return;
+      }
+      if (!listing.shipping_method) {
+        showToast('Please complete the Shipping step first.', 'error');
+        setTimeout(() => {
+          window.location.href = 'listing-shipping.html';
+        }, 1500);
+        return;
+      }
 
       // Populate elements
       document.getElementById('preview-title').textContent = listing.title || 'Untitled Listing';
@@ -642,8 +655,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.getElementById('summary-stock').textContent = listing.stock_count || 0;
       
-      const pbLimit = listing.allow_prebooking ? (listing.prebooking_window === '1_week' ? '1 Week' : (listing.prebooking_window === '2_weeks' ? '2 Weeks' : (listing.prebooking_window === '1_month' ? '1 Month' : listing.prebooking_window))) : 'Disabled';
-      document.getElementById('summary-prebooking').textContent = pbLimit;
+
 
       const addressNames = {
         'studio': "Kshitija's Studio",
@@ -662,6 +674,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Save title in sessionStorage for success screen
       sessionStorage.setItem('published_title', listing.title || 'Untitled Study');
+
+      currentListing = listing;
+      togglePublishGuard(photoCount);
     } catch (err) {
       console.error(err);
       showToast('Error loading draft details.', 'error');
@@ -669,9 +684,50 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Publish flow
+  // Toggle publish buttons state and warning badge
+  function togglePublishGuard(photoCount) {
+    const headerPublishBtn = document.getElementById('header-publish-btn');
+    const summaryPublishBtn = document.getElementById('summary-publish-btn');
+    
+    // Remove existing warning messages if any
+    document.querySelectorAll('.publish-warning-msg').forEach(el => el.remove());
+    
+    if (photoCount === 0) {
+      if (headerPublishBtn) {
+        headerPublishBtn.disabled = true;
+        headerPublishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+      if (summaryPublishBtn) {
+        summaryPublishBtn.disabled = true;
+        summaryPublishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // Add a warning message below the summary publish button
+        const warningMsg = document.createElement('p');
+        warningMsg.className = 'text-xs text-[#BA1A1A] font-medium mt-2 text-center publish-warning-msg';
+        warningMsg.textContent = '⚠ Upload at least 1 photo to publish';
+        summaryPublishBtn.parentNode.insertBefore(warningMsg, summaryPublishBtn.nextSibling);
+      }
+    } else {
+      if (headerPublishBtn) {
+        headerPublishBtn.disabled = false;
+        headerPublishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+      if (summaryPublishBtn) {
+        summaryPublishBtn.disabled = false;
+        summaryPublishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+  }
+
+  // Publish flow
   async function publishListing() {
     if (!draftId) {
       showToast('No listing draft ID found.', 'error');
+      return;
+    }
+    const photoCount = currentListing ? (currentListing.photos ? currentListing.photos.length : 0) : 0;
+    if (photoCount === 0) {
+      showToast('Please upload at least one product photo before publishing.', 'error');
       return;
     }
     try {
