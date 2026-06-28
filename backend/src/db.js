@@ -319,6 +319,28 @@ async function initDb() {
     // Add bank_name to seller_payout_accounts if not exists
     await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
 
+    // Create seller_applications table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS seller_applications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        full_name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        whatsapp TEXT,
+        instagram_handle TEXT,
+        bio TEXT,
+        categories TEXT[] NOT NULL,
+        agreed_terms BOOLEAN NOT NULL DEFAULT false,
+        agreed_handmade BOOLEAN NOT NULL DEFAULT false,
+        status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+        admin_notes TEXT,
+        submitted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        reviewed_at TIMESTAMP WITH TIME ZONE,
+        reviewed_by INTEGER REFERENCES admin_users(id) ON DELETE SET NULL
+      )
+    `);
+
     // Add whatsapp fields to sellers table if not exists
     await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
     await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');

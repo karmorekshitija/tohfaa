@@ -119,9 +119,16 @@
 <span class="font-body-md text-on-surface-variant">Subtotal</span>
 <span id="summary-subtotal" class="font-data-price text-on-surface">₹0.00</span>
 </div>
-<div class="flex justify-between items-center">
+<div class="flex justify-between items-start">
+<div>
 <span class="font-body-md text-on-surface-variant">Shipping</span>
+<p id="summary-shipping-note" class="font-body-md text-[11px] text-sage mt-xs"></p>
+</div>
 <span id="summary-shipping" class="font-data-price text-on-surface">₹0.00</span>
+</div>
+<div id="summary-shipping-discount-row" class="flex justify-between items-center hidden">
+  <span class="font-body-md text-primary text-sm">Special Shipping Discount</span>
+  <span id="summary-shipping-discount" class="font-data-price text-primary text-sm font-bold"></span>
 </div>
 <div class="h-[1px] bg-outline-variant/30 my-md"></div>
 <div class="flex justify-between items-center">
@@ -358,10 +365,7 @@
 
                 // Update summary
                 document.getElementById('cart-badge-count').innerText = `${item_count} ${item_count === 1 ? 'ITEM' : 'ITEMS'}`;
-                document.getElementById('summary-subtotal').innerText = formatPaise(subtotal_paise);
-                document.getElementById('summary-shipping').innerText = formatPaise(shipping_paise);
-                document.getElementById('summary-total').innerText = formatPaise(total_paise);
-                document.getElementById('btn-total').innerText = formatPaise(total_paise);
+                renderShippingSummary(items);
             }
         } catch (err) {
             console.error("Error fetching cart:", err);
@@ -468,6 +472,47 @@
         }).join('');
     }
 
+    function renderShippingSummary(items) {
+        const availableItems = items.filter(i => i.available);
+
+        // Subtotal
+        const subtotalPaise = availableItems.reduce((sum, ci) => sum + ci.price_paise * ci.quantity, 0);
+
+        // Shipping calculation
+        const uniqueSellers = new Set(availableItems.map(ci => ci.seller_id));
+        const sellerCount = uniqueSellers.size;
+        const rawShippingPaise = sellerCount * 7900;
+        const maxShippingPaise = 25000;
+        const shippingPaise = Math.min(rawShippingPaise, maxShippingPaise);
+        const discountPaise = rawShippingPaise > maxShippingPaise ? rawShippingPaise - maxShippingPaise : 0;
+
+        // Grand total
+        const totalPaise = subtotalPaise + shippingPaise;
+
+        // Update DOM
+        document.getElementById('summary-subtotal').innerText = formatPaise(subtotalPaise);
+        document.getElementById('summary-shipping').innerText = formatPaise(shippingPaise);
+
+        const shippingNote = document.getElementById('summary-shipping-note');
+        if (shippingNote) {
+            shippingNote.innerText = sellerCount > 1
+                ? `₹79 × ${sellerCount} sellers`
+                : `₹79 (1 seller)`;
+        }
+
+        const discountRow = document.getElementById('summary-shipping-discount-row');
+        const discountEl = document.getElementById('summary-shipping-discount');
+        if (discountPaise > 0 && discountRow && discountEl) {
+            discountEl.innerText = `−${formatPaise(discountPaise)}`;
+            discountRow.classList.remove('hidden');
+        } else if (discountRow) {
+            discountRow.classList.add('hidden');
+        }
+
+        document.getElementById('summary-total').innerText = formatPaise(totalPaise);
+        const btnTotal = document.getElementById('btn-total');
+        if (btnTotal) btnTotal.innerText = formatPaise(totalPaise);
+    }
 
     async function updateQty(id, newQty) {
         if (newQty <= 0) {

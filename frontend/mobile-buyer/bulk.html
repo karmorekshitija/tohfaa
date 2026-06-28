@@ -233,13 +233,43 @@
               <h4 style="font-family:'Playfair Display',serif;font-size:14px;line-height:1.3;color:#1f1b15;margin:0 0 4px;">${name}</h4>
               <p style="font-family:'Space Mono',monospace;font-size:12px;color:#C8973A;font-weight:700;margin:0 0 10px;">${price}</p>
               <button style="width:100%;padding:9px;background:#255338;color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;"
-                onclick="event.stopPropagation();window.location.href='/mobile-buyer/product.html?id=${p.listing_id || p.id}'">
+                onclick="event.stopPropagation(); requestSellerFromCard('${p.listing_id || p.id}', this)">
                 Request seller
               </button>
             </div>
           </div>`;
       }).join('');
     }
+
+    window.requestSellerFromCard = async function(listingId, btn) {
+      if (!getTohfaToken()) {
+        window.location.href = '/auth/login.html';
+        return;
+      }
+      btn.disabled = true;
+      btn.innerText = 'Sending...';
+      let success = false;
+      try {
+        const res = await apiClient.post('/requests', {
+          listing_id: Number(listingId),
+          request_type: 'bulk',
+          quantity: 1
+        });
+        const convId = res.data.conversation_id;
+        success = true;
+        window.location.href = `/mobile-buyer/chat.html?conversationId=${convId}`;
+      } catch (e) {
+        console.error("Failed to send request:", e);
+        if (window.Toast) {
+          window.Toast.show("Failed to send request. Please try again.", "error");
+        }
+      } finally {
+        if (!success) {
+          btn.disabled = false;
+          btn.innerText = 'Request seller';
+        }
+      }
+    };
 
     window.filterMobile = function(slug) {
       // Reset all pills

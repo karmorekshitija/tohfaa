@@ -160,7 +160,7 @@
             <p class="font-playfair text-lg font-bold">Join the Studio</p>
             <p class="text-xs text-white/80 mt-1">Become a certified Tohfa Artisan and share your craft with the world.</p>
         </div>
-        <button onclick="window.location.href='become-seller.html'" class="mt-4 bg-white text-tertiary font-bold text-xs px-4 py-2 rounded-full self-start active:scale-95 transition-transform">
+        <button class="mt-4 bg-white text-tertiary font-bold text-xs px-4 py-2 rounded-full self-start active:scale-95 transition-transform">
             Apply Now
         </button>
         <div class="absolute -right-4 -bottom-4 opacity-10">
@@ -223,6 +223,27 @@
     import { logout } from '/src/utils/auth.js';
 
     let profileData = null;
+
+    async function handleSellerEntryPoint(e) {
+        if (e) e.preventDefault();
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html?next=become-seller';
+            return;
+        }
+        try {
+            const res = await apiClient.get('/profile/me');
+            if (res.data?.success) {
+                const role = res.data.data.role;
+                if (role === 'seller') {
+                    window.location.href = '/seller/dashboard.html';
+                    return;
+                }
+            }
+        } catch(err) {}
+        window.location.href = '/mobile-buyer/become-seller.html';
+    }
+    window.handleSellerEntryPoint = handleSellerEntryPoint;
 
     async function init() {
         const token = sessionStorage.getItem('tohfa_access_token');
@@ -296,6 +317,7 @@
         if (joinCard) {
             if (profile.role === 'buyer') {
                 joinCard.classList.remove('hidden');
+                joinCard.addEventListener('click', handleSellerEntryPoint);
             } else {
                 joinCard.classList.add('hidden');
             }

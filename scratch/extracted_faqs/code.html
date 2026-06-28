@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FAQ | Tohfa - Thoughtful Gifting</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:wght@400;500;700&family=Space+Mono&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&family=Playfair+Display:wght@100..900&family=Space+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#062103",
+                    "tertiary-fixed": "#ffdeaa",
+                    "surface-container-high": "#f0e7dd",
+                    "surface-variant": "#eae1d7",
+                    "on-background": "#1f1b15",
+                    "inverse-surface": "#343029",
+                    "primary-container": "#3d6b4f",
+                    "on-secondary": "#ffffff",
+                    "outline": "#717972",
+                    "on-primary-fixed-variant": "#214f36",
+                    "secondary-fixed": "#caecbb",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#fcf2e8",
+                    "primary": "#255338",
+                    "on-primary-fixed": "#002110",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#4d6a43",
+                    "inverse-on-surface": "#f9efe5",
+                    "tertiary": "#624400",
+                    "on-surface": "#1f1b15",
+                    "tertiary-fixed-dim": "#f3be5d",
+                    "surface-dim": "#e2d9cf",
+                    "secondary-container": "#c8e9b8",
+                    "secondary": "#49663f",
+                    "on-secondary-fixed-variant": "#324e29",
+                    "surface-bright": "#fff8f3",
+                    "inverse-primary": "#a0d2b0",
+                    "secondary-fixed-dim": "#afd0a0",
+                    "surface": "#fff8f3",
+                    "surface-container-highest": "#eae1d7",
+                    "on-primary-container": "#b7e9c6",
+                    "primary-fixed-dim": "#a0d2b0",
+                    "on-tertiary-fixed-variant": "#5f4100",
+                    "on-tertiary-container": "#ffd796",
+                    "error": "#ba1a1a",
+                    "background": "#fff8f3",
+                    "primary-fixed": "#bceecb",
+                    "on-surface-variant": "#414942",
+                    "surface-tint": "#3a684c",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#f6ece2",
+                    "on-tertiary-fixed": "#271900",
+                    "outline-variant": "#c1c9c0",
+                    "tertiary-container": "#815a00",
+                    "on-error-container": "#93000a",
+                    "tohfa-gold": "#C9972C",
+                    "tohfa-forest": "#1E3D0F",
+                    "tohfa-sage": "#7A8C6E",
+                    "tohfa-bg": "#F7F2E8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px",
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Space Mono"],
+                    "button-text": ["DM Sans"],
+                    "headline-md": ["Playfair Display"],
+                    "display-lg-mobile": ["Playfair Display"],
+                    "body-lg": ["DM Sans"],
+                    "display-lg": ["Playfair Display"],
+                    "body-md": ["DM Sans"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "400"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .faq-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .faq-card.open {
+            border-left: 3px solid #C9972C;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(31, 27, 21, 0.12);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in;
+            opacity: 0;
+        }
+        .faq-card.open .faq-answer {
+            max-height: 500px;
+            opacity: 1;
+            padding-top: 12px;
+        }
+        .tab-btn.active {
+            background-color: #C9972C;
+            color: white;
+            border-color: #C9972C;
+        }
+    </style>
+</head>
+<body class="bg-tohfa-bg font-body-md text-on-background min-h-screen">
+<!-- Main Content Canvas -->
+<main class="max-w-container-max mx-auto px-margin-desktop py-20">
+<!-- Header Section -->
+<header class="text-center mb-16">
+<h1 class="font-display-lg text-display-lg italic text-tohfa-forest mb-4">Frequently Asked Questions</h1>
+<p class="font-body-lg text-body-lg text-tohfa-sage">Thoughtful Gifting, Made Effortless</p>
+</header>
+<!-- Tab Switcher -->
+<div class="flex justify-center mb-16">
+<div class="inline-flex p-1 bg-surface-container-low border border-outline-variant/30 rounded-full">
+<button class="tab-btn active px-8 py-3 rounded-full font-button-text text-button-text transition-all duration-300" id="btn-buyers" onclick="switchTab('buyers')">
+                    For Buyers
+                </button>
+<button class="tab-btn px-8 py-3 rounded-full font-button-text text-button-text text-tohfa-sage border border-transparent hover:border-tohfa-sage/30 transition-all duration-300" id="btn-sellers" onclick="switchTab('sellers')">
+                    For Sellers
+                </button>
+</div>
+</div>
+<!-- FAQ Grids -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter" id="buyers-grid">
+<!-- FAQ items will be injected here for Buyers -->
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter hidden" id="sellers-grid">
+<!-- FAQ items will be injected here for Sellers -->
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-low border-t border-outline-variant/30 dark:border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-margin-desktop py-16 grid grid-cols-1 md:grid-cols-5 gap-gutter">
+<div class="col-span-1 md:col-span-2">
+<div class="font-headline-md text-headline-md italic text-primary mb-6">Tohfa</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">Connecting heritage artisans with modern patrons through curated luxury and academic precision.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary font-bold mb-4">COMPANY</h4>
+<ul class="space-y-2">
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">About Us</a></li>
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">Artisans</a></li>
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">Our Story</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary font-bold mb-4">FOR SELLERS</h4>
+<ul class="space-y-2">
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">Seller Hub</a></li>
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">Guidelines</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary font-bold mb-4">SUPPORT</h4>
+<ul class="space-y-2">
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">Help Center</a></li>
+<li><a class="font-label-md text-label-md text-on-surface-variant hover:text-tertiary-container transition-colors" href="#">Shipping</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop py-8 border-t border-outline-variant/10 text-center">
+<p class="font-label-md text-label-md text-on-surface-variant">© 2024 Tohfa. Thoughtful Gifting, Made Effortless. Made with ♥ in India.</p>
+</div>
+</footer>
+<script>
+        const buyersFaqs = [
+            { q: "What is Tohfa?", a: "Tohfa is a curated marketplace for artisanal, handcrafted heritage products from across India." },
+            { q: "How do I place an order?", a: "Browse our collections, add items to your cart, and proceed to checkout with our secure payment gateway." },
+            { q: "Are the products authentic?", a: "Yes, every product is sourced directly from verified master artisans and heritage craft clusters." },
+            { q: "What are the shipping charges?", a: "Shipping is calculated at checkout based on weight and destination. We offer free shipping on orders over ₹5000." },
+            { q: "Do you ship internationally?", a: "Currently, we ship within India. International shipping is in our immediate roadmap." },
+            { q: "How can I track my order?", a: "Once shipped, you will receive a tracking link via email and SMS." },
+            { q: "What is the return policy?", a: "We accept returns for damaged or defective items within 48 hours of delivery." },
+            { q: "Can I customize a gift?", a: "Many of our artisans offer personalization. Look for the 'Customize' tag on product pages." },
+            { q: "What payment methods are accepted?", a: "We accept UPI, Credit/Debit Cards, and Net Banking." },
+            { q: "Is cash on delivery available?", a: "Yes, COD is available for select pincodes for orders below ₹2000." },
+            { q: "How do I care for handcrafted products?", a: "Care instructions specifically for each craft are included in the product description and packaging." },
+            { q: "Do you offer gift wrapping?", a: "Yes, we offer premium, eco-friendly gift wrapping inspired by traditional textiles." },
+            { q: "Can I include a gift message?", a: "Absolutely. You can add a handwritten note during the checkout process." },
+            { q: "What if I receive a broken item?", a: "Please take a photo and contact our support team immediately for a replacement or refund." },
+            { q: "How long does delivery take?", a: "Standard delivery takes 5-7 business days. Custom items may take longer." },
+            { q: "Can I cancel my order?", a: "Orders can be cancelled within 12 hours of placement, before they are processed by artisans." },
+            { q: "Do you have a loyalty program?", a: "Our Patron Circle is coming soon, offering early access to limited collections.", badge: true },
+            { q: "Can I book an artisan workshop?", a: "We are preparing to launch virtual 'Meet the Maker' sessions soon.", badge: true },
+            { q: "Is there a Tohfa mobile app?", a: "Our mobile experience is currently being handcrafted for iOS and Android.", badge: true }
+        ];
+
+        const sellersFaqs = [
+            { q: "How do I become a Tohfa seller?", a: "Apply through our Founding Sellers portal with photos of your craftwork." },
+            { q: "What crafts are eligible?", a: "We focus on GI-tagged crafts, heritage handlooms, and traditional Indian handicrafts." },
+            { q: "What is the commission fee?", a: "Tohfa charges a nominal commission on successful sales to maintain the platform and logistics." },
+            { q: "How do I get paid?", a: "Payments are settled directly to your registered bank account 7 days after successful delivery." },
+            { q: "Who handles the shipping?", a: "Tohfa provides integrated logistics. You just need to pack the item securely." },
+            { q: "What are the packaging guidelines?", a: "We require specific sustainable packaging standards to ensure product safety and brand consistency." },
+            { q: "Do I need a GST number?", a: "Yes, as per Indian e-commerce regulations, a valid GSTIN is required for all sellers." },
+            { q: "Can I sell personalized items?", a: "Yes, we encourage artisans to offer bespoke services through our customization tool." },
+            { q: "How do I manage my inventory?", a: "Our Seller Hub provides a simple dashboard to update stock and manage orders." },
+            { q: "Is there a registration fee?", a: "No, there is zero upfront cost to join Tohfa as an artisan." },
+            { q: "Can I list products on other platforms?", a: "Yes, we do not require exclusivity, though we encourage unique collections for Tohfa." },
+            { q: "What support do you offer artisans?", a: "We provide professional photography, story-writing, and digital marketing support." },
+            { q: "How are returns handled?", a: "In case of manufacturing defects, sellers are responsible. For other cases, Tohfa assists." },
+            { q: "Do you help with export?", a: "We are currently streamlining export documentation for our sellers." },
+            { q: "How do I update my artisan story?", a: "You can edit your profile and craft history via the Seller Hub at any time." },
+            { q: "Can I see sales analytics?", a: "Advanced insights and trend forecasting for artisans is launching next quarter.", badge: true }
+        ];
+
+        function createFaqCard(item, index) {
+            return `
+                <div class="faq-card bg-white p-6 rounded-[12px] border border-tohfa-forest/10 shadow-sm cursor-pointer group" onclick="toggleFaq(this)">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="flex-1">
+                            <h3 class="font-button-text text-tohfa-forest font-bold text-lg leading-snug">
+                                ${item.q}
+                                ${item.badge ? '<span class="ml-2 inline-block bg-tohfa-gold/10 text-tohfa-gold text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border border-tohfa-gold/20">Coming Soon</span>' : ''}
+                            </h3>
+                        </div>
+                        <span class="material-symbols-outlined text-tohfa-gold font-bold transition-transform group-[.open]:rotate-45" data-icon="add">add</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="font-body-md text-[#3B5E3F] leading-relaxed">${item.a}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFaq(element) {
+            const isOpen = element.classList.contains('open');
+            // Close all other cards
+            document.querySelectorAll('.faq-card').forEach(card => {
+                card.classList.remove('open');
+                card.querySelector('.material-symbols-outlined').textContent = 'add';
+            });
+            
+            if (!isOpen) {
+                element.classList.add('open');
+                element.querySelector('.material-symbols-outlined').textContent = 'close';
+            }
+        }
+
+        function switchTab(tab) {
+            const buyersGrid = document.getElementById('buyers-grid');
+            const sellersGrid = document.getElementById('sellers-grid');
+            const btnBuyers = document.getElementById('btn-buyers');
+            const btnSellers = document.getElementById('btn-sellers');
+
+            if (tab === 'buyers') {
+                buyersGrid.classList.remove('hidden');
+                sellersGrid.classList.add('hidden');
+                btnBuyers.classList.add('active');
+                btnSellers.classList.remove('active');
+                btnSellers.classList.add('text-tohfa-sage');
+            } else {
+                buyersGrid.classList.add('hidden');
+                sellersGrid.classList.remove('hidden');
+                btnSellers.classList.add('active');
+                btnBuyers.classList.remove('active');
+                btnBuyers.classList.add('text-tohfa-sage');
+            }
+        }
+
+        // Initialize grids
+        document.getElementById('buyers-grid').innerHTML = buyersFaqs.map((item, i) => createFaqCard(item, i)).join('');
+        document.getElementById('sellers-grid').innerHTML = sellersFaqs.map((item, i) => createFaqCard(item, i)).join('');
+    </script>
+</body></html>

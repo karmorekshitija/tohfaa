@@ -8280,6 +8280,197 @@ app.post('/api/seller/become', rateLimit(5), authenticateToken, async (req, res)
 });
 
 // ============================================================
+// POST /api/seller/apply (seller application submission)
+// ============================================================
+app.post('/api/seller/apply', rateLimit(5), authenticateToken, async (req, res) => {
+  try {
+    const { full_name, email, phone, whatsapp, instagram_handle, bio, categories, agreed_terms, agreed_handmade } = req.body;
+    
+    if (!full_name || !email || !phone || !categories || !agreed_terms || !agreed_handmade) {
+      return res.status(400).json({ error: true, message: 'Required fields are missing', code: 'VALIDATION_ERROR' });
+    }
+
+    const dbUser = await db.prepare('SELECT role FROM users WHERE id = ?').get(req.user.user_id);
+    if (dbUser && dbUser.role === 'seller') {
+      return res.status(400).json({ error: true, message: 'Already a seller', code: 'ALREADY_SELLER' });
+    }
+
+    const pendingApp = await db.prepare("SELECT id FROM seller_applications WHERE user_id = ? AND status = 'pending'").get(req.user.user_id);
+    if (pendingApp) {
+      return res.status(400).json({ error: true, message: 'Application already submitted', code: 'PENDING_APPLICATION_EXISTS' });
+    }
+
+    await db.prepare(`
+      INSERT INTO seller_applications (user_id, full_name, email, phone, whatsapp, instagram_handle, bio, categories, agreed_terms, agreed_handmade, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+    `).run(
+      req.user.user_id,
+      full_name,
+      email,
+      phone,
+      whatsapp || null,
+      instagram_handle || null,
+      bio || null,
+      categories,
+      agreed_terms ? true : false,
+      agreed_handmade ? true : false
+    );
+
+    return res.status(200).json({ success: true, message: 'Application submitted' });
+  } catch (err) {
+    console.error('POST /api/seller/apply error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// ============================================================
+// GET /api/admin/seller-applications (list applications)
+// ============================================================
+app.get('/api/admin/seller-applications', authenticateAdminToken, async (req, res) => {
+  try {
+    const { status = 'all', page = 1, per_page = 20 } = req.query;
+    const limit = parseInt(per_page) || 20;
+    const offset = (parseInt(page) - 1) * limit;
+
+    let query = `SELECT * FROM seller_applications`;
+    const params = [];
+
+    if (status !== 'all') {
+      query += ` WHERE status = ?`;
+      params.push(status);
+    }
+
+    const totalCountQuery = `SELECT COUNT(*) AS count FROM (${query}) AS sub`;
+    const countRow = await db.prepare(totalCountQuery).get(...params);
+    const total = countRow ? parseInt(countRow.count) : 0;
+
+    query += ` ORDER BY submitted_at DESC LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+
+    const rows = await db.prepare(query).all(...params);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        applications: rows,
+        total,
+        page: parseInt(page),
+        per_page: limit,
+        total_pages: Math.ceil(total / limit) || 1
+      }
+    });
+  } catch (err) {
+    console.error('GET /api/admin/seller-applications error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// ============================================================
+// POST /api/admin/seller-applications/:id/approve (approve application)
+// ============================================================
+app.post('/api/admin/seller-applications/:id/approve', authenticateAdminToken, async (req, res) => {
+  try {
+    const appId = parseInt(req.params.id);
+    const appInfo = await db.prepare('SELECT * FROM seller_applications WHERE id = ?').get(appId);
+    if (!appInfo) {
+      return res.status(404).json({ error: true, message: 'Application not found', code: 'NOT_FOUND' });
+    }
+
+    if (appInfo.status !== 'pending') {
+      return res.status(400).json({ error: true, message: 'Application is already reviewed', code: 'ALREADY_REVIEWED' });
+    }
+
+    await db.prepare(`
+      UPDATE seller_applications 
+      SET status = 'approved', reviewed_at = CURRENT_TIMESTAMP, reviewed_by = ? 
+      WHERE id = ?
+    `).run(req.admin.id, appId);
+
+    await db.prepare("UPDATE users SET role = 'seller' WHERE id = ?").run(appInfo.user_id);
+
+    const existingProfile = await db.prepare('SELECT id FROM seller_profiles WHERE user_id = ?').get(appInfo.user_id);
+    if (!existingProfile) {
+      const display_name = appInfo.full_name;
+      const storeSlug = display_name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      
+      let handle = appInfo.instagram_handle ? appInfo.instagram_handle.replace('@', '').toLowerCase() : '';
+      if (!handle || !/^[a-z0-9_]+$/.test(handle)) {
+        handle = appInfo.full_name.toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '');
+      }
+      if (!handle) {
+        handle = 'artisan_' + appInfo.user_id;
+      }
+      const handleTaken = await db.prepare('SELECT id FROM seller_profiles WHERE handle = ?').get(handle);
+      if (handleTaken) {
+        handle = handle + '_' + appInfo.user_id;
+      }
+
+      await db.prepare(`
+        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step)
+        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0)
+      `).run(appInfo.user_id, display_name, appInfo.bio, display_name, handle, storeSlug);
+    }
+
+    await writeAuditLog(
+      "admin.seller_application.approve",
+      req.admin.id,
+      req.admin.display_name,
+      "seller_applications",
+      appId,
+      `Approved application for ${appInfo.full_name}`,
+      { status: 'pending' },
+      { status: 'approved' }
+    );
+
+    return res.status(200).json({ success: true, message: 'Application approved' });
+  } catch (err) {
+    console.error('POST /api/admin/seller-applications/:id/approve error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// ============================================================
+// POST /api/admin/seller-applications/:id/reject (reject application)
+// ============================================================
+app.post('/api/admin/seller-applications/:id/reject', authenticateAdminToken, async (req, res) => {
+  try {
+    const appId = parseInt(req.params.id);
+    const { admin_notes } = req.body;
+
+    const appInfo = await db.prepare('SELECT * FROM seller_applications WHERE id = ?').get(appId);
+    if (!appInfo) {
+      return res.status(404).json({ error: true, message: 'Application not found', code: 'NOT_FOUND' });
+    }
+
+    if (appInfo.status !== 'pending') {
+      return res.status(400).json({ error: true, message: 'Application is already reviewed', code: 'ALREADY_REVIEWED' });
+    }
+
+    await db.prepare(`
+      UPDATE seller_applications 
+      SET status = 'rejected', admin_notes = ?, reviewed_at = CURRENT_TIMESTAMP, reviewed_by = ? 
+      WHERE id = ?
+    `).run(admin_notes || null, req.admin.id, appId);
+
+    await writeAuditLog(
+      "admin.seller_application.reject",
+      req.admin.id,
+      req.admin.display_name,
+      "seller_applications",
+      appId,
+      `Rejected application for ${appInfo.full_name}`,
+      { status: 'pending' },
+      { status: 'rejected', admin_notes }
+    );
+
+    return res.status(200).json({ success: true, message: 'Application rejected' });
+  } catch (err) {
+    console.error('POST /api/admin/seller-applications/:id/reject error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// ============================================================
 // PART 2: ADMIN PANEL MIDDLEWARE & ROUTES
 // ============================================================
 
