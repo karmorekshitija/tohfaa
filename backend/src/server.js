@@ -4217,7 +4217,6 @@ app.get('/api/wishlist', rateLimit(60), authenticateToken, async (req, res) => {
       SELECT 
         w.id, w.product_id, p.seller_id,
         p.name, p.price_paise, p.status,
-        p.listing_type, p.is_customized, p.tags,
         (SELECT slug FROM categories WHERE id = p.category_id) AS category_slug,
         COALESCE(
           (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
