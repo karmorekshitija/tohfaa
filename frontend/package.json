@@ -6,7 +6,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "vite",
-    "build": "node check-syntax.js && vite build",
+    "build": "node check-syntax.js && vite build && node copy-src.js",
     "preview": "vite preview"
   },
   "dependencies": {
