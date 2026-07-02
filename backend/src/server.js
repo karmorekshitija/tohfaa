@@ -10705,6 +10705,9 @@ app.get('/api/admin/dashboard/summary', authenticateAdminToken, async (req, res)
     const revenueTodayRes = await db.prepare("SELECT SUM(amount_paid) as sum FROM orders WHERE (payment_status = 'paid' OR payment_status = 'COMPLETED') AND created_at >= CURRENT_DATE").get();
     const revenueToday = parseInt(revenueTodayRes?.sum || 0);
 
+    const pendingAppsRes = await db.prepare("SELECT COUNT(*) as count FROM seller_applications WHERE status = 'pending'").get();
+    const pendingApplications = parseInt(pendingAppsRes?.count || 0);
+
     return res.status(200).json({
       success: true,
       data: {
@@ -10712,7 +10715,8 @@ app.get('/api/admin/dashboard/summary', authenticateAdminToken, async (req, res)
         total_orders_today: totalOrdersToday,
         total_sellers: totalSellers,
         total_buyers: totalBuyers,
-        revenue_today: revenueToday
+        revenue_today: revenueToday,
+        pending_applications: pendingApplications
       }
     });
   } catch (err) {

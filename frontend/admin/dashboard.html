@@ -71,10 +71,13 @@
         <span class="text-[11px] text-text-muted mt-1" id="stat-orders-prev">Today's transactions</span>
       </div>
       <!-- Card 3 -->
-      <div class="bg-white p-6 rounded-xl border border-outline-variant/30 border-l-4 border-l-accent-violet shadow-sm flex flex-col justify-between">
+      <div class="bg-white p-6 rounded-xl border border-outline-variant/30 border-l-4 border-l-accent-violet shadow-sm flex flex-col justify-between cursor-pointer hover:shadow-md transition-shadow" onclick="window.location.href='/admin/sellers.html?tab=applications'">
         <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Artisan Sellers</span>
         <h2 id="stat-sellers" class="font-headline-lg text-3xl text-primary mt-2">0</h2>
-        <span class="text-[11px] text-[#7B5EA7] font-semibold mt-1">Active Studios</span>
+        <span class="text-[11px] text-[#7B5EA7] font-semibold mt-1 flex items-center gap-1.5" id="pending-apps-container">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse hidden" id="pending-apps-dot"></span>
+          <span id="stat-pending-apps">Active Studios</span>
+        </span>
       </div>
       <!-- Card 4 -->
       <div class="bg-white p-6 rounded-xl border border-outline-variant/30 border-l-4 border-l-secondary-container shadow-sm flex flex-col justify-between">
@@ -189,6 +192,19 @@
           document.getElementById('stat-orders').textContent = s.revenue_today > 0 ? (s.total_orders_today || '1') : '0';
           document.getElementById('stat-sellers').textContent = s.total_sellers || 0;
           document.getElementById('stat-buyers').textContent = s.total_buyers || 0;
+
+          const pendingCount = s.pending_applications || 0;
+          const dot = document.getElementById('pending-apps-dot');
+          const label = document.getElementById('stat-pending-apps');
+          if (pendingCount > 0) {
+            dot.classList.remove('hidden');
+            label.textContent = `${pendingCount} pending applications`;
+            label.className = "text-amber-600 font-bold";
+          } else {
+            dot.classList.add('hidden');
+            label.textContent = "Active Studios";
+            label.className = "text-[#7B5EA7] font-semibold";
+          }
         }
       } catch (err) {
         console.error('Failed to load dashboard summary stats:', err);

@@ -731,7 +731,15 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 });
 
 // Initial load
-document.addEventListener('DOMContentLoaded', fetchSellers);
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tab = urlParams.get('tab');
+  if (tab === 'applications') {
+    tabApplications.click();
+  } else {
+    fetchSellers();
+  }
+});
 </script>
 </body>
 </html>
