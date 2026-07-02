@@ -346,6 +346,9 @@ async function initDb() {
     // Add bank_name to seller_payout_accounts if not exists
     await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
 
+    // Add ithink_warehouse_id to addresses if not exists
+    await pool.query('ALTER TABLE addresses ADD COLUMN IF NOT EXISTS ithink_warehouse_id TEXT');
+
     // Create seller_applications table if not exists
     await pool.query(`
       CREATE TABLE IF NOT EXISTS seller_applications (

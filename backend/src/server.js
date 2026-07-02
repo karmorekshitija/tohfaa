@@ -8299,6 +8299,21 @@ app.post('/api/seller/addresses', requireSeller, async (req, res) => {
       return res.status(400).json({ error: true, message: 'Label, address line, city, state, and pincode are required' });
     }
     
+    const { registerWarehouse } = require('./services/iThinkLogisticsService');
+    
+    // Fetch Seller Shop Name
+    const seller = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(userId);
+    const shopName = seller?.shop_name || label;
+
+    // Call iThink Logistics warehouse registration
+    const warehouseResult = await registerWarehouse({
+      label, address_line, city, state, pincode, phone
+    }, shopName);
+
+    if (!warehouseResult.success) {
+      return res.status(400).json({ error: true, message: `Logistics Registration Failed: ${warehouseResult.error}` });
+    }
+
     const isDefaultVal = is_default ? 1 : 0;
     
     const insertTransaction = db.transaction(async () => {
@@ -8307,9 +8322,9 @@ app.post('/api/seller/addresses', requireSeller, async (req, res) => {
       }
       
       const info = await db.prepare(`
-        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(userId, label, address_line, null, city, state, pincode, phone || null, isDefaultVal);
+        INSERT INTO addresses (user_id, full_name, line1, line2, city, state, pincode, phone, is_default, ithink_warehouse_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(userId, label, address_line, null, city, state, pincode, phone || null, isDefaultVal, warehouseResult.warehouseId);
       
       return info.lastInsertRowid;
     });
@@ -8327,7 +8342,8 @@ app.post('/api/seller/addresses', requireSeller, async (req, res) => {
         state,
         pincode,
         phone,
-        is_default: isDefaultVal === 1
+        is_default: isDefaultVal === 1,
+        ithink_warehouse_id: warehouseResult.warehouseId
       }
     });
   } catch (err) {
@@ -8355,6 +8371,21 @@ app.put('/api/seller/addresses/:id', requireSeller, async (req, res) => {
       return res.status(403).json({ error: true, message: 'Forbidden' });
     }
     
+    const { registerWarehouse } = require('./services/iThinkLogisticsService');
+
+    // Fetch Seller Shop Name
+    const seller = await db.prepare("SELECT shop_name FROM seller_profiles WHERE user_id = ?").get(userId);
+    const shopName = seller?.shop_name || label;
+
+    // Call iThink Logistics warehouse registration
+    const warehouseResult = await registerWarehouse({
+      label, address_line, city, state, pincode, phone
+    }, shopName);
+
+    if (!warehouseResult.success) {
+      return res.status(400).json({ error: true, message: `Logistics Registration Failed: ${warehouseResult.error}` });
+    }
+
     const isDefaultVal = is_default ? 1 : 0;
     
     const updateTransaction = db.transaction(async () => {
@@ -8364,9 +8395,9 @@ app.put('/api/seller/addresses/:id', requireSeller, async (req, res) => {
       
       await db.prepare(`
         UPDATE addresses
-        SET full_name = ?, line1 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?, created_at = datetime('now')
+        SET full_name = ?, line1 = ?, city = ?, state = ?, pincode = ?, phone = ?, is_default = ?, ithink_warehouse_id = ?, created_at = datetime('now')
         WHERE id = ?
-      `).run(label, address_line, city, state, pincode, phone || null, isDefaultVal, id);
+      `).run(label, address_line, city, state, pincode, phone || null, isDefaultVal, warehouseResult.warehouseId, id);
     });
     
     await updateTransaction();
@@ -8382,7 +8413,8 @@ app.put('/api/seller/addresses/:id', requireSeller, async (req, res) => {
         state,
         pincode,
         phone,
-        is_default: isDefaultVal === 1
+        is_default: isDefaultVal === 1,
+        ithink_warehouse_id: warehouseResult.warehouseId
       }
     });
   } catch (err) {
@@ -14471,9 +14503,9 @@ async function scheduleLogisticsPickups() {
       }
       
       if (toSchedule.length > 0) {
-        // Fetch default seller address
-        const address = await db.prepare("SELECT id FROM seller_addresses WHERE seller_id = ? ORDER BY is_default DESC LIMIT 1").get(parseInt(sellerId));
-        const pickupAddressId = address ? String(address.id) : `ADDR-${sellerId}`;
+        // Fetch default seller address from the addresses table
+        const address = await db.prepare("SELECT id, ithink_warehouse_id FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC LIMIT 1").get(parseInt(sellerId));
+        const pickupAddressId = address?.ithink_warehouse_id || `ADDR-${sellerId}`;
         
         // Prepare shipments array
         const shipments = [];
@@ -14484,6 +14516,11 @@ async function scheduleLogisticsPickups() {
           const width = listing?.width_cm || 10;
           const height = listing?.height_cm || 10;
           
+          // Query customer address details
+          const addressInfo = order.address_id 
+            ? await db.prepare("SELECT full_name, line1, line2, city, state, pincode, phone FROM addresses WHERE id = ?").get(order.address_id)
+            : null;
+          
           shipments.push({
             order_id: order.order_ref,
             payment_mode: 'prepaid',
@@ -14491,7 +14528,14 @@ async function scheduleLogisticsPickups() {
             weight,
             length,
             width,
-            height
+            height,
+            customer_name: addressInfo?.full_name || 'Customer',
+            address_line1: addressInfo?.line1 || 'No Address',
+            address_line2: addressInfo?.line2 || '',
+            pincode: addressInfo?.pincode || '',
+            city: addressInfo?.city || '',
+            state: addressInfo?.state || '',
+            phone: addressInfo?.phone || ''
           });
         }
         
