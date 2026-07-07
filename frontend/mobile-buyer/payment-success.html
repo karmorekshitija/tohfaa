@@ -88,18 +88,10 @@
 <div class="absolute inset-0 opacity-[0.07] pointer-events-none flex items-center justify-center studio-watermark">
 <span class="material-symbols-outlined text-[120px]" data-icon="potted_plant">potted_plant</span>
 </div>
-<div class="relative z-10">
+<div class="relative z-10 w-full">
 <span class="font-label-caps text-[10px] text-[#D4AF37] block mb-md">ORDER SUMMARY</span>
-<div class="flex items-center gap-md mb-lg">
-<div class="flex -space-x-4">
-<img class="w-14 h-14 rounded-lg object-cover border-2 border-[#FCFAF5] shadow-sm" data-alt="A handcrafted ceramic mug with a warm glaze sitting on a wooden table in a sunlit studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdsDk9RXyoHDtnQgGLpf5RCs3uhzh4itxVYNo_9l5IhT1btAEWn8mBkD-94dK-ajYheukstMPrGrZQ6vv5xCtq4PuW8qTgc_Scc8VyjguLb2rj183K_TYjP_zYCA4wY3mRvY4Eu6nh1u316SaHDHEhSZUR96ap2hyzjSGgdr6YzthQKV8WN99JrqhfTM9dxoIVF54g2FKz1g43PG-1_ZFX100iiiHCFQ5PhjDqbQgr_fk0lMRGTFfpTHB0kFpZ95NZqtoVRalH-cM" loading="lazy" />
-<img class="w-14 h-14 rounded-lg object-cover border-2 border-[#FCFAF5] shadow-sm" data-alt="A set of artisan hand-poured lavender candles with botanical sprigs visible in the wax." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBhBk54lj4pgF8bJJGN8ySUm9JjHoNRmIyi5MqlTRiBi55GBez_5HqTw2VNt9ypAt7FjtqgUtX64hdkT_31I4sgDTeKwDNmRwXXzruJUFBgIaGcV31625TBTYXQnahvcR5-eIVdPoOVvdKmq5aUfL1Nl47ACdZ4S_2zxfypQf8J0GEuL5pwtVC4aj6wf1ErOPoJwRhX6SAjgn4KGj897f20HtxBqTZ2_XvnM-bIL1BHJc_3t04RFzcxHtbpptT42PogmE10WNCRGQ" loading="lazy" />
-<img class="w-14 h-14 rounded-lg object-cover border-2 border-[#FCFAF5] shadow-sm" data-alt="A hand-woven textile wall hanging with earthy forest green and ivory tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtZ1CsuFy_TLfifSZBX0nUnxQRlxdv4NN8d8B-AjKnYtybA0wqlN_4VCR1-JW5v7IJkbaVUh_9kGtoSwkoe0asschIvC2djslvSINh_eQLaCIFvWY0SHIUvaxS9r_PtH4MKqL8oqsd5kHElfgN6NUKCVUpulUHIier1VViI_ou3SoIPuXeC7eg2iKYrw2QYJzvmUK5NqcsFJ4HnwRyqz0-FIWTVuARtHVzZs7Y0Y_VsLRHv5AenjXnmIx1jwul3sHSVD-UJ8tzTGk" loading="lazy" />
-</div>
-<div class="flex flex-col">
-<span class="font-body-md text-[13px] text-on-surface">3 items from 2 studios</span>
-<span class="font-data-price text-data-price text-[#D4AF37]">₹1,248 paid</span>
-</div>
+<div id="order-summary-items-mobile" class="space-y-4 mb-4">
+  <!-- Items loaded dynamically -->
 </div>
 <div class="pt-md border-t border-outline-variant/30 flex items-center gap-sm">
 <span class="material-symbols-outlined text-outline text-[16px]" data-icon="local_shipping">local_shipping</span>
@@ -202,16 +194,61 @@
     }
     .tohfa-footer-details[open] summary span.material-symbols-outlined {
       transform: rotate(180deg) !important;
-    }
   </style>
 </footer>
-<script>
-        // Micro-interaction for the track button
-        document.querySelector('button').addEventListener('click', function() {
-            this.innerHTML = '<span class="flex items-center justify-center gap-2"><span class="animate-spin material-symbols-outlined">sync</span> Loading...</span>';
-            setTimeout(() => {
-                this.innerHTML = 'Track my order';
-            }, 1500);
-        });
-    </script>
+<script type="module">
+  import apiClient from '/src/utils/apiClient.js';
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(window.location.search);
+    const orderRef = params.get('order_ref') || 'N/A';
+    const orderId = params.get('order_id');
+
+    // Update order ref string in header text
+    const refTextEl = document.querySelector('.font-data-price');
+    if (refTextEl) {
+      refTextEl.textContent = `ORDER #${orderRef} · PAID VIA GPAY`;
+    }
+
+    if (orderId) {
+      try {
+        const oRes = await apiClient.get(`/orders/${orderId}`);
+        if (oRes.data && oRes.data.success && oRes.data.data.items) {
+          const items = oRes.data.data.items;
+          const itemsContainer = document.getElementById('order-summary-items-mobile');
+          if (itemsContainer && items.length > 0) {
+            itemsContainer.innerHTML = items.map(item => {
+              const imgUrl = item.image_url ? item.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
+              return `
+                <div class="flex gap-md items-center border-b border-sage/10 pb-2 last:border-b-0">
+                  <div class="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-sage/10">
+                    <img class="w-full h-full object-cover" src="${imgUrl}" alt="${item.product_name}"/>
+                  </div>
+                  <div class="flex-grow min-w-0">
+                    <span class="font-body-md text-[13px] text-on-surface truncate block font-semibold">${item.product_name}</span>
+                    <span class="font-data-price text-on-surface-variant text-[11px] block mt-0.5">Qty ${item.quantity} • ${item.unit_price_paise ? (item.unit_price_paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }) : ''}</span>
+                    ${item.variant_name ? `<span class="inline-block mt-1 px-2 py-[2px] text-[10px] font-semibold rounded-full bg-[#3d6b4f]/10 text-[#3d6b4f] border border-[#3d6b4f]/20">${item.variant_name}</span>` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        console.error("Error loading mobile order summary:", err);
+      }
+    }
+
+    const btnTrack = document.querySelector('button');
+    if (btnTrack) {
+      btnTrack.addEventListener('click', () => {
+        if (orderId) {
+          window.location.href = `order-detail.html?id=${orderId}`;
+        } else {
+          window.location.href = 'orders.html';
+        }
+      });
+    }
+  });
+</script>
 </body></html>

@@ -316,6 +316,7 @@
             <div class="flex-grow pr-8">
               <h3 class="font-['Playfair_Display'] font-bold text-md ${isUnavailable ? 'text-gray-500' : 'text-[#3D6B4F]'} leading-tight cursor-pointer" onclick="window.location.href='product.html?id=${ci.product_id}'">${ci.name}</h3>
               <p class="text-xs text-[#74786f] mt-1 cursor-pointer" onclick="window.location.href='/mobile-buyer/seller-profile.html?id=${ci.seller_id}'">${ci.seller_name}</p>
+              ${ci.variant_name ? `<span class="inline-block mt-1 px-2 py-[2px] text-[11px] font-semibold rounded-full bg-[#3D6B4F]/10 text-[#3D6B4F] border border-[#3D6B4F]/20">${ci.variant_name}</span>` : ''}
               <p class="text-xs font-semibold ${isUnavailable ? 'text-gray-400' : 'text-[#C8973A]'} mt-1">${formatPaise(ci.price_paise)}</p>
             </div>
           </div>

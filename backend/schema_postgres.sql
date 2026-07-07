@@ -65,14 +65,16 @@ CREATE TABLE products (
       review_count    INTEGER DEFAULT 0,
       created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    , ready_to_ship INTEGER DEFAULT 0, discount_percentage INTEGER DEFAULT NULL, discounted_price INTEGER DEFAULT NULL, discount_active INTEGER DEFAULT 0, is_best_seller INTEGER DEFAULT 0);
+    , ready_to_ship INTEGER DEFAULT 0, discount_percentage INTEGER DEFAULT NULL, discounted_price INTEGER DEFAULT NULL, discount_active INTEGER DEFAULT 0, is_best_seller INTEGER DEFAULT 0
+    , source_listing_id INTEGER DEFAULT NULL REFERENCES listings(id) ON DELETE SET NULL);
 
 CREATE TABLE product_images (
       id          SERIAL PRIMARY KEY,
       product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
       url         TEXT NOT NULL,
       is_primary  INTEGER DEFAULT 0,
-      sort_order  INTEGER DEFAULT 0
+      sort_order  INTEGER DEFAULT 0,
+      variant_id  INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE CASCADE
     );
 
 CREATE TABLE cart_items (
@@ -80,8 +82,9 @@ CREATE TABLE cart_items (
       user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
       quantity    INTEGER NOT NULL DEFAULT 1,
+      variant_id  INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE SET NULL,
       added_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(user_id, product_id)
+      UNIQUE(user_id, product_id, variant_id)
     );
 
 CREATE TABLE addresses (
@@ -266,6 +269,21 @@ CREATE TABLE listing_variants (
       updated_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP
     );
 
+-- Buyer-side variant table, mirrors listing_variants structure.
+-- source_variant_id is a nullable bookkeeping FK back to listing_variants
+-- (NULL is valid for products/variants created outside the listing wizard).
+CREATE TABLE product_variants (
+      id                SERIAL PRIMARY KEY,
+      product_id        INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+      source_variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE SET NULL,
+      variant_name      TEXT    NOT NULL,
+      price_paise       INTEGER DEFAULT NULL,   -- NULL = inherit products.price_paise
+      stock_qty         INTEGER NOT NULL DEFAULT 0,
+      sku               TEXT    DEFAULT NULL,
+      created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
 CREATE TABLE review_request_settings (
       seller_id           INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
       enabled             INTEGER NOT NULL DEFAULT 1,   -- send automated requests
@@ -371,6 +389,7 @@ CREATE TABLE listing_photos (
       is_cover    INTEGER DEFAULT 0,
       is_video    INTEGER DEFAULT 0,
       sort_order  INTEGER DEFAULT 0,
+      variant_id  INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE CASCADE,
       created_at TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -506,7 +525,9 @@ CREATE TABLE order_items (
       product_name TEXT NOT NULL,
       unit_price_paise INTEGER NOT NULL,
       quantity    INTEGER NOT NULL DEFAULT 1,
-      image_url   TEXT
+      image_url   TEXT,
+      variant_id  INTEGER DEFAULT NULL REFERENCES product_variants(id),
+      variant_name TEXT DEFAULT NULL
     );
 
 CREATE TABLE conversations (
@@ -830,6 +851,8 @@ CREATE INDEX idx_seller_bans_seller_id ON seller_bans(seller_id);
 
 CREATE INDEX idx_variants_listing_id ON listing_variants(listing_id);
 
+CREATE UNIQUE INDEX idx_products_source_listing_id ON products(source_listing_id) WHERE source_listing_id IS NOT NULL;
+
 CREATE INDEX idx_swp_seller ON store_workspace_photos(seller_id);
 
 CREATE INDEX idx_payouts_seller ON payout_history(seller_id);
@@ -841,6 +864,8 @@ CREATE INDEX idx_listings_status    ON listings(status);
 CREATE INDEX idx_images_listing_id ON listing_images(listing_id);
 
 CREATE INDEX idx_photos_listing_id ON listing_photos(listing_id);
+
+CREATE INDEX idx_listing_photos_variant_id ON listing_photos(variant_id);
 
 CREATE INDEX idx_stm_seller ON seller_team_members(seller_id);
 
@@ -863,6 +888,14 @@ CREATE INDEX idx_ote_order ON order_tracking_events(order_id);
 CREATE INDEX idx_order_items_order ON order_items(order_id);
 
 CREATE INDEX idx_order_items_product ON order_items(product_id);
+
+CREATE INDEX idx_order_items_variant_id ON order_items(variant_id);
+
+CREATE INDEX idx_product_images_variant_id ON product_images(variant_id);
+
+CREATE INDEX idx_product_variants_product_id ON product_variants(product_id);
+
+CREATE INDEX idx_product_variants_source_variant_id ON product_variants(source_variant_id);
 
 CREATE INDEX idx_orders_seller ON orders(seller_id);
 

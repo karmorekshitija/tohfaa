@@ -296,9 +296,75 @@
 
     <!-- Right Sidebar -->
     <aside class="w-full lg:w-80 border border-sage/20 bg-white/60 rounded-xl p-6 flex flex-col gap-6 shrink-0 shadow-sm">
+      <!-- Advanced Tools Section -->
+      <div class="border border-sage/20 rounded-xl bg-parchment/30 overflow-hidden">
+        <details class="group">
+          <summary class="flex justify-between items-center font-display-lg text-primary text-sm font-serif p-4 bg-sage/10 cursor-pointer select-none">
+            <span class="flex items-center gap-2 font-bold tracking-wide uppercase font-mono text-[11px] text-on-surface-variant">
+              <span class="material-symbols-outlined text-base">settings</span> Catalog Cleanup
+            </span>
+            <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
+          </summary>
+          <div class="p-4 space-y-4 border-t border-sage/10">
+            <h4 class="font-display-lg text-primary text-sm font-bold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base">merge</span> Merge Listings
+            </h4>
+            <p class="text-[11px] text-on-surface-variant leading-relaxed">Consolidate multiple listings into a single variant-based product while preserving their historic orders and reviews.</p>
+            <button id="merge-tool-trigger" class="w-full py-2.5 bg-forest text-white rounded-full text-xs font-bold shadow hover:bg-forest/90 transition-all active:scale-95 flex items-center justify-center gap-1.5" onclick="openMergePanel()">
+              <span class="material-symbols-outlined text-sm">merge_type</span> Consolidate Selected
+            </button>
+          </div>
+        </details>
+      </div>
     </aside>
   </div>
 </seller-layout>
+
+<!-- Branded Merge Listings Custom Modal -->
+<div id="merge-modal" class="hidden modal-overlay">
+  <div class="bg-[#F7F3EC] border border-[#8FAF82] rounded-2xl max-w-lg w-full mx-4 shadow-2xl p-6 relative overflow-hidden flex flex-col max-h-[85vh]">
+    <div class="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-[#3D6B4F]/10 rounded-full blur-2xl"></div>
+    <div class="flex justify-between items-center border-b border-sage/20 pb-3 mb-4">
+      <h3 class="font-display-lg text-primary text-xl font-bold flex items-center gap-2">
+        <span class="material-symbols-outlined text-forest">merge_type</span> Consolidate Items
+      </h3>
+      <button onclick="closeMergeModal()" class="material-symbols-outlined text-stone-400 hover:text-stone-600 transition-colors">close</button>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto pr-1 py-1 space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-[#3D6B4F] uppercase tracking-wider mb-2">1. Choose Primary Listing</label>
+        <select id="merge-primary-select" class="w-full rounded-xl border border-sage/30 bg-white px-4 py-3 text-sm focus:ring-1 focus:ring-forest focus:border-forest outline-none transition-shadow" onchange="updateMergeItemsUI()">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-[#3D6B4F] uppercase tracking-wider">2. Name Merged Variants</label>
+        <p class="text-[10px] text-on-surface-variant leading-relaxed">Consolidated items will be disabled/archived, and their stock/photos migrated as a variant option under the primary item.</p>
+        <div id="merge-variants-list" class="space-y-3 pt-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-sage/20 pt-4 mt-4 flex flex-col gap-3">
+      <!-- Branded warning callout -->
+      <div class="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+        <span class="material-symbols-outlined text-amber-600 text-[18px] mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+        <p class="text-[11px] text-amber-800 leading-relaxed"><strong>This action is irreversible.</strong> Non-primary listings will be archived. All old product detail pages will forward or display as inactive, and their assets will permanently migrate to the primary product variants.</p>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button onclick="closeMergeModal()" class="px-5 py-2.5 border border-outline rounded-full text-xs font-bold text-on-surface-variant hover:bg-[#8FAF82]/10 transition-all active:scale-95">Cancel</button>
+        <button id="merge-confirm-btn" onclick="submitMerge()" class="px-6 py-2.5 bg-forest text-white rounded-full text-xs font-bold shadow hover:bg-forest/90 transition-all active:scale-95 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm font-bold">check</span> Confirm & Consolidate
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Floating Action Button for Support/Help -->
 <button class="fixed bottom-lg right-lg w-14 h-14 bg-tertiary text-on-tertiary rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-50">
@@ -702,6 +768,9 @@ function rowHTML(l) {
                 </div>
                 <button class="edit-btn text-sage hover:text-forest transition-colors" title="Edit" data-id="${l.listing_id}">
                     <span class="material-symbols-outlined text-lg">edit</span>
+                </button>
+                <button class="add-color-btn text-forest hover:text-primary transition-colors flex items-center justify-center p-1 rounded-full hover:bg-forest/10 active:scale-95" title="Add Color Variant" onclick="event.stopPropagation(); sessionStorage.setItem('draft_id', '${l.listing_id}'); window.location.href='/seller/listing-pricing-a.html?add_color=true';">
+                    <span class="material-symbols-outlined text-lg">palette</span>
                 </button>
                 <button class="pause-btn text-[#7B5EA7] hover:text-[#7B5EA7]/85 transition-colors" title="${pauseTitle}" data-id="${l.listing_id}" data-status="${l.status}">
                     <span class="material-symbols-outlined text-lg">${pauseIcon}</span>
@@ -1139,6 +1208,131 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.getElementById('retry-btn')?.addEventListener('click', () => loadListings(true));
+
+// ── Merge Listings Handlers ─────────────────────────────────────
+function openMergePanel() {
+    const selectedIds = Object.keys(selectedListings);
+    if (selectedIds.length < 2) {
+        showToast('Please select at least 2 listings from the table to merge.', 'error');
+        return;
+    }
+
+    const selectEl = document.getElementById('merge-primary-select');
+    selectEl.innerHTML = '';
+
+    selectedIds.forEach(id => {
+        const listing = allListings.find(l => String(l.listing_id) === String(id));
+        if (listing) {
+            const opt = document.createElement('option');
+            opt.value = listing.listing_id;
+            opt.textContent = `${listing.title} (${formatPaise(listing.price_paise)})`;
+            selectEl.appendChild(opt);
+        }
+    });
+
+    document.getElementById('merge-modal').classList.remove('hidden');
+    updateMergeItemsUI();
+}
+
+function closeMergeModal() {
+    document.getElementById('merge-modal').classList.add('hidden');
+}
+
+function updateMergeItemsUI() {
+    const primaryId = document.getElementById('merge-primary-select').value;
+    const selectedIds = Object.keys(selectedListings);
+    const container = document.getElementById('merge-variants-list');
+    container.innerHTML = '';
+
+    selectedIds.forEach(id => {
+        if (String(id) === String(primaryId)) return; // skip primary listing
+
+        const listing = allListings.find(l => String(l.listing_id) === String(id));
+        if (listing) {
+            const row = document.createElement('div');
+            row.className = 'bg-white rounded-xl border border-sage/20 p-4 flex flex-col gap-2 shadow-sm';
+            row.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden border border-sage/20 shrink-0">
+                        ${listing.cover_photo_url ? `<img src="${listing.cover_photo_url}" class="w-full h-full object-cover" />` : `<div class="w-full h-full bg-slate-100 flex items-center justify-center"><span class="material-symbols-outlined text-stone-400">image</span></div>`}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs font-semibold text-primary truncate">${listing.title}</p>
+                        <p class="text-[10px] text-on-surface-variant font-mono">Stock: ${listing.stock_count} • Price: ${formatPaise(listing.price_paise)}</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-forest/70 uppercase tracking-widest mb-1">Variant Label (e.g. Color or Style)</label>
+                    <input type="text" placeholder="e.g. Blush Pink, Matte Black" data-id="${id}" class="merge-variant-name-input w-full rounded-lg border border-sage/30 px-3 py-2 text-xs focus:ring-1 focus:ring-forest focus:border-forest outline-none" value="${listing.title.replace(/.*-\s*/, '')}" />
+                </div>
+            `;
+            container.appendChild(row);
+        }
+    });
+}
+
+async function submitMerge() {
+    const primaryId = parseInt(document.getElementById('merge-primary-select').value, 10);
+    const inputs = document.querySelectorAll('.merge-variant-name-input');
+    const sourceListings = [];
+    let hasEmpty = false;
+
+    inputs.forEach(input => {
+        const val = input.value.trim();
+        if (!val) {
+            hasEmpty = true;
+            input.classList.add('border-red-500');
+        } else {
+            input.classList.remove('border-red-500');
+            sourceListings.push({
+                id: parseInt(input.dataset.id, 10),
+                variant_name: val
+            });
+        }
+    });
+
+    if (hasEmpty) {
+        showToast('Please name each merged variant option.', 'error');
+        return;
+    }
+
+    const confirmBtn = document.getElementById('merge-confirm-btn');
+    const originalHTML = confirmBtn.innerHTML;
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Consolidating...`;
+
+    const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+    try {
+        const res = await fetch(`${API_BASE}/api/seller/listings/merge`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                primary_id: primaryId,
+                source_listings: sourceListings
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Consolidation failed');
+
+        showToast('Listings consolidated successfully!', 'success');
+        closeMergeModal();
+        dismissBulkBar();
+        await loadListings(true);
+    } catch (err) {
+        showToast(err.message, 'error');
+    } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = originalHTML;
+    }
+}
+window.openMergePanel = openMergePanel;
+window.closeMergeModal = closeMergeModal;
+window.updateMergeItemsUI = updateMergeItemsUI;
+window.submitMerge = submitMerge;
 </script>
 
 <!-- Mobile Nav Injection -->

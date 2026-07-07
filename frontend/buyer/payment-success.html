@@ -112,10 +112,19 @@
                 The maker has been notified — your gift is on its way.
             </p>
 <!-- Order ID Pill -->
-<div class="inline-flex items-center gap-sm bg-surface-container-low px-md py-xs rounded-full border border-outline-variant mb-xl">
+<div class="inline-flex items-center gap-sm bg-surface-container-low px-md py-xs rounded-full border border-outline-variant mb-4">
 <span class="material-symbols-outlined text-secondary !text-sm">confirmation_number</span>
 <span id="order-ref-text" class="font-data-price text-[13px] text-secondary">#N/A</span>
 </div>
+
+<!-- Consolidated Order Summary Card -->
+<div id="order-summary-card" class="hidden max-w-md mx-auto bg-ivory-card border border-sage/20 rounded-2xl p-6 text-left shadow-sm mb-8 relative overflow-hidden">
+  <h4 class="font-label-caps text-label-caps text-primary tracking-widest uppercase mb-4 text-xs font-bold">ORDER SUMMARY</h4>
+  <div id="order-summary-items" class="space-y-4">
+    <!-- Items populated by JS -->
+  </div>
+</div>
+
 <!-- Actions -->
 <div class="flex flex-col md:flex-row gap-md justify-center items-center">
 <button id="btn-view-order" class="w-full md:w-auto px-xl py-md bg-primary text-white rounded-lg font-body-md font-bold hover:opacity-90 transform active:scale-95 transition-all shadow-sm">
@@ -142,6 +151,38 @@
         const orderId = params.get('order_id');
 
         document.getElementById('order-ref-text').innerText = `#${orderRef}`;
+
+        // Fetch placed order items to render summary card with variant badges
+        if (orderId) {
+            try {
+                const oRes = await apiClient.get(`/orders/${orderId}`);
+                if (oRes.data && oRes.data.success && oRes.data.data.items) {
+                    const items = oRes.data.data.items;
+                    const itemsContainer = document.getElementById('order-summary-items');
+                    const summaryCard = document.getElementById('order-summary-card');
+                    if (itemsContainer && summaryCard && items.length > 0) {
+                        itemsContainer.innerHTML = items.map(item => {
+                            const imgUrl = item.image_url ? item.image_url : 'https://placehold.co/120x120/f4ede3/516447?text=Handcrafted';
+                            return `
+                                <div class="flex gap-4 items-center">
+                                    <div class="w-12 h-12 bg-surface-dim rounded-lg overflow-hidden flex-shrink-0 border border-sage/20">
+                                        <img class="w-full h-full object-cover" src="${imgUrl}" alt="${item.product_name}" loading="lazy">
+                                    </div>
+                                    <div class="flex-grow">
+                                        <h5 class="text-xs font-semibold text-primary truncate">${item.product_name}</h5>
+                                        <p class="text-[10px] text-on-surface-variant font-mono mt-0.5">Qty ${item.quantity} • ${item.unit_price_paise ? (item.unit_price_paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }) : ''}</p>
+                                        ${item.variant_name ? `<span class="inline-block mt-1 px-2 py-[2px] text-[10px] font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">${item.variant_name}</span>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        summaryCard.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading order summary:", err);
+            }
+        }
 
         const btnViewOrder = document.getElementById('btn-view-order');
         if (btnViewOrder) {

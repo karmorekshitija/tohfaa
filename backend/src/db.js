@@ -521,6 +521,7 @@ async function initDb() {
     `);
     
     await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_seller_status ON conversations(seller_id, status)');
+    await pool.query('ALTER TABLE order_items ADD COLUMN IF NOT EXISTS variant_name TEXT DEFAULT NULL');
 
     // ─── Delayed courier pickup columns and constraints on orders ──────────────
     await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_eligible_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');

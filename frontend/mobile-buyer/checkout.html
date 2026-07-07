@@ -264,6 +264,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-headline-sm text-headline-sm text-primary" style="font-size: 1.1rem">${ci.name}</h4>
+                                    ${ci.variant_name ? `<span class="inline-block mt-1 px-2 py-[2px] text-[11px] font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">${ci.variant_name}</span>` : ''}
                                     <p class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-1">Quantity: ${ci.quantity}</p>
                                     <p class="font-label-md text-label-md text-gold mt-2">${formatPaise(ci.price_paise)} each</p>
                                 </div>

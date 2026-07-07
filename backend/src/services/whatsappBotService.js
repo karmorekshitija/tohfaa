@@ -5,6 +5,7 @@ const PDFDocument = require('pdfkit');
 const db = require('../db');
 const geminiClient = require('./geminiClient');
 const whatsappService = require('./whatsappService');
+const { syncListingToProduct } = require('./listingSync');
 
 const SYSTEM_INSTRUCTION = `
 You are the Tohfa Seller Assistant AI. Analyze the user's message and categorize it into one of the following actions:
@@ -96,30 +97,41 @@ async function handlePendingAction(cleanMsg, pending, sellerId, fromNumber) {
     if (cleanMsg === 'yes' || cleanMsg === 'confirm') {
       const data = pending.data;
       const pricePaise = Math.round(data.price * 100);
+      let listingId = null;
       try {
         // Insert new listing directly in active state
-        await db.prepare(`
+        const listingResult = await db.prepare(`
           INSERT INTO listings (
             seller_id, title, description, base_price, price_paise, listing_type,
             status, stock_count, ships_in_days, dispatch_sla_days
           ) VALUES (?, ?, ?, ?, ?, 'pre-made', 'active', ?, 7, 3)
         `).run(sellerId, data.name, 'Added via WhatsApp Assistant', pricePaise, pricePaise, data.stock || 10);
-
-        // Also duplicate in products if the table is used
-        try {
-          await db.prepare(`
-            INSERT INTO products (
-              seller_id, name, price, stock, description
-            ) VALUES (?, ?, ?, ?, ?)
-          `).run(sellerId, data.name, pricePaise, data.stock || 10, 'Added via WhatsApp Assistant');
-        } catch (_) {}
-
-        await clearPendingAction(sellerId);
-        return `Success! Product "${data.name}" has been added and published in your catalog with price ₹${data.price} and stock ${data.stock}.`;
+        listingId = Number(listingResult.lastInsertRowid);
       } catch (err) {
-        console.error('Error inserting product from WhatsApp:', err);
+        console.error('[WhatsApp add_product] Error inserting listing:', err);
         await clearPendingAction(sellerId);
-        return "I was unable to save the product due to a database error. Please try again.";
+        return 'I was unable to save the product due to a database error. Please try again.';
+      }
+
+      // Sync the new listing into the buyer-visible products catalog
+      let syncResult;
+      try {
+        syncResult = await syncListingToProduct(listingId);
+      } catch (err) {
+        // syncListingToProduct itself catches internally and returns a warning,
+        // but guard here in case of an unexpected throw
+        console.error('[WhatsApp add_product] Unexpected error in syncListingToProduct:', err);
+        syncResult = { synced: false, productId: null, warning: err.message };
+      }
+
+      await clearPendingAction(sellerId);
+
+      if (syncResult.synced) {
+        return `Success! Product "${data.name}" has been added and published in your catalog with price ₹${data.price} and stock ${data.stock || 10}.`;
+      } else {
+        // Listing was saved but catalog publish failed — tell the seller honestly
+        console.error(`[WhatsApp add_product] Sync failed for listing ${listingId}:`, syncResult.warning);
+        return `Your product "${data.name}" was saved as a listing (id: ${listingId}), but couldn't be published to your buyer catalog yet. Please check your Seller Dashboard to complete the setup. Error: ${syncResult.warning || 'unknown error'}`;
       }
     } else if (cleanMsg === 'no' || cleanMsg === 'cancel') {
       await clearPendingAction(sellerId);
