@@ -104,7 +104,9 @@ VERIFY: locally create a new (unverified) seller + listing → listing not in GE
 approve the SELLER via admin API → listing appears without any per-listing approval action;
 grep confirms old "reviewed within 24 hours" copy no longer appears anywhere in buyer/seller UI.
 
-## #D12 ⬜ [chat] "Chat with Buyer" from Orders writes to a table nothing reads
+## #D12 ✅ FIXED [chat] "Chat with Buyer" from Orders writes to a table nothing reads
+   - Fix: Migrated seller orders chat APIs (/api/seller/messages/start, /api/seller/messages, /api/seller/messages/:thread_id/send) to write/read from live tables (conversations, conversation_messages) instead of the dead tables. Updated desktop and mobile seller orders page to redirect with conversationId, and seller messages inbox page to support both conversationId and thread_id query parameters.
+   - Files changed: backend/src/server.js, frontend/seller/orders.html, frontend/mobile-seller/orders.html, frontend/seller/messages.html, frontend/mobile-seller/messages.html
 Messages go to a dead table. Root-cause which chat system the buyer side actually reads, and
 point this entry into that same conversation flow (or read path) so both sides see one thread.
 Do not create a third path.

@@ -762,7 +762,7 @@
                         });
                         const d = await r.json();
                         if (!r.ok) throw new Error(d.message || 'Failed to start chat');
-                        window.location.href = `/mobile-seller/messages.html?thread_id=${d.data.thread_id}`;
+                        window.location.href = `/mobile-seller/messages.html?conversationId=${d.data.thread_id}`;
                     } catch (err) {
                         showToast(err.message, 'error');
                         chatBuyerBtn.disabled = false;

@@ -1438,7 +1438,7 @@
     
     // Check if initial conversation selected in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const initialConvId = urlParams.get('conversationId');
+    const initialConvId = urlParams.get('conversationId') || urlParams.get('thread_id');
     if (initialConvId) {
       activeConversationId = parseInt(initialConvId, 10);
       document.getElementById('chat-area-empty').classList.add('hidden');

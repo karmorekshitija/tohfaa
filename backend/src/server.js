@@ -1021,7 +1021,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active'
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY p.created_at DESC
       LIMIT 12
     `;
@@ -1097,7 +1097,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       JOIN sponsored_products sp_prod ON sp_prod.product_id = p.id
-      WHERE p.status = 'active' AND sp_prod.is_sponsored = 1
+      WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
     
@@ -1146,7 +1146,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder})
+      WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY sales_rank DESC, p.created_at DESC, p.id DESC
       LIMIT 8
     `;
@@ -1196,7 +1196,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder})
+      WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
 
@@ -1429,7 +1429,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.category_id = ? AND p.status = 'active'
+      WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
     `;
     
     if (queryParts.length > 0) {
@@ -1535,6 +1535,7 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
 
     let queryParts = [
       "p.status = 'active'",
+      "COALESCE(sp.is_approved, 0) = 1",
       "(p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR COALESCE(c.display_name, c.name) LIKE ? OR sp.shop_name LIKE ? OR u.full_name LIKE ?)"
     ];
     let queryParams = [];
@@ -1651,8 +1652,10 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
   try {
     // 1. Suggestions: distinct product names matching the query
     const suggestions = await db.prepare(`
-      SELECT DISTINCT name FROM products 
-      WHERE status = 'active' AND (name LIKE ? OR description LIKE ?)
+      SELECT DISTINCT p.name FROM products p
+      JOIN users u ON p.seller_id = u.id
+      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND (p.name LIKE ? OR p.description LIKE ?)
       LIMIT 7
     `).all(`%${q}%`, `%${q}%`).map(row => row.name);
     
@@ -1663,7 +1666,7 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
         (SELECT COUNT(*) FROM products p WHERE p.seller_id = u.id AND p.status = 'active' AND p.review_count > 0) AS reviewed_products
       FROM users u
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE u.role = 'seller' AND u.is_active = 1 AND u.is_banned = 0
+      WHERE u.role = 'seller' AND u.is_active = 1 AND u.is_banned = 0 AND COALESCE(sp.is_approved, 0) = 1
         AND (u.full_name LIKE ? OR sp.shop_name LIKE ?)
       LIMIT 5
     `).all(`%${q}%`, `%${q}%`);
@@ -1879,7 +1882,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         p.id, p.seller_id, p.category_id, p.name, p.description, p.price_paise, p.stock_qty, p.ships_in_days, p.avg_rating, p.review_count, p.status,
         p.paused_at, p.pause_reason, p.resume_estimate_date, COALESCE(p.remake_eligible, FALSE) AS remake_eligible,
         c.name AS category_name, c.slug AS category_slug,
-        COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline,
+        COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline, COALESCE(sp.is_approved, 0) AS is_approved,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
         COALESCE((SELECT tags FROM listings WHERE title = p.name LIMIT 1), '[]') AS listing_tags
     `;
@@ -1904,6 +1907,14 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         error: true,
         message: "Product not found",
         code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    if (productData.is_approved !== 1) {
+      return res.status(403).json({
+        error: true,
+        message: "Seller pending verification",
+        code: "PENDING_VERIFICATION"
       });
     }
     
@@ -6653,6 +6664,7 @@ app.get('/api/products/:id/similar', rateLimit(120), optionalAuthenticateToken, 
         AND p.status = 'active'
         AND p.stock_qty > 0
         AND COALESCE(sc.vacation_mode, 0) = 0
+        AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY p.avg_rating DESC, p.review_count DESC, p.id DESC
       LIMIT ?
     `).all(srcProduct.category_id, productId, limit);
@@ -6725,7 +6737,7 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active'
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
         AND p.stock_qty > 0
         AND p.id != ?
         AND (
@@ -7929,43 +7941,49 @@ app.post('/api/seller/messages/start', requireSeller, async (req, res) => {
     const { order_id, buyer_id } = req.body;
     if (!buyer_id) return res.status(400).json({ error: true, message: 'buyer_id required' });
 
-    // Ensure message_threads table exists
-    try {
-      db.exec(`CREATE TABLE IF NOT EXISTS message_threads (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        seller_id INTEGER NOT NULL,
-        buyer_id INTEGER NOT NULL,
-        order_id INTEGER DEFAULT NULL,
-        last_msg_at TEXT DEFAULT (datetime('now')),
-        has_unread INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT (datetime('now'))
-      )`);
-    } catch (_) {}
+    let conversation = null;
 
-    let thread = null;
-
-    // Check for existing thread tied to this order
     if (order_id) {
-      thread = db.prepare('SELECT * FROM message_threads WHERE order_id = ? AND seller_id = ?').get(order_id, sellerId);
+      conversation = await db.prepare('SELECT * FROM conversations WHERE order_id = ? AND seller_id = ?').get(order_id, sellerId);
     }
 
-    // Fall back to any thread between this seller and buyer
-    if (!thread) {
-      thread = db.prepare('SELECT * FROM message_threads WHERE seller_id = ? AND buyer_id = ? ORDER BY last_msg_at DESC LIMIT 1').get(sellerId, buyer_id);
-    }
-
-    // Create a new thread if none found
-    if (!thread) {
-      db.prepare('INSERT INTO message_threads (seller_id, buyer_id, order_id, last_msg_at) VALUES (?, ?, ?, datetime("now"))').run(sellerId, buyer_id, order_id || null);
-      const last = db.prepare('SELECT last_insert_rowid() as id').get();
-      const newId = last ? last.id : null;
-      if (newId) {
-        thread = db.prepare('SELECT * FROM message_threads WHERE id = ?').get(newId);
+    if (!conversation && order_id) {
+      const order = await db.prepare('SELECT listing_id FROM orders WHERE id = ?').get(order_id);
+      if (order && order.listing_id) {
+        conversation = await db.prepare('SELECT * FROM conversations WHERE buyer_id = ? AND seller_id = ? AND listing_id = ? ORDER BY updated_at DESC LIMIT 1').get(buyer_id, sellerId, order.listing_id);
+        if (conversation) {
+          await db.prepare('UPDATE conversations SET order_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(order_id, conversation.id);
+        }
       }
     }
 
-    if (!thread) return res.status(500).json({ error: true, message: 'Failed to create or find thread' });
-    return res.json({ success: true, data: { thread_id: thread.id } });
+    if (!conversation) {
+      let listingId = null;
+      if (order_id) {
+        const order = await db.prepare('SELECT listing_id FROM orders WHERE id = ?').get(order_id);
+        if (order) listingId = order.listing_id;
+      }
+      
+      if (!listingId) {
+        const fallbackListing = await db.prepare('SELECT id FROM listings WHERE seller_id = ? AND status = \'active\' LIMIT 1').get(sellerId);
+        if (fallbackListing) listingId = fallbackListing.id;
+      }
+
+      if (!listingId) {
+        return res.status(400).json({ error: true, message: 'Seller must have at least one listing to start a chat' });
+      }
+
+      const insertResult = await db.prepare(`
+        INSERT INTO conversations (seller_id, buyer_id, listing_id, status, intake_complete, product_type_tag, request_type, order_id)
+        VALUES (?, ?, ?, 'awaiting_seller', 1, 'customization', 'customization', ?)
+      `).run(sellerId, buyer_id, listingId, order_id || null);
+      
+      const lastId = insertResult.lastInsertRowid;
+      conversation = await db.prepare('SELECT * FROM conversations WHERE id = ?').get(lastId);
+    }
+
+    if (!conversation) return res.status(500).json({ error: true, message: 'Failed to create or find thread' });
+    return res.json({ success: true, data: { thread_id: conversation.id, conversation_id: conversation.id } });
   } catch (err) {
     console.error('POST /api/seller/messages/start error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error' });
@@ -7981,43 +7999,47 @@ app.get('/api/seller/messages', requireSeller, async (req, res) => {
     const { tab = 'all', thread_id } = req.query;
 
     let query = `
-      SELECT t.*, u.full_name as buyer_name,
-             (SELECT body FROM messages WHERE thread_id = t.id ORDER BY id DESC LIMIT 1) as last_message,
+      SELECT c.*, u.full_name as buyer_name,
+             (SELECT content FROM conversation_messages WHERE conversation_id = c.id ORDER BY id DESC LIMIT 1) as last_message,
              o.order_ref
-      FROM message_threads t
-      JOIN users u ON u.id = t.buyer_id
-      LEFT JOIN orders o ON o.id = t.order_id
-      WHERE t.seller_id = ?
+      FROM conversations c
+      JOIN users u ON u.id = c.buyer_id
+      LEFT JOIN orders o ON o.id = c.order_id
+      WHERE c.seller_id = ? AND c.status NOT IN ('intake_in_progress', 'bot_collecting')
     `;
     const params = [sellerId];
 
-    if (tab === 'unread') {
-      query += ` AND t.has_unread = 1`;
-    }
-
-    query += ` ORDER BY t.last_msg_at DESC`;
+    query += ` ORDER BY c.updated_at DESC`;
 
     const threadRows = await db.prepare(query).all(...params);
 
-    const threads = threadRows.map(t => {
+    const threads = await Promise.all(threadRows.map(async t => {
       const parts = (t.buyer_name || '').split(' ');
       const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
+      
+      const unreadRow = await db.prepare(`
+        SELECT COUNT(*) as count
+        FROM conversation_messages
+        WHERE conversation_id = ? AND sender_id != ? AND is_read = 0
+      `).get(t.id, sellerId);
+      const unread_count = unreadRow ? unreadRow.count : 0;
+
       return {
         thread_id: t.id,
         buyer_name: t.buyer_name,
         buyer_initials: initials || 'B',
         last_message: t.last_message || '',
-        last_msg_at: t.last_msg_at,
-        has_unread: t.has_unread === 1,
+        last_msg_at: t.updated_at,
+        has_unread: unread_count > 0,
         order_ref: t.order_ref || null
       };
-    });
+    }));
 
     let active_thread = null;
 
     if (thread_id) {
       const activeId = parseInt(thread_id);
-      const thread = await db.prepare('SELECT * FROM message_threads WHERE id = ?').get(activeId);
+      const thread = await db.prepare('SELECT * FROM conversations WHERE id = ?').get(activeId);
       if (!thread) {
         return res.status(404).json({ error: true, message: 'Thread not found', code: 'NOT_FOUND' });
       }
@@ -8025,7 +8047,7 @@ app.get('/api/seller/messages', requireSeller, async (req, res) => {
         return res.status(403).json({ error: true, message: 'Forbidden', code: 'FORBIDDEN' });
       }
 
-      await db.prepare('UPDATE message_threads SET has_unread = 0 WHERE id = ?').run(activeId);
+      await db.prepare('UPDATE conversation_messages SET is_read = 1 WHERE conversation_id = ? AND sender_id != ?').run(activeId, sellerId);
 
       const buyer = await db.prepare('SELECT full_name FROM users WHERE id = ?').get(thread.buyer_id);
       const orderLinked = thread.order_id ? await db.prepare('SELECT * FROM orders WHERE id = ?').get(thread.order_id) : null;
@@ -8056,17 +8078,17 @@ app.get('/api/seller/messages', requireSeller, async (req, res) => {
       }));
 
       const msgRows = await db.prepare(`
-        SELECT id, sender_id, body, created_at
-        FROM messages
-        WHERE thread_id = ?
-        ORDER BY created_at ASC
+        SELECT id, sender_id, content, sent_at
+        FROM conversation_messages
+        WHERE conversation_id = ?
+        ORDER BY id ASC
       `).all(activeId);
 
       const messages = msgRows.map(m => ({
         id: m.id,
         sender_role: m.sender_id === sellerId ? 'seller' : 'buyer',
-        body: m.body,
-        created_at: m.created_at
+        body: m.content,
+        created_at: m.sent_at
       }));
 
       active_thread = {
@@ -8109,7 +8131,7 @@ app.post('/api/seller/messages/:thread_id/send', rateLimit(120), requireSeller, 
       return res.status(400).json({ error: true, message: 'Message body required', code: 'VALIDATION_ERROR' });
     }
 
-    const thread = await db.prepare('SELECT * FROM message_threads WHERE id = ?').get(threadId);
+    const thread = await db.prepare('SELECT * FROM conversations WHERE id = ?').get(threadId);
     if (!thread) {
       return res.status(404).json({ error: true, message: 'Thread not found', code: 'NOT_FOUND' });
     }
@@ -8119,17 +8141,17 @@ app.post('/api/seller/messages/:thread_id/send', rateLimit(120), requireSeller, 
 
     const createdAt = new Date().toISOString();
     const result = await db.prepare(`
-      INSERT INTO messages (thread_id, sender_id, body, is_quick_reply, created_at)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(threadId, sellerId, sanitizedBody, is_quick_reply ? 1 : 0, createdAt);
+      INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, content, sent_at, is_read)
+      VALUES (?, ?, 'seller', 'text', ?, ?, 0)
+    `).run(threadId, sellerId, sanitizedBody, createdAt);
 
     const msgId = result.lastInsertRowid;
 
     await db.prepare(`
-      UPDATE message_threads
-      SET last_msg_at = ?, has_unread = 0
+      UPDATE conversations
+      SET updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(createdAt, threadId);
+    `).run(threadId);
 
     return res.status(201).json({
       success: true,
@@ -9428,6 +9450,7 @@ const ADMIN_ROLE_MAPPING = {
   'POST /api/admin/seller-applications/:id/reject': ['super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/ban': ['super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/unban': ['super_admin', 'superadmin'],
+  'POST /api/admin/sellers/:seller_id/verify': ['admin', 'super_admin', 'superadmin'],
   'PATCH /api/admin/orders/:order_id/status': ['super_admin', 'superadmin'],
   'POST /api/admin/orders/:order_id/flag-refund': ['super_admin', 'superadmin'],
   'POST /api/admin/categories': ['super_admin', 'superadmin'],
@@ -9728,6 +9751,7 @@ app.get('/api/admin/sellers', authenticateAdminToken, async (req, res) => {
         u.email,
         u.created_at AS joined_at,
         u.is_banned,
+        COALESCE(sp.is_approved, 0) AS is_approved,
         (
           SELECT COUNT(*) 
           FROM products p 
@@ -9736,7 +9760,7 @@ app.get('/api/admin/sellers', authenticateAdminToken, async (req, res) => {
         (
           SELECT COUNT(*) 
           FROM listings l 
-          WHERE l.seller_id = sp.id AND l.status != 'deleted'
+          WHERE l.seller_id = u.id AND l.status != 'deleted'
         ) AS listing_count
       FROM users u
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
@@ -9748,7 +9772,9 @@ app.get('/api/admin/sellers', authenticateAdminToken, async (req, res) => {
     if (status === 'banned') {
       query += ` AND (u.is_banned = 1 OR EXISTS (SELECT 1 FROM seller_bans sb WHERE sb.seller_id = u.id AND sb.unbanned_at IS NULL))`;
     } else if (status === 'active') {
-      query += ` AND u.is_banned = 0 AND NOT EXISTS (SELECT 1 FROM seller_bans sb WHERE sb.seller_id = u.id AND sb.unbanned_at IS NULL)`;
+      query += ` AND u.is_banned = 0 AND NOT EXISTS (SELECT 1 FROM seller_bans sb WHERE sb.seller_id = u.id AND sb.unbanned_at IS NULL) AND COALESCE(sp.is_approved, 0) = 1`;
+    } else if (status === 'pending_verification') {
+      query += ` AND u.is_banned = 0 AND NOT EXISTS (SELECT 1 FROM seller_bans sb WHERE sb.seller_id = u.id AND sb.unbanned_at IS NULL) AND COALESCE(sp.is_approved, 0) = 0`;
     }
 
     if (search) {
@@ -9782,7 +9808,7 @@ app.get('/api/admin/sellers', authenticateAdminToken, async (req, res) => {
       const names = displayName.split(/\s+/).filter(Boolean);
       const initials = names.map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
-      const sellerStatus = (r.is_banned === 1 || await db.prepare("SELECT 1 FROM seller_bans WHERE seller_id = ? AND unbanned_at IS NULL").get(r.user_id)) ? 'banned' : 'active';
+      const sellerStatus = (r.is_banned === 1 || await db.prepare("SELECT 1 FROM seller_bans WHERE seller_id = ? AND unbanned_at IS NULL").get(r.user_id)) ? 'banned' : (r.is_approved === 1 ? 'active' : 'pending_verification');
 
       return {
         id: r.user_id,
@@ -9905,6 +9931,54 @@ app.get('/api/admin/sellers/:seller_id', authenticateAdminToken, async (req, res
     });
   } catch (err) {
     console.error('GET /api/admin/sellers/:seller_id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/admin/sellers/:seller_id/verify - Verify seller
+app.post('/api/admin/sellers/:seller_id/verify', authenticateAdminToken, async (req, res) => {
+  try {
+    const sellerId = parseInt(req.params.seller_id, 10);
+    if (isNaN(sellerId)) {
+      return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const seller = await db.prepare('SELECT * FROM users WHERE id = ? AND role = \'seller\'').get(sellerId);
+    if (!seller) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
+    }
+
+    const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
+    const beforeApproved = sellerProfile ? sellerProfile.is_approved : 0;
+
+    if (beforeApproved === 1) {
+      return res.status(409).json({ error: true, message: 'Seller is already verified', code: 'ALREADY_VERIFIED' });
+    }
+
+    // Update is_approved = 1 in seller_profiles
+    const result = await db.prepare('UPDATE seller_profiles SET is_approved = 1 WHERE user_id = ?').run(sellerId);
+    
+    if (result.changes === 0) {
+      // If profile doesn't exist, create it with is_approved = 1
+      await db.prepare(`
+        INSERT INTO seller_profiles (user_id, shop_name, is_approved)
+        VALUES (?, ?, 1)
+      `).run(sellerId, seller.full_name + "'s Shop");
+    }
+
+    await writeAuditLog(
+      'admin.seller.verified', req.admin.id, req.admin.display_name,
+      'seller', sellerId, `Seller: ${seller.full_name}`,
+      { is_approved: beforeApproved },
+      { is_approved: 1 }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Seller verified successfully'
+    });
+  } catch (err) {
+    console.error('POST /api/admin/sellers/:seller_id/verify error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -13447,7 +13521,10 @@ app.get('/api/sellers/:id', optionalAuthenticateToken, async (req, res) => {
       return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
     }
 
-    const sellerProfile = await db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(sellerId) || {};
+    const sellerProfile = await db.prepare('SELECT * FROM seller_profiles WHERE user_id = ?').get(sellerId);
+    if (!sellerProfile || sellerProfile.is_approved !== 1) {
+      return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
+    }
     const storeConfig = await db.prepare('SELECT * FROM store_config WHERE seller_id = ?').get(sellerId) || {};
 
     // Get followers count
@@ -13530,6 +13607,11 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
     }
 
     const userId = req.user ? req.user.user_id : null;
+
+    const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
+    if (!sellerProfile || sellerProfile.is_approved !== 1) {
+      return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
+    }
 
     let totalQuery = `SELECT COUNT(*) AS c FROM products WHERE seller_id = ? AND status = 'active'`;
     const total = await db.prepare(totalQuery).get(sellerId).c;
@@ -13617,6 +13699,11 @@ app.get('/api/sellers/:id/customizations', async (req, res) => {
       return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
     }
 
+    const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
+    if (!sellerProfile || sellerProfile.is_approved !== 1) {
+      return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
+    }
+
     const total = await db.prepare(`SELECT COUNT(*) AS c FROM listings WHERE seller_id = ? AND listing_type = 'custom' AND status = 'active'`).get(sellerId).c;
 
     const rows = await db.prepare(`
@@ -13691,6 +13778,11 @@ app.get('/api/sellers/:id/reviews', async (req, res) => {
 
     if (isNaN(sellerId)) {
       return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
+    if (!sellerProfile || sellerProfile.is_approved !== 1) {
+      return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
     }
 
     // Get star breakdown stats
