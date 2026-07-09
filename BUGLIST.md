@@ -52,12 +52,13 @@ VERIFY: local wizard walkthrough pasted as step list: details → photos → pri
 pricing-b → shipping → review, via Next only.
 *Verification*: Swapped the navigation order of Photos and Pricing steps to form the linear sequence: `Details -> Photos -> Pricing A -> Pricing B -> Shipping -> Preview`. Modified next/back redirection URLs and step load guards in both `frontend/seller/` (desktop) and `frontend/mobile-seller/` (mobile) wizard files. Created and ran the verification script `verify_wizard_flow.js` which parses the files and asserts the flow is correct. All checks passed.
 
-## #F6 ⬜ [seller-studio] Wizard steps fake success when save fails
+## #F6 ✅ FIXED [seller-studio] Wizard steps fake success when save fails
 Every step shows success even when the API save errored — sellers "publish" nothing. Fix: each
 step's save must await the response, block advancing on failure, and show the real error to
 the seller. Publish must verify all steps persisted.
 VERIFY: locally stop the API mid-wizard → step shows error and does NOT advance; with API up,
 publish → listing exists in DB with all step data.
+*Verification*: Removed all `catch` blocks that showed "Offline fallback redirecting..." and silently advanced to the next step despite API failure — in `listing-details.js`, `listing-photos.html`, `listing-pricing-a.html`, `listing-pricing-b.html`, `listing-shipping.html` (desktop + mobile). Added server-side publish gate in `handleUpdateListing`: blocks `status=active` if title, category, photos, price, or shipping_method are missing — returning 400 with specific error codes (`PHOTO_REQUIRED`, `PRICING_REQUIRED`, `SHIPPING_REQUIRED`). Fixed PostgreSQL COUNT string coercion bug. Verified with `test_wizard_validation.js`: all three gates fired in sequence before successful publish.
 
 ## #F7 ⬜ [seller-studio] Hardcoded personal pickup address (Pune) pre-selected for every new seller
 Remove the hardcoded default entirely. New sellers get an empty address form with required

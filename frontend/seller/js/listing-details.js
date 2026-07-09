@@ -640,12 +640,7 @@ async function saveDetails(shouldRedirect) {
             window.location.href = 'listing-photos.html';
         }
     } catch (err) {
-        showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
-        if (shouldRedirect) {
-            setTimeout(() => {
-                window.location.href = 'listing-photos.html';
-            }, 1000);
-        }
+        showToast(err.message, 'error');
     }
 }
 

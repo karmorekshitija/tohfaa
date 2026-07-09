@@ -437,12 +437,7 @@
                 window.location.href = 'listing-preview.html';
             }
         } catch (err) {
-            showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
-            if (shouldRedirect) {
-                setTimeout(() => {
-                    window.location.href = 'listing-preview.html';
-                }, 1000);
-            }
+            showToast(err.message, 'error');
         }
     }
 

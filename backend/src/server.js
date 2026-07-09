@@ -6259,11 +6259,33 @@ const handleUpdateListing = async (req, res) => {
     }
 
     const body = req.body;
+    const basePriceVal = body.base_price !== undefined ? body.base_price : body.price_paise;
 
     if (body.status === 'active') {
+      const currentTitle = body.title !== undefined ? body.title : listing.title;
+      const currentCategory = body.category !== undefined ? body.category : listing.category;
+      const currentPrice = parseInt(basePriceVal !== undefined ? basePriceVal : (listing.base_price || listing.price_paise || 0), 10);
+      const currentShipping = body.shipping_method !== undefined ? body.shipping_method : listing.shipping_method;
+
+      if (!currentTitle || typeof currentTitle !== 'string' || currentTitle.trim().length === 0) {
+        return res.status(400).json({
+          error: true,
+          code: 'DETAILS_REQUIRED',
+          message: 'Title is required to publish listing.'
+        });
+      }
+      if (!currentCategory || typeof currentCategory !== 'string' || currentCategory.trim().length === 0) {
+        return res.status(400).json({
+          error: true,
+          code: 'DETAILS_REQUIRED',
+          message: 'Category is required to publish listing.'
+        });
+      }
+
       const photosCount = await db.prepare('SELECT COUNT(*) AS count FROM listing_photos WHERE listing_id = ?').get(listingId);
       const imagesCount = await db.prepare('SELECT COUNT(*) AS count FROM listing_images WHERE listing_id = ?').get(listingId);
-      const totalPhotos = (photosCount ? (photosCount.count || 0) : 0) + (imagesCount ? (imagesCount.count || 0) : 0);
+      const totalPhotos = parseInt(photosCount ? (photosCount.count || 0) : 0, 10)
+                        + parseInt(imagesCount ? (imagesCount.count || 0) : 0, 10);
       if (totalPhotos === 0) {
         return res.status(400).json({
           error: true,
@@ -6271,10 +6293,25 @@ const handleUpdateListing = async (req, res) => {
           message: 'At least one photo is required to publish a listing.'
         });
       }
+
+      if (!currentPrice || currentPrice <= 0) {
+        return res.status(400).json({
+          error: true,
+          code: 'PRICING_REQUIRED',
+          message: 'Price must be greater than 0 to publish listing.'
+        });
+      }
+
+      if (!currentShipping || typeof currentShipping !== 'string' || currentShipping.trim().length === 0) {
+        return res.status(400).json({
+          error: true,
+          code: 'SHIPPING_REQUIRED',
+          message: 'Shipping method is required to publish listing.'
+        });
+      }
     }
 
     // Enforce base_price vs price_paise mapping
-    const basePriceVal = body.base_price !== undefined ? body.base_price : body.price_paise;
 
     // Build updates array dynamically
     const fieldsToUpdate = {};

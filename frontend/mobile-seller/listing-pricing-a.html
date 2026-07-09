@@ -394,12 +394,7 @@
       }
       return true;
     } catch (err) {
-      showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
-      if (shouldRedirect) {
-        setTimeout(() => {
-          window.location.href = '/mobile-seller/listing-pricing-b.html';
-        }, 1000);
-      }
+      showToast(err.message, 'error');
       return false;
     }
   }
