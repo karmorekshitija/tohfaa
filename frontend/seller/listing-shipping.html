@@ -300,11 +300,18 @@
         }
 
         if (addresses.length === 0) {
-            // Render Fallbacks
-            addresses = [
-                { id: 'studio', full_name: "Kshitija's Studio", line1: "Plot No. 42, Viman Nagar", city: "Pune", state: "Maharashtra", pincode: "411014" },
-                { id: 'warehouse', full_name: "Tohfa Main Warehouse", line1: "Building B, Sector 4, Indiranagar", city: "Bengaluru", state: "Karnataka", pincode: "560038" }
-            ];
+            // No saved addresses — show empty state. Seller must add their own address.
+            container.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-10 px-6 border-2 border-dashed border-secondary/30 rounded-2xl bg-white/50 text-center">
+                    <svg class="w-10 h-10 mb-3 text-secondary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <p class="font-semibold text-on-surface mb-1">No pickup address saved yet</p>
+                    <p class="text-sm text-on-surface-variant mb-4">Add your studio or home address so buyers know where their order ships from.</p>
+                    <button id="empty-state-add-btn" type="button" class="px-5 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-all">+ Add Pickup Address</button>
+                </div>
+            `;
+            const emptyBtn = document.getElementById('empty-state-add-btn');
+            if (emptyBtn) emptyBtn.addEventListener('click', openAddressModal);
+            return;
         }
 
         addresses.forEach((addr, i) => {
@@ -398,7 +405,11 @@
     async function saveShipping(shouldRedirect) {
         const dispatch_sla_days = parseInt(dispatchSlaSelect.value) || 5;
         const selectedRadio = document.querySelector('input[name="pickup-address"]:checked');
-        const pickup_address_type = selectedRadio ? selectedRadio.value : 'studio';
+        if (!selectedRadio) {
+            showToast('Please add and select a pickup address before continuing.', 'error');
+            return;
+        }
+        const pickup_address_type = selectedRadio.value;
 
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         const draftId = sessionStorage.getItem('draft_id');
