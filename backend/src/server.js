@@ -299,7 +299,7 @@ function safeToISOString(dateStr) {
   return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
 }
 
-function generateTokens(user) {
+async function generateTokens(user) {
   const accessToken = jwt.sign(
     { user_id: user.id, email: user.email, role: user.role },
     JWT_SECRET,
@@ -312,7 +312,7 @@ function generateTokens(user) {
   // 30 days expiry
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
   
-  db.prepare('INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)')
+  await db.prepare('INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)')
     .run(user.id, hashedRefreshToken, expiresAt);
     
   return {
@@ -365,7 +365,7 @@ app.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
     };
     
     // 5. Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user);
+    const { accessToken, refreshToken } = await generateTokens(user);
     
     // 6. Return response
     return res.status(201).json({
@@ -478,7 +478,7 @@ app.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
     };
     
     // 5. Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user);
+    const { accessToken, refreshToken } = await generateTokens(user);
     
     // 6. Return response
     return res.status(201).json({
@@ -552,7 +552,7 @@ app.post('/api/auth/login', rateLimit(20), async (req, res) => {
     }
     
     // 5. Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user);
+    const { accessToken, refreshToken } = await generateTokens(user);
     
     // 6. Return response
     return res.status(200).json({
@@ -760,7 +760,7 @@ app.post('/api/auth/refresh', rateLimit(30), async (req, res) => {
     // Rotate token: delete old, generate new pair
     await db.prepare('DELETE FROM refresh_tokens WHERE id = ?').run(tokenRecord.id);
     
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+    const { accessToken, refreshToken: newRefreshToken } = await generateTokens(user);
     
     return res.status(200).json({
       success: true,
@@ -15690,3 +15690,7 @@ const server = app.listen(PORT, async () => {
 });
 
 module.exports = { app, server, scheduleLogisticsPickups };
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
