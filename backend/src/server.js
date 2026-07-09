@@ -9334,6 +9334,101 @@ app.post('/api/admin/seller-applications/:id/reject', authenticateAdminToken, as
 // PART 2: ADMIN PANEL MIDDLEWARE & ROUTES
 // ============================================================
 
+const ADMIN_ROLE_MAPPING = {
+  // GET routes - allowed for 'admin' and 'super_admin'
+  'GET /api/admin/seller-applications': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/sellers': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/sellers/:seller_id': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/orders': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/orders/:order_id': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/categories': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/products': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/audit-logs': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/audit-logs/:log_id/diff': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/payment-health': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/dashboard/summary': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/dashboard/revenue-chart': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/dashboard/footfall': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/dashboard/top-products': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/dashboard/seller-activity': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/ui-settings': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/our-story': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/payments/ledger/all': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/reports': ['admin', 'super_admin', 'superadmin'],
+
+  // POST/PUT/PATCH/DELETE routes - only 'super_admin'
+  'POST /api/admin/seller-applications/:id/approve': ['super_admin', 'superadmin'],
+  'POST /api/admin/seller-applications/:id/reject': ['super_admin', 'superadmin'],
+  'POST /api/admin/sellers/:seller_id/ban': ['super_admin', 'superadmin'],
+  'POST /api/admin/sellers/:seller_id/unban': ['super_admin', 'superadmin'],
+  'PATCH /api/admin/orders/:order_id/status': ['super_admin', 'superadmin'],
+  'POST /api/admin/orders/:order_id/flag-refund': ['super_admin', 'superadmin'],
+  'POST /api/admin/categories': ['super_admin', 'superadmin'],
+  'PATCH /api/admin/categories/:category_id': ['super_admin', 'superadmin'],
+  'DELETE /api/admin/categories/:category_id': ['super_admin', 'superadmin'],
+  'POST /api/admin/subcategories': ['super_admin', 'superadmin'],
+  'PATCH /api/admin/subcategories/:id': ['super_admin', 'superadmin'],
+  'DELETE /api/admin/subcategories/:id': ['super_admin', 'superadmin'],
+  'PATCH /api/admin/products/:product_id/sponsored': ['super_admin', 'superadmin'],
+  'POST /api/admin/payment-health/run-check': ['super_admin', 'superadmin'],
+  'PUT /api/admin/ui-settings/:slot_name': ['super_admin', 'superadmin'],
+  'POST /api/admin/ui-settings/:slot_name/activate-seasonal': ['super_admin', 'superadmin'],
+  'POST /api/admin/our-story': ['super_admin', 'superadmin'],
+  'PUT /api/admin/our-story/:id': ['super_admin', 'superadmin'],
+  'DELETE /api/admin/our-story/:id': ['super_admin', 'superadmin'],
+  'PATCH /api/admin/reports/:id': ['super_admin', 'superadmin']
+};
+
+function authorizeAdminRoute(req, res, next) {
+  const routeKey = `${req.method} ${req.route ? req.route.path : req.path}`;
+  const allowedRoles = ADMIN_ROLE_MAPPING[routeKey];
+  
+  if (!allowedRoles) {
+    if (req.admin && (req.admin.role === 'super_admin' || req.admin.role === 'superadmin')) {
+      return next();
+    }
+    return res.status(403).json({
+      error: true,
+      message: "Forbidden: Unmapped admin route",
+      code: "FORBIDDEN"
+    });
+  }
+
+  if (!allowedRoles.includes(req.admin.role)) {
+    return res.status(403).json({
+      error: true,
+      message: "Forbidden: Insufficient privileges",
+      code: "FORBIDDEN"
+    });
+  }
+  
+  next();
+}
+
+function requireRole(role) {
+  return (req, res, next) => {
+    if (!req.admin) {
+      return res.status(401).json({
+        error: true,
+        message: "Admin authentication required",
+        code: "UNAUTHORIZED"
+      });
+    }
+    const roles = Array.isArray(role) ? role : [role];
+    if (roles.includes('superadmin') && !roles.includes('super_admin')) roles.push('super_admin');
+    if (roles.includes('super_admin') && !roles.includes('superadmin')) roles.push('superadmin');
+
+    if (!roles.includes(req.admin.role)) {
+      return res.status(403).json({
+        error: true,
+        message: "Forbidden: Insufficient privileges",
+        code: "FORBIDDEN"
+      });
+    }
+    next();
+  };
+}
+
 async function authenticateAdminToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -9389,7 +9484,7 @@ async function authenticateAdminToken(req, res, next) {
     }
     
     req.admin = adminUser;
-    next();
+    authorizeAdminRoute(req, res, next);
   });
 }
 

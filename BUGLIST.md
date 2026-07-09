@@ -24,13 +24,14 @@ works end-to-end locally.
 *Verification*: Added `sendPasswordResetEmail` method to `emailService.js` and wired it into `forgot-password` endpoint. Removed plaintext token/OTP logging from all console outputs (both password reset and WhatsApp OTP outputs). Created test script `test_password_reset.js` which performs end-to-end request/reset flow by intercepting the email token securely and verifying single use (reset token marked `used = 1` in DB) and timezone-safe comparison. Tested successfully.
 🟡 note: owner must set SMTP/email-provider env vars on Render.
 
-## #S3 ⬜ [SECURITY][admin] Admin roles stored but never enforced
+## #S3 ✅ FIXED [SECURITY][admin] Admin roles stored but never enforced
 Any admin account can ban sellers, touch ledger, and payment ops regardless of role. Add
 role-check middleware (e.g. requireRole('superadmin')) and apply per-route: destructive +
 financial routes restricted, read routes open to all admin roles. Map every /api/admin route
 to a required role in one table in the code.
 VERIFY: locally create limited-role admin → GET dashboards 200, but ban/ledger/payment
 routes → 403; superadmin → 200.
+*Verification*: Created `ADMIN_ROLE_MAPPING` mapping table inside `server.js` and defined `authorizeAdminRoute` and `requireRole` middlewares. Integrated the authorization check dynamically inside `authenticateAdminToken` by parsing `req.route.path` and comparing against allowed roles. Created test script `test_admin_roles.js` that successfully verifies that limited admin ('admin' role) can perform read-only actions (like GET dashboard summary) but is blocked with `403 Forbidden` on modifying actions (like POST ban seller), while super admin ('super_admin' role) successfully passes the check.
 
 ## #S4 ⬜ [SECURITY][stability] Unawaited DB write in generateTokens() + no unhandledRejection handler
 Every login/register fires an unawaited promise that can crash the whole backend on a Neon
