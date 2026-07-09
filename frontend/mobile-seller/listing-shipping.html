@@ -489,7 +489,7 @@
         if (!listing.price_paise || listing.price_paise <= 0) {
           showToast('Please complete the Pricing step first.', 'error');
           setTimeout(() => {
-            window.location.href = '/mobile-seller/listing-pricing-a.html';
+            window.location.href = '/mobile-seller/listing-pricing-b.html';
           }, 1500);
           return;
         }
@@ -561,7 +561,7 @@
     let oldData = {};
     try { oldData = JSON.parse(sessionStorage.getItem('draft_data') || '{}'); } catch {}
     sessionStorage.setItem('draft_data', JSON.stringify({ ...oldData, ...local }));
-    window.location.href = '/mobile-seller/listing-photos.html';
+    window.location.href = '/mobile-seller/listing-pricing-b.html';
   });
 
   // Action Logic

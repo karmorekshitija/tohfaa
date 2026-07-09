@@ -32,7 +32,7 @@
 </div>
 <div class="hidden md:flex gap-3">
 <button class="px-6 py-2 rounded-full border border-forest text-forest hover:bg-forest/5 font-medium">Save as Draft</button>
-<button onclick="window.location.href='/mobile-seller/listing-photos.html'" class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium">Continue →</button>
+<button onclick="window.location.href='/mobile-seller/listing-shipping.html'" class="px-6 py-2 rounded-full bg-forest text-parchment hover:bg-forest/90 font-medium">Continue →</button>
 <button class="px-6 py-2 rounded-full border border-red-200 text-red-500 hover:bg-red-50 font-medium">Discard Draft</button>
 </div>
 </header>
@@ -305,6 +305,20 @@
           }, 1500);
           return;
         }
+        if (!listing.photos || listing.photos.length === 0) {
+          showToast('Please upload photos first.', 'error');
+          setTimeout(() => {
+            window.location.href = '/mobile-seller/listing-photos.html';
+          }, 1500);
+          return;
+        }
+        if (!listing.base_price || listing.base_price <= 0) {
+          showToast('Please complete the Pricing A step first.', 'error');
+          setTimeout(() => {
+            window.location.href = '/mobile-seller/listing-pricing-a.html';
+          }, 1500);
+          return;
+        }
 
         // Pre-fill inputs
         if (listing.base_price) {
@@ -316,7 +330,7 @@
       } else {
         showToast('Failed to load draft details.', 'error');
         setTimeout(() => {
-          window.location.href = '/mobile-seller/listing-details.html';
+          window.location.href = '/mobile-seller/listing-pricing-a.html';
         }, 1500);
       }
     } catch (err) {
@@ -390,14 +404,14 @@
 
       showToast('Pricing saved successfully!', 'success');
       if (shouldRedirect) {
-        window.location.href = '/mobile-seller/listing-photos.html';
+        window.location.href = '/mobile-seller/listing-shipping.html';
       }
       return true;
     } catch (err) {
       showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
       if (shouldRedirect) {
         setTimeout(() => {
-          window.location.href = '/mobile-seller/listing-photos.html';
+          window.location.href = '/mobile-seller/listing-shipping.html';
         }, 1000);
       }
       return false;

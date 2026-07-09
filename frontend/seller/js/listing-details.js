@@ -585,7 +585,7 @@ async function saveDetails(shouldRedirect) {
     if (!token) {
         showToast('Details validated! (Offline mode)', 'success');
         if (shouldRedirect) {
-            window.location.href = 'listing-pricing-a.html';
+            window.location.href = 'listing-photos.html';
         }
         return;
     }
@@ -637,13 +637,13 @@ async function saveDetails(shouldRedirect) {
 
         showToast('Details saved as draft!', 'success');
         if (shouldRedirect) {
-            window.location.href = 'listing-pricing-a.html';
+            window.location.href = 'listing-photos.html';
         }
     } catch (err) {
         showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
         if (shouldRedirect) {
             setTimeout(() => {
-                window.location.href = 'listing-pricing-a.html';
+                window.location.href = 'listing-photos.html';
             }, 1000);
         }
     }

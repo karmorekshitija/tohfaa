@@ -469,13 +469,6 @@
                     }, 1500);
                     return;
                 }
-                if (!listing.price_paise || listing.price_paise <= 0) {
-                    showToast('Please complete the Pricing step first.', 'error');
-                    setTimeout(() => {
-                        window.location.href = 'listing-pricing-a.html';
-                    }, 1500);
-                    return;
-                }
 
                 if (listing.title) {
                     document.getElementById('listing-title').value = listing.title;
@@ -585,13 +578,13 @@
             showToast('Draft saved successfully!', 'success');
 
             if (shouldRedirect) {
-                window.location.href = 'listing-shipping.html';
+                window.location.href = 'listing-pricing-a.html';
             }
         } catch (err) {
             showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
             if (shouldRedirect) {
                 setTimeout(() => {
-                    window.location.href = 'listing-shipping.html';
+                    window.location.href = 'listing-pricing-a.html';
                 }, 1000);
             }
         }
@@ -606,7 +599,7 @@
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
         if (!token) {
             // No backend — just navigate to next step directly
-            window.location.href = 'listing-shipping.html';
+            window.location.href = 'listing-pricing-a.html';
             return;
         }
         saveListingDraft(true);
@@ -628,7 +621,7 @@
             }
             const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
             if (!token) {
-                window.location.href = 'listing-shipping.html';
+                window.location.href = 'listing-pricing-a.html';
                 return;
             }
             saveListingDraft(true);

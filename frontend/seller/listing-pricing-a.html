@@ -220,6 +220,13 @@
                     }, 1500);
                     return;
                 }
+                if (!listing.photos || listing.photos.length === 0) {
+                    showToast('Please upload at least one photo first.', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'listing-photos.html';
+                    }, 1500);
+                    return;
+                }
                 
                 // Pre-fill inputs
                 if (listing.base_price) {
@@ -333,11 +340,10 @@
         });
     }
 
-    // Header Back Step
     const headerBackBtn = document.getElementById('header-back-btn');
     if (headerBackBtn) {
         headerBackBtn.addEventListener('click', () => {
-            window.location.href = 'listing-details.html';
+            window.location.href = 'listing-photos.html';
         });
     }
 

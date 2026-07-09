@@ -299,13 +299,27 @@
                 const resp = await res.json();
                 const listing = resp.data || resp;
 
-                if (!listing.title || !listing.category) {
-                    showToast('Please complete the Details step first.', 'error');
-                    setTimeout(() => {
-                        window.location.href = 'listing-details.html';
-                    }, 1500);
-                    return;
-                }
+                 if (!listing.title || !listing.category) {
+                     showToast('Please complete the Details step first.', 'error');
+                     setTimeout(() => {
+                         window.location.href = 'listing-details.html';
+                     }, 1500);
+                     return;
+                 }
+                 if (!listing.photos || listing.photos.length === 0) {
+                     showToast('Please upload photos first.', 'error');
+                     setTimeout(() => {
+                         window.location.href = 'listing-photos.html';
+                     }, 1500);
+                     return;
+                 }
+                 if (!listing.base_price || listing.base_price <= 0) {
+                     showToast('Please complete the Pricing A step first.', 'error');
+                     setTimeout(() => {
+                         window.location.href = 'listing-pricing-a.html';
+                     }, 1500);
+                     return;
+                 }
                 
                 // Pre-fill inputs
                 if (listing.base_price) {
@@ -348,7 +362,7 @@
         if (!token) {
             showToast('Pricing details validated! (Offline mode)', 'success');
             if (shouldRedirect) {
-                window.location.href = 'listing-photos.html';
+                window.location.href = 'listing-shipping.html';
             }
             return;
         }
@@ -381,7 +395,7 @@
 
             showToast('Pricing saved successfully!', 'success');
             if (shouldRedirect) {
-                window.location.href = 'listing-photos.html';
+                window.location.href = 'listing-shipping.html';
             }
         } catch (err) {
             showToast(err.message, 'error');
@@ -392,7 +406,7 @@
     document.getElementById('next-step-btn').addEventListener('click', () => savePricing(true));
 
     document.getElementById('back-step-btn').addEventListener('click', () => {
-        window.location.href = 'listing-details.html';
+        window.location.href = 'listing-pricing-a.html';
     });
 
 

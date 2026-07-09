@@ -744,7 +744,7 @@
     if (!token) {
       showToast('Details validated! (Offline mode)', 'success');
       if (shouldRedirect) {
-        window.location.href = '/mobile-seller/listing-pricing-a.html';
+        window.location.href = '/mobile-seller/listing-photos.html';
       }
       return true;
     }
@@ -794,14 +794,14 @@
 
       showToast('Details saved as draft!', 'success');
       if (shouldRedirect) {
-        window.location.href = '/mobile-seller/listing-pricing-a.html';
+        window.location.href = '/mobile-seller/listing-photos.html';
       }
       return true;
     } catch (err) {
       showToast(`${err.message} (Offline fallback redirecting...)`, 'error');
       if (shouldRedirect) {
         setTimeout(() => {
-          window.location.href = '/mobile-seller/listing-pricing-a.html';
+          window.location.href = '/mobile-seller/listing-photos.html';
         }, 1000);
       }
       return false;

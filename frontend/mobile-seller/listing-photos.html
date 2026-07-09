@@ -432,13 +432,6 @@
           }, 1500);
           return;
         }
-        if (!listing.price_paise || listing.price_paise <= 0) {
-          showToast('Please complete the Pricing step first.', 'error');
-          setTimeout(() => {
-            window.location.href = '/mobile-seller/listing-pricing-a.html';
-          }, 1500);
-          return;
-        }
 
         const allPhotos = listing.photos || [];
         photos = allPhotos.filter(p => p.is_video !== 1 && p.is_video !== 'true');
@@ -602,7 +595,7 @@
       showToast('Please upload at least one product photo before continuing.', 'error');
       return;
     }
-    window.location.href = '/mobile-seller/listing-shipping.html';
+    window.location.href = '/mobile-seller/listing-pricing-a.html';
   }
 
   // Update back button click
@@ -610,7 +603,7 @@
   if (backBtn) {
     backBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      window.location.href = '/mobile-seller/listing-pricing-b.html';
+      window.location.href = '/mobile-seller/listing-details.html';
     });
   }
 

@@ -298,6 +298,13 @@
           }, 1500);
           return;
         }
+        if (!listing.photos || listing.photos.length === 0) {
+          showToast('Please upload at least one photo first.', 'error');
+          setTimeout(() => {
+            window.location.href = '/mobile-seller/listing-photos.html';
+          }, 1500);
+          return;
+        }
 
         // Pre-fill inputs
         if (listing.base_price) {
@@ -309,7 +316,7 @@
       } else {
         showToast('Failed to load draft details.', 'error');
         setTimeout(() => {
-          window.location.href = '/mobile-seller/listing-details.html';
+          window.location.href = '/mobile-seller/listing-photos.html';
         }, 1500);
       }
     } catch (err) {
@@ -356,7 +363,7 @@
     if (!draftId) {
       showToast('No active draft found. Please start from Step 1.', 'error');
       setTimeout(() => {
-        window.location.href = '/mobile-seller/listing-details.html';
+        window.location.href = '/mobile-seller/listing-photos.html';
       }, 1500);
       return false;
     }
@@ -399,7 +406,7 @@
 
   document.getElementById('btn-back').addEventListener('click', async () => {
     await savePricing(false);
-    window.location.href = '/mobile-seller/listing-details.html';
+    window.location.href = '/mobile-seller/listing-photos.html';
   });
 
   async function handleSaveDraft(btn) {
