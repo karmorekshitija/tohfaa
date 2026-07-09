@@ -5201,6 +5201,13 @@ async function buildListingDetail(listingId) {
     console.warn("Error loading listing subcategories:", err);
   }
 
+  let variants = [];
+  try {
+    variants = await db.prepare('SELECT id, variant_name, price_paise, stock_count FROM listing_variants WHERE listing_id = ? ORDER BY id').all(listingId);
+  } catch (err) {
+    console.warn('Error loading listing variants:', err);
+  }
+
   return {
     listing_id: l.id,
     primary_name: l.primary_name,
@@ -5212,6 +5219,7 @@ async function buildListingDetail(listingId) {
     primary_medium: l.primary_medium,
     tags: l.tags ? JSON.parse(l.tags) : [],
     badges: l.badges ? JSON.parse(l.badges) : [],
+    base_price: l.base_price || l.price_paise,
     price_paise: l.price_paise,
     sku: l.sku,
     stock_count: l.stock_count,
@@ -5234,7 +5242,8 @@ async function buildListingDetail(listingId) {
     created_at: l.created_at,
     isCustomisable: l.listing_type === 'custom',
     customization_config: l.customization_config ? JSON.parse(l.customization_config) : null,
-    product_tag: l.product_tag || null
+    product_tag: l.product_tag || null,
+    variants
   };
 }
 
