@@ -175,7 +175,12 @@ app.use(sellerProfileRouter);
 app.use(paymentRouter);
 app.use('/api', chatbotRouter);
 app.use('/api', whatsappRouter);
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Serve /uploads with security headers to prevent execution of any slipped-through files
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Content-Disposition', 'inline');
+  next();
+}, express.static(path.join(__dirname, '..', 'uploads')));
 
 // Serve standard static screens for interactive flow if they exist
 const serveStitchScreen = (fileName) => {
@@ -5131,6 +5136,17 @@ async function requireSeller(req, res, next) {
 // Multer storage for listing photos
 const listingPhotosDir = path.join(__dirname, '..', 'uploads', 'listings');
 fs.mkdirSync(listingPhotosDir, { recursive: true });
+// ─── Shared image file-type filter (ext + mimetype) ────────────────────────
+const ALLOWED_IMAGE_EXT = /\.(jpg|jpeg|png|webp)$/i;
+const ALLOWED_IMAGE_MIME = /^image\/(jpeg|png|webp)$/;
+const imageFileFilter = (req, file, cb) => {
+  const extOk = ALLOWED_IMAGE_EXT.test(path.extname(file.originalname));
+  const mimeOk = ALLOWED_IMAGE_MIME.test(file.mimetype);
+  if (extOk && mimeOk) return cb(null, true);
+  cb(Object.assign(new Error('Only JPEG, PNG and WebP images are allowed'), { code: 'INVALID_FILE_TYPE' }));
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 const listingPhotoStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
     const rawId = String(req.params.id || 'tmp');
@@ -5141,7 +5157,11 @@ const listingPhotoStorage = multer.diskStorage({
   },
   filename: async (req, file, cb) => cb(null, `photo-${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`)
 });
-const uploadListingPhoto = multer({ storage: listingPhotoStorage, limits: { fileSize: 50 * 1024 * 1024 } });
+const uploadListingPhoto = multer({
+  storage: listingPhotoStorage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB max per photo
+  fileFilter: imageFileFilter
+});
 
 
 
@@ -10217,7 +10237,11 @@ const categoryStorage = multer.diskStorage({
     cb(null, 'category-' + Date.now() + path.extname(file.originalname));
   }
 });
-const uploadCategory = multer({ storage: categoryStorage });
+const uploadCategory = multer({
+  storage: categoryStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: imageFileFilter
+});
 
 // TASK 17: GET /api/admin/categories
 app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
@@ -11083,7 +11107,11 @@ const uiSettingsStorage = multer.diskStorage({
     cb(null, 'ui-' + Date.now() + path.extname(file.originalname));
   }
 });
-const uploadUiSettings = multer({ storage: uiSettingsStorage });
+const uploadUiSettings = multer({
+  storage: uiSettingsStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: imageFileFilter
+});
 
 // GET /api/admin/ui-settings
 app.get('/api/admin/ui-settings', authenticateAdminToken, async (req, res) => {
@@ -11184,7 +11212,11 @@ const spotlightStorage = multer.diskStorage({
     cb(null, 'spotlight-' + Date.now() + path.extname(file.originalname));
   }
 });
-const uploadSpotlight = multer({ storage: spotlightStorage });
+const uploadSpotlight = multer({
+  storage: spotlightStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: imageFileFilter
+});
 
 // GET /api/admin/our-story
 app.get('/api/admin/our-story', authenticateAdminToken, async (req, res) => {
@@ -11781,13 +11813,11 @@ const intakeStorage = multer.diskStorage({
   }
 });
 
-const intakeFileFilter = async (req, file, cb) => {
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (!allowedExtensions.includes(ext)) {
-    return cb(new Error('Format check: jpg/jpeg/png/webp only'), false);
-  }
-  cb(null, true);
+const intakeFileFilter = (req, file, cb) => {
+  const extOk = ALLOWED_IMAGE_EXT.test(path.extname(file.originalname));
+  const mimeOk = ALLOWED_IMAGE_MIME.test(file.mimetype);
+  if (extOk && mimeOk) return cb(null, true);
+  cb(Object.assign(new Error('Format check: jpg/jpeg/png/webp only'), { code: 'INVALID_FILE_TYPE' }));
 };
 
 const uploadIntake = multer({
@@ -12388,13 +12418,11 @@ const chatStorage = multer.diskStorage({
   }
 });
 
-const chatFileFilter = async (req, file, cb) => {
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (!allowedExtensions.includes(ext)) {
-    return cb(new Error('Format check: jpg/jpeg/png/webp only'), false);
-  }
-  cb(null, true);
+const chatFileFilter = (req, file, cb) => {
+  const extOk = ALLOWED_IMAGE_EXT.test(path.extname(file.originalname));
+  const mimeOk = ALLOWED_IMAGE_MIME.test(file.mimetype);
+  if (extOk && mimeOk) return cb(null, true);
+  cb(Object.assign(new Error('Format check: jpg/jpeg/png/webp only'), { code: 'INVALID_FILE_TYPE' }));
 };
 
 const uploadChat = multer({

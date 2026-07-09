@@ -60,11 +60,12 @@ VERIFY: locally stop the API mid-wizard → step shows error and does NOT advanc
 publish → listing exists in DB with all step data.
 *Verification*: Removed all `catch` blocks that showed "Offline fallback redirecting..." and silently advanced to the next step despite API failure — in `listing-details.js`, `listing-photos.html`, `listing-pricing-a.html`, `listing-pricing-b.html`, `listing-shipping.html` (desktop + mobile). Added server-side publish gate in `handleUpdateListing`: blocks `status=active` if title, category, photos, price, or shipping_method are missing — returning 400 with specific error codes (`PHOTO_REQUIRED`, `PRICING_REQUIRED`, `SHIPPING_REQUIRED`). Fixed PostgreSQL COUNT string coercion bug. Verified with `test_wizard_validation.js`: all three gates fired in sequence before successful publish.
 
-## #F7 ⬜ [seller-studio] Hardcoded personal pickup address (Pune) pre-selected for every new seller
+## #F7 ✅ FIXED [seller-studio] Hardcoded personal pickup address (Pune) pre-selected for every new seller
 Remove the hardcoded default entirely. New sellers get an empty address form with required
 validation; pickup_address_id only set after the seller submits their own address.
 VERIFY: grep confirms the hardcoded address is gone from the codebase; new seller onboarding
 locally shows empty required address form.
+*Verification*: Removed `{ id: 'studio', full_name: "Kshitija's Studio", line1: "Plot No. 42, Viman Nagar", city: "Pune" ... }` fallback from both `frontend/seller/listing-shipping.html` and `frontend/mobile-seller/listing-shipping.html`. When API returns no addresses, now shows a branded empty-state card ("No pickup address saved yet") with a "+ Add Pickup Address" button that opens the already-wired address modal. Save/Continue buttons now block with a toast error if no address is selected. grep for "Viman Nagar" in `frontend/` returns nothing.
 
 ## #F8 ⬜ [SECURITY][uploads] No file-type validation on uploads
 Any file type can be uploaded and is served statically (uploaded .html = hosted phishing page).
