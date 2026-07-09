@@ -81,10 +81,11 @@ Remove the fabricated default. Zero reviews → show "New seller / No reviews ye
 Check both seller profile and product cards.
 VERIFY: local seller with 0 reviews shows no numeric rating anywhere; grep for hardcoded 4.5 gone.
 
-## #D10 ⬜ [seller-studio] "Add Color Variant" button dead despite full backend support
+## #D10 ✅ FIXED [seller-studio] "Add Color Variant" button dead despite full backend support
 Wire the button to the existing variants endpoint: UI to add/name/remove variants in the
 wizard and edit page, persisted and rendered on the buyer product page.
 VERIFY: locally add 2 variants → API returns them → visible on product page.
+*Verification*: Enabled ?add_color=true mode in `listing-pricing-a.html` showing a dynamic color variants list, pre-loaded existing variants from buildListingDetail (which was updated to fetch from `listing_variants` table and include `base_price` / `variants`), and savePricing() now submits `variants` array in PUT payload.
 
 ## #D11 ⬜ [trust] No curation/approval gate despite UI promising 24hr review
 Do NOT gate individual listings — owner does not want to manually approve every listing.
