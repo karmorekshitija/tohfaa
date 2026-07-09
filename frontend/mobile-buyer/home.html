@@ -527,6 +527,16 @@
     import apiClient from '../src/utils/apiClient.js';
     import { logout } from '/src/utils/auth.js';
 
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     function isProductOwned(sellerId) {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
@@ -748,8 +758,8 @@
                         <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating || 0).toFixed(1)}</span>
                         <span>(${parseInt(product.review_count || 0, 10)})</span>
                     </div>
-                    <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${product.name}</h4>
-                    <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${product.seller_id}'">By ${product.seller_name}</span>
+                    <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${escapeHtml(product.name)}</h4>
+                    <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${product.seller_id}'">By ${escapeHtml(product.seller_name)}</span>
                 </div>
             </div>
             <div class="w-full">

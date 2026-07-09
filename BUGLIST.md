@@ -3,7 +3,7 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 # ===== ROUND 1 ADDITIONS — SECURITY & CORE-FLOW (work these FIRST) =====
 
-## #S1 ⬜ [SECURITY][reviews] Stored XSS via raw innerHTML in review rendering
+## #S1 ✅ FIXED [SECURITY][reviews] Stored XSS via raw innerHTML in review rendering
 Review content is injected with innerHTML unescaped — any buyer with an order can store a
 script that executes for every visitor. Fix BOTH sides: render with textContent (or escape
 HTML entities) on the frontend, and sanitize/strip HTML server-side on review create/update.
@@ -12,6 +12,7 @@ bios) and fix the same way in this item.
 VERIFY: locally submit review body `<img src=x onerror="document.title='XSS'">` → renders as
 literal text on product page, document.title unchanged; grep report of remaining innerHTML
 usages with user data = none.
+*Verification*: Created test script `test_xss_prevention.js` which submitted review body `<img src=x onerror="document.title='XSS'">` to `/api/reviews`. The backend sanitized this to an empty string (stored as `null` in DB), and mixed payloads like `Hello <img src=x onerror="document.title='XSS'"> World!` were sanitized to `Hello  World!` (all HTML tags stripped). Frontend templates across all buyer pages (product page, chat, profile, home) escape all user-supplied content using `escapeHtml`. Checked remaining `innerHTML` usages and all of them are now safe.
 
 ## #S2 ⬜ [SECURITY][auth] Password reset non-functional + raw reset token logged in plaintext
 No email is ever sent (emailService.js exists but is never imported/called) and the raw token

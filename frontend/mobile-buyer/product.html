@@ -487,6 +487,16 @@
         import { formatPaise } from '/src/utils/currency.js';
         import { logout } from '/src/utils/auth.js';
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         // Set search active style since we are browsing a product
         (function() {
             const activeEl = document.getElementById('tab-search');
@@ -1007,7 +1017,7 @@
                             <div class="flex-grow">
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <span class="font-semibold text-sm text-primary block">${r.reviewer_name || 'Anonymous'}</span>
+                                        <span class="font-semibold text-sm text-primary block">${escapeHtml(r.reviewer_name || 'Anonymous')}</span>
                                         <span class="text-[10px] text-outline">${dateStr}</span>
                                     </div>
                                     <div class="flex items-center text-amber-500">
@@ -1016,7 +1026,7 @@
                                         `).join('')}
                                     </div>
                                 </div>
-                                <p class="text-secondary text-sm leading-relaxed mt-2">${r.body || ''}</p>
+                                <p class="text-secondary text-sm leading-relaxed mt-2">${escapeHtml(r.body || '')}</p>
                             </div>
                         </div>
                     `;

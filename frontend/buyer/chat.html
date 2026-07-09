@@ -272,6 +272,16 @@
 
 <script>
   const API_BASE = window.location.origin;
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
   let activeConversationId = null;
   let activeOfferId = null;
   let conversations = [];
@@ -892,7 +902,7 @@
       if (msg.message_type === 'system_notice') {
         const sysDiv = document.createElement('div');
         sysDiv.className = "flex justify-center my-3 w-full";
-        sysDiv.innerHTML = `<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">${msg.content}</span>`;
+        sysDiv.innerHTML = `<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">${escapeHtml(msg.content)}</span>`;
         container.appendChild(sysDiv);
         return;
       }
@@ -1045,7 +1055,7 @@
           <div class="flex flex-col gap-1 max-w-[80%]">
             <div class="bg-[#F0F5EE] p-4 rounded-xl rounded-tl-none border border-[#8FAF82] shadow-sm">
               <p class="text-xs text-[#3D6B4F] font-bold mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">smart_toy</span> Tohfa Assistant</p>
-              <p class="text-sm leading-relaxed text-[#211b11]">${msg.content}</p>
+              <p class="text-sm leading-relaxed text-[#211b11]">${escapeHtml(msg.content)}</p>
             </div>
             <span class="text-[9px] text-gray-400 font-mono mt-1">${formatTime(msg.sent_at)}</span>
           </div>
@@ -1059,7 +1069,7 @@
       
       if (isOutgoing) {
         div.className = "flex justify-end w-full";
-        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${msg.content}</p>` : '';
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${escapeHtml(msg.content)}</p>` : '';
         if (msg.image_url) {
           contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}" loading="lazy">`;
         }
@@ -1073,7 +1083,7 @@
         `;
       } else {
         div.className = "flex justify-start w-full";
-        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${msg.content}</p>` : '';
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${escapeHtml(msg.content)}</p>` : '';
         if (msg.image_url) {
           contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}" loading="lazy">`;
         }

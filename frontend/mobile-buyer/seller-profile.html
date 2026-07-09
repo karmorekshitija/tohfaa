@@ -771,6 +771,16 @@
         import apiClient from '/src/utils/apiClient.js';
         import { logout } from '/src/utils/auth.js';
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         let sellerId = null;
         let sellerProfile = null;
         let activeTab = 'catalog';
@@ -936,8 +946,8 @@
             if (storyEl) {
                 const story = profile.artisan_story || profile.bio;
                 storyEl.innerHTML = story 
-                    ? story.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')
-                    : `<p>Welcome to ${profile.shop_name}. Our studio focuses on traditional handmade techniques, crafting unique treasures for slow and intentional living. Each creation is shaped with detail, care, and organic mineral mixtures.</p>`;
+                    ? story.split('\n').map(p => p.trim() ? `<p>${escapeHtml(p)}</p>` : '').join('')
+                    : `<p>Welcome to ${escapeHtml(profile.shop_name)}. Our studio focuses on traditional handmade techniques, crafting unique treasures for slow and intentional living. Each creation is shaped with detail, care, and organic mineral mixtures.</p>`;
             }
 
             // About Story Image

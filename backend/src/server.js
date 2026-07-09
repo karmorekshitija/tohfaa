@@ -14,6 +14,11 @@ const whatsappRouter = require('./whatsappRoutes');
 const whatsappService = require('./services/whatsappService');
 const cron = require('node-cron');
 
+function stripHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/<[^>]*>/g, '');
+}
+
 try { db.exec("ALTER TABLE notifications ADD COLUMN conversation_id INTEGER;"); } catch (e) {}
 try { db.exec("ALTER TABLE notifications ADD COLUMN offer_id INTEGER;"); } catch (e) {}
 try { db.exec("ALTER TABLE notifications ADD COLUMN order_code TEXT;"); } catch (e) {}
@@ -5003,6 +5008,7 @@ app.patch('/api/notifications/read-all', rateLimit(60), authenticateToken, async
 app.post('/api/reviews', rateLimit(30), authenticateToken, async (req, res) => {
   const authUserId = req.user.user_id;
   const { product_id, order_id, rating, body } = req.body;
+  const sanitizedBody = stripHtml(body);
 
   if (!product_id || !order_id || !rating || rating < 1 || rating > 5) {
     return res.status(400).json({
@@ -5059,7 +5065,7 @@ app.post('/api/reviews', rateLimit(30), authenticateToken, async (req, res) => {
       INSERT INTO reviews (product_id, buyer_id, reviewer_id, order_id, rating, body, comment_text, seller_id, listing_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `);
-    const result = await insertReview.run(product_id, authUserId, authUserId, order_id, rating, body || null, body || null, seller_id, listing_id);
+    const result = await insertReview.run(product_id, authUserId, authUserId, order_id, rating, sanitizedBody || null, sanitizedBody || null, seller_id, listing_id);
     const reviewId = result.lastInsertRowid;
 
     // 4. UPDATE products SET avg_rating, review_count (recalculate from all reviews)
@@ -5594,10 +5600,13 @@ app.put('/api/seller/profile', requireSeller, async (req, res) => {
       }
     }
 
-    const display_name_val = display_name !== undefined ? display_name : (shop_name !== undefined ? shop_name : null);
-    const shop_name_val = shop_name !== undefined ? shop_name : (display_name !== undefined ? display_name : null);
-    const artisan_story_val = artisan_story !== undefined ? artisan_story : (story_description !== undefined ? story_description : null);
-    const story_description_val = story_description !== undefined ? story_description : (artisan_story !== undefined ? artisan_story : null);
+    const display_name_val = display_name !== undefined ? stripHtml(display_name) : (shop_name !== undefined ? stripHtml(shop_name) : null);
+    const shop_name_val = shop_name !== undefined ? stripHtml(shop_name) : (display_name !== undefined ? stripHtml(display_name) : null);
+    const bio_val = bio !== undefined ? stripHtml(bio) : null;
+    const artisan_story_val = artisan_story !== undefined ? stripHtml(artisan_story) : (story_description !== undefined ? stripHtml(story_description) : null);
+    const story_description_val = story_description !== undefined ? stripHtml(story_description) : (artisan_story !== undefined ? stripHtml(artisan_story) : null);
+    const story_headline_val = story_headline !== undefined ? stripHtml(story_headline) : null;
+    const working_on_val = working_on !== undefined ? stripHtml(working_on) : null;
     const badges_val = badges !== undefined ? JSON.stringify(badges) : null;
 
     await db.prepare(`
@@ -5624,13 +5633,13 @@ app.put('/api/seller/profile', requireSeller, async (req, res) => {
       display_name_val ?? null,
       shop_name_val ?? null,
       handle ?? null,
-      bio ?? null,
+      bio_val ?? null,
       location ?? null,
       website ?? null,
       artisan_story_val ?? null,
       story_description_val ?? null,
-      story_headline ?? null,
-      working_on ?? null,
+      story_headline_val ?? null,
+      working_on_val ?? null,
       video_url ?? null,
       about_image_url ?? null,
       badges_val ?? null,
@@ -5924,7 +5933,9 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
       daily_product_cap = null
     } = req.body;
 
-    const titleVal = title;
+    const titleVal = stripHtml(title);
+    const sanitizedDescription = stripHtml(description);
+    const sanitizedStory = stripHtml(story);
     const basePriceVal = base_price !== undefined ? base_price : price_paise;
     const shipsInDaysVal = ships_in_days !== undefined ? ships_in_days : 7;
     const dispatchSlaDaysVal = dispatch_sla_days !== undefined ? dispatch_sla_days : 3;
@@ -6005,8 +6016,8 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
     `).run(
       sellerId,
       titleVal,
-      description || null,
-      story || null,
+      sanitizedDescription || null,
+      sanitizedStory || null,
       basePriceVal,
       finalListingType,
       shipsInDaysVal,
@@ -6264,7 +6275,11 @@ const handleUpdateListing = async (req, res) => {
 
     allowedFields.forEach(f => {
       if (body[f] !== undefined) {
-        fieldsToUpdate[f] = body[f];
+        if (f === 'title' || f === 'description' || f === 'story') {
+          fieldsToUpdate[f] = stripHtml(body[f]);
+        } else {
+          fieldsToUpdate[f] = body[f];
+        }
       }
     });
 
@@ -8008,6 +8023,7 @@ app.post('/api/seller/messages/:thread_id/send', rateLimit(120), requireSeller, 
     const threadId = parseInt(req.params.thread_id);
     const sellerId = req.user.user_id;
     const { body, is_quick_reply = false } = req.body;
+    const sanitizedBody = stripHtml(body ? body.trim() : '');
 
     if (!body || !body.trim()) {
       return res.status(400).json({ error: true, message: 'Message body required', code: 'VALIDATION_ERROR' });
@@ -8025,7 +8041,7 @@ app.post('/api/seller/messages/:thread_id/send', rateLimit(120), requireSeller, 
     const result = await db.prepare(`
       INSERT INTO messages (thread_id, sender_id, body, is_quick_reply, created_at)
       VALUES (?, ?, ?, ?, ?)
-    `).run(threadId, sellerId, body.trim(), is_quick_reply ? 1 : 0, createdAt);
+    `).run(threadId, sellerId, sanitizedBody, is_quick_reply ? 1 : 0, createdAt);
 
     const msgId = result.lastInsertRowid;
 
@@ -8166,6 +8182,7 @@ app.post('/api/seller/reviews/:id/reply', requireSeller, async (req, res) => {
     if (!reply_text || !reply_text.trim()) {
       return res.status(400).json({ error: true, message: 'reply_text is required', code: 'VALIDATION_ERROR' });
     }
+    const sanitizedReply = stripHtml(reply_text.trim());
 
     const review = await db.prepare('SELECT * FROM reviews WHERE id = ?').get(reviewId);
     if (!review) {
@@ -8185,16 +8202,16 @@ app.post('/api/seller/reviews/:id/reply', requireSeller, async (req, res) => {
       UPDATE reviews
       SET reply_text = ?, replied_at = ?, updated_at = datetime('now')
       WHERE id = ?
-    `).run(reply_text.trim(), repliedAt, reviewId);
+    `).run(sanitizedReply, repliedAt, reviewId);
 
     return res.status(201).json({
       success: true,
       data: {
         id: reviewId,
         review_id: reviewId, // compatibility
-        reply_text: reply_text.trim(),
+        reply_text: sanitizedReply,
         replied_at: repliedAt,
-        reply: { reply_text: reply_text.trim(), created_at: repliedAt } // compatibility
+        reply: { reply_text: sanitizedReply, created_at: repliedAt } // compatibility
       }
     });
   } catch (err) {
@@ -8895,7 +8912,7 @@ const handleUpdateStoreConfig = async (req, res) => {
     const spValues = [];
     if (body.shop_name !== undefined) {
       spUpdates.shop_name = '?';
-      spValues.push(body.shop_name);
+      spValues.push(stripHtml(body.shop_name));
     }
     if (body.instagram_handle !== undefined) {
       spUpdates.instagram_handle = '?';
@@ -8908,7 +8925,7 @@ const handleUpdateStoreConfig = async (req, res) => {
     }
     if (body.artist_bio !== undefined) {
       spUpdates.shop_bio = '?';
-      spValues.push(body.artist_bio);
+      spValues.push(stripHtml(body.artist_bio));
     }
 
     if (Object.keys(spUpdates).length > 0) {
@@ -8930,7 +8947,11 @@ const handleUpdateStoreConfig = async (req, res) => {
     directFields.forEach(f => {
       if (body[f] !== undefined) {
         configUpdates[f] = '?';
-        configValues.push(body[f]);
+        if (f === 'artist_bio' || f === 'tagline' || f === 'vacation_note') {
+          configValues.push(stripHtml(body[f]));
+        } else {
+          configValues.push(body[f]);
+        }
       }
     });
 
@@ -12294,6 +12315,9 @@ app.post('/api/conversations/:id/messages', authenticateToken, uploadChatMiddlew
 
     let message_type = 'text';
     let content = req.body.content || null;
+    if (content) {
+      content = stripHtml(content);
+    }
     let image_url = null;
 
     if (req.file) {

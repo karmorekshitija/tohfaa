@@ -452,6 +452,16 @@
     import apiClient from '../src/utils/apiClient.js';
     import { logout } from '/src/utils/auth.js';
 
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     function isProductOwned(sellerId) {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
@@ -683,8 +693,8 @@
                             <span>(${parseInt(product.review_count || 0, 10)})</span>
                         </div>
                     </div>
-                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${product.name}</h4>
-                    <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${product.seller_id}'">By ${product.seller_name}</span>
+                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${escapeHtml(product.name)}</h4>
+                    <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${product.seller_id}'">By ${escapeHtml(product.seller_name)}</span>
                 </div>
             </div>
             <div class="w-full">
