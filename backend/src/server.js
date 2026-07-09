@@ -12,6 +12,7 @@ const paymentRouter = require('./paymentRoutes');
 const chatbotRouter = require('./chatbotRoutes');
 const whatsappRouter = require('./whatsappRoutes');
 const whatsappService = require('./services/whatsappService');
+const emailService = require('./services/emailService');
 const cron = require('node-cron');
 
 function stripHtml(str) {
@@ -237,6 +238,18 @@ function rateLimit(limit, windowMs = 60000) {
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(String(email).toLowerCase());
+}
+
+function parseDbDate(dateInput) {
+  if (!dateInput) return new Date(0);
+  if (dateInput instanceof Date) return dateInput;
+  let str = String(dateInput);
+  if (str.indexOf(' ') > 0 && str.indexOf('T') === -1) {
+    str = str.replace(' ', 'T') + 'Z';
+  } else if (str.indexOf('Z') === -1 && !str.includes('+')) {
+    str = str + 'Z';
+  }
+  return new Date(str);
 }
 
 function formatTimeAgo(dateStr) {
@@ -786,10 +799,10 @@ app.post('/api/auth/forgot-password', rateLimit(5), async (req, res) => {
       const hashedToken = crypto.createHash('sha256').update(plainToken).digest('hex');
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
       
-      db.prepare('INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)')
+      await db.prepare('INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)')
         .run(user.id, hashedToken, expiresAt);
         
-      console.log(`[RESET TOKEN] user_id=${user.id} token=${plainToken} expires=${expiresAt}`);
+      await emailService.sendPasswordResetEmail({ email, token: plainToken });
     }
     
     return res.status(200).json({
@@ -825,7 +838,7 @@ app.post('/api/auth/reset-password', rateLimit(10), async (req, res) => {
     
     const tokenRecord = await db.prepare('SELECT * FROM password_reset_tokens WHERE token_hash = ?').get(hashedToken);
     
-    if (!tokenRecord || tokenRecord.used === 1 || new Date(tokenRecord.expires_at) < new Date()) {
+    if (!tokenRecord || tokenRecord.used === 1 || parseDbDate(tokenRecord.expires_at) < new Date()) {
       return res.status(400).json({
         error: true,
         message: "Token invalid, expired, or already used",

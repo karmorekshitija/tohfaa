@@ -14,13 +14,14 @@ literal text on product page, document.title unchanged; grep report of remaining
 usages with user data = none.
 *Verification*: Created test script `test_xss_prevention.js` which submitted review body `<img src=x onerror="document.title='XSS'">` to `/api/reviews`. The backend sanitized this to an empty string (stored as `null` in DB), and mixed payloads like `Hello <img src=x onerror="document.title='XSS'"> World!` were sanitized to `Hello  World!` (all HTML tags stripped). Frontend templates across all buyer pages (product page, chat, profile, home) escape all user-supplied content using `escapeHtml`. Checked remaining `innerHTML` usages and all of them are now safe.
 
-## #S2 ⬜ [SECURITY][auth] Password reset non-functional + raw reset token logged in plaintext
+## #S2 ✅ FIXED [SECURITY][auth] Password reset non-functional + raw reset token logged in plaintext
 No email is ever sent (emailService.js exists but is never imported/called) and the raw token
 is written to logs. Fix: wire emailService into the reset flow, remove ALL logging of the
 token/OTP, ensure token is hashed at rest with expiry + single use.
 VERIFY: local reset request → emailService send invoked (mock or log "reset email queued",
 never the token); grep confirms no console/log statement outputs the token; full reset flow
 works end-to-end locally.
+*Verification*: Added `sendPasswordResetEmail` method to `emailService.js` and wired it into `forgot-password` endpoint. Removed plaintext token/OTP logging from all console outputs (both password reset and WhatsApp OTP outputs). Created test script `test_password_reset.js` which performs end-to-end request/reset flow by intercepting the email token securely and verifying single use (reset token marked `used = 1` in DB) and timezone-safe comparison. Tested successfully.
 🟡 note: owner must set SMTP/email-provider env vars on Render.
 
 ## #S3 ⬜ [SECURITY][admin] Admin roles stored but never enforced

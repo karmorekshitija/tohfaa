@@ -67,6 +67,51 @@ Tohfa Marketplace Platform
   }
 }
 
+/**
+ * Sends a password reset email.
+ */
+async function sendPasswordResetEmail({ email, token }) {
+  const frontendUrl = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+  const resetUrl = `${frontendUrl}/auth/reset-password.html?token=${token}`;
+  const subject = `Reset Your Tohfa Hub Password`;
+  const bodyText = `
+Hello,
+
+We received a request to reset the password for your Tohfa Hub account.
+
+Please click the link below to set a new password:
+${resetUrl}
+
+This link is valid for 1 hour and can only be used once.
+
+If you did not request a password reset, please ignore this email.
+
+Warm regards,
+Tohfa Marketplace Platform
+  `;
+
+  console.log(`[EMAIL SIMULATOR] Password reset email queued for ${email}`);
+
+  if (!transporter) {
+    console.log(`[EMAIL SIMULATOR] SMTP not configured. Password reset email simulated.`);
+    return { success: true, simulated: true };
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Tohfa Assistant" <${EMAIL_USER}>`,
+      to: email,
+      subject: subject,
+      text: bodyText
+    });
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error("Nodemailer failed to send password reset email:", err);
+    throw err;
+  }
+}
+
 module.exports = {
-  sendProblemReportEmail
+  sendProblemReportEmail,
+  sendPasswordResetEmail
 };

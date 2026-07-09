@@ -44,7 +44,7 @@ async function callMetaAPI(endpoint, options = {}) {
 async function sendWhatsAppOTP(to, otp) {
   const cleanTo = String(to).replace(/\+/g, '').trim();
   if (isMockMode) {
-    console.log(`[WhatsApp Simulator] SENT OTP TEMPLATE (${TEMPLATE_NAME}) TO: +${cleanTo} WITH CODE: ${otp}`);
+    console.log(`[WhatsApp Simulator] SENT OTP TEMPLATE (${TEMPLATE_NAME}) TO: +${cleanTo} (OTP excluded from logs)`);
     return { mock: true, success: true, otp };
   }
 
@@ -82,7 +82,7 @@ async function sendWhatsAppOTP(to, otp) {
     });
   } catch (err) {
     console.error(`Meta API send OTP failed, falling back to simulation. Error: ${err.message}`);
-    console.log(`[WhatsApp Simulator Fallback] SENT OTP TEMPLATE TO: +${cleanTo} WITH CODE: ${otp}`);
+    console.log(`[WhatsApp Simulator Fallback] SENT OTP TEMPLATE TO: +${cleanTo} (OTP excluded from logs)`);
     return { mock: true, fallback: true, otp };
   }
 }
