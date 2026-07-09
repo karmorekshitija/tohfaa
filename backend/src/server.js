@@ -1659,7 +1659,8 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
     // 2. Sellers: matching seller name or shop name
     const sellers = await db.prepare(`
       SELECT u.id, COALESCE(sp.shop_name, u.full_name) AS shop_name, u.avatar_url,
-        ROUND(COALESCE((SELECT AVG(p.avg_rating) FROM products p WHERE p.seller_id = u.id AND p.status = 'active'), 4.5), 1) AS rating
+        ROUND((SELECT AVG(p.avg_rating) FROM products p WHERE p.seller_id = u.id AND p.status = 'active' AND p.avg_rating > 0), 1) AS rating,
+        (SELECT COUNT(*) FROM products p WHERE p.seller_id = u.id AND p.status = 'active' AND p.review_count > 0) AS reviewed_products
       FROM users u
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       WHERE u.role = 'seller' AND u.is_active = 1 AND u.is_banned = 0

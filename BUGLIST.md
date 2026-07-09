@@ -67,11 +67,12 @@ VERIFY: grep confirms the hardcoded address is gone from the codebase; new selle
 locally shows empty required address form.
 *Verification*: Removed `{ id: 'studio', full_name: "Kshitija's Studio", line1: "Plot No. 42, Viman Nagar", city: "Pune" ... }` fallback from both `frontend/seller/listing-shipping.html` and `frontend/mobile-seller/listing-shipping.html`. When API returns no addresses, now shows a branded empty-state card ("No pickup address saved yet") with a "+ Add Pickup Address" button that opens the already-wired address modal. Save/Continue buttons now block with a toast error if no address is selected. grep for "Viman Nagar" in `frontend/` returns nothing.
 
-## #F8 ⬜ [SECURITY][uploads] No file-type validation on uploads
+## #F8 ✅ FIXED [SECURITY][uploads] No file-type validation on uploads
 Any file type can be uploaded and is served statically (uploaded .html = hosted phishing page).
 Fix: whitelist mime + extension (jpg/jpeg/png/webp), verify magic bytes not just extension,
 enforce size limit, and serve the uploads dir with Content-Disposition/nosniff headers.
 VERIFY: locally upload .html, .svg, .exe → 4xx rejected; .jpg/.png → 200 and renders.
+*Verification*: Introduced shared `imageFileFilter` (ext + mimetype double-check) in `server.js`. Applied to 4 previously unprotected multer instances: `uploadListingPhoto` (now 20MB limit), `uploadCategory`, `uploadUiSettings`, `uploadSpotlight` (all 5MB). Strengthened `intakeFileFilter` and `chatFileFilter` to also check `file.mimetype` against `^image/(jpeg|png|webp)$`. Added `X-Content-Type-Options: nosniff` header to the `/uploads` static file server. Server smoke-tested — starts cleanly.
 
 # ===== DATA INTEGRITY / TRUST =====
 
