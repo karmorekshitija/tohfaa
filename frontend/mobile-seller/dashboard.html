@@ -241,6 +241,14 @@
   </div>
 
   <div id="dashboard-content" class="hidden flex flex-col gap-xl">
+    <!-- Verification Warning Banner -->
+    <div id="verification-warning-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-lg flex items-start gap-4">
+      <span class="material-symbols-outlined text-amber-600 text-3xl shrink-0">warning</span>
+      <div>
+        <h4 class="font-title-serif font-bold text-amber-800 text-base">Your account is pending verification</h4>
+        <p class="text-xs text-amber-700/80 mt-1 leading-relaxed">Once verified by our admin team, your listings will automatically become visible to buyers.</p>
+      </div>
+    </div>
     <!-- KPI Row -->
     <section id="kpi-grid" class="grid grid-cols-4 gap-lg mb-xl">
       <!-- KPI 1 -->
@@ -813,6 +821,19 @@
             if (user.role !== 'seller') {
                 window.location.href = '/mobile-buyer/profile.html';
                 return;
+            }
+
+            // Check if seller is approved
+            const sellerProfileRes = await fetch(`${API_BASE_URL}/api/seller/profile`, {
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            if (sellerProfileRes.ok) {
+                const sellerProfileData = await sellerProfileRes.json();
+                const sellerProfile = sellerProfileData.data || sellerProfileData;
+                if (sellerProfile.is_approved !== 1 && sellerProfile.is_approved !== true) {
+                    const banner = document.getElementById('verification-warning-banner');
+                    if (banner) banner.classList.remove('hidden');
+                }
             }
         } catch (e) {
             sessionStorage.clear();

@@ -14,6 +14,7 @@ const whatsappRouter = require('./whatsappRoutes');
 const whatsappService = require('./services/whatsappService');
 const emailService = require('./services/emailService');
 const cron = require('node-cron');
+const { syncListingToProduct } = require('./services/listingSync');
 
 function stripHtml(str) {
   if (typeof str !== 'string') return '';
@@ -5305,6 +5306,7 @@ async function buildSellerProfileResponse(seller) {
   return {
     seller_id: seller.id,
     user_id: seller.user_id,
+    is_approved: seller.is_approved,
     display_name: seller.display_name || seller.shop_name,
     handle: seller.handle,
     bio: seller.bio || seller.shop_bio,
@@ -6169,6 +6171,7 @@ app.post('/api/seller/listings', rateLimit(30), requireSeller, async (req, res) 
     }
 
     await syncListingCategoryToProduct(listingId);
+    await syncListingToProduct(listingId);
 
     const estimated_payout = basePriceVal - Math.floor(basePriceVal * 0.08);
 
@@ -6301,6 +6304,30 @@ const handleUpdateListing = async (req, res) => {
 
     const body = req.body;
     const basePriceVal = body.base_price !== undefined ? body.base_price : body.price_paise;
+
+    // Check edit restrictions for published listings
+    if (listing.status === 'active') {
+      const isTitleChanged = body.title !== undefined && body.title !== listing.title;
+      const isCategoryIdChanged = body.category_id !== undefined && parseInt(body.category_id, 10) !== listing.category_id;
+      const isCategoryChanged = body.category !== undefined && body.category !== listing.category;
+      
+      let isSubcategoriesChanged = false;
+      const subcategoryIds = body.subcategory_ids || body.subcategories;
+      if (subcategoryIds !== undefined && Array.isArray(subcategoryIds)) {
+        const existingSubcats = await db.prepare('SELECT subcategory_id FROM listing_subcategories WHERE listing_id = ?').all(listingId);
+        const existingSubcatIds = existingSubcats.map(s => s.subcategory_id).sort();
+        const incomingSubcatIds = [...new Set(subcategoryIds.map(id => parseInt(id, 10)))].sort();
+        isSubcategoriesChanged = JSON.stringify(existingSubcatIds) !== JSON.stringify(incomingSubcatIds);
+      }
+
+      if (isTitleChanged || isCategoryIdChanged || isCategoryChanged || isSubcategoriesChanged) {
+        return res.status(400).json({
+          error: true,
+          code: 'RESTRICTED_FIELD_EDIT',
+          message: 'Title, category, and subcategories cannot be edited on a published listing.'
+        });
+      }
+    }
 
     if (body.status === 'active') {
       const currentTitle = body.title !== undefined ? body.title : listing.title;
@@ -6566,6 +6593,7 @@ const handleUpdateListing = async (req, res) => {
     }
 
     await syncListingCategoryToProduct(listingId);
+    await syncListingToProduct(listingId);
 
     const updated = await db.prepare('SELECT * FROM listings WHERE id = ?').get(listingId);
 
@@ -11015,7 +11043,7 @@ app.get('/api/admin/dashboard/revenue-chart', authenticateAdminToken, async (req
       whereClause = "AND created_at BETWEEN ? AND ?";
       params = [start, end];
     } else {
-      whereClause = "AND created_at >= CURRENT_DATE - INTERVAL '" + daysLimit + " days'";
+      whereClause = "AND created_at >= date('now', '-" + daysLimit + " days')";
     }
 
     const query = `
@@ -11068,11 +11096,11 @@ app.get('/api/admin/dashboard/footfall', authenticateAdminToken, async (req, res
       whereClause = "AND occurred_at BETWEEN ? AND ?";
       params = [start, end];
     } else {
-      whereClause = "AND occurred_at >= CURRENT_DATE - INTERVAL '" + daysLimit + " days'";
+      whereClause = "AND occurred_at >= date('now', '-" + daysLimit + " days')";
     }
 
     const query = `
-      SELECT DATE(occurred_at) as date, COUNT(DISTINCT visitor_id) as visitors
+      SELECT DATE(occurred_at) as date, COUNT(DISTINCT session_id) as visitors
       FROM product_events
       WHERE 1=1 ${whereClause}
       GROUP BY DATE(occurred_at)
@@ -14666,7 +14694,7 @@ cron.schedule('0 8 * * *', async () => {
         const orders = await db.prepare(`
           SELECT order_ref, total_amount, status 
           FROM orders 
-          WHERE seller_id = ? AND created_at >= CURRENT_TIMESTAMP - INTERVAL '24 hours' AND LOWER(status) != 'cancelled'
+          WHERE seller_id = ? AND created_at >= datetime('now', '-24 hours') AND LOWER(status) != 'cancelled'
         `).all(seller.user_id);
         
         const count = orders.length;

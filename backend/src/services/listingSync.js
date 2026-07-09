@@ -34,9 +34,9 @@ async function syncListingToProduct(listingId) {
       return { synced: false, productId: null, warning: `Listing ${listingId} not found during sync` };
     }
 
-    // 2. Only sync pre-made listings; custom listings use the conversations flow
-    if (listing.listing_type !== 'pre-made') {
-      return { synced: false, productId: null, warning: null }; // intentionally a no-op
+    // 2. Sync all listings (pre-made and custom) so they are visible to buyers
+    if (listing.listing_type !== 'pre-made' && listing.listing_type !== 'custom') {
+      return { synced: false, productId: null, warning: null };
     }
 
     const effectivePrice = listing.base_price || listing.price_paise || 0;

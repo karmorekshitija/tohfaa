@@ -142,6 +142,14 @@
 </head>
 <body class="min-h-screen flex flex-col lg:flex-row">
 <seller-layout active-tab="catalog">
+  <!-- Verification Warning Banner -->
+  <div id="verification-warning-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-lg flex items-start gap-4 mx-4 my-6">
+    <span class="material-symbols-outlined text-amber-600 text-3xl shrink-0">warning</span>
+    <div>
+      <h4 class="font-title-serif font-bold text-amber-800 text-base">Your account is pending verification</h4>
+      <p class="text-xs text-amber-700/80 mt-1 leading-relaxed">Once verified by our admin team, your listings will automatically become visible to buyers.</p>
+    </div>
+  </div>
 <!-- BEGIN: Top Summary Cards -->
 <section class="mb-4 -mx-4 px-4 overflow-x-auto no-scrollbar" data-purpose="summary-stats">
   <div class="flex gap-3 pb-1" style="width: max-content;">
@@ -290,6 +298,23 @@
       const res = await fetch(`${API_BASE}/api/seller/listings`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      // Check if seller is approved
+      try {
+          const sellerProfileRes = await fetch(`${API_BASE}/api/seller/profile`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (sellerProfileRes.ok) {
+              const sellerProfileData = await sellerProfileRes.json();
+              const sellerProfile = sellerProfileData.data || sellerProfileData;
+              if (sellerProfile.is_approved !== 1 && sellerProfile.is_approved !== true) {
+                  const banner = document.getElementById('verification-warning-banner');
+                  if (banner) banner.classList.remove('hidden');
+              }
+          }
+      } catch (err) {
+          console.error("Seller profile approval check failed:", err);
+      }
       if (res.status === 401 || res.status === 403) { sessionStorage.clear(); window.location.href = '/auth/login.html'; return; }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const resp = await res.json();
@@ -622,7 +647,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Golden Fern" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
+<img alt="Golden Fern" class="w-full h-full object-cover" src="/img/ceramic_bowls.jpg" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Golden Fern Study No. 4</h3>
@@ -673,7 +698,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Seeds" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
+<img alt="Seeds" class="w-full h-full object-cover" src="/img/ceramic_bowls.jpg" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Archival Wildflower Seeds</h3>
@@ -718,7 +743,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Bowl" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
+<img alt="Bowl" class="w-full h-full object-cover" src="/img/ceramic_bowls.jpg" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Forest Floor Ceramic Bowl</h3>
@@ -763,7 +788,7 @@
 </div>
 <div class="col-span-4 flex items-center gap-4">
 <div class="w-16 h-16 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
-<img alt="Apron" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZPaPBkn7EmPZxsDwpKVrjw14It-y6O_rctJ2s1Om9pv1PFiVLSqL-m2j9_7wxD1kVxSpH_OazxgbMrQrj_KyLhd-pVD5Kcqqt48InhXIMX4YkkEw33QOA1BDln0g_AZ25ETuCh1pfXJVB5yy3UIxrbKHXKolK-6ExUaR1O6OtxhG3pfUwfDJM4ctodZ5PQiEvK5MyVkjbEWoVUQVmyQtfm1730KyGe-ATRNDbAGgUsy2pOXQFZcUERVUZfsZlOR75z3MgA3EPsQ" loading="lazy" />
+<img alt="Apron" class="w-full h-full object-cover" src="/img/ceramic_bowls.jpg" loading="lazy" />
 </div>
 <div>
 <h3 class="font-serif text-lg text-forest font-semibold leading-tight">Linen Studio Apron</h3>

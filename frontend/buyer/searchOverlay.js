@@ -372,7 +372,7 @@ class SearchOverlay {
       sellersSection.classList.remove('hidden');
       sellersList.innerHTML = sellers.map(s => `
         <a href="/buyer/seller-profile.html?id=${s.id}" class="flex flex-col items-center flex-shrink-0 w-20 text-center hover:scale-105 transition-transform duration-200">
-          <img loading="lazy" src="${s.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuA1MlCvGNVC5kb3_0adXisBIXKR2kO5rDi5REC7Ws_jdqAl-d9k85WtM1zhT8kPt7miefUL2zB7ZWlht6gOBoOFf_yaM44xEDS_XDmP2CC3-O2XtWEbyNWU5d0aYrxHES2zAVOb4to55ZXc0JuEuYUxljiCZtgqH9k3hGJLepqGwKKZZmnmigxFXREVk5a9jUDkeBzDkZX8Z9jT_im_tJi4_Y8YVc3tbxMsxYFYLwpSOJOXUuN4y3YO7VUkGCQmkVDabJ6ip82gLbE'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
+          <img loading="lazy" src="${s.avatar_url || '/uploads/avatars/default-avatar.png'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
           <p class="text-[11px] text-[#1f1b15] font-semibold truncate w-full mt-1">${s.shop_name || s.username}</p>
         </a>
       `).join('');

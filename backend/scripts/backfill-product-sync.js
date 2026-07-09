@@ -40,7 +40,7 @@ async function runBackfill() {
 
   for (const listing of listings) {
     // 1. Guard listing_type
-    if (listing.listing_type !== 'pre-made') {
+    if (listing.listing_type !== 'pre-made' && listing.listing_type !== 'custom') {
       skippedCustom++;
       continue;
     }

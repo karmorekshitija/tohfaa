@@ -177,7 +177,7 @@ class SellerSidebar extends HTMLElement {
       <aside class="w-[130px] h-screen fixed left-0 top-0 bg-[#F7F3EC] border-r border-[#8FAF82] shadow-sm flex flex-col py-8 z-50 overflow-y-auto custom-scrollbar font-['DM_Sans'] text-[#3D6B4F]">
         <!-- Brand Logo Header -->
         <div class="px-4 mb-8 flex flex-col items-center">
-          <img loading="lazy" alt="TOFA Logo" class="w-12 h-12 mb-3 rounded-full border border-[#8FAF82]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjQjmSoJKqFl-kRbAH85_u94nMS-Ok8oPnG2PAsYIPao9rA7dhGe8UxdJrc2ZZAzrwZNabbn59QVEgS7BBnW9tgfg43AOgPPepQuKoNu9Y8LnAgELFnunu7fN4ziKFD3utWMnD1wUchu7IL5DN5S8YIbb4t6eImmC8IYIbyaXgktzANbK3Bp9S-uJUoxNyfKN0-3CdY6CCeB0ICMb4og8ToBCMSoIyIF4u5UejdhA3mwODAny-lA6K9JdMJHT5Qhp3buD-BTaEM0">
+          <img loading="lazy" alt="TOFA Logo" class="w-12 h-12 mb-3 rounded-full border border-[#8FAF82]" src="/favicon.png">
           <h1 class="font-['Playfair_Display'] font-bold text-[14px] text-center leading-tight text-[#3D6B4F] italic">Tohfa Studio</h1>
         </div>
         

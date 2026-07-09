@@ -242,6 +242,7 @@ function populateSubcategoriesDropdown(categoryId) {
             const cb = document.createElement('input');
             cb.type = 'checkbox';
             cb.value = sub.id;
+            cb.setAttribute('data-id', sub.id);
             cb.className = 'rounded border-sage text-forest focus:ring-forest w-4 h-4 cursor-pointer';
             if (selectedSubcategoryIds.includes(sub.id)) {
                 cb.checked = true;

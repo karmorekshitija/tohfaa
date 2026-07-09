@@ -293,6 +293,10 @@
 
             <!-- Profile Actions -->
             <div class="flex flex-row lg:flex-col gap-3 shrink-0 w-full lg:w-auto justify-center">
+                <button id="chat-concierge-btn" onclick="handleConciergeChatClick()" class="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#3D6B4F] text-white hover:opacity-90 transition-all font-label-md text-sm shadow-md cursor-pointer active:scale-95 duration-200">
+                    <span class="material-symbols-outlined text-[18px]">chat</span>
+                    <span>Customise / Chat</span>
+                </button>
                 <button onclick="openShareModal()" class="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg border border-outline hover:bg-surface-container-high transition-all font-label-md text-sm text-on-surface cursor-pointer active:scale-95 duration-200">
                     <span class="material-symbols-outlined text-[18px]">share</span>
                     <span>Share</span>
@@ -503,7 +507,7 @@
                             </div>
                         </div>
                         <div class="relative h-[250px] md:h-[350px] rounded-xl overflow-hidden shadow-2xl">
-                            <img class="w-full h-full object-cover rounded-xl" src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600" alt="Eco wrapping" loading="lazy">
+                            <img class="w-full h-full object-cover rounded-xl" src="/img/linen_journal.jpg" alt="Eco wrapping" loading="lazy">
                         </div>
                     </div>
                 </section>
@@ -772,6 +776,7 @@
         let isWishlistUpdating = {};
         
         let allSellerProducts = [];
+        let allSellerCustomisations = [];
         let categoriesList = [];
         let activeFilters = {
             category_id: '',
@@ -893,7 +898,7 @@
             document.getElementById('seller-bio').innerText = profile.bio || 'Curating beautiful handcrafted creations with intention.';
             
             // Set Stats
-            document.getElementById('stat-rating').innerText = profile.avg_rating > 0 ? profile.avg_rating.toFixed(1) : '0.0';
+            document.getElementById('stat-rating').innerText = profile.review_count > 0 ? profile.avg_rating.toFixed(1) : 'New';
             document.getElementById('stat-reviews').innerText = profile.review_count;
             document.getElementById('stat-followers').innerText = formatCount(profile.followers_count);
 
@@ -947,9 +952,9 @@
                 
                 // Fallbacks if no workspace photos exist
                 const defaultPhotos = [
-                    { photo_url: 'https://images.unsplash.com/photo-1576016770956-debb63d900bb?w=500', caption: 'Centering clay' },
+                    { photo_url: '/img/ceramic_bowls.jpg', caption: 'Centering clay' },
                     { photo_url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500', caption: 'Artisan studio tools' },
-                    { photo_url: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500', caption: 'Eco wrapping paper' }
+                    { photo_url: '/img/linen_journal.jpg', caption: 'Eco wrapping paper' }
                 ];
                 
                 const list = photos.length > 0 ? photos : defaultPhotos;
@@ -1347,6 +1352,7 @@
             const res = await apiClient.get(`/sellers/${sellerId}/customizations?limit=50`);
             if (res.data && res.data.success) {
                 const list = res.data.data.customizations || [];
+                allSellerCustomisations = list;
                 if (list.length === 0) {
                     empty.classList.remove('hidden');
                     return;
@@ -1422,21 +1428,27 @@
                 const stats = data.stats || {};
                 
                 // Set overall average & count
-                document.getElementById('review-avg').innerText = stats.avg_rating > 0 ? stats.avg_rating.toFixed(2) : '0.0';
-                document.getElementById('review-total-lbl').innerText = `${stats.total_reviews} total reviews`;
-                
-                // Star Average visual stars
-                const starAvgContainer = document.getElementById('review-stars-avg');
-                starAvgContainer.innerHTML = '';
-                const fullStars = Math.floor(stats.avg_rating);
-                const hasHalf = stats.avg_rating % 1 >= 0.5;
-                for (let i = 1; i <= 5; i++) {
-                    if (i <= fullStars) {
-                        starAvgContainer.innerHTML += `<span class="material-symbols-outlined fill-icon text-base">star</span>`;
-                    } else if (i === fullStars + 1 && hasHalf) {
-                        starAvgContainer.innerHTML += `<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 0.7">star_half</span>`;
-                    } else {
-                        starAvgContainer.innerHTML += `<span class="material-symbols-outlined text-base">star</span>`;
+                if (stats.total_reviews === 0) {
+                    document.getElementById('review-avg').innerText = 'No reviews yet';
+                    document.getElementById('review-total-lbl').innerText = 'Be the first to leave a review!';
+                    document.getElementById('review-stars-avg').innerHTML = '';
+                } else {
+                    document.getElementById('review-avg').innerText = stats.avg_rating > 0 ? stats.avg_rating.toFixed(2) : '0.0';
+                    document.getElementById('review-total-lbl').innerText = `${stats.total_reviews} total reviews`;
+                    
+                    // Star Average visual stars
+                    const starAvgContainer = document.getElementById('review-stars-avg');
+                    starAvgContainer.innerHTML = '';
+                    const fullStars = Math.floor(stats.avg_rating);
+                    const hasHalf = stats.avg_rating % 1 >= 0.5;
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= fullStars) {
+                            starAvgContainer.innerHTML += `<span class="material-symbols-outlined fill-icon text-base">star</span>`;
+                        } else if (i === fullStars + 1 && hasHalf) {
+                            starAvgContainer.innerHTML += `<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 0.7">star_half</span>`;
+                        } else {
+                            starAvgContainer.innerHTML += `<span class="material-symbols-outlined text-base">star</span>`;
+                        }
                     }
                 }
 
@@ -1604,6 +1616,43 @@
                 window.Toast?.show("Failed to start chat. Please try again.", "error");
                 btn.disabled = false;
                 btn.innerText = originalText;
+            }
+        };
+
+        window.handleConciergeChatClick = async function() {
+            if (currentUser && sellerProfile && currentUser.id === sellerProfile.id) {
+                window.Toast?.show("Sellers cannot start a chat with themselves", "error");
+                return;
+            }
+            if (!isLoggedIn) {
+                window.Toast?.show("Please log in to contact the seller", "error");
+                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                return;
+            }
+
+            const btn = document.getElementById('chat-concierge-btn');
+            btn.disabled = true;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span><span>Starting chat...</span>';
+
+            const customProduct = allSellerCustomisations.find(p => p.listing_type === 'custom' || p.is_customized);
+            const anyProduct = customProduct || allSellerProducts[0];
+
+            if (!anyProduct) {
+                window.Toast?.show("This artisan does not have any listings available for chat.", "info");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+
+            if (anyProduct.listing_type === 'custom' || anyProduct.is_customized) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                window.startCustomisation(anyProduct.id, anyProduct.product_type_tag || 'custom', anyProduct.name);
+            } else {
+                await window.talkToSeller(new Event('click'), anyProduct.id, btn);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         };
 
@@ -2028,7 +2077,7 @@
             
             // Set Share Modal Info
             document.getElementById('share-modal-name').innerText = sellerProfile.shop_name;
-            document.getElementById('share-modal-rating').innerText = `${sellerProfile.avg_rating > 0 ? sellerProfile.avg_rating.toFixed(1) : '0.0'} (${sellerProfile.review_count} reviews)`;
+            document.getElementById('share-modal-rating').innerText = `${sellerProfile.review_count > 0 ? sellerProfile.avg_rating.toFixed(1) : 'New'} (${sellerProfile.review_count} reviews)`;
             
             const shareAvatar = document.getElementById('share-modal-avatar');
             if (sellerProfile.avatar_url) {

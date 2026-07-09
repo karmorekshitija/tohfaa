@@ -24,7 +24,7 @@
         pointer-events: none;
         z-index: -1;
         opacity: 0.08;
-        background-image: url('https://www.transparenttextures.com/patterns/pinstripe.png');
+        background-image: url('/img/textures/pinstripe.png');
     }
     .sketch-watermark {
         position: absolute;
@@ -142,7 +142,7 @@
       <span class="material-symbols-outlined text-[20px]">notifications</span>
     </button>
     <button id="logout-btn" class="text-on-surface-variant hover:text-primary transition-colors text-[14px] font-label-btn">Logout</button>
-    <img alt="Admin Profile" class="w-8 h-8 rounded-full border border-sage-border object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_b_T4p5aqNt720WEW3q8y4NFA8YEbiF-Lw6M-AA1tuRZsvgetSefNNbtx1l3vx-gRN6lfiBxGpd1GLlx_eIig1IX6_X2tufKsgoRlIjYOIn1AiXVnjVaypwAIuEVEHbFRYIl0PKcqM-M4AweTMrNCdXRCsBxtk7pMthKQpIxPOHVuF7JNAUGq7L1stVIA90d87w-qQQ-ji4GKbQzXc3lIK7T2GzUz9C4r5E4frc6LcGAin26fp_peKAHGEq_WeFtWmZx4yse0BA" loading="lazy" />
+    <img alt="Admin Profile" class="w-8 h-8 rounded-full border border-sage-border object-cover" src="/img/default-avatar.png" loading="lazy" />
   </div>
 </header>
 
@@ -172,6 +172,7 @@
         <button id="filter-all" class="px-6 py-2 bg-primary text-white font-label-btn rounded-full shadow-sm hover:scale-[0.98] transition-transform">All</button>
         <button id="filter-active" class="px-6 py-2 bg-white text-ink-soft border border-sage-border font-label-btn rounded-full hover:bg-surface-container transition-colors">Active</button>
         <button id="filter-banned" class="px-6 py-2 bg-white text-ink-soft border border-sage-border font-label-btn rounded-full hover:bg-surface-container transition-colors">Banned</button>
+        <button id="filter-pending" class="px-6 py-2 bg-white text-ink-soft border border-sage-border font-label-btn rounded-full hover:bg-surface-container transition-colors">Pending Verification</button>
       </div>
     </div>
     <!-- Data Table Section -->
@@ -330,17 +331,34 @@ function renderSellers(sellers) {
     const tr = document.createElement('tr');
     tr.className = `${isAlt ? 'bg-parchment/30 ' : ''}hover:bg-parchment/50 transition-colors`;
     
-    const statusBadge = seller.status === 'banned' 
-      ? `<span class="inline-flex items-center px-3 py-1 bg-[#ffdad6] text-[#93000a] font-bold text-[11px] rounded-full">
+    let statusBadge = '';
+    if (seller.status === 'banned') {
+      statusBadge = `<span class="inline-flex items-center px-3 py-1 bg-[#ffdad6] text-[#93000a] font-bold text-[11px] rounded-full">
           <span class="material-symbols-outlined text-[12px] mr-1">close</span> Banned
-         </span>`
-      : `<span class="inline-flex items-center px-3 py-1 bg-sage-soft/30 text-primary font-bold text-[11px] rounded-full">
+         </span>`;
+    } else if (seller.status === 'pending_verification') {
+      statusBadge = `<span class="inline-flex items-center px-3 py-1 bg-[#ffe08f] text-[#241a00] font-bold text-[11px] rounded-full">
+          <span class="status-pill-dot bg-[#241a00]"></span> Pending Verification
+         </span>`;
+    } else {
+      statusBadge = `<span class="inline-flex items-center px-3 py-1 bg-sage-soft/30 text-primary font-bold text-[11px] rounded-full">
           <span class="status-pill-dot bg-primary"></span> Active
          </span>`;
+    }
 
-    const actionBtn = seller.status === 'banned'
-      ? `<button class="unban-btn px-3 py-1 bg-primary/20 text-primary font-label-btn text-[11px] rounded hover:bg-primary hover:text-white transition-all" data-id="${seller.id}">Unban</button>`
-      : `<button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>`;
+    let actionBtn = '';
+    if (seller.status === 'banned') {
+      actionBtn = `<button class="unban-btn px-3 py-1 bg-primary/20 text-primary font-label-btn text-[11px] rounded hover:bg-primary hover:text-white transition-all" data-id="${seller.id}">Unban</button>`;
+    } else if (seller.status === 'pending_verification') {
+      actionBtn = `
+        <div class="flex gap-2">
+          <button class="verify-btn px-3 py-1 bg-primary text-white font-label-btn text-[11px] rounded hover:bg-primary/95 transition-all" data-id="${seller.id}">Verify</button>
+          <button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>
+        </div>
+      `;
+    } else {
+      actionBtn = `<button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>`;
+    }
 
     tr.innerHTML = `
       <td class="px-6 py-5">
@@ -374,6 +392,20 @@ function renderSellers(sellers) {
   });
 
   // Attach click events
+  listEl.querySelectorAll('.verify-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.target.getAttribute('data-id');
+      if (confirm('Are you sure you want to verify this seller? This will make their products visible to buyers.')) {
+        try {
+          await adminApiClient.post(`/admin/sellers/${id}/verify`);
+          fetchSellers();
+        } catch (err) {
+          alert(err.response?.data?.message || 'Failed to verify seller');
+        }
+      }
+    });
+  });
+
   listEl.querySelectorAll('.ban-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const id = e.target.getAttribute('data-id');
@@ -462,11 +494,13 @@ document.getElementById('search-input').addEventListener('input', (e) => {
 const filterAll = document.getElementById('filter-all');
 const filterActive = document.getElementById('filter-active');
 const filterBanned = document.getElementById('filter-banned');
+const filterPending = document.getElementById('filter-pending');
 
 const filters = [
   { el: filterAll, status: 'all' },
   { el: filterActive, status: 'active' },
-  { el: filterBanned, status: 'banned' }
+  { el: filterBanned, status: 'banned' },
+  { el: filterPending, status: 'pending_verification' }
 ];
 
 filters.forEach(({ el, status }) => {

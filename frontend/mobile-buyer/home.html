@@ -748,16 +748,18 @@
             <div>
                 <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
                     ${ribbonHtml}
-                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url || 'https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60'}" alt="${product.name}" loading="lazy">
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url || '/img/incense_holder.jpg'}" alt="${product.name}" loading="lazy">
                     ${wishlistBtnHtml}
                 </div>
                 <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
                     <span class="col-span-1 font-bold text-sm md:text-lg text-[#C8973A] md:order-1">${formattedPrice}</span>
-                    <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
-                        <span class="text-[#C8973A] font-bold">★</span>
-                        <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating || 0).toFixed(1)}</span>
-                        <span>(${parseInt(product.review_count || 0, 10)})</span>
-                    </div>
+                    ${parseInt(product.review_count || 0, 10) > 0
+                        ? `<div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                            <span class="text-[#C8973A] font-bold">★</span>
+                            <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating || 0).toFixed(1)}</span>
+                            <span>(${parseInt(product.review_count, 10)})</span>
+                          </div>`
+                        : `<span class="col-span-1 text-right md:text-left text-xs text-[#605e57] italic md:order-3">New</span>`}
                     <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${escapeHtml(product.name)}</h4>
                     <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${product.seller_id}'">By ${escapeHtml(product.seller_name)}</span>
                 </div>
@@ -931,11 +933,11 @@
     const mobileDotsContainer = document.getElementById('mobile-carousel-dots');
 
     const FALLBACK_SLIDES = [
-        { imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBBjSHDpc5HHHXnpAGCGGOIGRoumhZ9KlYdQmei0_40xNo1ftiEDRwwgy7CLHit8khhBsBrN82VUtp1Ancwg4HV13_20NgID3qzZN8ri6GsGRKSFFWZLqujEfX1aNxbOS4BRbn9pDCB0DkULgpZFq447D_KJ6WLA6pQgZ6ioSS8jr5DLWBb3QEoUjHf6WS34Xm2rWGRxkklcrCnRPe3XJZPvDcohsaRH-EuliTOZA5fnBgOd3fUr6qla_5R4vWfsQ_AHKo8At4ajSI", altText: "Artisan Ceramic" },
-        { imageUrl: "https://images.unsplash.com/photo-1576016770956-debb63d900bb?w=800&auto=format&fit=crop&q=80", altText: "Ceramic Bowls" },
-        { imageUrl: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80", altText: "Linen Journal" },
-        { imageUrl: "https://images.unsplash.com/photo-1602872030219-c16779798575?w=800&auto=format&fit=crop&q=80", altText: "Incense Holder" },
-        { imageUrl: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=800&auto=format&fit=crop&q=80", altText: "Stoneware Vase" }
+        { imageUrl: "/img/ceramic_bowls.jpg", altText: "Artisan Ceramic" },
+        { imageUrl: "/img/ceramic_bowls.jpg", altText: "Ceramic Bowls" },
+        { imageUrl: "/img/linen_journal.jpg", altText: "Linen Journal" },
+        { imageUrl: "/img/incense_holder.jpg", altText: "Incense Holder" },
+        { imageUrl: "/img/stoneware_vase.jpg", altText: "Stoneware Vase" }
     ];
 
     async function loadHeroSlides() {
@@ -1138,7 +1140,7 @@
             name: "Handcrafted Ceramic Bowls (Set of 2)",
             seller_name: "Earth & Clay Studio",
             price_paise: 185000,
-            image_url: "https://images.unsplash.com/photo-1576016770956-debb63d900bb?w=500&auto=format&fit=crop&q=60",
+            image_url: "/img/ceramic_bowls.jpg",
             type: "sponsored"
         },
         {
@@ -1146,7 +1148,7 @@
             name: "Handmade Linen Journal",
             seller_name: "The Paper Loom",
             price_paise: 95000,
-            image_url: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60",
+            image_url: "/img/linen_journal.jpg",
             type: "sponsored"
         },
         {
@@ -1154,7 +1156,7 @@
             name: "Solid Brass Incense Holder",
             seller_name: "Aura Metals",
             price_paise: 120000,
-            image_url: "https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60",
+            image_url: "/img/incense_holder.jpg",
             type: "sponsored"
         },
         {
@@ -1162,7 +1164,7 @@
             name: "Minimalist Stoneware Vase",
             seller_name: "Nordic Craft Co.",
             price_paise: 240000,
-            image_url: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=500&auto=format&fit=crop&q=60",
+            image_url: "/img/stoneware_vase.jpg",
             type: "sponsored"
         }
     ];

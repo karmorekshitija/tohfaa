@@ -627,7 +627,7 @@
         card.className = 'tohfa-chat-product-card';
         card.href = `/buyer/product.html?id=${p.id}`;
 
-        const imgUrl = p.image_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5VM4lUKEDHK5fa01g-G79ESVIQTcf3VUKlM9aBj-1LySkBCs-idXjV5Lsjae779XlW2AXejrn2ebhy_uR_fQ8Xj8TJTPEMjk5zJLjoqVuqY_2gPO84qvJmTjwuZMg1Lyo1TYDW4KqogHSaQoKdg0x2EchUlO9yeWoKMa_HA_qxFeqm_6scpRNxuMEfl7bmlQWQFmPp-83DKyD6SXpq8mpa_oDtZff-ixY07uzh5w4aDZ4FOkuHV0HD0NiHsXvl1-hx4XaJwm3Mg0';
+        const imgUrl = p.image_url || '/img/ceramic_bowls.jpg';
         const formattedPrice = `₹${(p.price_paise / 100).toFixed(0)}`;
 
         card.innerHTML = `

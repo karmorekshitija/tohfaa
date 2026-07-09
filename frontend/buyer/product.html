@@ -1519,11 +1519,14 @@
                         <div class="flex flex-col mb-4">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <span class="font-bold text-lg text-[#C8973A]">${price}</span>
-                                <div class="flex items-center gap-1 text-xs text-[#605e57]">
-                                    <span class="text-[#C8973A] font-bold">★</span>
-                                    <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
-                                    <span>(${parseInt(p.review_count || 0, 10)})</span>
-                                </div>
+                                ${parseInt(p.review_count || 0, 10) > 0
+                                    ? `<div class="flex items-center gap-1 text-xs text-[#605e57]">
+                                           <span class="text-[#C8973A] font-bold">★</span>
+                                           <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                           <span>(${parseInt(p.review_count || 0, 10)})</span>
+                                       </div>`
+                                    : `<span class="bg-[#3D6B4F]/10 text-[#3D6B4F] text-[10px] font-mono font-bold px-2 py-0.5 rounded tracking-wider uppercase">New</span>`
+                                }
                             </div>
                             <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                             <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>

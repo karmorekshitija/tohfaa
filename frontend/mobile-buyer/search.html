@@ -943,11 +943,13 @@
                             </div>
                             <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
                                 <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${price}</span>
-                                <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
-                                    <span class="text-[#C8973A] font-bold">★</span>
-                                    <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
-                                    <span>(${parseInt(p.review_count || 0, 10)})</span>
-                                </div>
+                                ${parseInt(p.review_count || 0, 10) > 0
+                                    ? `<div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                                        <span class="text-[#C8973A] font-bold">★</span>
+                                        <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                        <span>(${parseInt(p.review_count, 10)})</span>
+                                      </div>`
+                                    : `<span class="col-span-1 text-right md:text-left text-xs text-[#605e57] italic md:order-3">New</span>`}
                                 <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                                 <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
                             </div>
@@ -1071,11 +1073,13 @@
                                     </div>
                                     <div class="grid grid-cols-2 md:flex md:flex-col mb-4 gap-y-1">
                                         <span class="col-span-1 font-bold text-lg text-[#C8973A] md:order-1">${price}</span>
-                                        <div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
-                                            <span class="text-[#C8973A] font-bold">★</span>
-                                            <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
-                                            <span>(${parseInt(p.review_count || 0, 10)})</span>
-                                        </div>
+                                        ${parseInt(p.review_count || 0, 10) > 0
+                                            ? `<div class="col-span-1 flex items-center justify-end md:justify-start gap-1 text-xs text-[#605e57] md:order-3">
+                                                <span class="text-[#C8973A] font-bold">★</span>
+                                                <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating || 0).toFixed(1)}</span>
+                                                <span>(${parseInt(p.review_count, 10)})</span>
+                                              </div>`
+                                            : `<span class="col-span-1 text-right md:text-left text-xs text-[#605e57] italic md:order-3">New</span>`}
                                         <h4 class="col-span-2 font-headline-lg font-bold text-on-surface line-clamp-1 md:order-2" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                                         <span class="col-span-2 text-xs text-[#605e57] hover:underline cursor-pointer md:order-4" onclick="event.stopPropagation(); window.location.href='./seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
                                     </div>

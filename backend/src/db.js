@@ -547,6 +547,86 @@ async function initDb() {
       )
     `);
 
+    // Catalog & Variants schema updates
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id                SERIAL PRIMARY KEY,
+        product_id        INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+        source_variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE SET NULL,
+        variant_name      TEXT    NOT NULL,
+        price_paise       INTEGER DEFAULT NULL,
+        stock_qty         INTEGER NOT NULL DEFAULT 0,
+        sku               TEXT    DEFAULT NULL,
+        created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      ALTER TABLE products 
+      ADD COLUMN IF NOT EXISTS source_listing_id INTEGER DEFAULT NULL REFERENCES listings(id) ON DELETE SET NULL
+    `);
+
+    await pool.query(`
+      ALTER TABLE product_images 
+      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE CASCADE
+    `);
+
+    await pool.query(`
+      ALTER TABLE cart_items 
+      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE SET NULL
+    `);
+
+    // UNIQUE constraint on cart_items
+    try {
+      const constraintsRes = await pool.query(`
+        SELECT conname 
+        FROM pg_constraint 
+        WHERE conrelid = 'cart_items'::regclass AND contype = 'u'
+      `);
+      const constraints = constraintsRes.rows.map(r => r.conname);
+      if (constraints.includes('cart_items_user_id_product_id_key')) {
+        await pool.query('ALTER TABLE cart_items DROP CONSTRAINT cart_items_user_id_product_id_key');
+      }
+      if (!constraints.includes('cart_items_user_id_product_id_variant_id_key')) {
+        await pool.query(`
+          ALTER TABLE cart_items 
+          ADD CONSTRAINT cart_items_user_id_product_id_variant_id_key UNIQUE(user_id, product_id, variant_id)
+        `);
+      }
+    } catch (e) {
+      console.error('Error migrating cart_items unique constraint:', e.message);
+    }
+
+    await pool.query(`
+      ALTER TABLE listing_photos 
+      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE CASCADE
+    `);
+
+    await pool.query(`
+      ALTER TABLE order_items 
+      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id)
+    `);
+
+    await pool.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_products_source_listing_id ON products(source_listing_id) WHERE source_listing_id IS NOT NULL
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_listing_photos_variant_id ON listing_photos(variant_id)
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_order_items_variant_id ON order_items(variant_id)
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_product_images_variant_id ON product_images(variant_id)
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_product_variants_product_id ON product_variants(product_id)
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_product_variants_source_variant_id ON product_variants(source_variant_id)
+    `);
+
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);
   }

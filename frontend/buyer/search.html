@@ -286,7 +286,7 @@
             <!-- Mascot Greeting Block -->
             <section class="flex items-center justify-center gap-xl my-lg">
                 <div class="relative w-[180px] h-[180px] flex-shrink-0">
-                    <img alt="Tohfa Mascot Greeting" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY" loading="lazy" />
+                    <img alt="Tohfa Mascot Greeting" class="w-full h-full object-contain" src="/img/artisan-mascot.png" loading="lazy" />
                 </div>
                 <div class="speech-bubble relative bg-ivory border border-sage p-lg rounded-xl max-w-md">
                     <h1 class="font-title-serif italic text-[22px] text-ink mb-2 leading-tight">
@@ -934,7 +934,7 @@
                                             <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating).toFixed(1)}</span>
                                             <span>(${parseInt(p.review_count, 10)})</span>
                                           </div>`
-                                        : `<span class="text-xs text-[#605e57] italic">New</span>`}
+                                        : `<span class="bg-[#3D6B4F]/10 text-[#3D6B4F] text-[10px] font-mono font-bold px-2 py-0.5 rounded tracking-wider uppercase">New</span>`}
                                 </div>
                                 <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                                 <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>
@@ -1066,7 +1066,7 @@
                                                     <span class="font-semibold text-on-surface">${parseFloat(p.avg_rating).toFixed(1)}</span>
                                                     <span>(${parseInt(p.review_count, 10)})</span>
                                                   </div>`
-                                                : `<span class="text-xs text-[#605e57] italic">New</span>`}
+                                                : `<span class="bg-[#3D6B4F]/10 text-[#3D6B4F] text-[10px] font-mono font-bold px-2 py-0.5 rounded tracking-wider uppercase">New</span>`}
                                         </div>
                                         <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
                                         <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${p.seller_id}'">By ${p.seller_name || 'Artisan'}</span>

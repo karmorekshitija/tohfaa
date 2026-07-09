@@ -329,13 +329,13 @@ async function handleAnalyticsIntent(sellerId, fromNumber) {
         COALESCE(SUM(total_paise), 0) as total_revenue,
         COUNT(*) as total_orders
       FROM orders
-      WHERE seller_id = ? AND LOWER(status) != 'cancelled' AND created_at >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+      WHERE seller_id = ? AND LOWER(status) != 'cancelled' AND created_at >= datetime('now', '-30 days')
     `).get(sellerId);
 
     const statusGroup = await db.prepare(`
       SELECT status, COUNT(*) as c
       FROM orders
-      WHERE seller_id = ? AND created_at >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+      WHERE seller_id = ? AND created_at >= datetime('now', '-30 days')
       GROUP BY status
     `).all(sellerId);
 
@@ -343,7 +343,7 @@ async function handleAnalyticsIntent(sellerId, fromNumber) {
       SELECT l.title as name, SUM(o.quantity) as units_sold, SUM(o.total_amount) as revenue
       FROM orders o
       JOIN listings l ON o.listing_id = l.id
-      WHERE o.seller_id = ? AND LOWER(o.status) != 'cancelled' AND o.created_at >= CURRENT_TIMESTAMP - INTERVAL '30 days'
+      WHERE o.seller_id = ? AND LOWER(o.status) != 'cancelled' AND o.created_at >= datetime('now', '-30 days')
       GROUP BY l.title
       ORDER BY units_sold DESC
       LIMIT 5
