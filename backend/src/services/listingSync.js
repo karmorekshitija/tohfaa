@@ -179,22 +179,42 @@ async function syncListingToProduct(listingId) {
       'SELECT id, url, is_cover, sort_order FROM listing_photos WHERE listing_id = ? AND variant_id IS NULL ORDER BY sort_order ASC'
     ).all(listingId);
 
+    const listingImages = await db.prepare(
+      'SELECT id, image_url AS url, is_cover, sort_order FROM listing_images WHERE listing_id = ? ORDER BY sort_order ASC'
+    ).all(listingId);
+
+    const seenUrls = new Set();
+    const allPhotos = [];
+
+    for (const p of sharedListingPhotos) {
+      if (p.url && !seenUrls.has(p.url)) {
+        seenUrls.add(p.url);
+        allPhotos.push(p);
+      }
+    }
+    for (const p of listingImages) {
+      if (p.url && !seenUrls.has(p.url)) {
+        seenUrls.add(p.url);
+        allPhotos.push(p);
+      }
+    }
+
     await db.prepare(
       'DELETE FROM product_images WHERE product_id = ? AND variant_id IS NULL'
     ).run(productId);
 
-    if (sharedListingPhotos.length > 0) {
+    if (allPhotos.length > 0) {
       const sharedImgStmt = db.prepare(`
         INSERT INTO product_images (product_id, url, is_primary, sort_order, variant_id)
         VALUES (?, ?, ?, ?, NULL)
       `);
-      for (let i = 0; i < sharedListingPhotos.length; i++) {
-        const lp = sharedListingPhotos[i];
+      for (let i = 0; i < allPhotos.length; i++) {
+        const lp = allPhotos[i];
         const isPrimary = lp.is_cover ? 1 : (i === 0 ? 1 : 0);
         await sharedImgStmt.run(productId, lp.url, isPrimary, lp.sort_order);
       }
     } else if (listing.cover_photo_url) {
-      // Fallback: use listing's cover_photo_url if no shared listing_photos rows exist
+      // Fallback: use listing's cover_photo_url if no shared photos rows exist
       await db.prepare(`
         INSERT INTO product_images (product_id, url, is_primary, sort_order, variant_id)
         VALUES (?, ?, 1, 0, NULL)

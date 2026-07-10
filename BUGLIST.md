@@ -157,9 +157,10 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R15 ⬜ [HIGH][catalog-sync] Split Image Tables Discrepancy (listing_images vs listing_photos)
-- **Status**: ⬜ TODO
+## #R15 ✅ [HIGH][catalog-sync] Split Image Tables Discrepancy (listing_images vs listing_photos)
+- **Status**: ✅ FIXED
 - **Area**: `catalog-sync`
 - **Description**: Synced products on buyer pages are missing images even when images are provided during listing creation.
 - **Root Cause**: Listings created via `POST /api/seller/listings` write images to the `listing_images` table, but the sync service `syncListingToProduct` only reads from `listing_photos`.
+- **Fix**: Modified `syncListingToProduct` in `backend/src/services/listingSync.js` to query from both `listing_photos` and `listing_images` tables, merge/deduplicate the resulting photo lists, and sync all discovered image URLs to `product_images`.
 - **VERIFY**: Verify that the synced product has all of its image URLs present in the `product_images` table.
