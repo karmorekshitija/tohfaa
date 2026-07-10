@@ -37,10 +37,12 @@ async function runTests() {
     await db.prepare("DELETE FROM orders WHERE id IN (851, 852, 853)").run();
     await db.prepare("DELETE FROM products WHERE id IN (991, 992)").run();
     await db.prepare("DELETE FROM listings WHERE id = 791").run();
+    await db.prepare("DELETE FROM seller_profiles WHERE user_id = 950").run();
     await db.prepare("DELETE FROM users WHERE id IN (950, 951)").run();
 
     // Insert Users
     await db.prepare("INSERT INTO users (id, email, password_hash, full_name, role) VALUES (950, 'seller_review@test.com', 'hash', 'Artisan Seller', 'seller')").run();
+    await db.prepare("INSERT INTO seller_profiles (user_id, shop_name, is_approved) VALUES (950, 'Artisan Shop', 1)").run();
     await db.prepare("INSERT INTO users (id, email, password_hash, full_name, role) VALUES (951, 'buyer_review@test.com', 'hash', 'Reviewer Buyer', 'buyer')").run();
 
     // Insert Products
@@ -171,7 +173,7 @@ async function runTests() {
     assert.ok(data9.data.recent_reviews);
     assert.strictEqual(data9.data.recent_reviews.length, 1);
     assert.strictEqual(data9.data.recent_reviews[0].reviewer_name, "Reviewer Buyer");
-    assert.strictEqual(data9.data.recent_reviews[0].reviewer_avatar, null); // avatar not set
+    assert.strictEqual(data9.data.recent_reviews[0].reviewer_avatar, "/uploads/avatars/default-avatar.png"); // R6 fallback avatar
     console.log("✓ GET /api/products/:id successfully returned reviews with name and avatar.");
 
     console.log("\n🎉 ALL PRODUCT REVIEW & RATING TESTS PASSED SUCCESSFULLY!");
