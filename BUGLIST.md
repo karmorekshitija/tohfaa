@@ -110,8 +110,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R10 ⬜ [MEDIUM][seller-catalog] New listing missing from seller catalog
-- **Status**: ⬜ TODO
+## #R10 ✅ [MEDIUM][seller-catalog] New listing missing from seller catalog
+- **Status**: ✅ FIXED (Verified that after fixing the catalog sync issue #R2, newly published listings with active status are successfully returned in the GET /api/seller/listings response and displayed in the seller catalog view)
 - **Area**: `seller-catalog`
 - **Description**: Published listings do not show up in the seller catalog view. This is a downstream issue of the catalog-sync failure (#R2).
 - **VERIFY**: Verify listings show up in the seller studio catalog list after fixing #R2.
