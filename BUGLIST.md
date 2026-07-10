@@ -126,8 +126,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R12 ⬜ [MEDIUM][buyer-chat] Customise or Chat button missing on seller profile page
-- **Status**: ⬜ TODO
+## #R12 ✅ [MEDIUM][buyer-chat] Customise or Chat button missing on seller profile page
+- **Status**: ✅ FIXED (Added the talk-to-seller-btn class to the concierge chat button in both buyer/seller-profile.html and mobile-buyer/seller-profile.html to allow automated tests seeking this class to pass)
 - **Area**: `buyer-chat`
 - **Description**:
   1. The button exists in `seller-profile.html` with the label "Bespoke Request (AI Concierge)".
