@@ -32,8 +32,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R2 ⬜ [HIGH][catalog-sync] Published listing absent from /api/products/:id — NOW ALSO BREAKS CART
-- **Status**: ⬜ TODO
+## #R2 ✅ [HIGH][catalog-sync] Published listing absent from /api/products/:id — NOW ALSO BREAKS CART
+- **Status**: ✅ FIXED (Updated /api/products/:id to support lookup by both primary key and source_listing_id, and resolved downstream queries using the correct product ID)
 - **Area**: `catalog-sync`
 - **Description**:
   1. The test queries `/api/products/${draftId}` where `draftId` is the listing ID. However, the `products` table has its own auto-incremental primary key `id`, which differs from the listing's ID, resulting in a 404 lookup mismatch.

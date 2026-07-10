@@ -1897,11 +1897,11 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.id = ? AND p.status != 'archived'
+      WHERE (p.id = ? OR p.source_listing_id = ?) AND p.status != 'archived'
     `;
     
     const stmt = db.prepare(query);
-    const productData = userId ? await stmt.get(userId, numericId) : await stmt.get(numericId);
+    const productData = userId ? await stmt.get(userId, numericId, numericId) : await stmt.get(numericId, numericId);
     
     if (!productData) {
       return res.status(404).json({
@@ -1926,7 +1926,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
     }
     
     // 2. Join all images (order by sort_order)
-    const images = await db.prepare('SELECT url, is_primary, sort_order FROM product_images WHERE product_id = ? ORDER BY sort_order ASC').all(numericId);
+    const images = await db.prepare('SELECT url, is_primary, sort_order FROM product_images WHERE product_id = ? ORDER BY sort_order ASC').all(productData.id);
     
     // 5. Select 3 most recent reviews
     const recentReviews = await db.prepare(`
@@ -1936,7 +1936,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       WHERE r.product_id = ?
       ORDER BY r.created_at DESC, r.id DESC
       LIMIT 3
-    `).all(numericId);
+    `).all(productData.id);
     
     const sellerConfig = await db.prepare('SELECT vacation_mode, away_dates FROM store_config WHERE seller_id = ?').get(productData.seller_id);
     let holiday_mode_active = false;
@@ -1978,14 +1978,14 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       },
       recent_reviews: recentReviews,
       is_customized: productData.category_slug === 'customized-gifts',
-      is_sponsored: !!(await db.prepare("SELECT 1 FROM sponsored_products WHERE product_id = ? AND is_sponsored = 1").get(numericId)),
+      is_sponsored: !!(await db.prepare("SELECT 1 FROM sponsored_products WHERE product_id = ? AND is_sponsored = 1").get(productData.id)),
       is_best_seller: (await db.prepare(`
         SELECT p.id, COALESCE((SELECT SUM(quantity) FROM order_items WHERE product_id = p.id), 0) AS sales_rank
         FROM products p
         WHERE p.status = 'active'
         ORDER BY sales_rank DESC, p.created_at DESC, p.id DESC
         LIMIT 8
-      `).all()).some(b => b.id === numericId),
+      `).all()).some(b => b.id === productData.id),
       holiday_mode_active: holiday_mode_active,
       // Phase 2: pause fields
       paused_at: productData.paused_at || null,
@@ -2003,7 +2003,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         FROM subcategories sc
         JOIN product_subcategories psc ON sc.id = psc.subcategory_id
         WHERE psc.product_id = ?
-      `).all(numericId);
+      `).all(productData.id);
       productResponse.subcategories = subcats;
     } catch (err) {
       console.warn("Error loading product subcategories:", err);
