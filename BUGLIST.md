@@ -102,8 +102,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R9 ⬜ [HIGH][seller-studio] Post-publish edit restrictions still unenforced
-- **Status**: ⬜ TODO
+## #R9 ✅ [HIGH][seller-studio] Post-publish edit restrictions still unenforced
+- **Status**: ✅ FIXED (Verified the frontend edit-listing.html replaces input fields with locked, read-only divs showing lock icons for non-draft listings, and verified the backend handleUpdateListing controller rejects title/category/subcategory changes on active listings with a 400 Bad Request and code RESTRICTED_FIELD_EDIT)
 - **Area**: `seller-studio`
 - **Description**: Name and Category remain editable after a listing is published. The frontend should lock these fields, and the backend should reject edits to restricted fields post-publish.
 - **VERIFY**: Edit a published listing, verify fields are disabled with lock icons, and sending a PATCH request to edit restricted fields returns a 4xx error.
