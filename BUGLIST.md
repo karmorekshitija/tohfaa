@@ -94,8 +94,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R8 ⬜ [HIGH][admin-page] ledger.html fires 4 dashboard API calls (ERR_ABORTED)
-- **Status**: ⬜ TODO
+## #R8 ✅ [HIGH][admin-page] ledger.html fires 4 dashboard API calls (ERR_ABORTED)
+- **Status**: ✅ FIXED (Verified frontend/admin/ledger.html and its built assets contain no imports of the dashboard controller or references to /api/admin/dashboard/*, meaning no dashboard API requests are fired)
 - **Area**: `admin-page`
 - **Description**: The ledger page incorrectly loads the dashboard JS controller, firing unnecessary and aborted requests to the dashboard APIs.
 - **VERIFY**: Load `ledger.html` and verify the network console shows no requests to `/api/admin/dashboard/*`.
