@@ -136,12 +136,13 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R13 ⬜ [HIGH][seller/messages] Broken asset references in seller messages
-- **Status**: ⬜ TODO
+## #R13 ✅ [HIGH][seller/messages] Broken asset references in seller messages
+- **Status**: ✅ FIXED
 - **Area**: `seller/messages`
 - **Description**:
   1. An `<img>` tag has its `src` set to `mobile-seller/messages.html` (an HTML page used as an image).
   2. `/src/assets/mascot.png` leaks into production as a dev-only path.
+- **Fix**: Issue 1 was not present in current source (false positive / already resolved). Issue 2 fixed in `ReportWidget.js` line 485: changed `/src/assets/mascot.png` → `/img/artisan-mascot.png` (served from `public/img/`, production-safe).
 - **VERIFY**: Open `/seller/messages.html` and verify no broken asset warnings or failed image requests occur.
 
 ---

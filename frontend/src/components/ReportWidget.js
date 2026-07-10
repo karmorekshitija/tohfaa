@@ -482,7 +482,7 @@
     mascot.id = 'tohfa-chat-mascot';
     mascot.title = 'Tohfa Assistant';
     mascot.innerHTML = `
-      <img class="mascot-img" src="/src/assets/mascot.png" alt="Tohfa Assistant" draggable="false" />
+      <img class="mascot-img" src="/img/artisan-mascot.png" alt="Tohfa Assistant" draggable="false" />
       <div id="tohfa-chat-badge" style="display:none;"></div>
     `;
     document.body.appendChild(mascot);
