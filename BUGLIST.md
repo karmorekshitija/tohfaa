@@ -83,8 +83,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R7 ⬜ [HIGH][admin-api] /api/admin/dashboard/footfall?period=7d → HTTP 500
-- **Status**: ⬜ TODO
+## #R7 ✅ [HIGH][admin-api] /api/admin/dashboard/footfall?period=7d → HTTP 500
+- **Status**: ✅ FIXED (Verified the SQL Dialect Translator in db.js correctly translates both DATE(occurred_at) and SQLite's date('now', '-X days') to valid PostgreSQL syntax, and verified the GET /api/admin/dashboard/footfall endpoint returns 200 OK)
 - **Area**: `admin-api`
 - **Description**: The endpoint `/api/admin/dashboard/footfall` returns an HTTP 500.
 - **Root Cause**:
