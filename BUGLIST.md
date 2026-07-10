@@ -43,8 +43,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R3 ⬜ [HIGH][assets] Dead Unsplash images (/, buyer/home, mobile-buyer/home, Buyer Home)
-- **Status**: ⬜ TODO
+## #R3 ✅ [HIGH][assets] Dead Unsplash images (/, buyer/home, mobile-buyer/home, Buyer Home)
+- **Status**: ✅ FIXED (Replaced dead Unsplash URLs in server.js mock products with valid URLs, copied missing local placeholders ceramic_bowls.jpg and incense_holder.jpg to frontend/public/img/)
 - **Area**: `assets`
 - **Description**: Several Unsplash image placeholders return 404 or fail to load.
 - **VERIFY**: Grep the source and build output for dead Unsplash URLs. Ensure all render correctly or are replaced with local placeholders.

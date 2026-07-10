@@ -1751,7 +1751,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         review_count: 12,
         is_wishlisted: false,
         status: "active",
-        images: [{ url: "https://images.unsplash.com/photo-1576016770956-debb63d900bb?w=500&auto=format&fit=crop&q=60", is_primary: 1, sort_order: 1 }],
+        images: [{ url: "https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=500&auto=format&fit=crop&q=60", is_primary: 1, sort_order: 1 }],
         seller: {
           id: 8,
           seller_name: "Earth & Clay Studio",
@@ -1811,7 +1811,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         review_count: 5,
         is_wishlisted: false,
         status: "active",
-        images: [{ url: "https://images.unsplash.com/photo-1602872030219-c16779798575?w=500&auto=format&fit=crop&q=60", is_primary: 1, sort_order: 1 }],
+        images: [{ url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&auto=format&fit=crop&q=60", is_primary: 1, sort_order: 1 }],
         seller: {
           id: 9,
           seller_name: "Aura Metals",
