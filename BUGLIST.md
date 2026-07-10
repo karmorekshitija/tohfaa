@@ -51,9 +51,15 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R4 ⬜ [HIGH][assets] Google User Content (aida-public) placeholders in production
-- **Status**: ⬜ TODO
-## #R4 ✅ [MEDIUM][auth] sessionStorage token synchronization across windows
+## #R4 ✅ [HIGH][assets] Google User Content (aida-public) placeholders in production
+- **Status**: ✅ FIXED (Replaced Google User Content/aida URLs in seller-detail.html, session-ended.html, and signup-seller.html with local self-hosted assets: artisan-story.png, sleeping-cat.png, and artisan-mascot.png)
+- **Area**: `assets`
+- **Description**: User content placeholders (e.g. `googleusercontent`) are used in `admin/sellers`, `admin/products`, `buyer/categories`, and `seller/messages`. These must be replaced with local, self-hosted assets.
+- **VERIFY**: Grep `aida-public` or `googleusercontent` in `src` and `dist` directories.
+
+---
+
+## #R4-auth ✅ [MEDIUM][auth] sessionStorage token synchronization across windows
 - **Status**: ✅ FIXED (Added storage event listener and localStorage bridge to transfer session data from existing tabs to new tabs before executing route guards)
 - **Area**: `auth`
 - **Description**: The site stores the login token in `sessionStorage`. When the user opens a link in a new tab, `sessionStorage` is empty, prompting them to log in again.
