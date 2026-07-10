@@ -6,18 +6,38 @@ const mockGenAI = {
     }
     getGenerativeModel() {
       return {
-        generateContent: async () => {
+        generateContent: async (args) => {
+          const sysText = args && args[0] && args[0].text ? args[0].text : '';
+          
+          if (sysText.includes('FINALIZE') || sysText.includes('finalize')) {
+            return {
+              response: {
+                text: () => JSON.stringify({ decision: 'finalize' })
+              }
+            };
+          }
+          if (sysText.includes('YES') || sysText.includes('yes')) {
+            return {
+              response: {
+                text: () => JSON.stringify({ answer: 'yes' })
+              }
+            };
+          }
+          if (sysText.includes('quantity')) {
+            return {
+              response: {
+                text: () => JSON.stringify({ quantity: 5, needed_by_date: null })
+              }
+            };
+          }
+          // Default/details extraction
           return {
             response: {
               text: () => JSON.stringify({
-                extracted_fields: {
-                  quantity: 5,
-                  customization_type: "Hand-engraved initials",
-                  color_material: "Mahogany Wood",
-                  inspiration_reference: "engraving_sample.jpg",
-                  other_notes: "Please write 'A & B' on it"
-                },
-                bot_response: "Perfect, I've got all the requirements needed to draft your custom order! I will submit this for review."
+                customization_type: "Hand-engraved initials",
+                color_material: "Mahogany Wood",
+                inspiration_reference: "engraving_sample.jpg",
+                other_notes: "Please write 'A & B' on it"
               })
             }
           };
@@ -123,7 +143,7 @@ async function runTests() {
 
     // 3. Buyer replies -> Bot completes intake and transitions to POST_DRAFT_CHOICE
     console.log("Step 3: POST /api/requests/:id/messages (Buyer replies and completes intake)...");
-    const msgRes = await fetch(`${BASE_URL}/api/requests/${conversationId}/messages`, {
+    const msgRes1 = await fetch(`${BASE_URL}/api/requests/${conversationId}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -133,9 +153,34 @@ async function runTests() {
         content: "Please customize it with mahogany wood and hand-engraved initials. Here is my inspiration."
       })
     });
-    assert.strictEqual(msgRes.status, 200);
-    const msgData = await msgRes.json();
-    console.log("✓ Buyer reply submitted.");
+    assert.strictEqual(msgRes1.status, 200);
+    console.log("✓ Buyer reply 1 (details) submitted.");
+
+    const msgRes2 = await fetch(`${BASE_URL}/api/requests/${conversationId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${buyerToken}`
+      },
+      body: JSON.stringify({
+        content: "finalize"
+      })
+    });
+    assert.strictEqual(msgRes2.status, 200);
+    console.log("✓ Buyer reply 2 (finalize) submitted.");
+
+    const msgRes3 = await fetch(`${BASE_URL}/api/requests/${conversationId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${buyerToken}`
+      },
+      body: JSON.stringify({
+        content: "5"
+      })
+    });
+    assert.strictEqual(msgRes3.status, 200);
+    console.log("✓ Buyer reply 3 (quantity 5) submitted.");
 
     // 4. Verify thread state and draft card creation
     console.log("Step 4: GET /api/requests/:id (Verify status is POST_DRAFT_CHOICE and draft card created)...");
