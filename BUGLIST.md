@@ -75,8 +75,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R6 ⬜ [HIGH][assets] /uploads/avatars/default-avatar.png 404
-- **Status**: ⬜ TODO
+## #R6 ✅ [HIGH][assets] /uploads/avatars/default-avatar.png 404
+- **Status**: ✅ FIXED (Copied backend's default-avatar.png to frontend/public/uploads/avatars/default-avatar.png to ensure it gets bundled in frontend assets and resolved on any frontend URL context)
 - **Area**: `assets`
 - **Description**: Default avatars fail to load (404) on the buyer home and admin orders pages. A default avatar asset must be bundled or served by the backend.
 - **VERIFY**: Access `/uploads/avatars/default-avatar.png` and verify it returns a 200 OK.
