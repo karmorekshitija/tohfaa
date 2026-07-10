@@ -17,61 +17,113 @@
     }
   }
 
-  // Admin routes guard
-  if (path.startsWith('/admin/') && !path.includes('/admin/login.html')) {
-    const adminToken = sessionStorage.getItem('tohfa_admin_token');
-    if (!adminToken) {
-      window.location.replace('/admin/login.html');
-      return;
+  window.addEventListener('storage', function(event) {
+    if (event.key === 'tohfa_request_session' && event.newValue) {
+      const sessionData = {
+        tohfa_access_token: sessionStorage.getItem('tohfa_access_token'),
+        tohfa_refresh_token: sessionStorage.getItem('tohfa_refresh_token'),
+        tohfa_user: sessionStorage.getItem('tohfa_user'),
+        tohfa_admin_token: sessionStorage.getItem('tohfa_admin_token')
+      };
+      if (sessionData.tohfa_access_token || sessionData.tohfa_admin_token) {
+        try {
+          localStorage.setItem('tohfa_share_session', JSON.stringify(sessionData));
+          localStorage.removeItem('tohfa_share_session');
+        } catch (e) {}
+      }
+    } else if (event.key === 'tohfa_share_session' && event.newValue) {
+      try {
+        const data = JSON.parse(event.newValue);
+        if (data.tohfa_access_token) sessionStorage.setItem('tohfa_access_token', data.tohfa_access_token);
+        if (data.tohfa_refresh_token) sessionStorage.setItem('tohfa_refresh_token', data.tohfa_refresh_token);
+        if (data.tohfa_user) sessionStorage.setItem('tohfa_user', data.tohfa_user);
+        if (data.tohfa_admin_token) sessionStorage.setItem('tohfa_admin_token', data.tohfa_admin_token);
+        
+        window.dispatchEvent(new Event('tohfa-session-sync'));
+      } catch (e) {
+        console.error("Error parsing shared session:", e);
+      }
+    }
+  });
+
+  // Tab session synchronization logic using localStorage bridge
+  if (!sessionStorage.getItem('tohfa_access_token') && !sessionStorage.getItem('tohfa_admin_token')) {
+    try {
+      localStorage.setItem('tohfa_request_session', Date.now().toString());
+    } catch (e) {
+      console.warn("Storage sync failed:", e);
     }
   }
-  
-  // Seller routes guard
-  if (path.startsWith('/seller/')) {
-    const token = sessionStorage.getItem('tohfa_access_token');
-    if (!token) {
-      window.location.replace('/auth/login.html');
-      return;
+
+  let guardsRun = false;
+  function runGuards() {
+    if (guardsRun) return;
+    guardsRun = true;
+
+    // Admin routes guard
+    if (path.startsWith('/admin/') && !path.includes('/admin/login.html')) {
+      const adminToken = sessionStorage.getItem('tohfa_admin_token');
+      if (!adminToken) {
+        window.location.replace('/admin/login.html');
+        return;
+      }
     }
-    const userStr = sessionStorage.getItem('tohfa_user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.role !== 'seller' && user.role !== 'admin') {
-          sessionStorage.setItem('access_denied_reason', 'Access restricted to sellers only.');
-          window.location.replace('/buyer/home.html');
-          return;
-        }
-      } catch (e) {
+    
+    // Seller routes guard
+    if (path.startsWith('/seller/')) {
+      const token = sessionStorage.getItem('tohfa_access_token');
+      if (!token) {
         window.location.replace('/auth/login.html');
         return;
       }
+      const userStr = sessionStorage.getItem('tohfa_user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.role !== 'seller' && user.role !== 'admin') {
+            sessionStorage.setItem('access_denied_reason', 'Access restricted to sellers only.');
+            window.location.replace('/buyer/home.html');
+            return;
+          }
+        } catch (e) {
+          window.location.replace('/auth/login.html');
+          return;
+        }
+      }
+    }
+
+    // Buyer routes guard
+    if (path.startsWith('/buyer/') || path.startsWith('/mobile-buyer/')) {
+      const pageSegment = path.split('/').pop() || '';
+      const cleanSegment = pageSegment.replace('.html', '');
+      const isPublic = [
+        '',
+        'home',
+        'categories',
+        'category',
+        'product',
+        'our-story',
+        'seller-profile',
+        'search',
+        'zipgift'
+      ].includes(cleanSegment);
+
+      if (!isPublic) {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+          window.location.replace(`/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
+          return;
+        }
+      }
     }
   }
 
-  // Buyer routes guard
-  if (path.startsWith('/buyer/') || path.startsWith('/mobile-buyer/')) {
-    const pageSegment = path.split('/').pop() || '';
-    const cleanSegment = pageSegment.replace('.html', '');
-    const isPublic = [
-      '',
-      'home',
-      'categories',
-      'category',
-      'product',
-      'our-story',
-      'seller-profile',
-      'search',
-      'zipgift'
-    ].includes(cleanSegment);
-
-    if (!isPublic) {
-      const token = sessionStorage.getItem('tohfa_access_token');
-      if (!token) {
-        window.location.replace(`/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
-        return;
-      }
-    }
+  const hasToken = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('tohfa_admin_token');
+  if (hasToken) {
+    runGuards();
+  } else {
+    window.addEventListener('tohfa-session-sync', runGuards);
+    setTimeout(runGuards, 150);
   }
   function setupAuthAndBadges() {
     const token = sessionStorage.getItem('tohfa_access_token');
