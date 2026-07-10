@@ -67,8 +67,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R5 ⬜ [HIGH][assets] transparenttextures.com natural-paper.png — self-host
-- **Status**: ⬜ TODO
+## #R5 ✅ [HIGH][assets] transparenttextures.com natural-paper.png — self-host
+- **Status**: ✅ FIXED (Verified all texture assets are hosted locally under frontend/public/img/textures/ and all styles reference them locally, with no external transparenttextures.com calls in the application code)
 - **Area**: `assets`
 - **Description**: Page styling relies on external assets from `transparenttextures.com`, causing mixed-content or load failures.
 - **VERIFY**: Ensure the asset is hosted locally under `img/` or `assets/` and check for external calls.
