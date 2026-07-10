@@ -141,6 +141,7 @@
 <div class="space-y-4">
 <h2 class="text-xl font-playfair">Category Selection</h2>
 <div id="category-buttons-container" class="flex flex-wrap gap-2"></div>
+<select id="category-select" class="hidden"></select>
 <!-- Subcategories Selector -->
 <div id="subcategories-wrapper" class="hidden space-y-2 mt-4">
   <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Subcategories</label>
@@ -523,15 +524,48 @@
       categoriesList = FALLBACK_CATEGORIES;
     }
 
+    const categorySelect = document.getElementById('category-select');
+    if (categorySelect) {
+      categorySelect.innerHTML = '<option value="">Select a Category</option>';
+      categoriesList.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat.display_name || cat.name;
+        categorySelect.appendChild(opt);
+      });
+      
+      categorySelect.addEventListener('change', (e) => {
+        const catId = e.target.value;
+        const cat = categoriesList.find(c => String(c.id) === String(catId));
+        if (cat) {
+          if (String(selectedCategoryId) !== String(cat.id)) {
+            selectedSubcategoryIds = [];
+          }
+          selectedCategory = cat.display_name || cat.name;
+          selectedCategoryId = cat.id;
+          renderCategoryButtons(categoriesList);
+          renderSubcategories(cat.id);
+        } else {
+          selectedCategory = '';
+          selectedCategoryId = '';
+          selectedSubcategoryIds = [];
+          renderCategoryButtons(categoriesList);
+          renderSubcategories('');
+        }
+      });
+    }
+
     renderCategoryButtons(categoriesList);
     
     if (selectedCategoryId) {
       renderSubcategories(selectedCategoryId);
+      if (categorySelect) categorySelect.value = selectedCategoryId;
     } else if (selectedCategory) {
       const catObj = categoriesList.find(c => (c.display_name || c.name).toLowerCase() === selectedCategory.toLowerCase());
       if (catObj) {
         selectedCategoryId = catObj.id;
         renderSubcategories(catObj.id);
+        if (categorySelect) categorySelect.value = catObj.id;
       }
     }
   }
@@ -558,6 +592,10 @@
         }
         selectedCategory = catName;
         selectedCategoryId = cat.id;
+        const categorySelect = document.getElementById('category-select');
+        if (categorySelect) {
+          categorySelect.value = cat.id;
+        }
         renderCategoryButtons(categories);
         renderSubcategories(cat.id);
       });

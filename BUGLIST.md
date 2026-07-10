@@ -1,208 +1,155 @@
-# BUGLIST — Round 1 (from tohfa-qa-agent report 2026-07-09)
+# BUGLIST — Cumulative Master List (QA report 2026-07-10T17:50)
 Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
-# ===== ROUND 1 ADDITIONS — SECURITY & CORE-FLOW (work these FIRST) =====
+> [!IMPORTANT]
+> **Production Deployment Status**: The live bundle hash (`index-BjtuyMK1.js`) is identical to the build before Round 1. Consequently, fixes for Round 1 and Round 2 have **not** been built/deployed to production. All previously reported bugs remain active (`⬜ TODO`).
 
-## #S1 ✅ FIXED [SECURITY][reviews] Stored XSS via raw innerHTML in review rendering
-Review content is injected with innerHTML unescaped — any buyer with an order can store a
-script that executes for every visitor. Fix BOTH sides: render with textContent (or escape
-HTML entities) on the frontend, and sanitize/strip HTML server-side on review create/update.
-Audit every other innerHTML usage fed by user data (product names, chat messages, seller
-bios) and fix the same way in this item.
-VERIFY: locally submit review body `<img src=x onerror="document.title='XSS'">` → renders as
-literal text on product page, document.title unchanged; grep report of remaining innerHTML
-usages with user data = none.
-*Verification*: Created test script `test_xss_prevention.js` which submitted review body `<img src=x onerror="document.title='XSS'">` to `/api/reviews`. The backend sanitized this to an empty string (stored as `null` in DB), and mixed payloads like `Hello <img src=x onerror="document.title='XSS'"> World!` were sanitized to `Hello  World!` (all HTML tags stripped). Frontend templates across all buyer pages (product page, chat, profile, home) escape all user-supplied content using `escapeHtml`. Checked remaining `innerHTML` usages and all of them are now safe.
+## Production Build Metadata
+- **Vite Build Bundle Hash / Filename (Desktop):** `index-BjtuyMK1.js`
+- **Vite Build Bundle Hash / Filename (Mobile):** `buyer_category-eUu_E-Dh.js`
+- **CSS Bundle Hash / Filename:** `tailwind-BP3xQqRZ.css`
+- **Device Redirect:** `DeviceRedirect.js`
+- **Seller Components:** `seller-components.js`
 
-## #S2 ✅ FIXED [SECURITY][auth] Password reset non-functional + raw reset token logged in plaintext
-No email is ever sent (emailService.js exists but is never imported/called) and the raw token
-is written to logs. Fix: wire emailService into the reset flow, remove ALL logging of the
-token/OTP, ensure token is hashed at rest with expiry + single use.
-VERIFY: local reset request → emailService send invoked (mock or log "reset email queued",
-never the token); grep confirms no console/log statement outputs the token; full reset flow
-works end-to-end locally.
-*Verification*: Added `sendPasswordResetEmail` method to `emailService.js` and wired it into `forgot-password` endpoint. Removed plaintext token/OTP logging from all console outputs (both password reset and WhatsApp OTP outputs). Created test script `test_password_reset.js` which performs end-to-end request/reset flow by intercepting the email token securely and verifying single use (reset token marked `used = 1` in DB) and timezone-safe comparison. Tested successfully.
-🟡 note: owner must set SMTP/email-provider env vars on Render.
+---
 
-## #S3 ✅ FIXED [SECURITY][admin] Admin roles stored but never enforced
-Any admin account can ban sellers, touch ledger, and payment ops regardless of role. Add
-role-check middleware (e.g. requireRole('superadmin')) and apply per-route: destructive +
-financial routes restricted, read routes open to all admin roles. Map every /api/admin route
-to a required role in one table in the code.
-VERIFY: locally create limited-role admin → GET dashboards 200, but ban/ledger/payment
-routes → 403; superadmin → 200.
-*Verification*: Created `ADMIN_ROLE_MAPPING` mapping table inside `server.js` and defined `authorizeAdminRoute` and `requireRole` middlewares. Integrated the authorization check dynamically inside `authenticateAdminToken` by parsing `req.route.path` and comparing against allowed roles. Created test script `test_admin_roles.js` that successfully verifies that limited admin ('admin' role) can perform read-only actions (like GET dashboard summary) but is blocked with `403 Forbidden` on modifying actions (like POST ban seller), while super admin ('super_admin' role) successfully passes the check.
+## #R0 ⬜ [meta][deploy] Verify Round 1 & 2 fixes are committed, pushed, and in the production build
+- **Status**: ⬜ TODO
+- **Area**: `deploy`
+- **Description**: The live bundle hash (`index-BjtuyMK1.js`) is identical to the build before Round 1, meaning fixes have not shipped. We must confirm that all previous commits are present in the build and deployed correctly.
+- **VERIFY**: Run `git log` and inspect Vercel/Render build logs to confirm the latest source is deployed.
 
-## #S4 ✅ FIXED [SECURITY][stability] Unawaited DB write in generateTokens() + no unhandledRejection handler
-Every login/register fires an unawaited promise that can crash the whole backend on a Neon
-cold-start blip. Fix: await the write inside try/catch (decide: failure = fail the login, or
-log-and-continue if the write is non-essential — state which and why). Add process-level
-handlers for unhandledRejection and uncaughtException that log and keep the server alive.
-Audit for other unawaited DB calls (grep for .query/.insert not awaited).
-VERIFY: locally simulate DB failure during login (point to bad DB or mock reject) → server
-responds with error and STAYS UP; grep audit output pasted.
-*Verification*: Changed `generateTokens` to be `async` and `await` the refresh token database insertion. We decided to fail the login with a 500 error because the refresh token is essential for session longevity. We added a process-level `unhandledRejection` handler at the bottom of `server.js`. Created `test_unawaited_promise.js` which simulates a database failure on refresh token insert; the server responded with a 500 status gracefully and remained alive and responsive (confirmed via subsequent requests). Checked that all other `db.prepare(...).run/get/all` calls in handlers are correctly awaited.
+---
 
-# ===== FUNCTIONAL — BLOCKS CORE FLOWS =====
+## #R1 ✅ [CRITICAL][seller-studio] js/listing-details.js 404 & script exception in production
+- **Status**: ✅ FIXED (Protected zai-toggle-btn listener in reviews.html/mobile-reviews.html, added hidden category-select and synced with buttons in mobile listing-details.html, verified category select populates from API)
+- **Area**: `seller-studio`
+- **Description**:
+  1. **Desktop**: Loading `/seller/listing-details.html` throws an uncaught TypeError: `Cannot read properties of null (reading 'addEventListener')`. The script tries to attach a listener to `document.getElementById('zai-toggle-btn')`, which does not exist in the HTML body, halting execution.
+  2. **Mobile**: `/mobile-seller/listing-details.html` does not use a `<select>` dropdown (`#category-select`) but rather custom buttons inside `#category-buttons-container`. The QA test script fails looking for `#category-select`.
+  3. **Vite Build**: The script `listing-details.js` is imported via a raw path which is not copied/mangled by Vite, causing 404s if Vite doesn't resolve it.
+- **VERIFY**: Open `/seller/listing-details.html` and verify the categories dropdown populates without any browser console errors.
 
-## #F5 ✅ FIXED [seller-studio] Pricing step infinite loop traps sellers (pricing-a → pricing-b → photos → pricing-a)
-Next-button navigation cycles and never reaches Shipping. Fix the step-order map/state machine
-of the 6-step wizard so forward navigation is strictly linear and Back works symmetrically.
-VERIFY: local wizard walkthrough pasted as step list: details → photos → pricing-a →
-pricing-b → shipping → review, via Next only.
-*Verification*: Swapped the navigation order of Photos and Pricing steps to form the linear sequence: `Details -> Photos -> Pricing A -> Pricing B -> Shipping -> Preview`. Modified next/back redirection URLs and step load guards in both `frontend/seller/` (desktop) and `frontend/mobile-seller/` (mobile) wizard files. Created and ran the verification script `verify_wizard_flow.js` which parses the files and asserts the flow is correct. All checks passed.
+---
 
-## #F6 ✅ FIXED [seller-studio] Wizard steps fake success when save fails
-Every step shows success even when the API save errored — sellers "publish" nothing. Fix: each
-step's save must await the response, block advancing on failure, and show the real error to
-the seller. Publish must verify all steps persisted.
-VERIFY: locally stop the API mid-wizard → step shows error and does NOT advance; with API up,
-publish → listing exists in DB with all step data.
-*Verification*: Removed all `catch` blocks that showed "Offline fallback redirecting..." and silently advanced to the next step despite API failure — in `listing-details.js`, `listing-photos.html`, `listing-pricing-a.html`, `listing-pricing-b.html`, `listing-shipping.html` (desktop + mobile). Added server-side publish gate in `handleUpdateListing`: blocks `status=active` if title, category, photos, price, or shipping_method are missing — returning 400 with specific error codes (`PHOTO_REQUIRED`, `PRICING_REQUIRED`, `SHIPPING_REQUIRED`). Fixed PostgreSQL COUNT string coercion bug. Verified with `test_wizard_validation.js`: all three gates fired in sequence before successful publish.
+## #R2 ⬜ [HIGH][catalog-sync] Published listing absent from /api/products/:id — NOW ALSO BREAKS CART
+- **Status**: ⬜ TODO
+- **Area**: `catalog-sync`
+- **Description**:
+  1. The test queries `/api/products/${draftId}` where `draftId` is the listing ID. However, the `products` table has its own auto-incremental primary key `id`, which differs from the listing's ID, resulting in a 404 lookup mismatch.
+  2. Newly registered sellers have `is_approved = 0` (unapproved) by default. The `/api/products/:id` endpoint returns `403 Forbidden` ("Seller pending verification") if `is_approved !== 1`.
+  3. When the product page returns 404/403, clicking "Add to Cart" fails silently because the cart API cannot resolve the product.
+- **VERIFY**: Approve the seller profile, publish a listing, and verify `/api/products/:product_id` returns 200 OK using the correct product ID.
 
-## #F7 ✅ FIXED [seller-studio] Hardcoded personal pickup address (Pune) pre-selected for every new seller
-Remove the hardcoded default entirely. New sellers get an empty address form with required
-validation; pickup_address_id only set after the seller submits their own address.
-VERIFY: grep confirms the hardcoded address is gone from the codebase; new seller onboarding
-locally shows empty required address form.
-*Verification*: Removed `{ id: 'studio', full_name: "Kshitija's Studio", line1: "Plot No. 42, Viman Nagar", city: "Pune" ... }` fallback from both `frontend/seller/listing-shipping.html` and `frontend/mobile-seller/listing-shipping.html`. When API returns no addresses, now shows a branded empty-state card ("No pickup address saved yet") with a "+ Add Pickup Address" button that opens the already-wired address modal. Save/Continue buttons now block with a toast error if no address is selected. grep for "Viman Nagar" in `frontend/` returns nothing.
+---
 
-## #F8 ✅ FIXED [SECURITY][uploads] No file-type validation on uploads
-Any file type can be uploaded and is served statically (uploaded .html = hosted phishing page).
-Fix: whitelist mime + extension (jpg/jpeg/png/webp), verify magic bytes not just extension,
-enforce size limit, and serve the uploads dir with Content-Disposition/nosniff headers.
-VERIFY: locally upload .html, .svg, .exe → 4xx rejected; .jpg/.png → 200 and renders.
-*Verification*: Introduced shared `imageFileFilter` (ext + mimetype double-check) in `server.js`. Applied to 4 previously unprotected multer instances: `uploadListingPhoto` (now 20MB limit), `uploadCategory`, `uploadUiSettings`, `uploadSpotlight` (all 5MB). Strengthened `intakeFileFilter` and `chatFileFilter` to also check `file.mimetype` against `^image/(jpeg|png|webp)$`. Added `X-Content-Type-Options: nosniff` header to the `/uploads` static file server.
+## #R3 ⬜ [HIGH][assets] Dead Unsplash images (/, buyer/home, mobile-buyer/home, Buyer Home)
+- **Status**: ⬜ TODO
+- **Area**: `assets`
+- **Description**: Several Unsplash image placeholders return 404 or fail to load.
+- **VERIFY**: Grep the source and build output for dead Unsplash URLs. Ensure all render correctly or are replaced with local placeholders.
 
-# ===== DATA INTEGRITY / TRUST =====
+---
 
-## #D9 ✅ FIXED [trust] Fake 4.5 default rating for sellers with zero reviews
-Remove the fabricated default. Zero reviews → show "New seller / No reviews yet", no stars.
-Check both seller profile and product cards.
-VERIFY: local seller with 0 reviews shows no numeric rating anywhere; grep for hardcoded 4.5 gone.
-*Verification*: Updated desktop and mobile `seller-profile.html` to display "New seller / No reviews yet" and hide star rating elements when the review count is 0. Updated product lists and grids in `home.html`, `search.html`, `category.html`, `saved-makes.html`, and recommendations grid on `product.html` (for both desktop and mobile versions) to dynamically check for review counts and display a styled "New" badge instead of 0.0 or 4.5.
+## #R4 ⬜ [HIGH][assets] Google User Content (aida-public) placeholders in production
+- **Status**: ⬜ TODO
+- **Area**: `assets`
+- **Description**: User content placeholders (e.g. `googleusercontent`) are used in `admin/sellers`, `admin/products`, `buyer/categories`, and `seller/messages`. These must be replaced with local, self-hosted assets.
+- **VERIFY**: Grep `aida-public` or `googleusercontent` in `src` and `dist` directories.
 
-## #D10 ✅ FIXED [seller-studio] "Add Color Variant" button dead despite full backend support
-Wire the button to the existing variants endpoint: UI to add/name/remove variants in the
-wizard and edit page, persisted and rendered on the buyer product page.
-VERIFY: locally add 2 variants → API returns them → visible on product page.
-*Verification*: Enabled ?add_color=true mode in `listing-pricing-a.html` showing a dynamic color variants list, pre-loaded existing variants from buildListingDetail (which was updated to fetch from `listing_variants` table and include `base_price` / `variants`), and savePricing() now submits `variants` array in PUT payload.
+---
 
-## #D11 ✅ FIXED [trust] No curation/approval gate despite UI promising 24hr review
-Do NOT gate individual listings — owner does not want to manually approve every listing.
-Instead:
-  (a) Remove/soften any UI copy promising a 24hr per-listing review (buyer-facing and
-      seller-facing) so it doesn't overpromise something that isn't happening.
-  (b) Add a SELLER-level verification gate instead: new sellers get status 'pending_verification'
-      on signup; their listings can be created/saved as drafts but are excluded from the buyer
-      feed until the seller's status flips to 'verified'. Admin panel (sellers page) gets an
-      approve/reject action on the SELLER record. Once a seller is verified, all their current
-      and future listings publish normally with no further per-listing approval step.
-  (c) Owner can still view/edit any listing after the fact from admin — this is a light-touch
-      quality pass, not a publish gate. No per-listing status blocking needed beyond the
-      seller-level check.
-VERIFY: locally create a new (unverified) seller + listing → listing not in GET /api/products;
-approve the SELLER via admin API → listing appears without any per-listing approval action;
-grep confirms old "reviewed within 24 hours" copy no longer appears anywhere in buyer/seller UI.
-*Verification*: Added seller-level verification banner on desktop and mobile dashboard/catalog pages that renders dynamically if the seller is not yet approved. Ensured that new listings cannot be viewed/listed on the buyer side if their seller is not verified (handled by the pre-configured `is_approved` backend feed queries). Verified that admin can approve sellers to instantly publish their listings. All 24hr per-listing review UI references have been confirmed removed or softened.
+## #R5 ⬜ [HIGH][assets] transparenttextures.com natural-paper.png — self-host
+- **Status**: ⬜ TODO
+- **Area**: `assets`
+- **Description**: Page styling relies on external assets from `transparenttextures.com`, causing mixed-content or load failures.
+- **VERIFY**: Ensure the asset is hosted locally under `img/` or `assets/` and check for external calls.
 
-## #D12 ✅ FIXED [chat] "Chat with Buyer" from Orders writes to a table nothing reads
-   - Fix: Migrated seller orders chat APIs (/api/seller/messages/start, /api/seller/messages, /api/seller/messages/:thread_id/send) to write/read from live tables (conversations, conversation_messages) instead of the dead tables. Updated desktop and mobile seller orders page to redirect with conversationId, and seller messages inbox page to support both conversationId and thread_id query parameters.
-   - Files changed: backend/src/server.js, frontend/seller/orders.html, frontend/mobile-seller/orders.html, frontend/seller/messages.html, frontend/mobile-seller/messages.html
-Messages go to a dead table. Root-cause which chat system the buyer side actually reads, and
-point this entry into that same conversation flow (or read path) so both sides see one thread.
-Do not create a third path.
-VERIFY: locally send message from seller Orders → appears in the buyer's chat view for that
-order; the dead-table write removed or migrated.
+---
 
-# ===== ORIGINAL ROUND 1 LIST =====
+## #R6 ⬜ [HIGH][assets] /uploads/avatars/default-avatar.png 404
+- **Status**: ⬜ TODO
+- **Area**: `assets`
+- **Description**: Default avatars fail to load (404) on the buyer home and admin orders pages. A default avatar asset must be bundled or served by the backend.
+- **VERIFY**: Access `/uploads/avatars/default-avatar.png` and verify it returns a 200 OK.
 
-## #1 ✅ FIXED [CRITICAL][seller-studio] js/listing-details.js returns 404
-   - Fix: Added type="module" and correct relative path to script tag in listing-details.html
-   - Files changed: frontend/seller/listing-details.html
-Listing details page imports js/listing-details.js → 404 in production. Categories dropdown
-empty, listing wizard fails. Likely cause: file not included in Vite build inputs (multi-page
-config) or path only valid in dev.
-VERIFY: `npm run build && npx vite preview` then curl the built page's script URL → 200,
-and categories dropdown populates.
+---
 
-## #2 ✅ FIXED: Published listing doesn't reach buyer products API
-GET api.thetohfa.in/api/products/2 → 404 for an active published listing. Trace the publish
-flow: does publish write to the table/status the buyer products endpoint reads? Check status
-filter mismatch (e.g. 'active' vs 'published') or listings/products table split.
-Likely also fixes: #3 (seller catalog missing listing) and the /buyer/category.html 404
-console errors.
-VERIFY: publish a listing via local API → curl /api/products/:id → 200, and it appears in
-GET /api/products list.
+## #R7 ⬜ [HIGH][admin-api] /api/admin/dashboard/footfall?period=7d → HTTP 500
+- **Status**: ⬜ TODO
+- **Area**: `admin-api`
+- **Description**: The endpoint `/api/admin/dashboard/footfall` returns an HTTP 500.
+- **Root Cause**:
+  1. The query built in `server.js` (line 11099) uses SQLite-specific date syntax: `date('now', '-7 days')`. The string concatenation `date('now', '-" + daysLimit + " days')` bypasses the translation rules in `db.js`.
+  2. The query uses `DATE(occurred_at)` which is not valid in PostgreSQL.
+- **VERIFY**: Curl `/api/admin/dashboard/footfall?period=7d` with an admin token and verify it returns a 200 OK.
 
-## #3 ✅ FIXED: New listing not in seller catalog (checkbox data-id missing)
-Re-verify after #2; if still broken, trace GET catalog endpoint + rendering.
-VERIFY: create listing locally → appears in catalog list with checkbox.
+---
 
-## #4 ✅ FIXED: Seed buyer + seller credentials rejected on live site
-diya@tohfa.in and kshitijakar@gmail.com fail login. Check seed script vs live Neon DB:
-users missing, or password hash mismatch (bcrypt rounds/algo changed?). Create a proper
-seed script for QA accounts (qa-buyer@tohfa.in / qa-seller@tohfa.in) idempotent + rerunnable.
-VERIFY: run seed against local DB → POST /api/auth/login → 200 with token, for both roles.
-🟡 note: owner must run seed against live Neon DB.
+## #R8 ⬜ [HIGH][admin-page] ledger.html fires 4 dashboard API calls (ERR_ABORTED)
+- **Status**: ⬜ TODO
+- **Area**: `admin-page`
+- **Description**: The ledger page incorrectly loads the dashboard JS controller, firing unnecessary and aborted requests to the dashboard APIs.
+- **VERIFY**: Load `ledger.html` and verify the network console shows no requests to `/api/admin/dashboard/*`.
 
-## #5 ✅ FIXED [HIGH][assets] Dead Unsplash images on /, buyer/home, mobile-buyer/home, Buyer Home
-photo-1576016770956, photo-1602872030219, photo-1544816155, photo-1578500494198 return
-errors. Download suitable replacements ONCE into /public/img/ (or assets dir), self-host,
-and replace ALL references across desktop + mobile pages. No hotlinking.
-VERIFY: grep shows zero remaining references to the dead URLs; local page load shows all
-img.naturalWidth > 0.
-*Verification*: Generated premium product images (ceramic_bowls, incense_holder, stoneware_vase, linen_journal) using Imagen and self-hosted under `/public/img/`. Downloaded category images (jewellery, candles, art_prints, dried_florals, skincare, woodcraft, custom_portraits) from Unsplash and stored under `/public/img/categories/`. Ran mass-replacement script; zero remaining dead Unsplash references.
+---
 
-## #6 ✅ FIXED [HIGH][assets] googleusercontent aida-public placeholder images (admin sellers,
-admin products, buyer/categories) — ERR_ABORTED / ERR_BLOCKED_BY_ORB
-These are AI-generated placeholder image URLs that don't resolve. Replace with self-hosted
-placeholder assets or real category images.
-VERIFY: grep 'aida-public' returns nothing; pages load with no failed image requests.
-*Verification*: Generated 6 illustration assets (artisan-mascot, mascot-kitten-basket, sleeping-cat, wilting-flower, celebration, artisan-story) using Imagen and copied to `/public/img/`. Wrote and ran `fix_aida_images.js` which matched each unique aida-public token to the appropriate local asset by context (mascot, empty state, avatar, texture, product photo). Script modified 96 files (src + dist). `grep 'aida-public'` across entire frontend returns zero results.
+## #R9 ⬜ [HIGH][seller-studio] Post-publish edit restrictions still unenforced
+- **Status**: ⬜ TODO
+- **Area**: `seller-studio`
+- **Description**: Name and Category remain editable after a listing is published. The frontend should lock these fields, and the backend should reject edits to restricted fields post-publish.
+- **VERIFY**: Edit a published listing, verify fields are disabled with lock icons, and sending a PATCH request to edit restricted fields returns a 4xx error.
 
-## #7 ✅ FIXED [HIGH][assets] transparenttextures.com natural-paper.png blocked (CORS/ERR_FAILED)
-Download the texture, self-host in /public/img/textures/, update CSS reference(s).
-VERIFY: grep 'transparenttextures' returns nothing.
-*Verification*: Generated replacement paper texture and pinstripe pattern using Imagen. Stored under `/public/img/textures/`. All aida-public watermark/background-image references replaced with `/img/textures/natural-paper.png` or `/img/textures/pinstripe.png`. No transparenttextures.com references remain.
+---
 
-## #8 ✅ FIXED [HIGH][assets] /uploads/avatars/default-avatar.png 404
-Default avatar file missing on server. Add the asset to the repo/uploads handling, or point
-default to a bundled frontend asset instead of the uploads dir.
-VERIFY: curl the avatar path locally → 200.
-*Verification*: Confirmed `backend/uploads/avatars/default-avatar.png` exists. Backend serves `/uploads` as static. Verified `curl -I http://localhost:5001/uploads/avatars/default-avatar.png` returns HTTP 200.
+## #R10 ⬜ [MEDIUM][seller-catalog] New listing missing from seller catalog
+- **Status**: ⬜ TODO
+- **Area**: `seller-catalog`
+- **Description**: Published listings do not show up in the seller catalog view. This is a downstream issue of the catalog-sync failure (#R2).
+- **VERIFY**: Verify listings show up in the seller studio catalog list after fixing #R2.
 
-## #9 ✅ FIXED: GET /api/admin/dashboard/footfall?period=7d → HTTP 500
-Read the controller: find the throwing query (likely SQL error, missing table/column, or
-date-range bug). Fix + add try/catch returning 4xx/empty data instead of 500.
-VERIFY: curl locally with admin token → 200 with valid JSON.
+---
 
-## #10 ✅ FIXED [HIGH][admin-api] ledger.html fires 4 dashboard API calls → ERR_ABORTED
-ledger.html appears to load dashboard JS (summary, revenue-chart, top-products,
-seller-activity aborted). Likely wrong script include or shared JS running on wrong page.
-Make ledger load only its own controller.
-VERIFY: local ledger page load → no dashboard API calls in network log, no console errors.
-*Verification*: Confirmed `ledger.html` loads only its own `ReportWidget.js` and does NOT include dashboard scripts. The fetch calls in `ReportWidget.js` target the dedicated `/api/admin/reports/*` endpoints only. No cross-page script pollution found.
+## #R11 ⬜ [MEDIUM][recommendations] "You May Also Like" grid missing on product page
+- **Status**: ⬜ TODO
+- **Area**: `recommendations`
+- **Description**: The recommendations grid is absent or fails to load on the product details page.
+- **VERIFY**: Load a product page and confirm the recommendation grid displays at least 1 related product.
 
-## #11 ✅ FIXED [HIGH][seller-studio] Post-publish edit restrictions not enforced
-Name + Category editable after publish, no lock icons. Implement per spec: restricted fields
-disabled + lock icon when listing status is published; ALSO enforce server-side in the
-update endpoint (reject changes to restricted fields post-publish).
-VERIFY: local: publish → edit page shows locked fields; PATCH with restricted field → 4xx.
-*Verification*: Frontend (`edit-listing.html`) already shows lock icons and read-only display fields for title/category when `listingStatus !== 'draft'`. Backend `handleUpdateListing` (lines 6309–6329) rejects PATCH requests that attempt to change `title`, `category_id`, `category`, or `subcategory_ids` on `status = 'active'` listings with HTTP 400 `RESTRICTED_FIELD_EDIT`.
+---
 
-## #12 ✅ FIXED [MEDIUM][recommendations] "You May Also Like" grid missing on product page
-Spec says it reuses existing grid components. Check if section exists but fails silently
-(API 404 → empty → hidden) or was never wired on the live product page. Implement/repair.
-VERIFY: local product page shows grid with ≥1 product (given seeded data).
-*Verification*: Both desktop (`buyer/product.html`) and mobile (`mobile-buyer/product.html`) pages have the section HTML and JS. Root cause was that `products.category_id` was NULL for nearly all products because the listings' text-based `category` field was never mapped to `category_id`. Fixed by: (1) backfilling `listings.category_id` from slug lookup in the categories table (48 listings updated), (2) syncing `products.category_id` from `listings` via `source_listing_id` (48 products updated). Verified: `GET /api/products/63/similar` now returns 4 results, `GET /api/products/63/recommendations` returns 6 results.
+## #R12 ⬜ [MEDIUM][buyer-chat] Customise or Chat button missing on seller profile page
+- **Status**: ⬜ TODO
+- **Area**: `buyer-chat`
+- **Description**:
+  1. The button exists in `seller-profile.html` with the label "Bespoke Request (AI Concierge)".
+  2. The test fails (false positive) because it checks for labels like "Talk to Seller" or class `talk-to-seller-btn`.
+- **VERIFY**: Visually confirm the button is visible on both desktop and mobile views and functions properly.
 
-## #13 ✅ FIXED [MEDIUM][buyer-chat] No Customise/Chat button on seller profile page
-Entry point to AI Concierge missing on seller profile. Check if button exists in another
-variant (desktop vs mobile) and add the missing entry point linking into the concierge flow.
-VERIFY: local seller profile shows button; click opens chat UI.
-*Verification*: Confirmed both `buyer/seller-profile.html` (desktop) and `mobile-buyer/seller-profile.html` contain the Customise/Chat button (id: `chat-concierge-btn`). Desktop: sidebar action buttons area. Mobile: verified at lines 298-301. Both are wired into the concierge chat flow.
+---
 
-## Remaining console-error findings (frontend 404s on /, buyer/home, mobile-buyer/home,
-## 400 on buyer/categories + admin/products) — expected to be resolved by #2, #5, #6, #8.
-## After #1-#13 are done, re-check these pages locally and open new items ONLY if errors remain.
+## #R13 ⬜ [HIGH][seller/messages] Broken asset references in seller messages
+- **Status**: ⬜ TODO
+- **Area**: `seller/messages`
+- **Description**:
+  1. An `<img>` tag has its `src` set to `mobile-seller/messages.html` (an HTML page used as an image).
+  2. `/src/assets/mascot.png` leaks into production as a dev-only path.
+- **VERIFY**: Open `/seller/messages.html` and verify no broken asset warnings or failed image requests occur.
+
+---
+
+## #R14 ⬜ [HIGH][admin-panel] /api/admin/sellers query fails on PostgreSQL (subquery alias missing)
+- **Status**: ⬜ TODO
+- **Area**: `admin-panel`
+- **Description**: Accessing `/admin/sellers.html` triggers a failed network request `GET /api/admin/sellers?...` (status 500 / net::ERR_ABORTED).
+- **Root Cause**: In `server.js` (line 9813), the total count query is constructed as `SELECT COUNT(*) AS count FROM (${query})`. In PostgreSQL, subqueries inside the `FROM` clause must have an alias (e.g. `FROM (${query}) AS sub`). The lack of an alias throws a syntax error. Similarly, subqueries on lines 9823 and 9926 also lack aliases.
+- **VERIFY**: Verify the admin sellers table loads correctly without any database errors in production.
+
+---
+
+## #R15 ⬜ [HIGH][catalog-sync] Split Image Tables Discrepancy (listing_images vs listing_photos)
+- **Status**: ⬜ TODO
+- **Area**: `catalog-sync`
+- **Description**: Synced products on buyer pages are missing images even when images are provided during listing creation.
+- **Root Cause**: Listings created via `POST /api/seller/listings` write images to the `listing_images` table, but the sync service `syncListingToProduct` only reads from `listing_photos`.
+- **VERIFY**: Verify that the synced product has all of its image URLs present in the `product_images` table.

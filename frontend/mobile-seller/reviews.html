@@ -499,27 +499,30 @@
         });
 
         // ZAI toggle
-        document.getElementById('zai-toggle-btn').addEventListener('click', () => {
-            const nextEnabled = !(localStorage.getItem('zai_mode') === 'true');
-            localStorage.setItem('zai_mode', nextEnabled ? 'true' : 'false');
-            
-            // Sync with backend
-            fetch(`${API_BASE_URL}/api/seller/zai-mode`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ enabled: nextEnabled })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.success) {
-                    updateZaiUI(nextEnabled);
-                }
-            })
-            .catch(err => console.error("Error setting ZAI mode:", err));
-        });
+        const toggleBtn = document.getElementById('zai-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const nextEnabled = !(localStorage.getItem('zai_mode') === 'true');
+                localStorage.setItem('zai_mode', nextEnabled ? 'true' : 'false');
+                
+                // Sync with backend
+                fetch(`${API_BASE_URL}/api/seller/zai-mode`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ enabled: nextEnabled })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.success) {
+                        updateZaiUI(nextEnabled);
+                    }
+                })
+                .catch(err => console.error("Error setting ZAI mode:", err));
+            });
+        }
 
         // View Store
         const viewStoreBtn = document.getElementById('view-store-btn');
