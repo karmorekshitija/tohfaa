@@ -118,8 +118,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R11 ⬜ [MEDIUM][recommendations] "You May Also Like" grid missing on product page
-- **Status**: ⬜ TODO
+## #R11 ✅ [MEDIUM][recommendations] "You May Also Like" grid missing on product page
+- **Status**: ✅ FIXED (Modified GET /api/products/:id/recommendations endpoint to resolve the target product by id or source_listing_id, allowing the page to load recommendations when accessed via listing ID query parameters)
 - **Area**: `recommendations`
 - **Description**: The recommendations grid is absent or fails to load on the product details page.
 - **VERIFY**: Load a product page and confirm the recommendation grid displays at least 1 related product.

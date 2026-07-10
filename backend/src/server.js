@@ -6722,12 +6722,13 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
 
   try {
     // 1. Find category and subcategories of current product
-    const srcProduct = await db.prepare('SELECT category_id FROM products WHERE id = ? AND status != \'archived\'').get(productId);
+    const srcProduct = await db.prepare("SELECT id, category_id FROM products WHERE (id = ? OR source_listing_id = ?) AND status != 'archived'").get(productId, productId);
     if (!srcProduct) {
       return res.status(200).json({ success: true, data: [] });
     }
 
-    const subcats = await db.prepare('SELECT subcategory_id FROM product_subcategories WHERE product_id = ?').all(productId);
+    const actualProductId = srcProduct.id;
+    const subcats = await db.prepare('SELECT subcategory_id FROM product_subcategories WHERE product_id = ?').all(actualProductId);
     const subcatIds = subcats.map(s => s.subcategory_id);
 
     // 2. Build the matching query
@@ -6776,7 +6777,7 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
     if (userId) {
       params.push(userId);
     }
-    params.push(productId, srcProduct.category_id);
+    params.push(actualProductId, srcProduct.category_id);
 
     if (subcatIds.length > 0) {
       const placeholders = subcatIds.map(() => '?').join(', ');
