@@ -9811,7 +9811,7 @@ app.get('/api/admin/sellers', authenticateAdminToken, async (req, res) => {
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    const totalCountQuery = `SELECT COUNT(*) AS count FROM (${query})`;
+    const totalCountQuery = `SELECT COUNT(*) AS count FROM (${query}) AS sub`;
     const total = await db.prepare(totalCountQuery).get(...params).count;
 
     query += ` LIMIT ? OFFSET ?`;
@@ -9828,7 +9828,7 @@ app.get('/api/admin/sellers', authenticateAdminToken, async (req, res) => {
           LEFT JOIN products p ON p.id = oi.product_id
           LEFT JOIN seller_order_meta som ON som.order_id = o.id
           WHERE (p.seller_id = ? OR som.seller_id = ?) AND o.status != 'Cancelled'
-        )
+        ) AS sub
       `).get(r.user_id, r.profile_id);
 
       const totalSalesPaise = salesRow ? salesRow.total_sales_paise : 0;
@@ -9930,7 +9930,7 @@ app.get('/api/admin/sellers/:seller_id', authenticateAdminToken, async (req, res
         LEFT JOIN products p ON p.id = oi.product_id
         LEFT JOIN seller_order_meta som ON som.order_id = o.id
         WHERE (p.seller_id = ? OR som.seller_id = ?) AND o.status != 'Cancelled'
-      )
+      ) AS sub
     `).get(sellerId, sp.id) : { total: 0 };
     const totalSalesPaise = salesRow.total;
 

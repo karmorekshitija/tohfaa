@@ -147,11 +147,12 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R14 ⬜ [HIGH][admin-panel] /api/admin/sellers query fails on PostgreSQL (subquery alias missing)
-- **Status**: ⬜ TODO
+## #R14 ✅ [HIGH][admin-panel] /api/admin/sellers query fails on PostgreSQL (subquery alias missing)
+- **Status**: ✅ FIXED
 - **Area**: `admin-panel`
 - **Description**: Accessing `/admin/sellers.html` triggers a failed network request `GET /api/admin/sellers?...` (status 500 / net::ERR_ABORTED).
 - **Root Cause**: In `server.js` (line 9813), the total count query is constructed as `SELECT COUNT(*) AS count FROM (${query})`. In PostgreSQL, subqueries inside the `FROM` clause must have an alias (e.g. `FROM (${query}) AS sub`). The lack of an alias throws a syntax error. Similarly, subqueries on lines 9823 and 9926 also lack aliases.
+- **Fix**: Added `AS sub` alias to all three subqueries in server.js. Verified `GET /api/admin/sellers` returns 200 OK with seller data.
 - **VERIFY**: Verify the admin sellers table loads correctly without any database errors in production.
 
 ---
