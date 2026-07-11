@@ -164,8 +164,8 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 
 ---
 
-## #R17 ⬜ [MEDIUM][admin-auth] Token refresh endpoint and silent refresh missing
-- **Status**: ⬜ TODO
+## #R17 ✅ [MEDIUM][admin-auth] Token refresh endpoint and silent refresh missing
+- **Status**: ✅ FIXED (Implemented POST /api/admin/auth/refresh on backend; updated login.html, ProtectedRoute.js, and adminApiClient.js to save, synchronize, and silently use the refresh token on 401/403 errors. Files changed: backend/src/server.js, frontend/admin/login.html, frontend/src/components/ProtectedRoute.js, frontend/src/utils/adminApiClient.js)
 - **Area**: `admin-auth`
 - **Description**: Admin access token expires in 15 minutes, but there is no `/api/admin/auth/refresh` endpoint and no token refresh logic in the frontend client, resulting in hard logouts every 15 minutes.
 - **VERIFY**: Implement `/api/admin/auth/refresh` on the backend and wire up silent refresh on the frontend, verifying that a expired/expiring access token is refreshed seamlessly.

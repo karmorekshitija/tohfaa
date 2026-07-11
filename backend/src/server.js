@@ -9712,6 +9712,75 @@ app.post('/api/admin/auth/login', rateLimit(10), async (req, res) => {
   }
 });
 
+// POST /api/admin/auth/refresh
+app.post('/api/admin/auth/refresh', rateLimit(10), async (req, res) => {
+  const { refresh_token } = req.body;
+  
+  if (!refresh_token || typeof refresh_token !== 'string') {
+    return res.status(400).json({
+      error: true,
+      message: "Missing refresh_token",
+      code: "VALIDATION_ERROR"
+    });
+  }
+  
+  try {
+    const decoded = jwt.verify(refresh_token, JWT_SECRET);
+    if (!decoded || decoded.type !== "admin_refresh") {
+      return res.status(401).json({
+        error: true,
+        message: "Invalid, expired, or incorrect token type",
+        code: "INVALID_REFRESH_TOKEN"
+      });
+    }
+    
+    const admin = await db.prepare('SELECT * FROM admin_users WHERE id = ?').get(decoded.sub);
+    if (!admin) {
+      return res.status(401).json({
+        error: true,
+        message: "Admin user not found",
+        code: "INVALID_REFRESH_TOKEN"
+      });
+    }
+    
+    if (admin.is_active === 0) {
+      return res.status(403).json({
+        error: true,
+        message: "Account is inactive",
+        code: "ACCOUNT_INACTIVE"
+      });
+    }
+    
+    const accessToken = jwt.sign(
+      { sub: admin.id, role: admin.role, type: "admin_access" },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+    
+    const refreshToken = jwt.sign(
+      { sub: admin.id, type: "admin_refresh" },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    return res.status(200).json({
+      success: true,
+      data: {
+        access_token: accessToken,
+        refresh_token: refreshToken
+      }
+    });
+  } catch (err) {
+    console.error('POST /api/admin/auth/refresh error:', err);
+    return res.status(401).json({
+      error: true,
+      message: "Invalid or expired token",
+      code: "INVALID_REFRESH_TOKEN"
+    });
+  }
+});
+
+
 function formatJoinedDisplay(dateStr) {
   if (!dateStr) return 'unknown';
   let cleanDateStr = dateStr;

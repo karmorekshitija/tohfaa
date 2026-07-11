@@ -23,7 +23,8 @@
         tohfa_access_token: sessionStorage.getItem('tohfa_access_token'),
         tohfa_refresh_token: sessionStorage.getItem('tohfa_refresh_token'),
         tohfa_user: sessionStorage.getItem('tohfa_user'),
-        tohfa_admin_token: sessionStorage.getItem('tohfa_admin_token')
+        tohfa_admin_token: sessionStorage.getItem('tohfa_admin_token'),
+        tohfa_admin_refresh_token: sessionStorage.getItem('tohfa_admin_refresh_token')
       };
       if (sessionData.tohfa_access_token || sessionData.tohfa_admin_token) {
         try {
@@ -38,6 +39,7 @@
         if (data.tohfa_refresh_token) sessionStorage.setItem('tohfa_refresh_token', data.tohfa_refresh_token);
         if (data.tohfa_user) sessionStorage.setItem('tohfa_user', data.tohfa_user);
         if (data.tohfa_admin_token) sessionStorage.setItem('tohfa_admin_token', data.tohfa_admin_token);
+        if (data.tohfa_admin_refresh_token) sessionStorage.setItem('tohfa_admin_refresh_token', data.tohfa_admin_refresh_token);
         
         window.dispatchEvent(new Event('tohfa-session-sync'));
       } catch (e) {
