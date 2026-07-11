@@ -1,4 +1,16 @@
 {
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/admin/dashboard.html",
+      "permanent": false
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/dashboard.html",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",
