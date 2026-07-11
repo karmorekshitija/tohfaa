@@ -11097,15 +11097,15 @@ app.get('/api/admin/dashboard/footfall', authenticateAdminToken, async (req, res
       whereClause = "AND occurred_at BETWEEN ? AND ?";
       params = [start, end];
     } else {
-      whereClause = "AND occurred_at >= date('now', '-" + daysLimit + " days')";
+      whereClause = `AND occurred_at >= CURRENT_DATE - INTERVAL '${daysLimit} days'`;
     }
 
     const query = `
-      SELECT DATE(occurred_at) as date, COUNT(DISTINCT session_id) as visitors
+      SELECT CAST(occurred_at AS date) as date, COUNT(DISTINCT session_id) as visitors
       FROM product_events
       WHERE 1=1 ${whereClause}
-      GROUP BY DATE(occurred_at)
-      ORDER BY DATE(occurred_at) ASC
+      GROUP BY CAST(occurred_at AS date)
+      ORDER BY CAST(occurred_at AS date) ASC
     `;
     const rows = await db.prepare(query).all(params);
     const data = rows.map(r => ({
