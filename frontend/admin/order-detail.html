@@ -318,7 +318,7 @@ function renderOrderDetail(order) {
     statusBadgeClass = 'bg-surface-variant text-on-surface-variant border-outline-variant/20';
   }
 
-  statusBadge.className = `px-3 py-1 rounded-full text-[10px] font-bold font-accent-caps border tracking-wider \${statusBadgeClass}`;
+  statusBadge.className = `px-3 py-1 rounded-full text-[10px] font-bold font-accent-caps border tracking-wider ${statusBadgeClass}`;
   statusBadge.textContent = order.is_refund_flagged ? 'REFUND FLAGGED' : order.status.replace(/_/g, ' ').toUpperCase();
 
   // Summary Card
@@ -329,7 +329,7 @@ function renderOrderDetail(order) {
   document.getElementById('buyer-name').textContent = order.buyer?.name || 'N/A';
   const buyerEmail = document.getElementById('buyer-email');
   buyerEmail.textContent = order.buyer?.email || 'N/A';
-  buyerEmail.href = order.buyer?.email ? `mailto:\${order.buyer.email}` : '#';
+  buyerEmail.href = order.buyer?.email ? `mailto:${order.buyer.email}` : '#';
 
   // Seller
   document.getElementById('seller-name').textContent = order.seller?.shop_name || 'N/A';
@@ -390,8 +390,8 @@ function renderLineItems(items) {
         <span class="material-symbols-outlined text-text-faint">image</span>
       </div>
       <div class="flex-grow">
-        <p class="font-body-sm text-[13px] font-medium text-text-default">\${item.product_name}</p>
-        <p class="font-data-meta text-[12px] text-text-muted mt-1">\${item.quantity} × <span class="text-text-default font-bold">\${item.unit_price_display || formatPaise(item.unit_price_paise)}</span></p>
+        <p class="font-body-sm text-[13px] font-medium text-text-default">${item.product_name}</p>
+        <p class="font-data-meta text-[12px] text-text-muted mt-1">${item.quantity} × <span class="text-text-default font-bold">${item.unit_price_display || formatPaise(item.unit_price_paise)}</span></p>
       </div>
     `;
     container.appendChild(el);
@@ -422,14 +422,14 @@ function renderTimeline(journey) {
     const dateClass = step.completed ? 'text-text-muted' : 'text-text-faint';
     const dateText = step.display || 'Pending';
 
-    el.className = `relative flex gap-6 \${stepClass}`;
+    el.className = `relative flex gap-6 ${stepClass}`;
     el.innerHTML = `
-      <div class="z-10 flex items-center justify-center w-6 h-6 rounded-full \${circleClass}">
-        <span class="material-symbols-outlined text-xs">\${step.icon || 'circle'}</span>
+      <div class="z-10 flex items-center justify-center w-6 h-6 rounded-full ${circleClass}">
+        <span class="material-symbols-outlined text-xs">${step.icon || 'circle'}</span>
       </div>
       <div>
-        <p class="text-sm \${titleClass}">\${step.label}</p>
-        <p class="font-data-meta text-[11px] \${dateClass}">\${dateText}</p>
+        <p class="text-sm ${titleClass}">${step.label}</p>
+        <p class="font-data-meta text-[11px] ${dateClass}">${dateText}</p>
       </div>
     `;
     container.appendChild(el);
@@ -440,7 +440,7 @@ function renderTimeline(journey) {
 document.getElementById('override-status-btn').addEventListener('click', async () => {
   const newStatus = document.getElementById('status-select').value;
   try {
-    const res = await adminApiClient.patch(`/admin/orders/\${orderId}/status`, { new_status: newStatus });
+    const res = await adminApiClient.patch(`/admin/orders/${orderId}/status`, { new_status: newStatus });
     if (res.data?.success) {
       loadOrderDetail();
     }
@@ -453,7 +453,7 @@ document.getElementById('override-status-btn').addEventListener('click', async (
 document.getElementById('flag-refund-btn').addEventListener('click', async () => {
   if (confirm('Are you sure you want to flag this order for refund review?')) {
     try {
-      const res = await adminApiClient.post(`/admin/orders/\${orderId}/flag-refund`);
+      const res = await adminApiClient.post(`/admin/orders/${orderId}/flag-refund`);
       if (res.data?.success) {
         loadOrderDetail();
       }

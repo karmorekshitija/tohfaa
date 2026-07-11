@@ -153,3 +153,20 @@ Statuses: ⬜ TODO | ✅ FIXED | 🟡 NEEDS-DEPLOY | ❌ BLOCKED
 - **Description**: Synced products on buyer pages are missing images even when images are provided during listing creation.
 - **Root Cause**: Listings created via `POST /api/seller/listings` write images to the `listing_images` table, but the sync service `syncListingToProduct` only reads from `listing_photos`.
 - **VERIFY**: Verify that the synced product has all of its image URLs present in the `product_images` table.
+
+---
+
+## #R16 ✅ [HIGH][admin-panel] Template literals escaped as \${...} in order-detail.html and seller-detail.html
+- **Status**: ✅ FIXED (Unescaped template literals from \${...} to ${...} in all HTML template strings and API request URLs. Files changed: frontend/admin/order-detail.html, frontend/admin/seller-detail.html)
+- **Area**: `admin-panel`
+- **Description**: In `order-detail.html` and `seller-detail.html`, template literals are escaped as `\${...}`, rendering literal `${...}` text on screen and breaking API call URLs.
+- **VERIFY**: Unescape `\${` to `${` in both files and verify the page renders values correctly.
+
+---
+
+## #R17 ⬜ [MEDIUM][admin-auth] Token refresh endpoint and silent refresh missing
+- **Status**: ⬜ TODO
+- **Area**: `admin-auth`
+- **Description**: Admin access token expires in 15 minutes, but there is no `/api/admin/auth/refresh` endpoint and no token refresh logic in the frontend client, resulting in hard logouts every 15 minutes.
+- **VERIFY**: Implement `/api/admin/auth/refresh` on the backend and wire up silent refresh on the frontend, verifying that a expired/expiring access token is refreshed seamlessly.
+

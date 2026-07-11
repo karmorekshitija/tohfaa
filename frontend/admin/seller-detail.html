@@ -231,12 +231,12 @@ function renderSeller(seller) {
   document.getElementById('profile-name').textContent = seller.display_name || '';
   
   const emailEl = document.getElementById('profile-email');
-  emailEl.innerHTML = `<span class="material-symbols-outlined text-[16px]">mail</span> \${seller.email}`;
-  emailEl.href = `mailto:\${seller.email}`;
+  emailEl.innerHTML = `<span class="material-symbols-outlined text-[16px]">mail</span> ${seller.email}`;
+  emailEl.href = `mailto:${seller.email}`;
   
-  document.getElementById('profile-phone').innerHTML = `<span class="material-symbols-outlined text-[16px]">call</span> \${seller.phone || 'N/A'}`;
-  document.getElementById('profile-joined').textContent = `Joined \${seller.joined_display || seller.joined_at || ''}`;
-  document.getElementById('profile-bio').textContent = seller.bio ? `"\${seller.bio}"` : '"No bio provided by seller."';
+  document.getElementById('profile-phone').innerHTML = `<span class="material-symbols-outlined text-[16px]">call</span> ${seller.phone || 'N/A'}`;
+  document.getElementById('profile-joined').textContent = `Joined ${seller.joined_display || seller.joined_at || ''}`;
+  document.getElementById('profile-bio').textContent = seller.bio ? `"${seller.bio}"` : '"No bio provided by seller."';
 
   // Stats
   document.getElementById('stat-products').textContent = seller.total_products || '0';
@@ -295,10 +295,10 @@ function renderProducts(products) {
         <span class="material-symbols-outlined text-text-muted">image</span>
       </div>
       <div class="flex-1">
-        <h5 class="font-body-md text-[14px] text-on-surface line-clamp-1">\${p.name}</h5>
-        <p class="font-data-meta text-[13px] text-text-muted">\${p.price_display || formatPaise(p.price_paise)}</p>
+        <h5 class="font-body-md text-[14px] text-on-surface line-clamp-1">${p.name}</h5>
+        <p class="font-data-meta text-[13px] text-text-muted">${p.price_display || formatPaise(p.price_paise)}</p>
       </div>
-      <span class="\text-[10px] font-bold px-2 py-0.5 rounded \${badgeClass}">\${badgeText}</span>
+      <span class="\text-[10px] font-bold px-2 py-0.5 rounded ${badgeClass}">${badgeText}</span>
     `;
     container.appendChild(item);
   });
@@ -321,7 +321,7 @@ function renderActions(seller) {
     document.getElementById('unban-btn').addEventListener('click', async () => {
       if (confirm('Are you sure you want to unban this seller?')) {
         try {
-          await adminApiClient.post(`/admin/sellers/\${seller.id}/unban`);
+          await adminApiClient.post(`/admin/sellers/${seller.id}/unban`);
           loadSellerDetails();
         } catch (err) {
           alert(err.response?.data?.message || 'Failed to unban seller');
@@ -388,7 +388,7 @@ function renderActions(seller) {
         return;
       }
       try {
-        await adminApiClient.post(`/admin/sellers/\${seller.id}/ban`, { ban_reason: reason });
+        await adminApiClient.post(`/admin/sellers/${seller.id}/ban`, { ban_reason: reason });
         loadSellerDetails();
       } catch (err) {
         alert(err.response?.data?.message || 'Failed to ban seller');
