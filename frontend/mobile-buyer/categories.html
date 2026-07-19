@@ -61,7 +61,7 @@
         <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);width:130px;height:130px;background:rgba(200,151,58,0.15);filter:blur(48px);border-radius:50%;pointer-events:none;"></div>
         <!-- Gift image -->
         <img
-          src="/img/linen_journal.jpg"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvRYdWomJ2rT_t6DtY3CCP-w8l_2pbfQ7rLmoguWM8Ff0PkqGvxqCz4Mzs7xOuzT-xoYgR6wDk1woac8aoNhEv2pf2kJVCMam3luiJHMJdj0bzM7jT0eSKkG-HG9I1cdIq2vyRFaDMo9anB1x-1SiTVJdMWMcbYmTdIctulPlrNSH1r_8N31Jmcv00QHnfWjwmWlARYca__ybqYf13uWMwPwbQ4uSsklOQvUZp4_6AbhmJfROGV2Tm1vpv-zn48SY52QpUOe_yjec"
           alt="Bulk gift boxes"
           style="position:absolute;right:-8px;top:50%;transform:translateY(-52%) rotate(-3deg);width:115px;height:auto;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.45));"
         >
@@ -100,54 +100,11 @@
         </div>
       </div>
     </div>
-  </div>
-
   <script type="module">
     import apiClient from '/src/utils/apiClient.js';
 
-    // Static image mapping mapping
-    const GRID_SLOTS = [
-      {
-        slugs: ['textile-arts', 'hand-knits'],
-        image: '/img/categories/crochet.jpg'
-      },
-      {
-        slugs: ['jewellery', 'jewelry'],
-        image: '/img/categories/jewellery.jpg'
-      },
-      {
-        slugs: ['ceramics-pottery'],
-        image: '/img/categories/ceramics.jpg'
-      },
-      {
-        slugs: ['journals-stationery'],
-        image: '/img/categories/journals.jpg'
-      },
-      {
-        slugs: ['candles-fragrance'],
-        image: '/img/categories/candles.jpg'
-      },
-      {
-        slugs: ['paintings', 'wall-art-prints'],
-        image: '/img/categories/art_prints.jpg'
-      },
-      {
-        slugs: ['home-decor'],
-        image: '/img/categories/dried_florals.jpg'
-      },
-      {
-        slugs: ['skincare'],
-        image: '/img/categories/skincare.jpg'
-      },
-      {
-        slugs: ['woodcraft'],
-        image: '/img/categories/woodcraft.jpg'
-      },
-      {
-        slugs: ['customized-gifts'],
-        image: '/img/categories/custom_portraits.jpg'
-      }
-    ];
+    // Fallback placeholder category image URL. Keep in sync with frontend/admin/categories.html
+    const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800&auto=format&fit=crop';
 
     let allCategories = [];
 
@@ -172,8 +129,7 @@
 
       container.innerHTML = list.map(cat => {
         const displayName = cat.display_name || cat.name;
-        const matched = GRID_SLOTS.find(slot => slot.slugs.includes(cat.slug));
-        const image = matched ? matched.image : 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted';
+        const image = cat.image_url || FALLBACK_IMAGE;
         return `
           <div onclick="window.location.href='./category.html?slug=${cat.slug}'" class="flex flex-col items-center cursor-pointer transition-transform duration-200 active:scale-95">
             <div class="w-full rounded-xl overflow-hidden shadow-sm bg-[#F7F3EC] aspect-square">

@@ -65,7 +65,12 @@ function translateSql(sql) {
   if (isInsert && !cleanSql.toUpperCase().includes('RETURNING')) {
     if (cleanSql.toLowerCase().includes('store_config') || cleanSql.toLowerCase().includes('review_request_settings')) {
       cleanSql = cleanSql.trim() + ' RETURNING seller_id';
-    } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('daily_order_tracking')) {
+    } else if (
+      cleanSql.toLowerCase().includes('follows') || 
+      cleanSql.toLowerCase().includes('daily_order_tracking') ||
+      cleanSql.toLowerCase().includes('listing_subcategories') ||
+      cleanSql.toLowerCase().includes('product_subcategories')
+    ) {
       // No single auto-increment id column
     } else {
       cleanSql = cleanSql.trim() + ' RETURNING id';

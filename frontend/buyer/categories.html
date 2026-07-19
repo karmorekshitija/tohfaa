@@ -25,7 +25,7 @@
         }
         .paper-texture {
             background-color: #FFFFFF;
-            background-image: url(/img/textures/natural-paper.png);
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8);
         }
         /* Editorial category layout styles */
         .dot-grid-overlay {
@@ -280,86 +280,8 @@
 
         let isLoggedIn = false;
 
-        const GRID_SLOTS = [
-          {
-            slugs: ['textile-arts', 'hand-knits'],
-            defaultSlug: 'textile-arts',
-            type: 'standard',
-            displayName: 'Crochet & Knitting',
-            image: '/img/categories/crochet.jpg',
-            badge: 'Textile Arts'
-          },
-          {
-            slugs: ['jewellery', 'jewelry'],
-            defaultSlug: 'jewellery',
-            type: 'standard',
-            displayName: 'Jewellery',
-            image: '/img/categories/jewellery.jpg',
-            icon: 'colors_spark',
-            bg: 'bg-tertiary-container/10'
-          },
-          {
-            slugs: ['ceramics-pottery'],
-            defaultSlug: 'ceramics-pottery',
-            type: 'standard',
-            displayName: 'Ceramics & Pottery',
-            image: '/img/categories/ceramics.jpg',
-            bg: 'bg-secondary-container/10'
-          },
-          {
-            slugs: ['journals-stationery'],
-            defaultSlug: 'journals-stationery',
-            type: 'standard',
-            displayName: 'Journals',
-            image: '/img/categories/journals.jpg',
-            icon: 'ink_pen'
-          },
-          {
-            slugs: ['candles-fragrance'],
-            defaultSlug: 'candles-fragrance',
-            type: 'standard',
-            displayName: 'Candles',
-            image: '/img/categories/candles.jpg'
-          },
-          {
-            slugs: ['paintings', 'wall-art-prints'],
-            defaultSlug: 'paintings',
-            type: 'standard',
-            displayName: 'Art Prints',
-            image: '/img/categories/art_prints.jpg'
-          },
-          {
-            slugs: ['home-decor'],
-            defaultSlug: 'home-decor',
-            type: 'standard',
-            displayName: 'Dried Florals',
-            image: '/img/categories/dried_florals.jpg',
-            icon: 'eco'
-          },
-          {
-            slugs: ['skincare'],
-            defaultSlug: 'skincare',
-            type: 'standard',
-            displayName: 'Skincare',
-            image: '/img/categories/skincare.jpg'
-          },
-          {
-            slugs: ['woodcraft'],
-            defaultSlug: 'woodcraft',
-            type: 'standard',
-            displayName: 'Woodcraft',
-            image: '/img/categories/woodcraft.jpg'
-          },
-          {
-            slugs: ['customized-gifts'],
-            defaultSlug: 'customized-gifts',
-            type: 'standard',
-            displayName: 'Custom Portraits',
-            image: '/img/categories/custom_portraits.jpg',
-            icon: 'palette',
-            buttonText: 'Request Quote'
-          }
-        ];
+        // Fallback placeholder category image URL. Keep in sync with frontend/admin/categories.html
+        const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800&auto=format&fit=crop';
 
         async function checkAuthState() {
             const token = sessionStorage.getItem('tohfa_access_token');
@@ -388,7 +310,7 @@
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
-                            ${initial}
+                             ${initial}
                         </a>
                     `;
                 }
@@ -424,11 +346,10 @@
                 return;
               }
 
-              const displayedSlugs = new Set();
               let html = `
                 <!-- Slot 1: Bulk Orders (Full-bleed Photographic Anchor) -->
                 <div onclick="window.location.href='/buyer/bulk.html'" class="md:col-span-2 md:row-span-2 relative rounded-xl overflow-hidden group category-card bulk-card cursor-pointer">
-                  <img alt="Premium artisan gift boxes stack" class="absolute inset-0 w-full h-full object-cover" src="/img/categories/jewellery.jpg"/>
+                  <img alt="Premium artisan gift boxes stack" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-nKoLNKY0QI9MzRM1uw0JF089sUq7PQjGNR1pW7jfieV5gyAyGKtaCAbQ6oDqDrHd4YPk_ChLd3NFY2ctGe7R85F2P2-_0fXAzPTdyyhfMPtquaB1BPm9nCTURZeM5rJal8gJhAgIzikTUJrPSptlF4jbBZmYqw7p6Eu-Z2S2Cu4M76qCCK9LiF_FS-G1U1rFcRrj8rEKCN9M6wOL8DQ3UY_WmTr5TDwu6UhL-muiMX2z5jqlwjCGpR8Txk40c0ACp8vzpMuN11c"/>
                   <div class="absolute inset-0 bg-[#C8973A]/5 pointer-events-none"></div>
                   <div class="absolute inset-y-0 left-0 w-1 bg-[#C8973A] z-20"></div>
                   <div class="absolute inset-0 bulk-gradient z-10"></div>
@@ -446,53 +367,22 @@
                 </div>
               `;
 
-              GRID_SLOTS.forEach(slot => {
-                // Find matching category in the API list
-                const cat = categories.find(c => slot.slugs.includes(c.slug));
-                const slugToUse = cat ? cat.slug : slot.defaultSlug;
-                const count = cat ? (cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)) : null;
-                const imageToUse = (cat && cat.image_url) ? cat.image_url : slot.image;
+              categories.forEach(cat => {
+                const displayName = cat.display_name || cat.name;
+                const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
+                const clickAction = `onclick="window.location.href='category.html?slug=${cat.slug}'"`;
+                const imageToUse = cat.image_url || FALLBACK_IMAGE;
 
-                if (cat) {
-                  slot.slugs.forEach(s => displayedSlugs.add(s));
-                }
-
-                const clickAction = `onclick="window.location.href='category.html?slug=${slugToUse}'"`;
-                // Unified editorial card for all slot types
-                const colSpan = 'grid-column:span 1;';
-                const rowSpan = '';
-                const countText = count !== null ? `${count} makes` : '';
                 html += `
-                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="${colSpan}${rowSpan}border-radius:14px;">
-                    <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
+                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="border-radius:14px;">
+                    <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${displayName}" loading="lazy">
                     <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.10) 55%, transparent 100%);border-radius:14px;"></div>
                     <div style="position:absolute;bottom:0;left:0;padding:20px;color:#fff;">
-                      <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;line-height:1.2;margin-bottom:${countText ? '6px' : '0'};">${slot.displayName}</h3>
-                      ${countText ? `<span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.72;">${countText}</span>` : ''}
+                      <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;line-height:1.2;margin-bottom:6px;">${displayName}</h3>
+                      <span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.72;">${count} makes</span>
                     </div>
                   </div>
                 `;
-              });
-
-              // Now append any other categories from the API that were not mapped to the main 10 slots
-              categories.forEach(cat => {
-                if (!displayedSlugs.has(cat.slug)) {
-                  const displayName = cat.display_name || cat.name;
-                  const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
-                  const clickAction = `onclick="window.location.href='category.html?slug=${cat.slug}'"`;
-                  const imageToUse = cat.image_url || "https://placehold.co/400x400/f4ede3/516447?text=Handcrafted";
-
-                  html += `
-                    <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="border-radius:14px;">
-                      <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${displayName}" loading="lazy">
-                      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.70) 0%,transparent 55%);border-radius:14px;"></div>
-                      <div style="position:absolute;bottom:0;left:0;padding:20px;color:#fff;">
-                        <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;">${displayName}</h3>
-                        <span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.75;">${count} makes</span>
-                      </div>
-                    </div>
-                  `;
-                }
               });
 
               container.innerHTML = html;

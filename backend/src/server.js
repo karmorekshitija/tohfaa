@@ -1243,7 +1243,17 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
 // TASK 16: GET /api/categories
 app.get('/api/categories', rateLimit(120), async (req, res) => {
   try {
-    const cats = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY sort_order ASC, id ASC").all();
+    const cats = await db.prepare(`
+      SELECT c.*,
+        (
+          COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
+          +
+          COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
+        ) AS live_product_count
+      FROM categories c 
+      WHERE c.is_active = 1 
+      ORDER BY c.sort_order ASC, c.id ASC
+    `).all();
     let subcats = [];
     try {
       subcats = await db.prepare("SELECT * FROM subcategories ORDER BY name ASC").all();
@@ -1257,6 +1267,7 @@ app.get('/api/categories', rateLimit(120), async (req, res) => {
       emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
       description: c.description || null,
       image_url: c.image_url || null,
+      product_count: parseInt(c.live_product_count || 0, 10),
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
         category_id: sc.category_id,
@@ -10428,7 +10439,16 @@ const uploadCategory = multer({
 // TASK 17: GET /api/admin/categories
 app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
   try {
-    const cats = await db.prepare('SELECT * FROM categories ORDER BY sort_order ASC, id ASC').all();
+    const cats = await db.prepare(`
+      SELECT c.*,
+        (
+          COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
+          +
+          COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
+        ) AS live_product_count
+      FROM categories c 
+      ORDER BY c.sort_order ASC, c.id ASC
+    `).all();
     let subcats = [];
     try {
       subcats = await db.prepare('SELECT * FROM subcategories ORDER BY name ASC').all();
@@ -10444,7 +10464,7 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
       sort_order: c.sort_order || 0,
       is_active: c.is_active !== undefined ? !!c.is_active : true,
       status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
-      product_count: c.product_count || c.item_count || 0,
+      product_count: parseInt(c.live_product_count || 0, 10),
       image_url: c.image_url || null,
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
@@ -10579,13 +10599,18 @@ app.delete('/api/admin/categories/:category_id', authenticateAdminToken, async (
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
-    const productCount = await db.prepare("SELECT COUNT(*) AS c FROM products WHERE category_id = ? AND status = 'active'").get(catId).c;
-    if (productCount > 0) {
+    const productCountRes = await db.prepare("SELECT COUNT(*) AS c FROM products WHERE category_id = ? AND status = 'active'").get(catId);
+    const listingCountRes = await db.prepare("SELECT COUNT(*) AS c FROM listings WHERE category_id = ? AND status = 'active'").get(catId);
+    const productCount = parseInt(productCountRes.c || 0, 10);
+    const listingCount = parseInt(listingCountRes.c || 0, 10);
+
+    if (productCount > 0 || listingCount > 0) {
       return res.status(400).json({
         error: true,
-        message: `Cannot delete: this category has ${productCount} active products.`,
-        code: 'HAS_ACTIVE_PRODUCTS',
-        product_count: productCount
+        message: `Cannot delete: ${productCount} active products and ${listingCount} active listings are assigned to this category.`,
+        code: 'HAS_ACTIVE_ITEMS',
+        product_count: productCount,
+        listing_count: listingCount
       });
     }
 
@@ -10680,14 +10705,18 @@ app.delete('/api/admin/subcategories/:id', authenticateAdminToken, async (req, r
     const subcat = await db.prepare('SELECT * FROM subcategories WHERE id = ?').get(subcatId);
     if (!subcat) return res.status(404).json({ error: true, message: 'Subcategory not found', code: 'NOT_FOUND' });
 
-    const productLink = await db.prepare("SELECT COUNT(*) AS c FROM product_subcategories WHERE subcategory_id = ?").get(subcatId);
-    const listingLink = await db.prepare("SELECT COUNT(*) AS c FROM listing_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const productLinkRes = await db.prepare("SELECT COUNT(*) AS c FROM product_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const listingLinkRes = await db.prepare("SELECT COUNT(*) AS c FROM listing_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const productLink = parseInt(productLinkRes.c || 0, 10);
+    const listingLink = parseInt(listingLinkRes.c || 0, 10);
     
-    if (productLink.c > 0 || listingLink.c > 0) {
+    if (productLink > 0 || listingLink > 0) {
       return res.status(400).json({
         error: true,
-        message: 'Cannot delete: this subcategory is linked to active listings/products.',
-        code: 'HAS_LINKED_PRODUCTS'
+        message: `Cannot delete: ${productLink} products and ${listingLink} listings are assigned to this subcategory.`,
+        code: 'HAS_LINKED_PRODUCTS',
+        product_count: productLink,
+        listing_count: listingLink
       });
     }
 
