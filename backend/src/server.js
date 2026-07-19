@@ -894,7 +894,8 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url
       FROM products p
-      WHERE p.status = 'active'
+      JOIN users u ON p.seller_id = u.id
+      WHERE p.status = 'active' AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY RANDOM() LIMIT 6
     `;
     const rows = await db.prepare(query).all();
@@ -1022,7 +1023,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC
       LIMIT 12
     `;
@@ -1098,7 +1099,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       JOIN sponsored_products sp_prod ON sp_prod.product_id = p.id
-      WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
     
@@ -1147,7 +1148,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY sales_rank DESC, p.created_at DESC, p.id DESC
       LIMIT 8
     `;
@@ -1197,7 +1198,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
 
@@ -1441,7 +1442,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
     `;
     
     if (queryParts.length > 0) {
@@ -1548,6 +1549,8 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
     let queryParts = [
       "p.status = 'active'",
       "COALESCE(sp.is_approved, 0) = 1",
+      "u.is_banned = 0",
+      "u.is_active = 1",
       "(p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR COALESCE(c.display_name, c.name) LIKE ? OR sp.shop_name LIKE ? OR u.full_name LIKE ?)"
     ];
     let queryParams = [];
@@ -1667,7 +1670,7 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
       SELECT DISTINCT p.name FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND (p.name LIKE ? OR p.description LIKE ?)
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1 AND (p.name LIKE ? OR p.description LIKE ?)
       LIMIT 7
     `).all(`%${q}%`, `%${q}%`).map(row => row.name);
     
@@ -1895,6 +1898,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         p.paused_at, p.pause_reason, p.resume_estimate_date, COALESCE(p.remake_eligible, FALSE) AS remake_eligible,
         c.name AS category_name, c.slug AS category_slug,
         COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline, COALESCE(sp.is_approved, 0) AS is_approved,
+        u.is_banned, u.is_active,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
         COALESCE((SELECT tags FROM listings WHERE title = p.name LIMIT 1), '[]') AS listing_tags
     `;
@@ -1915,6 +1919,14 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
     const productData = userId ? await stmt.get(userId, numericId, numericId) : await stmt.get(numericId, numericId);
     
     if (!productData) {
+      return res.status(404).json({
+        error: true,
+        message: "Product not found",
+        code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    if (productData.is_banned === 1 || productData.is_active === 0) {
       return res.status(404).json({
         error: true,
         message: "Product not found",
@@ -6652,6 +6664,9 @@ app.delete('/api/seller/listings/:id', requireSeller, async (req, res) => {
     const targetStatus = action === 'pause' ? 'paused' : 'deleted';
     await db.prepare("UPDATE listings SET status = ?, updated_at = datetime('now') WHERE id = ?").run(targetStatus, listingId);
 
+    // Synchronize listing changes to product catalog
+    await syncListingToProduct(listingId);
+
     return res.json({
       success: true,
       data: {
@@ -6662,6 +6677,41 @@ app.delete('/api/seller/listings/:id', requireSeller, async (req, res) => {
     });
   } catch (err) {
     console.error('DELETE /api/seller/listings/:id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/products/:id/event
+// Tracks clicks and views for a product
+app.post('/api/products/:id/event', rateLimit(120), optionalAuthenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { event_type, session_id } = req.body;
+    const userId = req.user ? req.user.user_id : null;
+
+    if (!event_type || !['view', 'click', 'cart_add'].includes(event_type)) {
+      return res.status(400).json({ error: true, message: 'Invalid or missing event_type' });
+    }
+
+    if (!session_id) {
+      return res.status(400).json({ error: true, message: 'Missing session_id' });
+    }
+
+    const productId = parseInt(id, 10);
+    if (isNaN(productId)) {
+      return res.status(200).json({ success: true, message: 'Mock event ignored' });
+    }
+
+    // Insert the event into product_events table
+    const query = `
+      INSERT INTO product_events (product_id, event_type, user_id, session_id)
+      VALUES (?, ?, ?, ?)
+    `;
+    await db.prepare(query).run(productId, event_type, userId, session_id);
+
+    return res.status(200).json({ success: true, message: 'Event logged successfully' });
+  } catch (err) {
+    console.error('POST /api/products/:id/event error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -6703,6 +6753,8 @@ app.get('/api/products/:id/similar', rateLimit(120), optionalAuthenticateToken, 
         AND p.status = 'active'
         AND p.stock_qty > 0
         AND COALESCE(sc.vacation_mode, 0) = 0
+        AND u.is_banned = 0
+        AND u.is_active = 1
         AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY p.avg_rating DESC, p.review_count DESC, p.id DESC
       LIMIT ?
@@ -6777,7 +6829,7 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
         AND p.stock_qty > 0
         AND p.id != ?
         AND (
@@ -9472,6 +9524,7 @@ const ADMIN_ROLE_MAPPING = {
   'GET /api/admin/orders/:order_id': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/categories': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/products': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/products/:product_id': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/audit-logs': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/audit-logs/:log_id/diff': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/payment-health': ['admin', 'super_admin', 'superadmin'],
@@ -10148,7 +10201,29 @@ app.post('/api/admin/sellers/:seller_id/unban', authenticateAdminToken, async (r
 
     const unbanTransaction = db.transaction(async () => {
       await db.prepare("UPDATE users SET is_banned = 0, updated_at = datetime('now') WHERE id = ?").run(sellerId);
-      await db.prepare("UPDATE products SET status = 'active', updated_at = datetime('now') WHERE seller_id = ? AND status = 'archived'").run(sellerId);
+      
+      const archivedProducts = await db.prepare("SELECT id, source_listing_id FROM products WHERE seller_id = ? AND status = 'archived'").all(sellerId);
+      for (const prod of archivedProducts) {
+        if (prod.source_listing_id) {
+          const listing = await db.prepare("SELECT status FROM listings WHERE id = ?").get(prod.source_listing_id);
+          if (listing) {
+            let targetStatus = 'active';
+            if (listing.status === 'paused') {
+              targetStatus = 'paused';
+            } else if (listing.status === 'draft') {
+              targetStatus = 'draft';
+            } else if (listing.status === 'deleted') {
+              targetStatus = 'archived';
+            }
+            await db.prepare("UPDATE products SET status = ?, updated_at = datetime('now') WHERE id = ?").run(targetStatus, prod.id);
+          } else {
+            await db.prepare("UPDATE products SET status = 'active', updated_at = datetime('now') WHERE id = ?").run(prod.id);
+          }
+        } else {
+          await db.prepare("UPDATE products SET status = 'active', updated_at = datetime('now') WHERE id = ?").run(prod.id);
+        }
+      }
+
       await db.prepare("UPDATE seller_bans SET unbanned_at = datetime('now'), unbanned_by = ? WHERE seller_id = ? AND unbanned_at IS NULL").run(req.admin.id, sellerId);
       await writeAuditLog(
         'admin.seller.unbanned', req.admin.id, req.admin.display_name,
@@ -10799,6 +10874,89 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
   }
 });
 
+// GET /api/admin/products/:product_id - Get product detail for admin
+app.get('/api/admin/products/:product_id', authenticateAdminToken, async (req, res) => {
+  try {
+    const productId = parseInt(req.params.product_id, 10);
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: true, message: 'Invalid product ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const productData = await db.prepare(`
+      SELECT 
+        p.id, p.seller_id, p.category_id, p.name, p.description, p.price_paise, p.stock_qty, p.ships_in_days, p.avg_rating, p.review_count, p.status,
+        p.paused_at, p.pause_reason, p.resume_estimate_date, COALESCE(p.remake_eligible, FALSE) AS remake_eligible,
+        c.name AS category_name, c.slug AS category_slug,
+        COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline, COALESCE(sp.is_approved, 0) AS is_approved,
+        u.is_banned, u.is_active,
+        COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
+        COALESCE((SELECT tags FROM listings WHERE title = p.name LIMIT 1), '[]') AS listing_tags
+      FROM products p
+      JOIN users u ON p.seller_id = u.id
+      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.id = ?
+    `).get(productId);
+
+    if (!productData) {
+      return res.status(404).json({
+        error: true,
+        message: "Product not found",
+        code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    const images = await db.prepare('SELECT url, is_primary, sort_order FROM product_images WHERE product_id = ? ORDER BY sort_order ASC').all(productId);
+    
+    const recentReviews = await db.prepare(`
+      SELECT COALESCE(u.display_name, u.full_name) AS reviewer_name, u.avatar_url AS reviewer_avatar, r.rating, r.body, r.created_at
+      FROM reviews r
+      JOIN users u ON r.reviewer_id = u.id
+      WHERE r.product_id = ?
+      ORDER BY r.created_at DESC, r.id DESC
+      LIMIT 10
+    `).all(productId);
+    
+    const isSponsored = await db.prepare("SELECT 1 FROM sponsored_products WHERE product_id = ? AND is_sponsored = 1").get(productId);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: productData.id,
+        name: productData.name,
+        description: productData.description,
+        price_paise: productData.price_paise,
+        stock_qty: productData.stock_qty,
+        ships_in_days: productData.ships_in_days,
+        avg_rating: productData.avg_rating,
+        review_count: productData.review_count,
+        status: productData.status,
+        images: images,
+        seller: {
+          id: productData.seller_id,
+          seller_name: productData.seller_name,
+          avatar_url: productData.avatar_url,
+          shop_tagline: productData.shop_tagline,
+          is_banned: productData.is_banned,
+          is_active: productData.is_active
+        },
+        category: {
+          id: productData.category_id,
+          name: productData.category_name,
+          slug: productData.category_slug
+        },
+        recent_reviews: recentReviews,
+        is_sponsored: !!isSponsored,
+        listing_type: productData.listing_type,
+        listing_tags: JSON.parse(productData.listing_tags)
+      }
+    });
+  } catch (err) {
+    console.error('GET /api/admin/products/:product_id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
 // TASK 22: PATCH /api/admin/products/:product_id/sponsored
 app.patch('/api/admin/products/:product_id/sponsored', authenticateAdminToken, async (req, res) => {
   try {
@@ -10850,14 +11008,112 @@ app.patch('/api/admin/products/:product_id/sponsored', authenticateAdminToken, a
   }
 });
 
+// DELETE /api/admin/products/:id - Soft delete product
+app.delete('/api/admin/products/:id', authenticateAdminToken, async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: true, message: 'Invalid product ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const product = await db.prepare('SELECT * FROM products WHERE id = ?').get(productId);
+    if (!product) {
+      return res.status(404).json({ error: true, message: 'Product not found', code: 'NOT_FOUND' });
+    }
+
+    const deleteTransaction = db.transaction(async () => {
+      // 1. Soft delete product
+      await db.prepare("UPDATE products SET status = 'archived', updated_at = datetime('now') WHERE id = ?").run(productId);
+
+      // 2. Soft delete corresponding listing
+      if (product.source_listing_id) {
+        await db.prepare("UPDATE listings SET status = 'deleted', updated_at = datetime('now') WHERE id = ?").run(product.source_listing_id);
+      }
+
+      // 3. Remove from sponsored
+      await db.prepare("DELETE FROM sponsored_products WHERE product_id = ?").run(productId);
+
+      // 4. Audit Log
+      await writeAuditLog(
+        'admin.product.deleted', req.admin.id, req.admin.display_name,
+        'product', productId, `Product: ${product.name}`,
+        { status: product.status },
+        { status: 'archived' }
+      );
+    });
+    await deleteTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Product successfully archived'
+    });
+  } catch (err) {
+    console.error('DELETE /api/admin/products/:id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// DELETE /api/admin/sellers/:id - Soft delete seller
+app.delete('/api/admin/sellers/:id', authenticateAdminToken, async (req, res) => {
+  try {
+    const sellerId = parseInt(req.params.id, 10);
+    if (isNaN(sellerId)) {
+      return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const user = await db.prepare('SELECT * FROM users WHERE id = ? AND role = \'seller\'').get(sellerId);
+    if (!user) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
+    }
+
+    const deleteTransaction = db.transaction(async () => {
+      // 1. Deactivate seller
+      await db.prepare("UPDATE users SET is_active = 0, updated_at = datetime('now') WHERE id = ?").run(sellerId);
+
+      // 2. Soft delete all products
+      await db.prepare("UPDATE products SET status = 'archived', updated_at = datetime('now') WHERE seller_id = ?").run(sellerId);
+
+      // 3. Soft delete all listings
+      await db.prepare("UPDATE listings SET status = 'deleted', updated_at = datetime('now') WHERE seller_id = ?").run(sellerId);
+
+      // 4. Remove sponsored products
+      const products = await db.prepare("SELECT id FROM products WHERE seller_id = ?").all(sellerId);
+      if (products.length > 0) {
+        const placeholders = products.map(() => '?').join(',');
+        const prodIds = products.map(p => p.id);
+        await db.prepare(`DELETE FROM sponsored_products WHERE product_id IN (${placeholders})`).run(...prodIds);
+      }
+
+      // 5. Audit Log
+      await writeAuditLog(
+        'admin.seller.deleted', req.admin.id, req.admin.display_name,
+        'seller', sellerId, `Seller: ${user.full_name}`,
+        { is_active: user.is_active },
+        { is_active: 0 }
+      );
+    });
+    await deleteTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Seller successfully deactivated and listings archived'
+    });
+  } catch (err) {
+    console.error('DELETE /api/admin/sellers/:id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
 // Helper: map event_type → event_label
 function auditEventLabel(eventType) {
   const map = {
     'admin.seller.banned': 'Seller Banned',
     'admin.seller.unbanned': 'Seller Unbanned',
+    'admin.seller.deleted': 'Seller Deleted',
     'admin.order.status_overridden': 'Order Override',
     'admin.order.refund_flagged': 'Order Flagged',
     'admin.product.sponsored_toggled': 'Sponsored Toggle',
+    'admin.product.deleted': 'Product Deleted',
     'admin.category.created': 'Category Created',
     'admin.category.updated': 'Category Change',
     'admin.category.deleted': 'Category Deleted',
@@ -11241,7 +11497,8 @@ app.get('/api/admin/dashboard/top-products', authenticateAdminToken, async (req,
         COALESCE(SUM(CASE WHEN pe.event_type = 'view' THEN 1 ELSE 0 END), 0) as views,
         COALESCE(SUM(CASE WHEN pe.event_type = 'click' THEN 1 ELSE 0 END), 0) as clicks
       FROM listings l
-      LEFT JOIN product_events pe ON l.id = pe.product_id
+      LEFT JOIN products p ON l.id = p.source_listing_id
+      LEFT JOIN product_events pe ON p.id = pe.product_id
       GROUP BY l.id, l.title
       ORDER BY views DESC, clicks DESC
       LIMIT ?
@@ -13643,8 +13900,8 @@ app.get('/api/sellers/:id', optionalAuthenticateToken, async (req, res) => {
       return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
     }
 
-    const sellerUser = await db.prepare('SELECT id, email, full_name, role, avatar_url, bio, location, instagram_handle FROM users WHERE id = ?').get(sellerId);
-    if (!sellerUser) {
+    const sellerUser = await db.prepare('SELECT id, email, full_name, role, avatar_url, bio, location, instagram_handle, is_banned, is_active FROM users WHERE id = ?').get(sellerId);
+    if (!sellerUser || sellerUser.is_banned === 1 || sellerUser.is_active === 0) {
       return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
     }
 
@@ -13735,6 +13992,11 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
 
     const userId = req.user ? req.user.user_id : null;
 
+    const sellerUser = await db.prepare('SELECT is_banned, is_active FROM users WHERE id = ?').get(sellerId);
+    if (!sellerUser || sellerUser.is_banned === 1 || sellerUser.is_active === 0) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
+    }
+
     const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
     if (!sellerProfile || sellerProfile.is_approved !== 1) {
       return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
@@ -13824,6 +14086,11 @@ app.get('/api/sellers/:id/customizations', async (req, res) => {
 
     if (isNaN(sellerId)) {
       return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const sellerUser = await db.prepare('SELECT is_banned, is_active FROM users WHERE id = ?').get(sellerId);
+    if (!sellerUser || sellerUser.is_banned === 1 || sellerUser.is_active === 0) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
     }
 
     const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);

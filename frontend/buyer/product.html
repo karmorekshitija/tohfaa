@@ -512,6 +512,22 @@
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id') || '';
 
+        async function logProductEvent(eventType) {
+            try {
+                let sessionId = localStorage.getItem('tohfa_chat_session_id');
+                if (!sessionId) {
+                    sessionId = 'session_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+                    localStorage.setItem('tohfa_chat_session_id', sessionId);
+                }
+                await apiClient.post(`/products/${productId}/event`, {
+                    event_type: eventType,
+                    session_id: sessionId
+                });
+            } catch (err) {
+                console.error(`Failed to log product event ${eventType}:`, err);
+            }
+        }
+
         let product = null;
         let isCustomized = false;
         let isSoldOut = false;
@@ -920,6 +936,13 @@
                     }
                     // ─────────────────────────────────────────────────────────────────────
 
+                    // Track views and clicks
+                    logProductEvent('view');
+                    const ref = document.referrer;
+                    if (ref && (ref.includes(window.location.host) || ref.includes('/buyer/'))) {
+                        logProductEvent('click');
+                    }
+
                 } else {
                     showErrorState();
                 }
@@ -1208,6 +1231,7 @@
                 const response = await apiClient.post('/cart/items', { product_id: Number(productId), quantity: qty });
                 if (response.data && response.data.success) {
                     window.Toast?.show("Added to cart successfully!", "success");
+                    logProductEvent('cart_add');
                 }
             } catch (e) {
                 console.error("Error adding to cart:", e);
@@ -1581,6 +1605,19 @@
                 const res = await apiClient.post('/cart/items', { product_id: Number(productId), quantity: 1 });
                 if (res.data && res.data.success) {
                     window.Toast?.show("Added to cart successfully!", "success");
+                    try {
+                        let sessionId = localStorage.getItem('tohfa_chat_session_id');
+                        if (!sessionId) {
+                            sessionId = 'session_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+                            localStorage.setItem('tohfa_chat_session_id', sessionId);
+                        }
+                        await apiClient.post(`/products/${productId}/event`, {
+                            event_type: 'cart_add',
+                            session_id: sessionId
+                        });
+                    } catch (err) {
+                        console.error('Failed to log recommendation cart_add:', err);
+                    }
                 }
             } catch (err) {
                 console.error("Cart error:", err);
