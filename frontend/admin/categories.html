@@ -677,13 +677,9 @@ formEl.addEventListener('submit', async (e) => {
 
   try {
     if (editingCategoryId) {
-      await adminApiClient.patch(`/admin/categories/${editingCategoryId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await adminApiClient.patch(`/admin/categories/${editingCategoryId}`, formData);
     } else {
-      await adminApiClient.post('/admin/categories', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await adminApiClient.post('/admin/categories', formData);
     }
     fetchCategories();
     resetForm();
