@@ -12434,11 +12434,12 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
       });
     }
     
-    // Check if open conversation exists
+    // Check if open conversation exists between this buyer and seller
     let existing = await db.prepare(`
       SELECT * FROM conversations 
-      WHERE buyer_id = ? AND seller_id = ? AND listing_id = ? AND product_type_tag = ? AND status NOT IN ('completed', 'closed')
-    `).get(buyer_id, seller_id, listing_id, product_type_tag);
+      WHERE buyer_id = ? AND seller_id = ? AND status NOT IN ('completed', 'closed')
+      ORDER BY updated_at DESC LIMIT 1
+    `).get(buyer_id, seller_id);
     
     const questionCountRow = await db.prepare(`
       SELECT COUNT(*) as count FROM intake_question_templates 
@@ -12450,19 +12451,28 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
     const isBypass = bypass_intake === true || bypass_intake === 'true' || question_count === 0;
     
     if (existing) {
-      let isIntakeComplete = existing.intake_complete === 1;
+      let isIntakeComplete = isBypass;
+
+      // Mark previous pending offers in this conversation as superseded so they become read-only
+      await db.prepare(`
+        UPDATE custom_offers SET status = 'superseded' WHERE conversation_id = ? AND status = 'pending'
+      `).run(existing.id);
+
+      // Insert bot intake header to visually demarcate the new custom product inquiry session
+      const headerText = `Starting new custom product inquiry: "${listing.title}"`;
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, type, content, sent_at, is_read)
+        VALUES (?, 0, 'system', 'text', 'bot_intake_header', ?, datetime('now'), 0)
+      `).run(existing.id, headerText);
       
       if (isBypass) {
-        if (existing.status === 'intake_in_progress') {
-          await db.prepare(`
-            UPDATE conversations
-            SET status = 'awaiting_seller', intake_complete = 1, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-          `).run(existing.id);
-          isIntakeComplete = true;
-        }
+        await db.prepare(`
+          UPDATE conversations
+          SET listing_id = ?, product_type_tag = ?, status = 'awaiting_seller', intake_complete = 1, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(listing_id, product_type_tag, existing.id);
         
-        // Insert product inquiry message
+        // Insert product inquiry message for new product
         const inquiryContent = JSON.stringify({
           product_id: listing.id,
           product_name: listing.title,
@@ -12476,11 +12486,19 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
           VALUES (?, ?, 'buyer', 'text', 'product_inquiry', ?, ?, datetime('now'), 0)
         `).run(existing.id, buyer_id, inquiryContent, listing.cover_photo_url);
         
-        // Create notification for seller
         await db.prepare(`
           INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
-          VALUES (?, 'new_message', 'You have a new custom/overflow inquiry message', ?, 0, datetime('now'))
+          VALUES (?, 'new_message', 'You have a new custom product inquiry message', ?, 0, datetime('now'))
         `).run(seller_id, existing.id);
+      } else {
+        // Reset intake responses for fresh inquiry cycle
+        await db.prepare(`DELETE FROM intake_responses WHERE conversation_id = ?`).run(existing.id);
+
+        await db.prepare(`
+          UPDATE conversations
+          SET listing_id = ?, product_type_tag = ?, status = 'intake_in_progress', intake_complete = 0, intake_summary = NULL, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(listing_id, product_type_tag, existing.id);
       }
       
       return res.status(200).json({
@@ -12503,6 +12521,13 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, NULL)
       `).run(seller_id, buyer_id, listing_id, product_type_tag, statusVal, intakeCompleteVal);
       const new_id = info.lastInsertRowid;
+
+      // Insert bot intake header for initial inquiry
+      const headerText = `Starting custom product inquiry: "${listing.title}"`;
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, type, content, sent_at, is_read)
+        VALUES (?, 0, 'system', 'text', 'bot_intake_header', ?, datetime('now'), 0)
+      `).run(new_id, headerText);
       
       if (isBypass) {
         // Insert product inquiry message
@@ -12519,10 +12544,9 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
           VALUES (?, ?, 'buyer', 'text', 'product_inquiry', ?, ?, datetime('now'), 0)
         `).run(new_id, buyer_id, inquiryContent, listing.cover_photo_url);
         
-        // Create notification for seller
         await db.prepare(`
           INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
-          VALUES (?, 'new_message', 'You have a new custom/overflow inquiry message', ?, 0, datetime('now'))
+          VALUES (?, 'new_message', 'You have a new custom product inquiry message', ?, 0, datetime('now'))
         `).run(seller_id, new_id);
       }
       
@@ -12874,6 +12898,13 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
       ORDER BY m.id ASC
     `).all(id);
 
+    let latestHeaderId = 0;
+    messagesRows.forEach(r => {
+      if (r.type === 'bot_intake_header' || (r.type === 'product_inquiry' && r.id > latestHeaderId)) {
+        latestHeaderId = r.id;
+      }
+    });
+
     const messages = messagesRows.map(r => ({
       id: r.id,
       sender_id: r.sender_id,
@@ -12885,6 +12916,7 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
       is_read: r.is_read === 1,
       type: r.type || 'text',
       offer_id: r.offer_id || null,
+      is_historical: latestHeaderId > 0 && r.id < latestHeaderId,
       offer: r.offer_id ? {
         id: r.offer_id,
         price: r.price,

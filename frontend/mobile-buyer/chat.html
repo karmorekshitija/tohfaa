@@ -991,6 +991,20 @@
         container.appendChild(separator);
       }
 
+      if (msg.type === 'bot_intake_header') {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = "flex items-center justify-center my-6 w-full";
+        headerDiv.innerHTML = `
+          <div class="flex-1 border-t border-[#8FAF82]/40"></div>
+          <span class="bg-[#F0F5EE] border border-[#8FAF82]/60 text-[#3D6B4F] px-4 py-1.5 rounded-full text-xs font-eyebrow font-bold tracking-wider uppercase shadow-sm flex items-center gap-1.5 mx-3">
+            <span class="material-symbols-outlined text-sm">sparkles</span> ${escapeHtml(msg.content)}
+          </span>
+          <div class="flex-1 border-t border-[#8FAF82]/40"></div>
+        `;
+        container.appendChild(headerDiv);
+        return;
+      }
+
       if (msg.message_type === 'system_notice') {
         const sysDiv = document.createElement('div');
         sysDiv.className = "flex justify-center my-3 w-full";
@@ -1025,11 +1039,17 @@
           ? `₹${(orderData.draft_price / 100).toFixed(2)}` 
           : `<span class="text-amber-600 italic">Pending review</span>`;
 
-        const statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
-        const statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+        let statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
+        let statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+        if (msg.is_historical) {
+          statusBadgeColor = 'bg-gray-200 text-gray-700';
+          statusLabel = 'PREVIOUS REQUEST';
+        }
+
+        const cardStyle = msg.is_historical ? 'opacity-70 bg-gray-50/60 pointer-events-none' : 'bg-[#FFFDFB]';
 
         draftCardDiv.innerHTML = `
-          <div class="w-full max-w-[340px] bg-[#FFFDFB] border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative interactive-hover">
+          <div class="w-full max-w-[340px] ${cardStyle} border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative interactive-hover">
             <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
               ${statusLabel}
             </div>
@@ -1066,7 +1086,7 @@
       if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
         const offerDiv = document.createElement('div');
         offerDiv.className = "flex justify-start w-full";
-        offerDiv.innerHTML = renderOfferCardHtml(msg.offer);
+        offerDiv.innerHTML = renderOfferCardHtml(msg.offer, msg.is_historical);
         container.appendChild(offerDiv);
         return;
       }
@@ -1231,7 +1251,7 @@
     initCountdownTimers();
   }
 
-  function renderOfferCardHtml(offer) {
+  function renderOfferCardHtml(offer, isHistorical) {
     if (!offer) return `<div class="p-4 bg-white border border-outline-variant rounded-xl text-xs text-gray-400 italic">Offer record missing.</div>`;
     
     let statusBadgeColor = 'bg-amber-100 text-amber-800';
@@ -1245,10 +1265,15 @@
     } else if (offer.status === 'expired') {
       statusBadgeColor = 'bg-gray-100 text-gray-800';
       statusLabel = 'EXPIRED';
+    } else if (offer.status === 'superseded' || isHistorical) {
+      statusBadgeColor = 'bg-gray-200 text-gray-700';
+      statusLabel = 'PREVIOUS OFFER';
     }
 
+    const historicalClass = (isHistorical || offer.status === 'superseded') ? 'opacity-70 bg-gray-50/60' : 'bg-[#FFFDFB]';
+
     return `
-      <div class="max-w-[380px] w-full bg-[#FFFDFB] border border-outline-variant rounded-xl overflow-hidden shadow-sm relative my-2 interactive-hover" id="offer-card-${offer.id}">
+      <div class="max-w-[380px] w-full ${historicalClass} border border-outline-variant rounded-xl overflow-hidden shadow-sm relative my-2 interactive-hover" id="offer-card-${offer.id}">
         <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow" id="offer-badge-${offer.id}">
           ${statusLabel}
         </div>
