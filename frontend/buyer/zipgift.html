@@ -9,140 +9,79 @@
 <script src="/src/components/DeviceRedirect.js"></script>
 <script src="/src/components/ProtectedRoute.js"></script>
 <!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;family=Cinzel:wght@400..900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-      if (typeof tailwind !== 'undefined') {
-        tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "on-error-container": "#93000a",
-                    "on-secondary-container": "#4d6a43",
-                    "on-primary-container": "#b7e9c6",
-                    "error-container": "#ffdad6",
-                    "surface-container-low": "#fff2e1",
-                    "surface-container-lowest": "#ffffff",
-                    "on-primary-fixed-variant": "#214f36",
-                    "tertiary": "#573b81",
-                    "on-tertiary-container": "#e8d6ff",
-                    "surface-dim": "#e5d8c8",
-                    "outline-variant": "#c1c9c0",
-                    "on-tertiary-fixed-variant": "#54387e",
-                    "inverse-primary": "#a0d2b0",
-                    "primary": "#3D6B4F",
-                    "tertiary-fixed-dim": "#d6baff",
-                    "on-surface-variant": "#414942",
-                    "tertiary-fixed": "#ecdcff",
-                    "surface-tint": "#3a684c",
-                    "on-primary-fixed": "#002110",
-                    "primary-fixed-dim": "#a0d2b0",
-                    "on-tertiary": "#ffffff",
-                    "secondary-fixed-dim": "#afd0a0",
-                    "surface-container-highest": "#ede1d1",
-                    "primary-fixed": "#bceecb",
-                    "error": "#ba1a1a",
-                    "on-background": "#211b11",
-                    "on-secondary-fixed-variant": "#324e29",
-                    "surface-bright": "#fff8f3",
-                    "on-primary": "#ffffff",
-                    "background": "#fff8f3",
-                    "secondary": "#49663f",
-                    "outline": "#717972",
-                    "surface-container": "#f9ecdc",
-                    "on-error": "#ffffff",
-                    "secondary-fixed": "#caecbb",
-                    "on-surface": "#211b11",
-                    "on-secondary-fixed": "#062103",
-                    "inverse-on-surface": "#fcefde",
-                    "surface": "#fff8f3",
-                    "primary-container": "#3d6b4f",
-                    "inverse-surface": "#362f25",
-                    "surface-container-high": "#f3e6d6",
-                    "on-secondary": "#ffffff",
-                    "surface-variant": "#ede1d1",
-                    "tertiary-container": "#70539b",
-                    "on-tertiary-fixed": "#270550",
-                    "secondary-container": "#c8e9b8",
-                    "skeleton-base": "#dddad3",
-                    "skeleton-detail": "#d0cdc6"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "unit": "4px",
-                    "margin-mobile": "20px",
-                    "sm": "8px",
-                    "margin-desktop": "64px",
-                    "xs": "4px",
-                    "xl": "40px",
-                    "gutter": "16px",
-                    "md": "16px",
-                    "lg": "24px",
-                    "container-margin": "64px"
-            },
-            "fontFamily": {
-                    "body-md": ["DM Sans"],
-                    "data-price": ["Space Mono"],
-                    "headline-lg-mobile": ["Playfair Display"],
-                    "label-caps": ["Cinzel"],
-                    "display-hero": ["Playfair Display"],
-                    "title-serif": ["Merriweather"],
-                    "headline-lg": ["Playfair Display"]
-            }
-          }
-        }
-      }
-    </script>
-<style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
         body {
             background-color: #fff8f3;
             -webkit-font-smoothing: antialiased;
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         .coming-soon-overlay {
             background: rgba(253, 249, 242, 0.75);
             pointer-events: none;
         }
-        .header-sticky {
-            background-color: #fdf9f2;
-            border-bottom: 1px solid rgba(193, 201, 192, 0.5);
-        }
-        .active-link {
-            border-bottom: 2px solid #3D6B4F;
-            color: #3D6B4F !important;
-        }
-    </style>
+  </style>
 </head>
 <body class="font-body-md text-on-surface">
-<!-- TopNavBar (Fallback header, overridden by ProtectedRoute.js navbar injection) -->
-<header class="fixed top-0 w-full h-[64px] z-50 header-sticky">
-<div class="flex items-center justify-between px-container-margin max-w-7xl mx-auto w-full h-full">
-<!-- Brand Logo -->
-<div class="flex items-center">
-<span class="font-headline-lg text-primary italic font-bold">Tohfa</span>
-</div>
-<!-- Navigation Links -->
-<nav class="hidden md:flex items-center space-x-lg h-full">
-<a class="text-[15px] text-on-surface-variant hover:text-primary transition-all duration-200" href="/buyer/home.html">Shop</a>
-<a class="text-[15px] text-on-surface-variant hover:text-primary transition-all duration-200" href="/buyer/categories.html">Categories</a>
-<a class="text-[15px] active-link font-bold h-full flex items-center transition-all duration-200" href="/buyer/zipgift.html">ZipGift</a>
-<a class="text-[15px] text-on-surface-variant hover:text-primary transition-all duration-200" href="/seller/dashboard.html">Seller Studio</a>
-<a class="text-[15px] text-on-surface-variant hover:text-primary transition-all duration-200" href="/buyer/our-story.html">Our Story</a>
-</nav>
-</div>
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- ZipGift -->
+    <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
+    </a>
+    <!-- Profile -->
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="/buyer/search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+  
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
 </header>
-<main class="mt-[64px] min-h-screen pt-xl px-container-margin max-w-7xl mx-auto">
+<main class="min-h-screen py-xl px-margin-desktop max-w-7xl mx-auto">
 <!-- Main Content Wrapper -->
 <div class="relative bg-[#fdf9f2] rounded-xl overflow-hidden pb-xl">
 <!-- Static Skeleton UI (Non-Interactive Background) -->

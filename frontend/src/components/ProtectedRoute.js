@@ -471,7 +471,7 @@
           </a>
         </div>
         
-        <nav class="hidden lg:flex items-center justify-center gap-xl h-full">
+        <nav class="hidden md:flex items-center justify-center gap-xl h-full">
           <a href="/buyer/home.html" class="flex items-center gap-xs transition-colors h-full px-1 font-['DM_Sans'] text-[16px] uppercase ${isHome ? 'text-[#3D6B4F] border-b-2 border-[#3D6B4F] font-bold' : 'text-[#414942] hover:text-[#3D6B4F] font-normal'}">
             <span class="material-symbols-outlined text-[20px]">home</span>
             <span>HOME</span>
@@ -578,10 +578,86 @@
   window.updateWishlistBadge = updateGlobalWishlistBadge;
   window.addEventListener('tohfa-wishlist-updated', updateGlobalWishlistBadge);
 
+  // ─────────────────────────────────────────────────────────────────
+  // Global Contact Us Modal — injected once into every page that loads
+  // ProtectedRoute.js, so it works even on pages with hardcoded footers.
+  // ─────────────────────────────────────────────────────────────────
+  function injectContactModal() {
+    if (document.getElementById('tohfa-contact-modal')) return;
+
+    // -- Styles --
+    if (!document.getElementById('tohfa-contact-modal-styles')) {
+      const s = document.createElement('style');
+      s.id = 'tohfa-contact-modal-styles';
+      s.textContent = [
+        '.tohfa-contact-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;}',
+        '.tohfa-contact-modal.is-open{display:flex!important;}',
+        '.tohfa-contact-card{background:#1E3D0F;color:#F7F2E8;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 32px 32px;width:100%;max-width:440px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}',
+        '.tohfa-contact-modal.is-open .tohfa-contact-card{transform:scale(1);}',
+        '.tohfa-contact-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#F7F2E8;font-size:22px;cursor:pointer;opacity:.7;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}',
+        '.tohfa-contact-close-btn:hover{opacity:1;background:rgba(255,255,255,.1);transform:scale(1.05);}',
+        '.tohfa-contact-close-btn:active{transform:scale(.95);}',
+        '.tohfa-contact-card h3{font-family:\'Playfair Display\',serif;font-size:28px;margin:0 0 12px;color:#C9972C;}',
+        '.tohfa-contact-card p{font-family:\'DM Sans\',sans-serif;font-size:16px;line-height:1.5;margin-bottom:24px;color:#A8B89A;}',
+        '.tohfa-contact-email-link{display:inline-flex;align-items:center;gap:8px;font-family:\'Space Mono\',monospace;font-size:16px;color:#C9972C;text-decoration:none;border:1px solid rgba(201,151,44,.3);padding:12px 24px;border-radius:8px;background:rgba(201,151,44,.05);transition:all .2s ease;}',
+        '.tohfa-contact-email-link:hover{background:rgba(201,151,44,.15);border-color:rgba(201,151,44,.6);color:#F7F2E8;transform:translateY(-2px);}',
+        '.tohfa-contact-email-link:active{transform:translateY(0);}'
+      ].join('');
+      document.head.appendChild(s);
+    }
+
+    // -- Modal HTML --
+    const modal = document.createElement('div');
+    modal.id = 'tohfa-contact-modal';
+    modal.className = 'tohfa-contact-modal';
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.closeContactModal();
+    });
+    modal.innerHTML = `
+      <div class="tohfa-contact-card" onclick="event.stopPropagation()">
+        <button class="tohfa-contact-close-btn" onclick="window.closeContactModal()" aria-label="Close contact modal">&times;</button>
+        <h3>Get in Touch</h3>
+        <p>Reach us at</p>
+        <a href="mailto:tohfa126@gmail.com" class="tohfa-contact-email-link">
+          <span class="material-symbols-outlined" style="font-size:20px;vertical-align:middle;">mail</span>
+          <span>tohfa126@gmail.com</span>
+        </a>
+      </div>`;
+    document.body.appendChild(modal);
+
+    // -- Global functions --
+    window.openContactModal = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      const m = document.getElementById('tohfa-contact-modal');
+      if (m) { m.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+    };
+    window.closeContactModal = function() {
+      const m = document.getElementById('tohfa-contact-modal');
+      if (m) { m.classList.remove('is-open'); document.body.style.overflow = ''; }
+    };
+
+    // -- Universal click interceptor for any "Contact Us" anchor on any page --
+    if (!window._tohfaContactClickListenerAdded) {
+      window._tohfaContactClickListenerAdded = true;
+      document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.textContent.trim().toLowerCase() === 'contact us') {
+          e.preventDefault();
+          window.openContactModal(e);
+        }
+      }, true); // capture phase so it fires before href navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') window.closeContactModal();
+      });
+    }
+  }
+
   // Let's run a check when page loads to show any toast from redirection
   function init() {
     setupBuyerNavbar();
+    injectContactModal();
     updateGlobalCartBadge();
+
     updateGlobalWishlistBadge();
 
     const deniedReason = sessionStorage.getItem('access_denied_reason');
