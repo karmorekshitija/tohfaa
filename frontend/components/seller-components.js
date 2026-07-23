@@ -337,7 +337,7 @@ class SellerTopBar extends HTMLElement {
               <p class="text-[9px] text-[#6B6B6B] uppercase tracking-wider">Artisan Partner</p>
             </div>
             <div class="w-9 h-9 rounded-full overflow-hidden border border-[#E8E2D9] flex-shrink-0 bg-gray-50">
-              <img loading="lazy" id="sidebar-avatar" class="w-full h-full object-cover" src="/uploads/avatars/default-avatar.png" alt="Avatar"/>
+              <img loading="lazy" id="sidebar-avatar" class="w-full h-full object-cover" src="/img/default-avatar.png" alt="Avatar"/>
             </div>
           </div>
           <!-- Hamburger Button: visible only on mobile/tablet (< 1024px) -->
@@ -352,7 +352,8 @@ class SellerTopBar extends HTMLElement {
     
     // Fetch profile and update display name and avatar dynamically
     if (token) {
-      fetch('/api/seller/profile', {
+      const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : 'https://api.thetohfa.in';
+      fetch(`${apiHost}/api/seller/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -362,7 +363,13 @@ class SellerTopBar extends HTMLElement {
           const nameEl = this.querySelector('#topbar-seller-name');
           const avatarEl = this.querySelector('#sidebar-avatar');
           if (nameEl) nameEl.textContent = profile.display_name || 'Artisan';
-          if (avatarEl && profile.avatar_url) avatarEl.src = profile.avatar_url;
+          if (avatarEl && profile.avatar_url) {
+            let avatarUrl = profile.avatar_url;
+            if (avatarUrl && !avatarUrl.startsWith('http')) {
+              avatarUrl = apiHost + avatarUrl;
+            }
+            avatarEl.src = avatarUrl;
+          }
         }
       })
       .catch(err => console.error("Error populating topbar profile details:", err));

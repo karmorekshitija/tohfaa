@@ -474,9 +474,9 @@
         // Fetch Artisans
         const grid = document.getElementById('artisans-grid');
         if (grid) {
-            fetch('/api/artisans')
-                .then(res => res.json())
-                .then(data => {
+            apiClient.get('/artisans')
+                .then(res => {
+                    const data = res.data;
                     if (data.success && data.data) {
                         grid.innerHTML = data.data.map((artisan, index) => {
                             const styles = [

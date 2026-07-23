@@ -16,6 +16,13 @@ const emailService = require('./services/emailService');
 const cron = require('node-cron');
 const { syncListingToProduct } = require('./services/listingSync');
 
+function getApiBaseUrl(req) {
+  if (process.env.API_BASE_URL) {
+    return process.env.API_BASE_URL;
+  }
+  return `${req.protocol}://${req.get('host')}`;
+}
+
 const REQUIRED_ENV_VARS = ['JWT_SECRET', 'RAZORPAY_KEY_SECRET', 'DATABASE_URL'];
 const missingEnvVars = REQUIRED_ENV_VARS.filter(v => !process.env[v]);
 if (missingEnvVars.length > 0) {
@@ -1124,7 +1131,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
     const categories = cats.map(c => {
       let imgUrl = c.image_url;
       if (imgUrl && !imgUrl.startsWith('http://') && !imgUrl.startsWith('https://')) {
-        imgUrl = `${req.protocol}://${req.get('host')}${imgUrl}`;
+        imgUrl = `${getApiBaseUrl(req)}${imgUrl}`;
       }
       return {
         ...c,
@@ -1360,7 +1367,7 @@ app.get('/api/categories', rateLimit(120), async (req, res) => {
       slug: c.slug,
       emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
       description: c.description || null,
-      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${req.protocol}://${req.get('host')}${c.image_url}`) : null,
+      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${getApiBaseUrl(req)}${c.image_url}`) : null,
       product_count: parseInt(c.live_product_count || 0, 10),
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
@@ -5859,7 +5866,7 @@ app.post('/api/seller/profile/photo', requireSeller, (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
   await generateThumbnail(req.file.path);
-  const url = `${req.protocol}://${req.get('host')}/uploads/avatars/${req.file.filename}`;
+  const url = `${getApiBaseUrl(req)}/uploads/avatars/${req.file.filename}`;
   await db.prepare('UPDATE seller_profiles SET avatar_url = ? WHERE user_id = ?').run(url, req.user.user_id);
   await db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(url, req.user.user_id);
   return res.json({ success: true, data: { avatar_url: url } });
@@ -5887,7 +5894,7 @@ app.post('/api/seller/profile/banner', requireSeller, (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
   await generateThumbnail(req.file.path);
-  const url = `${req.protocol}://${req.get('host')}/uploads/banners/${req.file.filename}`;
+  const url = `${getApiBaseUrl(req)}/uploads/banners/${req.file.filename}`;
   // UPSERT store_config row for this seller
   await db.prepare(`
     INSERT INTO store_config (seller_id, banner_url) VALUES (?, ?)
@@ -5921,7 +5928,7 @@ app.post('/api/seller/profile/about-image', requireSeller, (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
   await generateThumbnail(req.file.path);
-  const url = `${req.protocol}://${req.get('host')}/uploads/about/${req.file.filename}`;
+  const url = `${getApiBaseUrl(req)}/uploads/about/${req.file.filename}`;
   await db.prepare('UPDATE seller_profiles SET about_image_url = ? WHERE user_id = ?').run(url, req.user.user_id);
   return res.json({ success: true, data: { about_image_url: url } });
 });
@@ -9555,9 +9562,11 @@ app.post('/api/admin/seller-applications/:id/approve', authenticateAdminToken, a
       }
 
       await db.prepare(`
-        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step)
-        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0)
+        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step, is_approved)
+        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0, 1)
       `).run(appInfo.user_id, display_name, appInfo.bio, display_name, handle, storeSlug);
+    } else {
+      await db.prepare('UPDATE seller_profiles SET is_approved = 1 WHERE user_id = ?').run(appInfo.user_id);
     }
 
     await writeAuditLog(
@@ -10648,7 +10657,7 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
       is_active: c.is_active !== undefined ? !!c.is_active : true,
       status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
       product_count: parseInt(c.live_product_count || 0, 10),
-      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${req.protocol}://${req.get('host')}${c.image_url}`) : null,
+      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${getApiBaseUrl(req)}${c.image_url}`) : null,
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
         category_id: sc.category_id,
@@ -10706,7 +10715,7 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
         is_active: !!newCat.is_active,
         status_label: newCat.is_active ? 'Active' : 'Hidden',
         product_count: 0,
-        image_url: newCat.image_url ? (newCat.image_url.startsWith('http://') || newCat.image_url.startsWith('https://') ? newCat.image_url : `${req.protocol}://${req.get('host')}${newCat.image_url}`) : null
+        image_url: newCat.image_url ? (newCat.image_url.startsWith('http://') || newCat.image_url.startsWith('https://') ? newCat.image_url : `${getApiBaseUrl(req)}${newCat.image_url}`) : null
       }
     });
   } catch (err) {
@@ -10766,7 +10775,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
         product_count: updated.product_count || updated.item_count || 0,
-        image_url: updated.image_url ? (updated.image_url.startsWith('http://') || updated.image_url.startsWith('https://') ? updated.image_url : `${req.protocol}://${req.get('host')}${updated.image_url}`) : null
+        image_url: updated.image_url ? (updated.image_url.startsWith('http://') || updated.image_url.startsWith('https://') ? updated.image_url : `${getApiBaseUrl(req)}${updated.image_url}`) : null
       }
     });
   } catch (err) {

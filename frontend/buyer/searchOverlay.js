@@ -372,7 +372,7 @@ class SearchOverlay {
       sellersSection.classList.remove('hidden');
       sellersList.innerHTML = sellers.map(s => `
         <a href="/buyer/seller-profile.html?id=${s.id}" class="flex flex-col items-center flex-shrink-0 w-20 text-center hover:scale-105 transition-transform duration-200">
-          <img loading="lazy" src="${s.avatar_url || '/uploads/avatars/default-avatar.png'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
+          <img loading="lazy" src="${s.avatar_url || '/img/default-avatar.png'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
           <p class="text-[11px] text-[#1f1b15] font-semibold truncate w-full mt-1">${s.shop_name || s.username}</p>
         </a>
       `).join('');

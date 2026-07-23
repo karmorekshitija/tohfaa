@@ -349,13 +349,6 @@ function renderSellers(sellers) {
     let actionBtn = '';
     if (seller.status === 'banned') {
       actionBtn = `<button class="unban-btn px-3 py-1 bg-primary/20 text-primary font-label-btn text-[11px] rounded hover:bg-primary hover:text-white transition-all" data-id="${seller.id}">Unban</button>`;
-    } else if (seller.status === 'pending_verification') {
-      actionBtn = `
-        <div class="flex gap-2">
-          <button class="verify-btn px-3 py-1 bg-primary text-white font-label-btn text-[11px] rounded hover:bg-primary/95 transition-all" data-id="${seller.id}">Verify</button>
-          <button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>
-        </div>
-      `;
     } else {
       actionBtn = `<button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>`;
     }
@@ -395,19 +388,6 @@ function renderSellers(sellers) {
   });
 
   // Attach click events
-  listEl.querySelectorAll('.verify-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.target.getAttribute('data-id');
-      if (confirm('Are you sure you want to verify this seller? This will make their products visible to buyers.')) {
-        try {
-          await adminApiClient.post(`/admin/sellers/${id}/verify`);
-          fetchSellers();
-        } catch (err) {
-          alert(err.response?.data?.message || 'Failed to verify seller');
-        }
-      }
-    });
-  });
 
   listEl.querySelectorAll('.ban-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
