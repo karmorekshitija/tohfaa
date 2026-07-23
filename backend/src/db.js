@@ -317,9 +317,10 @@ async function initDb() {
       'art-portraits': '/img/categories/art_prints.jpg'
     };
     for (const [slug, imgPath] of Object.entries(catImageMap)) {
-      await pool.query('UPDATE categories SET image_url = $1 WHERE slug = $2 AND (image_url IS NULL OR image_url = \'\')', [imgPath, slug]);
+      await pool.query('UPDATE categories SET image_url = COALESCE(NULLIF(image_url, \'\'), $1), banner_image_url = COALESCE(NULLIF(banner_image_url, \'\'), $1) WHERE slug = $2', [imgPath, slug]);
     }
     await pool.query("UPDATE categories SET image_url = '/img/categories/ceramics.jpg' WHERE image_url IS NULL OR image_url = ''");
+    await pool.query("UPDATE categories SET banner_image_url = image_url WHERE banner_image_url IS NULL OR banner_image_url = ''");
 
     // Seed default admin users if empty
     const adminCheck = await pool.query('SELECT COUNT(*) FROM admin_users');

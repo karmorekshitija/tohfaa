@@ -203,7 +203,7 @@
 </header>
 <main class="max-w-[1440px] mx-auto pb-24">
 <!-- 2. CATEGORY IDENTITY HEADER -->
-<section class="h-[140px] w-full watercolour-wash relative flex items-center px-margin-desktop overflow-hidden border-b border-outline-variant/30">
+<section id="category-hero-header" class="h-[140px] w-full watercolour-wash relative flex items-center px-margin-desktop overflow-hidden border-b border-outline-variant/30">
 <div class="absolute inset-0 opacity-[0.08] artisan-pattern pointer-events-none"></div>
 <div class="flex items-center gap-lg z-10">
 <div id="category-emoji" class="text-[56px] drop-shadow-sm">🏺</div>
@@ -668,6 +668,22 @@
               document.getElementById('category-title').innerText = cat.display_name || cat.name;
               document.getElementById('category-emoji').innerText = cat.emoji_icon || cat.icon_emoji || '🏺';
               document.getElementById('category-product-count').innerText = `${cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)} active makes`;
+
+              const bannerBg = cat.banner_image_url || cat.image_url;
+              const heroHeader = document.getElementById('category-hero-header');
+              if (heroHeader && bannerBg) {
+                let imgUrl = bannerBg;
+                if (imgUrl.includes('/img/categories/')) {
+                  const match = imgUrl.match(/(\/img\/categories\/[^?#]+)/);
+                  if (match) imgUrl = match[1];
+                } else if (imgUrl.includes('/img/')) {
+                  const match = imgUrl.match(/(\/img\/[^?#]+)/);
+                  if (match) imgUrl = match[1];
+                }
+                heroHeader.style.backgroundImage = `linear-gradient(rgba(247, 243, 236, 0.85), rgba(247, 243, 236, 0.95)), url('${imgUrl}')`;
+                heroHeader.style.backgroundSize = 'cover';
+                heroHeader.style.backgroundPosition = 'center';
+              }
             }
           }
         }
