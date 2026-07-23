@@ -100,6 +100,37 @@ function stripHtml(str) {
   return str.replace(/<[^>]*>/g, '');
 }
 
+let bestsellerCache = {
+  ids: [],
+  lastUpdated: 0
+};
+
+async function getBestsellerIds() {
+  const now = Date.now();
+  if (now - bestsellerCache.lastUpdated < 10 * 60 * 1000 && bestsellerCache.ids.length > 0) {
+    return bestsellerCache.ids;
+  }
+  try {
+    const rows = await db.prepare(`
+      SELECT oi.product_id
+      FROM order_items oi
+      JOIN products p2 ON oi.product_id = p2.id
+      JOIN orders o ON oi.order_id = o.id
+      WHERE p2.status = 'active'
+        AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+      GROUP BY oi.product_id
+      HAVING SUM(oi.quantity) > 0
+      ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+      LIMIT 100
+    `).all();
+    bestsellerCache.ids = rows.map(r => r.product_id);
+    bestsellerCache.lastUpdated = now;
+  } catch (err) {
+    console.error("Error updating bestseller cache:", err);
+  }
+  return bestsellerCache.ids;
+}
+
 try { db.exec("ALTER TABLE notifications ADD COLUMN conversation_id INTEGER;"); } catch (e) {}
 try { db.exec("ALTER TABLE notifications ADD COLUMN offer_id INTEGER;"); } catch (e) {}
 try { db.exec("ALTER TABLE notifications ADD COLUMN order_code TEXT;"); } catch (e) {}
@@ -1077,6 +1108,9 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
     }
     
     const userId = req.user ? req.user.user_id : null;
+    const bestsellerIds = await getBestsellerIds();
+    const bestsellerList = bestsellerIds.length > 0 ? bestsellerIds.join(',') : '0';
+
     let queryStr = `
       SELECT 
         p.id, p.name, p.price_paise, p.ships_in_days, p.avg_rating, p.review_count, p.status, p.seller_id,
@@ -1086,7 +1120,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        COALESCE(bs.is_bestseller, 0) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       queryStr += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1097,18 +1131,6 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      LEFT JOIN (
-        SELECT oi.product_id, 1 AS is_bestseller
-        FROM order_items oi
-        JOIN products p2 ON oi.product_id = p2.id
-        JOIN orders o ON oi.order_id = o.id
-        WHERE p2.status = 'active'
-          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-        GROUP BY oi.product_id
-        HAVING SUM(oi.quantity) > 0
-        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-        LIMIT 100
-      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC
       LIMIT 12
@@ -1161,6 +1183,8 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
 app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (req, res) => {
   try {
     const userId = req.user ? req.user.user_id : null;
+    const bestsellerIds = await getBestsellerIds();
+    const bestsellerList = bestsellerIds.length > 0 ? bestsellerIds.join(',') : '0';
     
     // 1. Get Sponsored Products
     let sponsoredQuery = `
@@ -1172,7 +1196,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        COALESCE(bs.is_bestseller, 0) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       sponsoredQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1184,18 +1208,6 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       JOIN sponsored_products sp_prod ON sp_prod.product_id = p.id
-      LEFT JOIN (
-        SELECT oi.product_id, 1 AS is_bestseller
-        FROM order_items oi
-        JOIN products p2 ON oi.product_id = p2.id
-        JOIN orders o ON oi.order_id = o.id
-        WHERE p2.status = 'active'
-          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-        GROUP BY oi.product_id
-        HAVING SUM(oi.quantity) > 0
-        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-        LIMIT 100
-      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
@@ -1223,7 +1235,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT SUM(quantity) FROM order_items WHERE product_id = p.id), 0) AS sales_rank,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        COALESCE(bs.is_bestseller, 0) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       bestsellerQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1234,18 +1246,6 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      LEFT JOIN (
-        SELECT oi.product_id, 1 AS is_bestseller
-        FROM order_items oi
-        JOIN products p2 ON oi.product_id = p2.id
-        JOIN orders o ON oi.order_id = o.id
-        WHERE p2.status = 'active'
-          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-        GROUP BY oi.product_id
-        HAVING SUM(oi.quantity) > 0
-        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-        LIMIT 100
-      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY sales_rank DESC, p.created_at DESC, p.id DESC
       LIMIT 8
@@ -1274,7 +1274,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        COALESCE(bs.is_bestseller, 0) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       regularQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1285,18 +1285,6 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      LEFT JOIN (
-        SELECT oi.product_id, 1 AS is_bestseller
-        FROM order_items oi
-        JOIN products p2 ON oi.product_id = p2.id
-        JOIN orders o ON oi.order_id = o.id
-        WHERE p2.status = 'active'
-          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-        GROUP BY oi.product_id
-        HAVING SUM(oi.quantity) > 0
-        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-        LIMIT 100
-      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
@@ -1509,6 +1497,9 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
     }
     
     let userId = req.user ? req.user.user_id : null;
+    const bestsellerIds = await getBestsellerIds();
+    const bestsellerList = bestsellerIds.length > 0 ? bestsellerIds.join(',') : '0';
+
     let sql = `
       SELECT 
         p.id, p.name, p.price_paise, p.ships_in_days, p.avg_rating, p.review_count, p.status, p.seller_id,
@@ -1519,7 +1510,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         (p.ships_in_days <= 1) AS ready_to_ship,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        COALESCE(bs.is_bestseller, 0) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       sql += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1530,18 +1521,6 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      LEFT JOIN (
-        SELECT oi.product_id, 1 AS is_bestseller
-        FROM order_items oi
-        JOIN products p2 ON oi.product_id = p2.id
-        JOIN orders o ON oi.order_id = o.id
-        WHERE p2.status = 'active'
-          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-        GROUP BY oi.product_id
-        HAVING SUM(oi.quantity) > 0
-        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-        LIMIT 100
-      ) bs ON p.id = bs.product_id
       WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
     `;
     

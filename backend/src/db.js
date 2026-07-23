@@ -470,6 +470,11 @@ async function initDb() {
     // ─── Phase 4: Index on orders(buyer_id, status) for tiebreak query ────────
     await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_buyer_status ON orders(buyer_id, status)');
 
+    // Performance Optimization Indexes
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_products_status_seller ON products(status, seller_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_order_items_product_order ON order_items(product_id, order_id)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)');
+
     // Categories and Subcategories Overhaul
     await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL');
     await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL');

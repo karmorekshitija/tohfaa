@@ -769,12 +769,25 @@
 
             const categories = categoriesRes.data.data.categories;
 
-            for (const category of categories) {
-                // Fetch products for each category
-                const productsRes = await apiClient.get(`/categories/${category.slug}/products?limit=20`);
-                if (!productsRes.data || !productsRes.data.success) continue;
+            // Fetch products for all categories concurrently
+            const categoryPromises = categories.map(async (category) => {
+                try {
+                    const productsRes = await apiClient.get(`/categories/${category.slug}/products?limit=20`);
+                    if (productsRes.data && productsRes.data.success) {
+                        return {
+                            category,
+                            products: productsRes.data.data.products || []
+                        };
+                    }
+                } catch (err) {
+                    console.error(`Failed to load products for category ${category.slug}:`, err);
+                }
+                return { category, products: [] };
+            });
 
-                const products = productsRes.data.data.products || [];
+            const results = await Promise.all(categoryPromises);
+
+            for (const { category, products } of results) {
                 if (products.length === 0) continue; // Only show row if it has products
 
                 const rowWrapper = document.createElement('div');
