@@ -493,6 +493,8 @@ async function initDb() {
     await pool.query('CREATE INDEX IF NOT EXISTS idx_products_status_seller ON products(status, seller_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_order_items_product_order ON order_items(product_id, order_id)');
     await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_listings_cat_status ON listings(category_id, status)');
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_products_status_rating ON products(status, avg_rating DESC)');
 
     // Categories and Subcategories Overhaul
     await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL');
