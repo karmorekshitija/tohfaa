@@ -1602,8 +1602,13 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       data: {
         category: {
           id: category.id,
+          display_name: category.display_name || category.name,
           name: category.name,
           slug: category.slug,
+          emoji_icon: category.emoji_icon || category.icon_emoji || '🏷️',
+          description: category.description || null,
+          image_url: category.image_url ? (category.image_url.startsWith('http') || category.image_url.startsWith('/img/') ? category.image_url : `${getApiBaseUrl(req)}${category.image_url}`) : null,
+          banner_image_url: category.banner_image_url ? (category.banner_image_url.startsWith('http') || category.banner_image_url.startsWith('/img/') ? category.banner_image_url : `${getApiBaseUrl(req)}${category.banner_image_url}`) : null,
           item_count: category.item_count
         },
         products,
