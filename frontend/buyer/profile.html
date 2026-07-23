@@ -412,7 +412,7 @@
             // Fetch profile
             const profileRes = await apiClient.get('/profile/me');
             if (profileRes.data && profileRes.data.success) {
-                const profileData = profileRes.data.data;
+                profileData = profileRes.data.data;
                 updateProfileUI(profileData);
             }
 

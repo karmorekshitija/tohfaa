@@ -50,7 +50,7 @@
         <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
         <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
           <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+          <li><a href="javascript:void(0)" onclick="openContactModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
           <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
           <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
           <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
@@ -136,7 +136,7 @@
         </summary>
         <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
           <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+          <li><a href="javascript:void(0)" onclick="openContactModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
           <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
           <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
           <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
@@ -172,7 +172,117 @@
       .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
       .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
     }
+
+    /* Modal styling */
+    .tohfa-contact-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .tohfa-contact-modal.is-open {
+      display: flex !important;
+    }
+    .tohfa-contact-card {
+      background: #1E3D0F;
+      color: #F7F2E8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 40px 32px 32px 32px;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .tohfa-contact-modal.is-open .tohfa-contact-card {
+      transform: scale(1);
+    }
+    .tohfa-contact-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #F7F2E8;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .tohfa-contact-close:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+    .tohfa-contact-close:active {
+      transform: scale(0.95);
+    }
+    .tohfa-contact-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: #C9972C;
+    }
+    .tohfa-contact-card p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      color: #A8B89A;
+    }
+    .tohfa-contact-email-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 16px;
+      color: #C9972C;
+      text-decoration: none;
+      border: 1px solid rgba(201, 151, 44, 0.3);
+      padding: 12px 24px;
+      border-radius: 8px;
+      background: rgba(201, 151, 44, 0.05);
+      transition: all 0.2s ease;
+    }
+    .tohfa-contact-email-link:hover {
+      background: rgba(201, 151, 44, 0.15);
+      border-color: rgba(201, 151, 44, 0.6);
+      color: #F7F2E8;
+      transform: translateY(-2px);
+    }
+    .tohfa-contact-email-link:active {
+      transform: translateY(0);
+    }
   </style>
+
+  <!-- Contact Us Modal -->
+  <div id="tohfa-contact-modal" class="tohfa-contact-modal" onclick="if(event.target === this) closeContactModal()">
+    <div class="tohfa-contact-card" onclick="event.stopPropagation()">
+      <button class="tohfa-contact-close" onclick="closeContactModal()" aria-label="Close modal">&times;</button>
+      <h3>Get in Touch</h3>
+      <p>Reach us at</p>
+      <a href="mailto:tohfa126@gmail.com" class="tohfa-contact-email-link">
+        <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">mail</span>
+        <span>tohfa126@gmail.com</span>
+      </a>
+    </div>
+  </div>
 </footer>
 
 <script>
@@ -203,5 +313,35 @@ async function handleFooterSellerLink(e) {
   } catch(err) {}
   
   window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+// Escape key listener (registered idempotently)
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
 }
 </script>
