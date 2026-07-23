@@ -44,6 +44,7 @@
         }
     })();
 
+    if (typeof tailwind !== 'undefined') {
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -69,6 +70,7 @@
                 },
             },
         };
+    }
     </script>
 <style>
         body { font-family: 'DM Sans', sans-serif; }

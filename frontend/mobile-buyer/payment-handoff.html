@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
   <script>
+    if (typeof tailwind !== 'undefined') {
         tailwind.config = {
             theme: {
                 extend: {
@@ -29,14 +30,15 @@
                         'on-surface-variant': '#5C635D',
                     },
                     fontFamily: {
-                        'playfair': ['Playfair Display', 'serif'],
-                        'dm-sans': ['DM Sans', 'sans-serif'],
-                        'space-mono': ['Space Mono', 'monospace'],
-                    },
+                        sans: ['DM Sans', 'sans-serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    }
                 }
             }
-        }
-    </script>
+        };
+    }
+  </script>
 <style>
         .sidebar-active {
             background-color: #8FAF8220;

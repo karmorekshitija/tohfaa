@@ -280,8 +280,33 @@ app.use(expressRateLimit({
 }));
 
 const cors = require('cors');
+
+const allowedOrigins = [
+  'https://thetohfa.in',
+  'https://www.thetohfa.in',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://localhost:8080'
+];
+
+if (process.env.FRONTEND_ORIGIN) {
+  process.env.FRONTEND_ORIGIN.split(',').forEach(o => {
+    const trimmed = o.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(null, origin);
+  },
   credentials: true
 }));
 app.use(express.json());

@@ -130,7 +130,7 @@
 <div class="space-y-2">
 <h2 class="text-xl font-playfair">Listing Title</h2>
 <div class="relative">
-<input id="input-title" maxlength="80" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
+<input id="listing-title" data-mobile-id="input-title" maxlength="80" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
 <div class="text-right mt-2">
 <span id="title-char-count" class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
 </div>
@@ -163,19 +163,19 @@
 <div class="grid grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">L (CM)</label>
-<input id="input-length" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
+<input id="length-input" data-mobile-id="input-length" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">W (CM)</label>
-<input id="input-width" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
+<input id="width-input" data-mobile-id="input-width" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">H (CM)</label>
-<input id="input-height" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
+<input id="height-input" data-mobile-id="input-height" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Weight (G)</label>
-<input id="input-weight" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
+<input id="weight-input" data-mobile-id="input-weight" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
 </div>
 </div>
 </div>
@@ -183,7 +183,7 @@
 <!-- BEGIN: Product Description -->
 <div class="space-y-4">
 <h2 class="text-xl font-playfair">Product Description</h2>
-<textarea id="textarea-description" class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
+<textarea id="listing-description" data-mobile-id="textarea-description" class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
 </div>
 <!-- END: Product Description -->
 </form>
@@ -309,6 +309,11 @@
   let categoriesList = [];
   let selectedSubcategoryIds = [];
   let selectedCategoryId = '';
+
+  function getEl(id) {
+    if (!id) return null;
+    return document.getElementById(id) || document.querySelector(`[data-mobile-id="${id}"]`) || document.querySelector(`[data-desktop-id="${id}"]`);
+  }
 
   function getToken() {
     try {

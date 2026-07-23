@@ -578,45 +578,29 @@
             showToast('Draft saved successfully!', 'success');
 
             if (shouldRedirect) {
-                window.location.href = 'listing-pricing-a.html';
+                window.location.href = 'listing-shipping.html';
             }
         } catch (err) {
             showToast(err.message, 'error');
         }
     }
 
-    document.getElementById('save-draft-btn').addEventListener('click', () => saveListingDraft(false));
-    document.getElementById('next-step-btn').addEventListener('click', () => {
-        if (existingPhotos.length + selectedFiles.length === 0) {
-            showToast('Please upload at least one product photo before continuing.', 'error');
-            return;
-        }
-        const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
-        if (!token) {
-            // No backend — just navigate to next step directly
-            window.location.href = 'listing-pricing-a.html';
-            return;
-        }
-        saveListingDraft(true);
-    });
+    const saveDraftBtn = document.getElementById('header-save-draft-btn') || document.getElementById('save-draft-btn');
+    const nextStepBtn = document.getElementById('header-next-step-btn') || document.getElementById('next-step-btn');
 
-    // Header Save as Draft button
-    const headerDraftBtn = document.getElementById('header-save-draft-btn');
-    if (headerDraftBtn) {
-        headerDraftBtn.addEventListener('click', () => saveListingDraft(false));
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', () => saveListingDraft(false));
     }
 
-    // Header Next Step button
-    const headerNextBtn = document.getElementById('header-next-step-btn');
-    if (headerNextBtn) {
-        headerNextBtn.addEventListener('click', () => {
+    if (nextStepBtn) {
+        nextStepBtn.addEventListener('click', () => {
             if (existingPhotos.length + selectedFiles.length === 0) {
                 showToast('Please upload at least one product photo before continuing.', 'error');
                 return;
             }
             const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
             if (!token) {
-                window.location.href = 'listing-pricing-a.html';
+                window.location.href = 'listing-shipping.html';
                 return;
             }
             saveListingDraft(true);

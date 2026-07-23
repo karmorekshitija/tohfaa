@@ -12,7 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&amp;family=DM+Sans:wght@400;500;700&amp;family=Merriweather:wght@400;700&amp;family=Cinzel:wght@700&amp;family=Space+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-    tailwind.config = {
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
@@ -101,7 +102,7 @@
             "data-price": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
           }
         },
-      },
+      };
     }
   </script>
 <style>
