@@ -81,6 +81,7 @@ const { app, server } = require('../src/server');
 const jwt = require('jsonwebtoken');
 const assert = require('assert');
 const db = require('../src/db');
+const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
 const buyerId = 12;
@@ -285,7 +286,9 @@ async function runTests() {
         offer_id: offerId,
         razorpay_order_id: acceptData.razorpay_order_id,
         razorpay_payment_id: "pay_concierge_payment_999",
-        razorpay_signature: "mock_signature"
+        razorpay_signature: crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_mocksecret12345')
+          .update(acceptData.razorpay_order_id + '|' + "pay_concierge_payment_999")
+          .digest('hex')
       })
     });
     assert.strictEqual(verifyRes.status, 200, "Payment verification should succeed");

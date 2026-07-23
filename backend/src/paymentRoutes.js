@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('./db');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Authentication middleware
 async function authenticateToken(req, res, next) {

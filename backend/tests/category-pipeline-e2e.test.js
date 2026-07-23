@@ -70,10 +70,10 @@ async function runTests() {
     `).run();
     await db.prepare(`
       INSERT INTO admin_users (id, username, email, password_hash, role, display_name, is_active)
-      VALUES (990001, 'admin_test_pipeline', 'admin_test_pipeline@test.com', 'hash', 'admin', 'Pipeline Admin', 1)
+      VALUES (990001, 'admin_test_pipeline', 'admin_test_pipeline@test.com', 'hash', 'super_admin', 'Pipeline Admin', 1)
     `).run();
 
-    const adminToken = jwt.sign({ sub: 990001, type: 'admin_access', role: 'admin' }, JWT_SECRET);
+    const adminToken = jwt.sign({ sub: 990001, type: 'admin_access', role: 'super_admin' }, JWT_SECRET);
     const sellerToken = jwt.sign({ user_id: 990002 }, JWT_SECRET);
     const buyerToken = jwt.sign({ user_id: 990003 }, JWT_SECRET);
 

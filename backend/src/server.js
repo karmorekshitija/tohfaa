@@ -16,6 +16,78 @@ const emailService = require('./services/emailService');
 const cron = require('node-cron');
 const { syncListingToProduct } = require('./services/listingSync');
 
+const REQUIRED_ENV_VARS = ['JWT_SECRET', 'RAZORPAY_KEY_SECRET', 'DATABASE_URL'];
+const missingEnvVars = REQUIRED_ENV_VARS.filter(v => !process.env[v]);
+if (missingEnvVars.length > 0) {
+  console.error(`FATAL: Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  console.error('Refusing to start with insecure defaults. Set these in .env or the process environment.');
+  process.exit(1);
+}
+
+const sharp = require('sharp');
+
+async function generateThumbnail(filePath) {
+  if (!filePath) return null;
+  const ext = path.extname(filePath).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+    return null;
+  }
+  const thumbPath = filePath.replace(/(\.\w+)$/, '_thumb$1');
+  try {
+    let pipeline = sharp(filePath)
+      .resize(480, 480, { fit: 'inside', withoutEnlargement: true });
+    
+    if (ext === '.png') {
+      pipeline = pipeline.png({ quality: 75 });
+    } else if (ext === '.webp') {
+      pipeline = pipeline.webp({ quality: 75 });
+    } else {
+      pipeline = pipeline.jpeg({ quality: 75 });
+    }
+    
+    await pipeline.toFile(thumbPath);
+    return thumbPath;
+  } catch (err) {
+    console.error(`Error generating thumbnail for ${filePath}:`, err);
+    return null;
+  }
+}
+
+function getThumbnailUrl(originalUrl) {
+  if (!originalUrl) return originalUrl;
+  let relativePath = originalUrl;
+  if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+    try {
+      const urlObj = new URL(relativePath);
+      relativePath = urlObj.pathname;
+    } catch (e) {
+      return originalUrl;
+    }
+  }
+  
+  if (!relativePath.startsWith('/uploads')) {
+    return originalUrl;
+  }
+  
+  const ext = relativePath.substring(relativePath.lastIndexOf('.')).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+    return originalUrl;
+  }
+  
+  const relativeThumb = relativePath.replace(/(\.\w+)$/, '_thumb$1');
+  const fullThumbPath = path.join(__dirname, '..', relativeThumb);
+  
+  if (fs.existsSync(fullThumbPath)) {
+    if (originalUrl.startsWith('http://') || originalUrl.startsWith('https://')) {
+      const urlObj = new URL(originalUrl);
+      return `${urlObj.protocol}//${urlObj.host}${relativeThumb}`;
+    }
+    return relativeThumb;
+  }
+  
+  return originalUrl;
+}
+
 function stripHtml(str) {
   if (typeof str !== 'string') return '';
   return str.replace(/<[^>]*>/g, '');
@@ -149,6 +221,9 @@ const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
+const compression = require('compression');
+app.use(compression());
+
 const helmet = require('helmet');
 app.use(helmet());
 
@@ -181,7 +256,11 @@ app.use('/uploads', (req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Content-Disposition', 'inline');
   next();
-}, express.static(path.join(__dirname, '..', 'uploads')));
+}, express.static(path.join(__dirname, '..', 'uploads'), {
+  maxAge: '30d',
+  etag: true,
+  immutable: false
+}));
 
 // Serve standard static screens for interactive flow if they exist
 const serveStitchScreen = (fileName) => {
@@ -204,7 +283,7 @@ app.get('/wishlist', serveStitchScreen('05_tohfa_wishlist_-_desktop_web_app_code
 // Serve all other stitch files under /stitch/
 app.use('/stitch', express.static(path.join(__dirname, '..', '..', 'stitch_screens')));
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
+const JWT_SECRET = process.env.JWT_SECRET;
 const BCRYPT_SALT_ROUNDS = 12;
 
 // Custom Rate Limiter Middleware
@@ -1000,19 +1079,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       queryStr += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1023,6 +1090,18 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC
       LIMIT 12
@@ -1035,12 +1114,23 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
       p.avg_rating = p.avg_rating !== null && p.avg_rating !== undefined ? parseFloat(p.avg_rating) : 0.0;
       p.review_count = p.review_count !== null && p.review_count !== undefined ? parseInt(p.review_count, 10) : 0;
     });
     
     // Query all categories
-    const categories = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY item_count DESC").all();
+    const cats = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY item_count DESC").all();
+    const categories = cats.map(c => {
+      let imgUrl = c.image_url;
+      if (imgUrl && !imgUrl.startsWith('http://') && !imgUrl.startsWith('https://')) {
+        imgUrl = `${req.protocol}://${req.get('host')}${imgUrl}`;
+      }
+      return {
+        ...c,
+        image_url: imgUrl
+      };
+    });
     
     return res.status(200).json({
       success: true,
@@ -1075,19 +1165,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       sponsoredQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1099,6 +1177,18 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       JOIN sponsored_products sp_prod ON sp_prod.product_id = p.id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
@@ -1109,6 +1199,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
     });
 
     // 2. Get Bestsellers (excluding sponsored)
@@ -1125,19 +1216,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT SUM(quantity) FROM order_items WHERE product_id = p.id), 0) AS sales_rank,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       bestsellerQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1148,6 +1227,18 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY sales_rank DESC, p.created_at DESC, p.id DESC
       LIMIT 8
@@ -1160,6 +1251,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
     });
 
     // 3. Get Regular Products (excluding sponsored and bestsellers)
@@ -1175,19 +1267,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       regularQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1198,6 +1278,18 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
@@ -1209,6 +1301,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
     });
 
     // Combine them
@@ -1267,7 +1360,7 @@ app.get('/api/categories', rateLimit(120), async (req, res) => {
       slug: c.slug,
       emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
       description: c.description || null,
-      image_url: c.image_url || null,
+      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${req.protocol}://${req.get('host')}${c.image_url}`) : null,
       product_count: parseInt(c.live_product_count || 0, 10),
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
@@ -1419,19 +1512,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         (p.ships_in_days <= 1) AS ready_to_ship,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       sql += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1442,6 +1523,18 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
     `;
     
@@ -1471,6 +1564,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       p.ready_to_ship = !!p.ready_to_ship;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
       p.avg_rating = p.avg_rating !== null && p.avg_rating !== undefined ? parseFloat(p.avg_rating) : 0.0;
       p.review_count = p.review_count !== null && p.review_count !== undefined ? parseInt(p.review_count, 10) : 0;
     });
@@ -1573,19 +1667,7 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
       SELECT
         p.id, p.name, p.price_paise, p.ships_in_days, p.ready_to_ship, p.avg_rating, p.review_count, p.seller_id,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
         ${wishlistSelect},
         COALESCE(
           (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
@@ -1596,6 +1678,18 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE ${queryParts.join(' AND ')}
       ORDER BY ${orderBy}
       LIMIT ?
@@ -1620,6 +1714,7 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
       p.ready_to_ship = !!p.ready_to_ship;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
       p.avg_rating = p.avg_rating !== null && p.avg_rating !== undefined ? parseFloat(p.avg_rating) : 0.0;
       p.review_count = p.review_count !== null && p.review_count !== undefined ? parseInt(p.review_count, 10) : 0;
     });
@@ -3946,11 +4041,11 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
   if (conversation_id !== undefined && offer_id !== undefined) {
     try {
       // 1. Verify Razorpay signature
-      const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_mocksecret12345';
+      const secret = process.env.RAZORPAY_KEY_SECRET;
       const expected = crypto.createHmac('sha256', secret)
         .update(razorpay_order_id + '|' + razorpay_payment_id)
         .digest('hex');
-      if (razorpay_signature !== expected && razorpay_signature !== 'mock_signature') {
+      if (razorpay_signature !== expected) {
         return res.status(400).json({ error: "Payment verification failed", code: "INVALID_SIGNATURE" });
       }
 
@@ -4132,13 +4227,13 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
       });
     }
     
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_mocksecret12345';
+    const secret = process.env.RAZORPAY_KEY_SECRET;
     const generated_signature = crypto
       .createHmac('sha256', secret)
       .update(razorpay_order_id + '|' + razorpay_payment_id)
       .digest('hex');
       
-    if (razorpay_signature !== generated_signature && razorpay_signature !== 'mock_signature') {
+    if (razorpay_signature !== generated_signature) {
       return res.status(402).json({
         error: true,
         message: "Signature verification failed",
@@ -4649,6 +4744,8 @@ app.post('/api/profile/me/avatar', rateLimit(60), authenticateToken, uploadAvata
     const protocol = req.protocol;
     const avatarUrl = `${protocol}://${host}/uploads/avatars/${req.file.filename}`;
 
+    await generateThumbnail(req.file.path);
+
     await db.prepare("UPDATE users SET avatar_url = ? WHERE id = ?").run(avatarUrl, userId);
 
     return res.status(200).json({
@@ -4661,6 +4758,10 @@ app.post('/api/profile/me/avatar', rateLimit(60), authenticateToken, uploadAvata
     console.error('Error uploading avatar:', err);
     if (req.file) {
       fs.unlinkSync(req.file.path);
+      try {
+        const thumbPath = req.file.path.replace(/(\.\w+)$/, '_thumb$1');
+        if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+      } catch (e) {}
     }
     return res.status(500).json({
       error: true,
@@ -5757,6 +5858,7 @@ app.post('/api/seller/profile/photo', requireSeller, (req, res, next) => {
   });
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
+  await generateThumbnail(req.file.path);
   const url = `${req.protocol}://${req.get('host')}/uploads/avatars/${req.file.filename}`;
   await db.prepare('UPDATE seller_profiles SET avatar_url = ? WHERE user_id = ?').run(url, req.user.user_id);
   await db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(url, req.user.user_id);
@@ -5784,6 +5886,7 @@ app.post('/api/seller/profile/banner', requireSeller, (req, res, next) => {
   });
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
+  await generateThumbnail(req.file.path);
   const url = `${req.protocol}://${req.get('host')}/uploads/banners/${req.file.filename}`;
   // UPSERT store_config row for this seller
   await db.prepare(`
@@ -5817,6 +5920,7 @@ app.post('/api/seller/profile/about-image', requireSeller, (req, res, next) => {
   });
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
+  await generateThumbnail(req.file.path);
   const url = `${req.protocol}://${req.get('host')}/uploads/about/${req.file.filename}`;
   await db.prepare('UPDATE seller_profiles SET about_image_url = ? WHERE user_id = ?').run(url, req.user.user_id);
   return res.json({ success: true, data: { about_image_url: url } });
@@ -6804,19 +6908,7 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
 
     if (userId) {
@@ -6829,6 +6921,18 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
         AND p.stock_qty > 0
         AND p.id != ?
@@ -7180,6 +7284,10 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     const isVideo = req.body.is_video === 'true' || req.file.mimetype.startsWith('video/');
     const sortOrder = parseInt(req.body.sort_order) || 0;
     const url = `/uploads/listings/${listingId}/${req.file.filename}`;
+
+    if (!isVideo) {
+      await generateThumbnail(req.file.path);
+    }
 
     if (isCover) {
       await db.prepare('UPDATE listing_photos SET is_cover = 0 WHERE listing_id = ?').run(listingId);
@@ -10540,7 +10648,7 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
       is_active: c.is_active !== undefined ? !!c.is_active : true,
       status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
       product_count: parseInt(c.live_product_count || 0, 10),
-      image_url: c.image_url || null,
+      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${req.protocol}://${req.get('host')}${c.image_url}`) : null,
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
         category_id: sc.category_id,
@@ -10598,7 +10706,7 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
         is_active: !!newCat.is_active,
         status_label: newCat.is_active ? 'Active' : 'Hidden',
         product_count: 0,
-        image_url: newCat.image_url
+        image_url: newCat.image_url ? (newCat.image_url.startsWith('http://') || newCat.image_url.startsWith('https://') ? newCat.image_url : `${req.protocol}://${req.get('host')}${newCat.image_url}`) : null
       }
     });
   } catch (err) {
@@ -10658,7 +10766,7 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
         product_count: updated.product_count || updated.item_count || 0,
-        image_url: updated.image_url
+        image_url: updated.image_url ? (updated.image_url.startsWith('http://') || updated.image_url.startsWith('https://') ? updated.image_url : `${req.protocol}://${req.get('host')}${updated.image_url}`) : null
       }
     });
   } catch (err) {
@@ -14013,19 +14121,7 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       productsQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -14034,6 +14130,18 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
     }
     productsQuery += `
       FROM products p
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.seller_id = ? AND p.status = 'active'
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
@@ -14109,20 +14217,21 @@ app.get('/api/sellers/:id/customizations', async (req, res) => {
         listings.base_price,
         listings.ships_in_days AS lead_time_days,
         listings.cover_photo_url AS cover_image_url,
-        (SELECT p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = listings.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        ) FROM products p WHERE p.name = listings.title AND p.seller_id = listings.seller_id LIMIT 1) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
       FROM listings
+      LEFT JOIN products p ON p.name = listings.title AND p.seller_id = listings.seller_id AND p.status = 'active'
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE listings.seller_id = ? AND listings.listing_type = 'custom' AND listings.status = 'active'
       ORDER BY listings.created_at DESC
       LIMIT ? OFFSET ?

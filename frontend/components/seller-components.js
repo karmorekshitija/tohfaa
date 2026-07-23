@@ -98,7 +98,6 @@
       display: flex !important;
       flex-direction: column !important;
       min-width: 0 !important;
-      margin-left: 130px !important;
       position: relative !important;
       background-color: #FFFFFF !important;
       padding: 32px 64px 64px 64px !important;
