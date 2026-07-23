@@ -1374,22 +1374,37 @@ app.get('/api/categories', rateLimit(120), async (req, res) => {
     } catch (e) {
       console.warn("subcategories fetch failed:", e);
     }
-    const categories = cats.map(c => ({
-      id: c.id,
-      display_name: c.display_name || c.name,
-      slug: c.slug,
-      emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
-      description: c.description || null,
-      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${getApiBaseUrl(req)}${c.image_url}`) : null,
-      product_count: parseInt(c.live_product_count || 0, 10),
-      subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
-        id: sc.id,
-        category_id: sc.category_id,
-        name: sc.name,
-        slug: sc.slug,
-        description: sc.description || null
-      }))
-    }));
+    const categories = cats.map(c => {
+      let rawImg = c.image_url;
+      let finalImg = null;
+      if (rawImg) {
+        if (rawImg.startsWith('/img/')) {
+          finalImg = rawImg;
+        } else if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
+          finalImg = rawImg;
+        } else if (rawImg.startsWith('/uploads/')) {
+          finalImg = `${getApiBaseUrl(req)}${rawImg}`;
+        } else {
+          finalImg = rawImg.startsWith('/') ? rawImg : `/${rawImg}`;
+        }
+      }
+      return {
+        id: c.id,
+        display_name: c.display_name || c.name,
+        slug: c.slug,
+        emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
+        description: c.description || null,
+        image_url: finalImg,
+        product_count: parseInt(c.live_product_count || 0, 10),
+        subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
+          id: sc.id,
+          category_id: sc.category_id,
+          name: sc.name,
+          slug: sc.slug,
+          description: sc.description || null
+        }))
+      };
+    });
     return res.status(200).json({
       success: true,
       data: {

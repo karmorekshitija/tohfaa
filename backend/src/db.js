@@ -303,6 +303,24 @@ async function initDb() {
       }
     }
 
+    // Ensure all category rows have valid default image_urls
+    const catImageMap = {
+      'customized-gifts': '/img/categories/art_prints.jpg',
+      'jewellery': '/img/categories/jewellery.jpg',
+      'hampers': '/img/categories/dried_florals.jpg',
+      'wedding-rituals': '/img/categories/candles.jpg',
+      'crochet': '/img/categories/journals.jpg',
+      'fabric-crafts': '/img/categories/skincare.jpg',
+      'festivals': '/img/categories/candles.jpg',
+      'couples': '/img/categories/custom_portraits.jpg',
+      'home-decor': '/img/categories/ceramics.jpg',
+      'art-portraits': '/img/categories/art_prints.jpg'
+    };
+    for (const [slug, imgPath] of Object.entries(catImageMap)) {
+      await pool.query('UPDATE categories SET image_url = $1 WHERE slug = $2 AND (image_url IS NULL OR image_url = \'\')', [imgPath, slug]);
+    }
+    await pool.query("UPDATE categories SET image_url = '/img/categories/ceramics.jpg' WHERE image_url IS NULL OR image_url = ''");
+
     // Seed default admin users if empty
     const adminCheck = await pool.query('SELECT COUNT(*) FROM admin_users');
     if (parseInt(adminCheck.rows[0].count) === 0) {
