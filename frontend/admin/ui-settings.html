@@ -677,6 +677,7 @@
       }
       const formData = new FormData();
       formData.append('banner', fileInput.files[0]);
+      formData.append('image', fileInput.files[0]);
 
       try {
         const res = await adminApiClient.patch(`/admin/categories/${selectedCategoryId}`, formData, {

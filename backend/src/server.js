@@ -10708,7 +10708,8 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
       is_active: c.is_active !== undefined ? !!c.is_active : true,
       status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
       product_count: parseInt(c.live_product_count || 0, 10),
-      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') ? c.image_url : `${getApiBaseUrl(req)}${c.image_url}`) : null,
+      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') || c.image_url.startsWith('/img/') ? c.image_url : `${getApiBaseUrl(req)}${c.image_url}`) : null,
+      banner_image_url: c.banner_image_url ? (c.banner_image_url.startsWith('http://') || c.banner_image_url.startsWith('https://') || c.banner_image_url.startsWith('/img/') ? c.banner_image_url : `${getApiBaseUrl(req)}${c.banner_image_url}`) : null,
       subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
         id: sc.id,
         category_id: sc.category_id,
@@ -10725,9 +10726,9 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
 });
 
 // TASK 18: POST /api/admin/categories
-app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single('image'), async (req, res) => {
+app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.fields([{ name: 'image', maxCount: 1 }, { name: 'banner', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
   try {
-    const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
+    const { emoji_icon, display_name, slug, description, sort_order, is_active, image_url } = req.body;
     if (!emoji_icon || !display_name || !slug || sort_order === undefined || is_active === undefined) {
       return res.status(400).json({ error: true, message: 'emoji_icon, display_name, slug, sort_order, is_active are required', code: 'VALIDATION_ERROR' });
     }
@@ -10738,19 +10739,22 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
     if (existing) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
 
     let imageUrl = null;
-    if (req.file) {
-      imageUrl = '/uploads/categories/' + req.file.filename;
+    const fileObj = req.file || (req.files && (req.files.image?.[0] || req.files.banner?.[0] || req.files.file?.[0]));
+    if (fileObj) {
+      imageUrl = '/uploads/categories/' + fileObj.filename;
+    } else if (image_url) {
+      imageUrl = image_url;
     } else {
-      imageUrl = `https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800&auto=format&fit=crop`;
+      imageUrl = `/img/categories/ceramics.jpg`;
     }
 
     const sortOrderVal = parseInt(sort_order, 10) || 0;
     const isActiveVal = (is_active === 'true' || is_active === '1' || is_active === 1 || is_active === true) ? 1 : 0;
 
     const result = await db.prepare(`
-      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at, image_url)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), ?)
-    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sortOrderVal, isActiveVal, imageUrl);
+      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at, image_url, banner_image_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), ?, ?)
+    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sortOrderVal, isActiveVal, imageUrl, imageUrl);
 
     await writeAuditLog('admin.category.created', req.admin.id, req.admin.display_name, 'category', result.lastInsertRowid, `Category: ${display_name}`);
 
@@ -10766,7 +10770,8 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
         is_active: !!newCat.is_active,
         status_label: newCat.is_active ? 'Active' : 'Hidden',
         product_count: 0,
-        image_url: newCat.image_url ? (newCat.image_url.startsWith('http://') || newCat.image_url.startsWith('https://') ? newCat.image_url : `${getApiBaseUrl(req)}${newCat.image_url}`) : null
+        image_url: newCat.image_url ? (newCat.image_url.startsWith('http://') || newCat.image_url.startsWith('https://') || newCat.image_url.startsWith('/img/') ? newCat.image_url : `${getApiBaseUrl(req)}${newCat.image_url}`) : null,
+        banner_image_url: newCat.banner_image_url ? (newCat.banner_image_url.startsWith('http://') || newCat.banner_image_url.startsWith('https://') || newCat.banner_image_url.startsWith('/img/') ? newCat.banner_image_url : `${getApiBaseUrl(req)}${newCat.banner_image_url}`) : null
       }
     });
   } catch (err) {
@@ -10776,13 +10781,13 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
 });
 
 // TASK 19: PATCH /api/admin/categories/:category_id
-app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCategory.single('image'), async (req, res) => {
+app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCategory.fields([{ name: 'image', maxCount: 1 }, { name: 'banner', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
   try {
     const catId = parseInt(req.params.category_id);
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
-    const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
+    const { emoji_icon, display_name, slug, description, sort_order, is_active, image_url, banner_image_url } = req.body;
     if (slug !== undefined) {
       if (!/^[a-z0-9-]+$/.test(slug)) {
         return res.status(400).json({ error: true, message: 'Invalid slug format', code: 'INVALID_SLUG' });
@@ -10801,10 +10806,21 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
     if (description !== undefined) { updates.push('description = ?'); params.push(description); }
     if (sort_order !== undefined) { updates.push('sort_order = ?'); params.push(parseInt(sort_order, 10)); }
     if (is_active !== undefined) { updates.push('is_active = ?'); params.push((is_active === 'true' || is_active === '1' || is_active === 1 || is_active === true) ? 1 : 0); }
-    if (req.file) {
-      const imageUrl = '/uploads/categories/' + req.file.filename;
-      updates.push('image_url = ?');
-      params.push(imageUrl);
+
+    const fileObj = req.file || (req.files && (req.files.image?.[0] || req.files.banner?.[0] || req.files.file?.[0]));
+    if (fileObj) {
+      const uploadedUrl = '/uploads/categories/' + fileObj.filename;
+      updates.push('image_url = ?', 'banner_image_url = ?');
+      params.push(uploadedUrl, uploadedUrl);
+    } else {
+      if (image_url !== undefined && image_url !== null) {
+        updates.push('image_url = ?');
+        params.push(image_url);
+      }
+      if (banner_image_url !== undefined && banner_image_url !== null) {
+        updates.push('banner_image_url = ?');
+        params.push(banner_image_url);
+      }
     }
 
     updates.push("updated_at = datetime('now')");
@@ -10814,6 +10830,8 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
 
     const updated = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     await writeAuditLog('admin.category.updated', req.admin.id, req.admin.display_name, 'category', catId, `Category: ${updated.display_name}`, beforeJson, { display_name: updated.display_name, slug: updated.slug, is_active: updated.is_active, image_url: updated.image_url });
+
+    const formatImg = (url) => url ? (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/img/') ? url : `${getApiBaseUrl(req)}${url}`) : null;
 
     return res.status(200).json({
       success: true,
@@ -10826,7 +10844,8 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
         product_count: updated.product_count || updated.item_count || 0,
-        image_url: updated.image_url ? (updated.image_url.startsWith('http://') || updated.image_url.startsWith('https://') ? updated.image_url : `${getApiBaseUrl(req)}${updated.image_url}`) : null
+        image_url: formatImg(updated.image_url),
+        banner_image_url: formatImg(updated.banner_image_url || updated.image_url)
       }
     });
   } catch (err) {
