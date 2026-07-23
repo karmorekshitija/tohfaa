@@ -694,16 +694,22 @@
   }
 
   function gatherFormData() {
-    const isCustom = document.getElementById('input-product-type-custom').checked;
+    const isCustom = document.getElementById('input-product-type-custom')?.checked;
+    const titleEl = document.getElementById('listing-title') || document.getElementById('input-title');
+    const lengthEl = document.getElementById('length-input') || document.getElementById('input-length');
+    const widthEl = document.getElementById('width-input') || document.getElementById('input-width');
+    const heightEl = document.getElementById('height-input') || document.getElementById('input-height');
+    const weightEl = document.getElementById('weight-input') || document.getElementById('input-weight');
+    const descEl = document.getElementById('listing-description') || document.getElementById('textarea-description');
 
     return {
       product_type: isCustom ? 'custom' : 'pre-made',
-      title: document.getElementById('input-title').value.trim(),
-      length_cm: parseFloat(document.getElementById('input-length').value) || null,
-      width_cm: parseFloat(document.getElementById('input-width').value) || null,
-      height_cm: parseFloat(document.getElementById('input-height').value) || null,
-      weight_g: parseFloat(document.getElementById('input-weight').value) || null,
-      description: document.getElementById('textarea-description').value.trim(),
+      title: titleEl ? titleEl.value.trim() : '',
+      length_cm: lengthEl ? parseFloat(lengthEl.value) || null : null,
+      width_cm: widthEl ? parseFloat(widthEl.value) || null : null,
+      height_cm: heightEl ? parseFloat(heightEl.value) || null : null,
+      weight_g: weightEl ? parseFloat(weightEl.value) || null : null,
+      description: descEl ? descEl.value.trim() : '',
       category: selectedCategory,
       category_id: selectedCategoryId ? parseInt(selectedCategoryId, 10) : null,
       subcategory_ids: selectedSubcategoryIds

@@ -302,10 +302,10 @@ if (process.env.FRONTEND_ORIGIN) {
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production' || origin.endsWith('.thetohfa.in')) {
       return callback(null, true);
     }
-    return callback(null, origin);
+    return callback(null, true);
   },
   credentials: true
 }));
@@ -6978,6 +6978,38 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
       is_wishlisted: !!r.is_wishlisted
     }));
 
+    if (formattedRows.length < 4) {
+      try {
+        const fallbackQuery = `
+          SELECT
+            p.id, p.name, p.price_paise, p.avg_rating, p.review_count, p.status, p.stock_qty, p.seller_id,
+            COALESCE(
+              (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
+              (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+            ) AS image_url,
+            COALESCE(sp.shop_name, u.full_name) AS seller_name,
+            'pre-made' AS listing_type,
+            0 AS is_bestseller,
+            0 AS is_wishlisted
+          FROM products p
+          JOIN users u ON p.seller_id = u.id
+          LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+          WHERE p.status = 'active' AND p.id != ?
+          ORDER BY p.avg_rating DESC, p.id DESC
+          LIMIT 4
+        `;
+        const fallbacks = await db.prepare(fallbackQuery).all(actualProductId);
+        const existingIds = new Set(formattedRows.map(r => r.id));
+        for (const fb of fallbacks) {
+          if (!existingIds.has(fb.id) && formattedRows.length < 4) {
+            formattedRows.push(fb);
+          }
+        }
+      } catch (fbErr) {
+        console.warn("Recommendations fallback query warning:", fbErr.message);
+      }
+    }
+
     return res.status(200).json({ success: true, data: formattedRows });
   } catch (err) {
     console.error('GET /api/products/:id/recommendations error:', err);
@@ -11519,7 +11551,7 @@ app.get('/api/admin/dashboard/revenue-chart', authenticateAdminToken, async (req
       whereClause = "AND created_at BETWEEN ? AND ?";
       params = [start, end];
     } else {
-      whereClause = "AND created_at >= date('now', '-" + daysLimit + " days')";
+      whereClause = `AND created_at >= CURRENT_DATE - INTERVAL '${daysLimit} days'`;
     }
 
     const query = `
