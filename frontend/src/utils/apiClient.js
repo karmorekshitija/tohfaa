@@ -95,8 +95,31 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+function prefixRelativeUrls(obj) {
+  if (!obj) return obj;
+  if (typeof obj === 'string') {
+    if (obj.startsWith('/uploads/') || obj.startsWith('/media/')) {
+      const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : 'https://api.thetohfa.in';
+      return apiHost + obj;
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(prefixRelativeUrls);
+  }
+  if (typeof obj === 'object') {
+    for (const key of Object.keys(obj)) {
+      obj[key] = prefixRelativeUrls(obj[key]);
+    }
+  }
+  return obj;
+}
+
 apiClient.interceptors.response.use(
   (response) => {
+    if (response.data) {
+      response.data = prefixRelativeUrls(response.data);
+    }
     const url = response.config?.url;
     const method = response.config?.method;
     if (url && (url.includes('/cart') || url.includes('/cart/items')) && ['post', 'put', 'patch', 'delete'].includes(method.toLowerCase())) {
