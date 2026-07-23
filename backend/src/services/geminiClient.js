@@ -27,7 +27,7 @@ async function generateText(prompt, systemInstruction = null) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const contents = [];
     if (systemInstruction) {
       contents.push({ role: "user", parts: [{ text: `System Instruction:\n${systemInstruction}` }] });
@@ -53,7 +53,7 @@ async function generateJson(prompt, systemInstruction = null) {
 
   const runCall = async () => {
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
     const contents = [];

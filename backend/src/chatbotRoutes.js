@@ -67,4 +67,15 @@ router.post('/chatbot/message', optionalAuthenticateToken, async (req, res) => {
   }
 });
 
+// TEMPORARY DEBUG ENDPOINT - DO NOT LEAVE IN PRODUCTION LONG-TERM
+router.get('/chatbot/debug-env', (req, res) => {
+  const key = process.env.GEMINI_API_KEY || "";
+  return res.status(200).json({
+    hasKey: !!key,
+    keyLength: key.length,
+    prefix: key ? key.substring(0, 4) : "",
+    suffix: key ? key.substring(key.length - 4) : ""
+  });
+});
+
 module.exports = router;

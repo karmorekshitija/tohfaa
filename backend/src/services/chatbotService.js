@@ -33,7 +33,7 @@ Respond with ONLY valid JSON, no markdown, no preamble:
     const result = await geminiClient.generateJson(prompt, systemInstruction);
     return result.intent || 'unclear';
   } catch (err) {
-    console.error("Failed to classify intent, falling back to unclear:", err);
+    console.error("[CHATBOT SERVICE] Failed to classify intent, falling back to unclear:", err.message, err.stack);
     return 'unclear';
   }
 }
@@ -133,7 +133,7 @@ ${JSON.stringify(filtered)}`;
       products: finalProducts
     };
   } catch (err) {
-    console.error("Error in handleRecommendation:", err);
+    console.error("[CHATBOT SERVICE] Error in handleRecommendation:", err.message, err.stack);
     return {
       type: 'recommendation',
       text: "I experienced an error checking our product catalog. Please try again in a moment.",
@@ -160,7 +160,7 @@ Respond with plain text only (no JSON, no markdown).`;
       text: textResponse.trim()
     };
   } catch (err) {
-    console.error("Error in handleFAQ:", err);
+    console.error("[CHATBOT SERVICE] Error in handleFAQ:", err.message, err.stack);
     return {
       type: 'faq',
       text: "I'm having trouble retrieving that policy information right now. Please ask again in a moment, or report a problem if you need help."
@@ -223,7 +223,7 @@ Respond with ONLY valid JSON, no markdown, no preamble:
       }
     };
   } catch (err) {
-    console.error("Error in handleProblemReport:", err);
+    console.error("[CHATBOT SERVICE] Error in handleProblemReport:", err.message, err.stack);
     return {
       type: 'problem_report',
       text: "I ran into an issue logging your support ticket. Please try again or email us directly.",
@@ -256,6 +256,7 @@ async function processMessage(message, buyerId, sessionId) {
         text: response.trim()
       };
     } catch (err) {
+      console.error("[CHATBOT SERVICE] processMessage fallback text generation error:", err.message, err.stack);
       result = {
         type: 'unclear',
         text: "Namaste! I'm the Tohfa Assistant. How can I help you today? You can ask for product suggestions, policies/FAQs, or report an issue."
