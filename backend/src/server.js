@@ -10703,26 +10703,49 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
     } catch (e) {
       console.warn("subcategories table read failed:", e);
     }
-    const categories = cats.map(c => ({
-      id: c.id,
-      display_name: c.display_name || c.name,
-      slug: c.slug,
-      emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
-      description: c.description || null,
-      sort_order: c.sort_order || 0,
-      is_active: c.is_active !== undefined ? !!c.is_active : true,
-      status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
-      product_count: parseInt(c.live_product_count || 0, 10),
-      image_url: c.image_url ? (c.image_url.startsWith('http://') || c.image_url.startsWith('https://') || c.image_url.startsWith('/img/') ? c.image_url : `${getApiBaseUrl(req)}${c.image_url}`) : null,
-      banner_image_url: c.banner_image_url ? (c.banner_image_url.startsWith('http://') || c.banner_image_url.startsWith('https://') || c.banner_image_url.startsWith('/img/') ? c.banner_image_url : `${getApiBaseUrl(req)}${c.banner_image_url}`) : null,
-      subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
-        id: sc.id,
-        category_id: sc.category_id,
-        name: sc.name,
-        slug: sc.slug,
-        description: sc.description || null
-      }))
-    }));
+    const categories = cats.map(c => {
+      let rawImg = c.image_url;
+      if (!rawImg || rawImg.includes('unsplash.com')) {
+        const catMap = {
+          'customized-gifts': '/img/categories/art_prints.jpg',
+          'jewellery': '/img/categories/jewellery.jpg',
+          'hampers': '/img/categories/dried_florals.jpg',
+          'wedding-rituals': '/img/categories/candles.jpg',
+          'crochet': '/img/categories/journals.jpg',
+          'fabric-crafts': '/img/categories/skincare.jpg',
+          'festivals': '/img/categories/candles.jpg',
+          'couples': '/img/categories/custom_portraits.jpg',
+          'home-decor': '/img/categories/ceramics.jpg',
+          'art-portraits': '/img/categories/art_prints.jpg'
+        };
+        rawImg = catMap[c.slug] || '/img/categories/ceramics.jpg';
+      }
+      let rawBanner = c.banner_image_url || rawImg;
+      if (rawBanner.includes('unsplash.com')) rawBanner = rawImg;
+
+      const formatImg = (url) => url ? (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/img/') ? url : `${getApiBaseUrl(req)}${url}`) : null;
+
+      return {
+        id: c.id,
+        display_name: c.display_name || c.name,
+        slug: c.slug,
+        emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
+        description: c.description || null,
+        sort_order: c.sort_order || 0,
+        is_active: c.is_active !== undefined ? !!c.is_active : true,
+        status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
+        product_count: parseInt(c.live_product_count || 0, 10),
+        image_url: formatImg(rawImg),
+        banner_image_url: formatImg(rawBanner),
+        subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
+          id: sc.id,
+          category_id: sc.category_id,
+          name: sc.name,
+          slug: sc.slug,
+          description: sc.description || null
+        }))
+      };
+    });
     return res.status(200).json({ success: true, data: { categories, total: categories.length } });
   } catch (err) {
     console.error('GET /api/admin/categories error:', err);
