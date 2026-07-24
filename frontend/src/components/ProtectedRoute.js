@@ -652,10 +652,78 @@
     }
   }
 
+  // -- Dynamic injection of Refunds & Disputes Modal --
+  function injectRefundsModal() {
+    if (document.getElementById('tohfa-refunds-modal')) return;
+
+    // -- Styles --
+    if (!document.getElementById('tohfa-refunds-modal-styles')) {
+      const s = document.createElement('style');
+      s.id = 'tohfa-refunds-modal-styles';
+      s.textContent = [
+        '.tohfa-refunds-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;}',
+        '.tohfa-refunds-modal.is-open{display:flex!important;}',
+        '.tohfa-refunds-card{background:#1E3D0F;color:#F7F2E8;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 32px 32px;width:100%;max-width:520px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:left;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}',
+        '.tohfa-refunds-modal.is-open .tohfa-refunds-card{transform:scale(1);}',
+        '.tohfa-refunds-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#F7F2E8;font-size:22px;cursor:pointer;opacity:.7;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}',
+        '.tohfa-refunds-close-btn:hover{opacity:1;background:rgba(255,255,255,.1);transform:scale(1.05);}',
+        '.tohfa-refunds-close-btn:active{transform:scale(.95);}',
+        '.tohfa-refunds-card h3{font-family:\'Playfair Display\',serif;font-size:28px;margin:0 0 20px;color:#FFFFFF;text-align:center;}',
+        '.tohfa-refunds-card p{font-family:\'DM Sans\',sans-serif;font-size:14px;line-height:1.6;margin-bottom:16px;color:#A8B89A;}',
+        '.tohfa-refunds-card p:last-child{margin-bottom:0;}'
+      ].join('');
+      document.head.appendChild(s);
+    }
+
+    // -- Modal HTML --
+    const modal = document.createElement('div');
+    modal.id = 'tohfa-refunds-modal';
+    modal.className = 'tohfa-refunds-modal';
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.closeRefundsModal();
+    });
+    modal.innerHTML = `
+      <div class="tohfa-refunds-card" onclick="event.stopPropagation()">
+        <button class="tohfa-refunds-close-btn" onclick="window.closeRefundsModal()" aria-label="Close refunds modal">&times;</button>
+        <h3>Refunds & Disputes</h3>
+        <p>Most Tohfa products are handmade or customized just for you, so we're unable to accept returns or offer refunds once an order is placed.</p>
+        <p>If your order arrives damaged, we'll gladly offer a replacement or refund — provided you share an unedited unboxing video (starting before the package is opened) within 48 hours of delivery. As we're now in an age where images can be easily edited or AI-generated, we're only able to accept video proof, not photos, to verify a claim.</p>
+        <p>Please note: refunds aren't available for change of mind, customization changes after production starts, or minor handmade variations — these are natural, since every piece is made by hand.</p>
+      </div>`;
+    document.body.appendChild(modal);
+
+    // -- Global functions --
+    window.openRefundsModal = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      const m = document.getElementById('tohfa-refunds-modal');
+      if (m) { m.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+    };
+    window.closeRefundsModal = function() {
+      const m = document.getElementById('tohfa-refunds-modal');
+      if (m) { m.classList.remove('is-open'); document.body.style.overflow = ''; }
+    };
+
+    // -- Universal click interceptor for any "Refunds & Disputes" anchor on any page --
+    if (!window._tohfaRefundsClickListenerAdded) {
+      window._tohfaRefundsClickListenerAdded = true;
+      document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.textContent.trim().toLowerCase() === 'refunds & disputes') {
+          e.preventDefault();
+          window.openRefundsModal(e);
+        }
+      }, true); // capture phase so it fires before href navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') window.closeRefundsModal();
+      });
+    }
+  }
+
   // Let's run a check when page loads to show any toast from redirection
   function init() {
     setupBuyerNavbar();
     injectContactModal();
+    injectRefundsModal();
     updateGlobalCartBadge();
 
     updateGlobalWishlistBadge();
