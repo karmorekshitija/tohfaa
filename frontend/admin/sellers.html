@@ -349,6 +349,11 @@ function renderSellers(sellers) {
     let actionBtn = '';
     if (seller.status === 'banned') {
       actionBtn = `<button class="unban-btn px-3 py-1 bg-primary/20 text-primary font-label-btn text-[11px] rounded hover:bg-primary hover:text-white transition-all" data-id="${seller.id}">Unban</button>`;
+    } else if (seller.status === 'pending_verification') {
+      actionBtn = `
+        <button class="approve-seller-btn px-3 py-1 bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] rounded transition-all shadow-sm" data-id="${seller.id}">Approve</button>
+        <button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>
+      `;
     } else {
       actionBtn = `<button class="ban-btn px-3 py-1 bg-highlight-gold/20 text-highlight-gold font-label-btn text-[11px] rounded hover:bg-[#ffe08f] hover:text-[#241a00] transition-all" data-id="${seller.id}">Ban</button>`;
     }
@@ -388,6 +393,24 @@ function renderSellers(sellers) {
   });
 
   // Attach click events
+
+  listEl.querySelectorAll('.approve-seller-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.target.getAttribute('data-id');
+      if (confirm('Are you sure you want to approve and activate this seller account?')) {
+        try {
+          const res = await adminApiClient.post(`/admin/sellers/user/${id}/approve`);
+          if (res.data?.success) {
+            alert('Seller approved and activated successfully!');
+            fetchSellers();
+            fetchApplications();
+          }
+        } catch (err) {
+          alert(err.response?.data?.message || 'Failed to approve seller');
+        }
+      }
+    });
+  });
 
   listEl.querySelectorAll('.ban-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
@@ -521,8 +544,24 @@ filters.forEach(({ el, status }) => {
 });
 
 /* ---------------- SELLER APPLICATIONS LOGIC ---------------- */
+async function updatePendingBadge() {
+  try {
+    const response = await adminApiClient.get('/admin/seller-applications', { params: { status: 'pending', per_page: 1 } });
+    if (response.data?.success) {
+      const pendingTotal = response.data.data?.total || 0;
+      const tabBtn = document.getElementById('tab-applications');
+      if (tabBtn) {
+        tabBtn.innerHTML = `Seller Applications ${pendingTotal > 0 ? `<span class="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full font-bold">${pendingTotal}</span>` : ''}`;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to update pending application badge:', err);
+  }
+}
+
 async function fetchApplications() {
   try {
+    updatePendingBadge();
     const response = await adminApiClient.get('/admin/seller-applications', {
       params: {
         status: currentAppStatus,

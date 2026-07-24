@@ -334,14 +334,20 @@ function renderActions(seller) {
       }
     });
   } else {
+    const isPending = seller.status === 'pending_verification' || seller.is_approved === 0;
     container.innerHTML = `
       <div id="ban-trigger-state">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="flex-1">
-            <p class="font-body-md text-on-surface font-medium">Seller is currently <span class="text-on-secondary-container font-bold">ACTIVE</span></p>
-            <p class="font-body-sm text-text-muted mt-1">Status changes will impact all listed products immediately.</p>
+            <p class="font-body-md text-on-surface font-medium">Seller is currently <span class="${isPending ? 'text-amber-700' : 'text-on-secondary-container'} font-bold">${isPending ? 'PENDING VERIFICATION' : 'ACTIVE'}</span></p>
+            <p class="font-body-sm text-text-muted mt-1">${isPending ? 'Approve application to activate studio and publish listings.' : 'Status changes will impact all listed products immediately.'}</p>
           </div>
           <div class="flex gap-4">
+            ${isPending ? `
+              <button id="approve-seller-detail-btn" class="px-8 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-label-btn shadow-md transition-all">
+                Approve Seller Application
+              </button>
+            ` : ''}
             <button id="show-ban-form-btn" class="px-8 py-3 rounded-full border border-danger-terracotta text-danger-terracotta font-label-btn hover:bg-danger-terracotta/5 transition-colors">
               Ban This Seller
             </button>

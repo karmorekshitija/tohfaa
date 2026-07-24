@@ -9654,6 +9654,64 @@ app.post('/api/admin/seller-applications/:id/approve', authenticateAdminToken, a
 });
 
 // ============================================================
+// POST /api/admin/sellers/user/:user_id/approve (approve seller by user ID)
+// ============================================================
+app.post('/api/admin/sellers/user/:user_id/approve', authenticateAdminToken, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.user_id, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: true, message: 'Invalid user ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const user = await db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    if (!user) {
+      return res.status(404).json({ error: true, message: 'User not found', code: 'NOT_FOUND' });
+    }
+
+    await db.prepare("UPDATE users SET role = 'seller' WHERE id = ?").run(userId);
+
+    const existingProfile = await db.prepare('SELECT id FROM seller_profiles WHERE user_id = ?').get(userId);
+    if (!existingProfile) {
+      const displayName = user.full_name || user.display_name || 'Artisan Seller';
+      const storeSlug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `seller-${userId}`;
+      let handle = user.full_name ? user.full_name.toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '') : `artisan_${userId}`;
+      const handleTaken = await db.prepare('SELECT id FROM seller_profiles WHERE handle = ?').get(handle);
+      if (handleTaken) {
+        handle = handle + '_' + userId;
+      }
+      await db.prepare(`
+        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step, is_approved)
+        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0, 1)
+      `).run(userId, displayName, user.bio || '', displayName, handle, storeSlug);
+    } else {
+      await db.prepare('UPDATE seller_profiles SET is_approved = 1 WHERE user_id = ?').run(userId);
+    }
+
+    await db.prepare(`
+      UPDATE seller_applications 
+      SET status = 'approved', reviewed_at = CURRENT_TIMESTAMP, reviewed_by = ? 
+      WHERE user_id = ? AND status = 'pending'
+    `).run(req.admin.id, userId);
+
+    await writeAuditLog(
+      "admin.seller.approve",
+      req.admin.id,
+      req.admin.display_name,
+      "users",
+      userId,
+      `Approved seller application for ${user.full_name || user.email}`,
+      { is_approved: 0 },
+      { is_approved: 1 }
+    );
+
+    return res.status(200).json({ success: true, message: 'Seller approved and activated successfully' });
+  } catch (err) {
+    console.error('POST /api/admin/sellers/user/:user_id/approve error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// ============================================================
 // POST /api/admin/seller-applications/:id/reject (reject application)
 // ============================================================
 app.post('/api/admin/seller-applications/:id/reject', authenticateAdminToken, async (req, res) => {
@@ -9721,9 +9779,10 @@ const ADMIN_ROLE_MAPPING = {
   'GET /api/admin/payments/ledger/all': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/reports': ['admin', 'super_admin', 'superadmin'],
 
-  // POST/PUT/PATCH/DELETE routes - only 'super_admin'
-  'POST /api/admin/seller-applications/:id/approve': ['super_admin', 'superadmin'],
-  'POST /api/admin/seller-applications/:id/reject': ['super_admin', 'superadmin'],
+  // POST/PUT/PATCH/DELETE routes
+  'POST /api/admin/seller-applications/:id/approve': ['admin', 'super_admin', 'superadmin'],
+  'POST /api/admin/seller-applications/:id/reject': ['admin', 'super_admin', 'superadmin'],
+  'POST /api/admin/sellers/user/:user_id/approve': ['admin', 'super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/ban': ['super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/unban': ['super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/verify': ['admin', 'super_admin', 'superadmin'],
