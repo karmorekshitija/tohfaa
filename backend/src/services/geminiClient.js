@@ -26,8 +26,8 @@ async function generateText(prompt, systemInstruction = null) {
     return "Thank you for your message. Gemini API key is currently not configured.";
   }
 
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const runCall = async (modelName) => {
+    const model = genAI.getGenerativeModel({ model: modelName });
     const contents = [];
     if (systemInstruction) {
       contents.push({ role: "user", parts: [{ text: `System Instruction:\n${systemInstruction}` }] });
@@ -36,9 +36,18 @@ async function generateText(prompt, systemInstruction = null) {
 
     const result = await model.generateContent({ contents });
     return result.response.text();
+  };
+
+  try {
+    return await runCall("gemini-2.5-flash");
   } catch (err) {
-    console.error("Gemini text generation error:", err);
-    throw err;
+    console.warn("[GEMINI CLIENT] gemini-2.5-flash text generation failed, trying gemini-1.5-flash...", err.message);
+    try {
+      return await runCall("gemini-1.5-flash");
+    } catch (fallbackErr) {
+      console.error("[GEMINI CLIENT] Both gemini-2.5-flash and gemini-1.5-flash text generation failed:", fallbackErr.message);
+      throw fallbackErr;
+    }
   }
 }
 
@@ -51,9 +60,9 @@ async function generateJson(prompt, systemInstruction = null) {
     return {};
   }
 
-  const runCall = async () => {
+  const runCall = async (modelName) => {
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: modelName,
       generationConfig: { responseMimeType: "application/json" }
     });
     const contents = [];
@@ -68,13 +77,22 @@ async function generateJson(prompt, systemInstruction = null) {
     return JSON.parse(cleaned);
   };
 
+  const attemptJson = async () => {
+    try {
+      return await runCall("gemini-2.5-flash");
+    } catch (err) {
+      console.warn("[GEMINI CLIENT] gemini-2.5-flash JSON generation failed, trying gemini-1.5-flash...", err.message);
+      return await runCall("gemini-1.5-flash");
+    }
+  };
+
   try {
-    return await runCall();
+    return await attemptJson();
   } catch (firstErr) {
     console.warn("First Gemini JSON attempt failed, retrying once...", firstErr.message);
     try {
       // Retry once
-      return await runCall();
+      return await attemptJson();
     } catch (secondErr) {
       console.error("Gemini JSON generation failed after retry:", secondErr);
       throw secondErr;

@@ -236,32 +236,83 @@ Respond with ONLY valid JSON, no markdown, no preamble:
  * Handles intent logic and calls corresponding handlers
  */
 async function processMessage(message, buyerId, sessionId) {
-  const intent = await classifyIntent(message);
+  if (!process.env.GEMINI_API_KEY) {
+    const errorResult = {
+      type: 'error',
+      text: "Namaste! My AI connection is currently offline. Please try again later, or feel free to browse our categories!"
+    };
+    try {
+      await db.prepare(`
+        INSERT INTO chat_logs (buyer_id, session_id, message, intent, response)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(
+        buyerId ? parseInt(buyerId) : null,
+        sessionId,
+        message,
+        'unclear',
+        JSON.stringify({ ...errorResult, error_details: 'GEMINI_API_KEY is not configured' })
+      );
+    } catch (dbErr) {
+      console.error("Failed to log chat to database:", dbErr);
+    }
+    return {
+      intent: 'unclear',
+      ...errorResult
+    };
+  }
+
+  let intent;
+  try {
+    intent = await classifyIntent(message);
+  } catch (err) {
+    console.error("[CHATBOT SERVICE] Intent classification failed:", err.message);
+    intent = 'unclear';
+  }
   console.log(`[CHATBOT] Message: "${message}" | Classified Intent: ${intent}`);
 
   let result;
-  if (intent === 'recommendation') {
-    result = await handleRecommendation(message);
-  } else if (intent === 'faq') {
-    result = await handleFAQ(message);
-  } else if (intent === 'problem_report') {
-    result = await handleProblemReport(message, buyerId, sessionId);
-  } else {
-    // unclear / conversational fallback
-    const systemInstruction = `You are a friendly mascot assistant for Tohfa, an Indian handmade artisan marketplace. Acknowledge the user's message warmly. If they are asking for recommendations, return a query. If they are raising a problem, ask them to clarify. Keep your reply brief (1-2 sentences).`;
-    try {
-      const response = await geminiClient.generateText(message, systemInstruction);
-      result = {
-        type: 'unclear',
-        text: response.trim()
-      };
-    } catch (err) {
-      console.error("[CHATBOT SERVICE] processMessage fallback text generation error:", err.message, err.stack);
-      result = {
-        type: 'unclear',
-        text: "Namaste! I'm the Tohfa Assistant. How can I help you today? You can ask for product suggestions, policies/FAQs, or report an issue."
-      };
+  let errorLogged = null;
+
+  try {
+    if (intent === 'recommendation') {
+      result = await handleRecommendation(message);
+    } else if (intent === 'faq') {
+      result = await handleFAQ(message);
+    } else if (intent === 'problem_report') {
+      result = await handleProblemReport(message, buyerId, sessionId);
+    } else {
+      // unclear / conversational fallback
+      const systemInstruction = `You are a friendly mascot assistant for Tohfa, an Indian handmade artisan marketplace. Acknowledge the user's message warmly. If they are asking for recommendations, return a query. If they are raising a problem, ask them to clarify. Keep your reply brief (1-2 sentences).`;
+      try {
+        const response = await geminiClient.generateText(message, systemInstruction);
+        if (response.includes("not configured")) {
+          result = {
+            type: 'error',
+            text: "Namaste! My AI connection is currently offline. Please try again later."
+          };
+          errorLogged = 'Gemini API returned unconfigured mock message';
+        } else {
+          result = {
+            type: 'unclear',
+            text: response.trim()
+          };
+        }
+      } catch (err) {
+        console.error("[CHATBOT SERVICE] processMessage fallback text generation error:", err.message, err.stack);
+        result = {
+          type: 'error',
+          text: "Namaste! I'm having trouble connecting to my AI brain right now. Please ask again in a moment, or report a problem."
+        };
+        errorLogged = err.message || 'Gemini text generation throw';
+      }
     }
+  } catch (outerErr) {
+    console.error("[CHATBOT SERVICE] processMessage outer execution error:", outerErr.message, outerErr.stack);
+    result = {
+      type: 'error',
+      text: "Namaste! I encountered a small hiccup while processing your message. Please try again in a moment."
+    };
+    errorLogged = outerErr.message || 'Outer handler execution error';
   }
 
   // Log chat message to database
@@ -274,7 +325,7 @@ async function processMessage(message, buyerId, sessionId) {
       sessionId,
       message,
       intent,
-      JSON.stringify(result)
+      JSON.stringify(errorLogged ? { ...result, error_details: errorLogged } : result)
     );
   } catch (dbErr) {
     console.error("Failed to log chat to database:", dbErr);
