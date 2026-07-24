@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <title>Tohfa | Handcrafted Treasures</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -541,6 +541,9 @@
 </footer>
 
 <script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
     function getTohfaToken() {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
@@ -549,9 +552,6 @@
             return sessionStorage.getItem('tohfa_access_token') || null;
         }
     }
-
-    import apiClient from '../src/utils/apiClient.js';
-    import { logout } from '/src/utils/auth.js';
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -831,6 +831,7 @@
         } finally {
             skeletons.classList.add('hidden');
         }
+    }
 
     let publicUiSettings = null;
     async function fetchPublicUiSettings() {
@@ -1439,10 +1440,7 @@
     }
 
     checkAuthState();
-</script>
 
-
-<script>
 async function handleFooterSellerLink(e) {
   if (e) e.preventDefault();
   const isMobile = window.innerWidth < 768;
