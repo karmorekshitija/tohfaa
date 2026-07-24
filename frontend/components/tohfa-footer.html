@@ -332,7 +332,7 @@
       text-align: center;
     }
     .tohfa-refunds-card p {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'DM Sans', sans-serif !important;
       font-size: 14px;
       line-height: 1.6;
       margin-bottom: 16px;
@@ -340,6 +340,11 @@
     }
     .tohfa-refunds-card p:last-child {
       margin-bottom: 0;
+    }
+    @media (min-width: 768px) {
+      .tohfa-refunds-card p {
+        font-size: 17px;
+      }
     }
   </style>
 
@@ -362,7 +367,7 @@
       <button class="tohfa-refunds-close" onclick="closeRefundsModal()" aria-label="Close modal">&times;</button>
       <h3>Refunds &amp; Disputes</h3>
       <p>Most Tohfa products are handmade or customized just for you, so we're unable to accept returns or offer refunds once an order is placed.</p>
-      <p>If your order arrives damaged, we'll gladly offer a replacement or refund — provided you share an unedited unboxing video (starting before the package is opened) within 48 hours of delivery. As we're now in an age where images can be easily edited or AI-generated, we're only able to accept video proof, not photos, to verify a claim.</p>
+      <p>If your order arrives damaged, we'll gladly offer a replacement or refund — provided you share an unedited unboxing video (starting before the package is opened) within 48 hours of delivery. As we're now in an age where images can be easily edited or AI-generated, <strong style="color: #C9972C; font-weight: 700;">we're only able to accept video proof, not photos, to verify a claim.</strong></p>
       <p>Please note: refunds aren't available for change of mind, customization changes after production starts, or minor handmade variations — these are natural, since every piece is made by hand.</p>
     </div>
   </div>
