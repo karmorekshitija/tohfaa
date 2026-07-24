@@ -172,7 +172,6 @@
         <button id="filter-all" class="px-6 py-2 bg-primary text-white font-label-btn rounded-full shadow-sm hover:scale-[0.98] transition-transform">All</button>
         <button id="filter-active" class="px-6 py-2 bg-white text-ink-soft border border-sage-border font-label-btn rounded-full hover:bg-surface-container transition-colors">Active</button>
         <button id="filter-banned" class="px-6 py-2 bg-white text-ink-soft border border-sage-border font-label-btn rounded-full hover:bg-surface-container transition-colors">Banned</button>
-        <button id="filter-pending" class="px-6 py-2 bg-white text-ink-soft border border-sage-border font-label-btn rounded-full hover:bg-surface-container transition-colors">Pending Verification</button>
       </div>
     </div>
     <!-- Data Table Section -->
@@ -519,13 +518,11 @@ document.getElementById('search-input').addEventListener('input', (e) => {
 const filterAll = document.getElementById('filter-all');
 const filterActive = document.getElementById('filter-active');
 const filterBanned = document.getElementById('filter-banned');
-const filterPending = document.getElementById('filter-pending');
 
 const filters = [
   { el: filterAll, status: 'all' },
   { el: filterActive, status: 'active' },
-  { el: filterBanned, status: 'banned' },
-  { el: filterPending, status: 'pending_verification' }
+  { el: filterBanned, status: 'banned' }
 ];
 
 filters.forEach(({ el, status }) => {

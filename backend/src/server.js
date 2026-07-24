@@ -5455,7 +5455,7 @@ async function syncListingCategoryToProduct(listingId) {
 }
 
 // Helper: build seller profile response shape
-async function buildSellerProfileResponse(seller) {
+async function buildSellerProfileResponse(seller, req = null) {
   // Pending payouts balance
   const bal = await db.prepare("SELECT COALESCE(SUM(amount_paise),0) as total FROM payout_history WHERE seller_id = ? AND status = 'pending'").get(seller.id);
   const nextPayout = await db.prepare("SELECT scheduled_at FROM payout_history WHERE seller_id = ? AND status = 'pending' ORDER BY scheduled_at ASC LIMIT 1").get(seller.id);
@@ -5788,7 +5788,7 @@ app.get('/api/seller/dashboard', rateLimit(60), requireSeller, async (req, res) 
 // ============================================================
 app.get('/api/seller/profile', requireSeller, async (req, res) => {
   try {
-    return res.json({ success: true, data: await buildSellerProfileResponse(req.seller) });
+    return res.json({ success: true, data: await buildSellerProfileResponse(req.seller, req) });
   } catch (err) {
     console.error('GET /api/seller/profile error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
@@ -5871,7 +5871,7 @@ app.put('/api/seller/profile', requireSeller, async (req, res) => {
     );
 
     const updated = await db.prepare('SELECT * FROM seller_profiles WHERE id = ?').get(seller.id);
-    return res.json({ success: true, data: await buildSellerProfileResponse(updated) });
+    return res.json({ success: true, data: await buildSellerProfileResponse(updated, req) });
   } catch (err) {
     console.error('PUT /api/seller/profile error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
