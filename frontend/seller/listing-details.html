@@ -331,8 +331,8 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="if(window.openTohfaChat){event.preventDefault();window.openTohfaChat('Find me a gift');}else{event.preventDefault();}">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </div>
     <!-- Support -->
