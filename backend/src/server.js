@@ -23,6 +23,15 @@ function getApiBaseUrl(req) {
   return `${req.protocol}://${req.get('host')}`;
 }
 
+function formatImg(url, req) {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/img/')) {
+    return url;
+  }
+  const base = getApiBaseUrl(req);
+  return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
+}
+
 const REQUIRED_ENV_VARS = ['JWT_SECRET', 'RAZORPAY_KEY_SECRET', 'DATABASE_URL'];
 const missingEnvVars = REQUIRED_ENV_VARS.filter(v => !process.env[v]);
 if (missingEnvVars.length > 0) {
@@ -711,7 +720,7 @@ app.post('/api/auth/login', rateLimit(20), async (req, res) => {
           email: user.email,
           full_name: user.full_name,
           role: user.role,
-          avatar_url: user.avatar_url
+          avatar_url: formatImg(user.avatar_url, req)
         },
         access_token: accessToken,
         refresh_token: refreshToken
@@ -2117,7 +2126,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       seller: {
         id: productData.seller_id,
         seller_name: productData.seller_name,
-        avatar_url: productData.avatar_url,
+        avatar_url: formatImg(productData.avatar_url, req),
         shop_tagline: productData.shop_tagline
       },
       category: {
@@ -2125,7 +2134,10 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         name: productData.category_name,
         slug: productData.category_slug
       },
-      recent_reviews: recentReviews,
+      recent_reviews: recentReviews.map(rev => ({
+        ...rev,
+        reviewer_avatar: formatImg(rev.reviewer_avatar, req)
+      })),
       is_customized: productData.category_slug === 'customized-gifts',
       is_sponsored: !!(await db.prepare("SELECT 1 FROM sponsored_products WHERE product_id = ? AND is_sponsored = 1").get(productData.id)),
       is_best_seller: (await db.prepare(`
@@ -4553,7 +4565,7 @@ app.get('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) =>
         display_name: user.display_name,
         email: user.email,
         phone: user.phone || null,
-        avatar_url: user.avatar_url,
+        avatar_url: formatImg(user.avatar_url, req),
         role: user.role,
         bio: user.bio,
         location: user.location,
@@ -4694,7 +4706,7 @@ app.patch('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) 
         display_name: updatedUser.display_name || updatedUser.full_name,
         email: updatedUser.email,
         phone: updatedUser.phone || null,
-        avatar_url: updatedUser.avatar_url,
+        avatar_url: formatImg(updatedUser.avatar_url, req),
         role: updatedUser.role,
         bio: updatedUser.bio,
         location: updatedUser.location,
@@ -4771,18 +4783,16 @@ app.post('/api/profile/me/avatar', rateLimit(60), authenticateToken, uploadAvata
   }
 
   try {
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const avatarUrl = `${protocol}://${host}/uploads/avatars/${req.file.filename}`;
+    const relativePath = `/uploads/avatars/${req.file.filename}`;
 
     await generateThumbnail(req.file.path);
 
-    await db.prepare("UPDATE users SET avatar_url = ? WHERE id = ?").run(avatarUrl, userId);
+    await db.prepare("UPDATE users SET avatar_url = ? WHERE id = ?").run(relativePath, userId);
 
     return res.status(200).json({
       success: true,
       data: {
-        avatar_url: avatarUrl
+        avatar_url: formatImg(relativePath, req)
       }
     });
   } catch (err) {
@@ -5468,7 +5478,7 @@ async function buildSellerProfileResponse(seller) {
     location: seller.location,
     website: seller.website,
     artisan_story: seller.artisan_story,
-    avatar_url: seller.avatar_url,
+    avatar_url: formatImg(seller.avatar_url, req),
     store_slug: seller.store_slug,
     is_accepting_orders: seller.is_accepting_orders === 1,
     default_language: seller.default_language || 'en',
@@ -5890,10 +5900,10 @@ app.post('/api/seller/profile/photo', requireSeller, (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
   await generateThumbnail(req.file.path);
-  const url = `${getApiBaseUrl(req)}/uploads/avatars/${req.file.filename}`;
-  await db.prepare('UPDATE seller_profiles SET avatar_url = ? WHERE user_id = ?').run(url, req.user.user_id);
-  await db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(url, req.user.user_id);
-  return res.json({ success: true, data: { avatar_url: url } });
+  const relativePath = `/uploads/avatars/${req.file.filename}`;
+  await db.prepare('UPDATE seller_profiles SET avatar_url = ? WHERE user_id = ?').run(relativePath, req.user.user_id);
+  await db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(relativePath, req.user.user_id);
+  return res.json({ success: true, data: { avatar_url: formatImg(relativePath, req) } });
 });
 
 // POST /api/seller/profile/banner — upload seller banner
@@ -12265,7 +12275,7 @@ app.get(['/api/customizations', '/customizations'], async (req, res) => {
         listing_id: row.listing_id,
         seller_id: row.seller_id,
         seller_name: row.shop_name || row.full_name || '',
-        seller_avatar_url: row.seller_avatar_url || null,
+        seller_avatar_url: formatImg(row.seller_avatar_url, req),
         product_type_tag: row.product_type_tag || null,
         product_name: row.product_name || '',
         base_price: row.base_price / 100,
@@ -12948,7 +12958,7 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
         id: conversation.seller_id,
         user_id: conversation.seller_id,
         name: shop_name,
-        avatar_url: sellerUser ? sellerUser.avatar_url : null,
+        avatar_url: sellerUser ? formatImg(sellerUser.avatar_url, req) : null,
         is_online: false
       };
     } else {
@@ -12956,7 +12966,7 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
         id: conversation.buyer_id,
         user_id: conversation.buyer_id,
         name: buyerUser ? buyerUser.full_name : "",
-        avatar_url: buyerUser ? buyerUser.avatar_url : null,
+        avatar_url: buyerUser ? formatImg(buyerUser.avatar_url, req) : null,
         is_online: false
       };
     }
@@ -14201,7 +14211,7 @@ app.get('/api/sellers/:id', optionalAuthenticateToken, async (req, res) => {
       bio: sellerUser.bio || sellerProfile.shop_bio || storeConfig.artist_bio || '',
       location: sellerUser.location || storeConfig.city || '',
       instagram_handle: sellerUser.instagram_handle || sellerProfile.instagram_handle || '',
-      avatar_url: sellerUser.avatar_url,
+      avatar_url: formatImg(sellerUser.avatar_url, req),
       cover_photo_url: storeConfig.banner_url || null,
       about_image_url: sellerProfile.about_image_url || null,
       followers_count: followersCount,

@@ -31,12 +31,13 @@ class SearchOverlay {
 
     // Create the overlay elements
     const overlayMarkup = `
-      <div id="global-search-overlay" class="fixed inset-0 z-[250] flex items-start justify-center p-4 md:p-10 pointer-events-none hidden font-['DM_Sans']">
+      <div id="global-search-overlay" class="fixed inset-0 z-[99999] flex items-start justify-center p-4 md:p-8 pt-12 md:pt-16 pointer-events-none hidden font-['DM_Sans']">
         <!-- Backdrop Blur Scrim -->
-        <div id="global-search-scrim" class="fixed inset-0 bg-[#1f1b15]/40 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-auto cursor-pointer"></div>
+        <div id="global-search-scrim" class="fixed inset-0 bg-[#1f1b15]/75 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-auto cursor-pointer z-[99998]"></div>
         
         <style>
           #global-search-overlay {
+            z-index: 99999 !important;
             --primary-container: #3d6b4f;
             --primary: #3D6B4F;
             --gold: #A68911;
@@ -45,6 +46,18 @@ class SearchOverlay {
             --ink: #211b11;
             --outline-variant: #c1c9c0;
             --violet: #7B5EA7;
+          }
+          #global-search-scrim {
+            z-index: 99998 !important;
+            background-color: rgba(31, 27, 21, 0.75) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+          }
+          #global-search-card {
+            z-index: 99999 !important;
+            background-color: #FCFAF5 !important;
+            box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.5) !important;
+            margin-top: 1.5rem !important;
           }
           .speech-bubble::after {
               content: '';
@@ -79,20 +92,24 @@ class SearchOverlay {
         </style>
 
         <!-- Search Card -->
-        <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FCFAF5] rounded-2xl shadow-2xl border-2 border-[#717972] flex flex-col max-h-[85vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[251]">
+        <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FCFAF5] rounded-2xl shadow-2xl border-2 border-[#717972] flex flex-col max-h-[80vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[99999] mt-6 md:mt-10">
           
           <!-- Search Header -->
-          <div class="relative flex items-center border-b border-[#c1c9c0]/50 px-6 py-4 bg-[#FCFAF5]">
-            <span class="material-symbols-outlined text-[#717972] absolute left-10 pointer-events-none select-none">search</span>
+          <div class="relative flex items-center justify-between gap-3 border-b border-[#c1c9c0]/50 px-6 py-4 bg-[#FCFAF5]">
+            <!-- Search Input Container (Pill) -->
+            <div class="relative flex-1 flex items-center">
+              <span class="material-symbols-outlined text-[#717972] absolute left-4 pointer-events-none select-none text-[22px]">search</span>
+              
+              <input type="text" id="global-search-input" placeholder="Search gifts, sellers, occasions..." class="w-full bg-white border-2 border-[#c1c9c0] focus:border-[#7B5EA7] rounded-full py-2.5 pl-11 pr-10 outline-none text-[#211b11] text-[15px] transition-all placeholder:text-[#717972]/60 focus:ring-0 shadow-sm" autocomplete="off">
+              
+              <button id="global-search-clear" class="absolute right-3 flex items-center justify-center w-7 h-7 text-[#717972] hover:text-[#3D6B4F] hover:bg-[#3D6B4F]/10 rounded-full transition-colors hidden" title="Clear input">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
             
-            <input type="text" id="global-search-input" placeholder="Search gifts, sellers, occasions..." class="w-full bg-white border-2 border-[#c1c9c0] focus:border-[#7B5EA7] rounded-full py-2.5 pl-12 pr-24 outline-none text-[#211b11] text-[15px] transition-all placeholder:text-[#717972]/60 focus:ring-0" autocomplete="off">
-            
-            <button id="global-search-clear" class="absolute right-20 flex items-center text-[#717972] hover:text-[#3D6B4F] transition-colors hidden" title="Clear input">
-              <span class="material-symbols-outlined text-[20px]">close</span>
-            </button>
-            
-            <button id="global-search-close" class="absolute right-10 flex items-center text-[#717972] hover:text-[#ba1a1a] transition-colors" title="Close Search">
-              <span class="material-symbols-outlined">close</span>
+            <!-- Exit Popup Close Button (Outside the Search Bar Pill) -->
+            <button id="global-search-close" class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-[#ba1a1a]/10 border-2 border-[#c1c9c0] hover:border-[#ba1a1a]/50 text-[#717972] hover:text-[#ba1a1a] transition-all active:scale-95 shadow-sm" title="Close Search">
+              <span class="material-symbols-outlined text-[22px]">close</span>
             </button>
           </div>
           
@@ -230,13 +247,10 @@ class SearchOverlay {
   bindEvents() {
     // Intercept clicks on search button in header
     document.addEventListener('click', (e) => {
-      const searchBtn = e.target.closest('#header-search-btn, a[href="/buyer/categories.html"], a[href="/buyer/search.html?focus=true"]');
+      const searchBtn = e.target.closest('#header-search-btn, a[href="/buyer/search.html?focus=true"], [data-action="open-search"]');
       if (searchBtn && !searchBtn.closest('#global-search-overlay')) {
-        const icon = searchBtn.querySelector('.material-symbols-outlined');
-        if (icon && icon.textContent.trim() === 'search') {
-          e.preventDefault();
-          this.open();
-        }
+        e.preventDefault();
+        this.open();
       }
     });
 
@@ -296,6 +310,7 @@ class SearchOverlay {
   open() {
     if (this.isOpen) return;
     this.isOpen = true;
+    document.body.style.overflow = 'hidden';
 
     // Show overlay element container
     this.overlay.classList.remove('hidden');
@@ -322,6 +337,7 @@ class SearchOverlay {
   close() {
     if (!this.isOpen) return;
     this.isOpen = false;
+    document.body.style.overflow = '';
 
     // Transition animations out
     this.scrim.classList.remove('opacity-100');

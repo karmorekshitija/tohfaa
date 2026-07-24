@@ -231,6 +231,9 @@
 
 <script type="module">
   import apiClient from '/src/utils/apiClient.js';
+  import { initSearchOverlay } from '/buyer/searchOverlay.js';
+
+  initSearchOverlay();
 
   // Toast Functionality
   function showToast(msg, type='error') {

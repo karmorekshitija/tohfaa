@@ -753,6 +753,9 @@
     <script type="module">
         import apiClient from '/src/utils/apiClient.js';
         import { logout } from '/src/utils/auth.js';
+        import { initSearchOverlay } from '/buyer/searchOverlay.js';
+
+        initSearchOverlay();
 
         function escapeHtml(str) {
             if (!str) return '';

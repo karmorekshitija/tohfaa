@@ -223,6 +223,9 @@
   <script type="module">
     import apiClient from '/src/utils/apiClient.js';
     import { logout } from '/src/utils/auth.js';
+    import { initSearchOverlay } from '/buyer/searchOverlay.js';
+
+    initSearchOverlay();
 
     // ── Auth state ──
     async function checkAuthState() {

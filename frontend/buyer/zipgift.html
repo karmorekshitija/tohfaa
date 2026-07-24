@@ -284,8 +284,6 @@
     }
   </style>
 </footer>
-
-
 <script>
 async function handleFooterSellerLink(e) {
   if (e) e.preventDefault();
@@ -390,5 +388,12 @@ if (!window.hasRefundsModalEscListener) {
   });
   window.hasRefundsModalEscListener = true;
 }
+</script>
+
+<script type="module">
+  import { initSearchOverlay } from '/buyer/searchOverlay.js';
+  document.addEventListener('DOMContentLoaded', () => {
+    initSearchOverlay();
+  });
 </script>
 </body></html>

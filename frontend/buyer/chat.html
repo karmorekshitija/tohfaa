@@ -268,8 +268,12 @@
 <!-- Image Lightbox Overlay -->
 <div id="lightbox-overlay" onclick="closeLightbox()" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
   <img id="lightbox-img" class="max-w-[90%] max-h-[90%] object-contain rounded-lg" src="" loading="lazy">
-</div>
-
+<script type="module">
+  import { initSearchOverlay } from '/buyer/searchOverlay.js';
+  document.addEventListener('DOMContentLoaded', () => {
+    initSearchOverlay();
+  });
+</script>
 <script>
   const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? ''
