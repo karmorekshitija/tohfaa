@@ -374,29 +374,46 @@ async function handleFooterSellerLink(e) {
   const isMobile = window.innerWidth < 768;
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
-    window.location.href = '/auth/login.html?next=become-seller';
-    return;
-  }
-  
-  const client = typeof apiClient !== 'undefined' ? apiClient : null;
-  if (!client) {
-    window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
     return;
   }
 
   try {
-    const res = await client.get('/profile/me');
-    if (res.data?.success) {
-      const role = res.data.data.role;
-      if (role === 'seller') {
-        window.location.href = '/seller/dashboard.html';
-        return;
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
       }
     }
-  } catch(err) {}
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
   
   window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
 }
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
 
 window.openContactModal = function(e) {
   if (e) {
@@ -418,7 +435,6 @@ window.closeContactModal = function() {
   }
 };
 
-// Escape key listener (registered idempotently)
 if (!window.hasContactModalEscListener) {
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {

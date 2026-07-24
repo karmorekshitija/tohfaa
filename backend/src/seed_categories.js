@@ -34,12 +34,12 @@ const categoriesData = [
     ]
   },
   {
-    name: "Wedding & Rituals",
-    slug: "wedding-rituals",
-    emoji_icon: "🔱",
+    name: "Home Decor",
+    slug: "home-decor",
+    emoji_icon: "🏡",
     subcategories: [
-      "Shagun Envelopes", "Wedding Hampers", "Mehendi Essentials", "Haldi Essentials",
-      "Wedding Decor", "Return Gifts", "Wedding Nameplates"
+      "Candles", "Wall Art", "Clay Articles", "Resin Decor", "Name Boards",
+      "Decorative Frames", "Planters"
     ]
   },
   {
@@ -52,19 +52,19 @@ const categoriesData = [
     ]
   },
   {
-    name: "Fabric Crafts",
-    slug: "fabric-crafts",
-    emoji_icon: "👜",
-    subcategories: [
-      "Tote Bags", "Knitted Items", "Embroidery"
-    ]
-  },
-  {
     name: "Festivals",
     slug: "festivals",
     emoji_icon: "🎉",
     subcategories: [
       "Rakhi", "Diwali", "Navratri", "Holi", "Christmas", "Eid", "Karwa Chauth"
+    ]
+  },
+  {
+    name: "Fabric Crafts",
+    slug: "fabric-crafts",
+    emoji_icon: "👜",
+    subcategories: [
+      "Tote Bags", "Knitted Items", "Embroidery"
     ]
   },
   {
@@ -78,12 +78,12 @@ const categoriesData = [
     ]
   },
   {
-    name: "Home Decor",
-    slug: "home-decor",
-    emoji_icon: "🏡",
+    name: "Wedding & Rituals",
+    slug: "wedding-rituals",
+    emoji_icon: "🔱",
     subcategories: [
-      "Candles", "Wall Art", "Clay Articles", "Resin Decor", "Name Boards",
-      "Decorative Frames", "Planters"
+      "Shagun Envelopes", "Wedding Hampers", "Mehendi Essentials", "Haldi Essentials",
+      "Wedding Decor", "Return Gifts", "Wedding Nameplates"
     ]
   },
   {

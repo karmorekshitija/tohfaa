@@ -295,12 +295,12 @@ async function initDb() {
           ['Customized Gifts', 'customized-gifts', 'Personalised & bespoke handmade pieces', '🎁'],
           ['Jewellery', 'jewellery', 'Handcrafted rings, necklaces & bangles', '💍'],
           ['Hampers', 'hampers', 'Curated gift hampers for all occasions', '🧺'],
-          ['Wedding & Rituals', 'wedding-rituals', 'Traditional wedding essentials & decor', '🔱'],
-          ['Crochet', 'crochet', 'Hand-stitched crochet yarn creations', '🧶'],
-          ['Fabric Crafts', 'fabric-crafts', 'Handmade bags, totes & embroidery', '👜'],
-          ['Festivals', 'festivals', 'Festive decorations & handmade gifts', '🎉'],
-          ['Couples', 'couples', 'Curated & matching gifts for couples', '👩‍❤️‍👨'],
           ['Home Decor', 'home-decor', 'Hand-carved, woven & crafted home objects', '🏡'],
+          ['Crochet', 'crochet', 'Hand-stitched crochet yarn creations', '🧶'],
+          ['Festivals', 'festivals', 'Festive decorations & handmade gifts', '🎉'],
+          ['Fabric Crafts', 'fabric-crafts', 'Handmade bags, totes & embroidery', '👜'],
+          ['Couples', 'couples', 'Curated & matching gifts for couples', '👩‍❤️‍👨'],
+          ['Wedding & Rituals', 'wedding-rituals', 'Traditional wedding essentials & decor', '🔱'],
           ['Art & Portraits', 'art-portraits', 'Custom digital drawings, paintings & sketches', '🎨']
         ];
         for (const cat of seedCats) {
