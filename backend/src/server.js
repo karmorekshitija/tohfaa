@@ -10705,7 +10705,7 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
     }
     const categories = cats.map(c => {
       let rawImg = c.image_url;
-      if (!rawImg || rawImg.includes('unsplash.com')) {
+      if (!rawImg) {
         const catMap = {
           'customized-gifts': '/img/categories/art_prints.jpg',
           'jewellery': '/img/categories/jewellery.jpg',

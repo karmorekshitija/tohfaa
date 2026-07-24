@@ -153,10 +153,11 @@
 <label class="block font-body-md font-bold text-text-muted text-[14px]">Category Image</label>
 <div class="flex items-center gap-3">
 <div id="imagePreviewContainer" class="w-14 h-14 rounded-lg overflow-hidden border border-sage-soft bg-surface-ivory flex items-center justify-center shrink-0">
-<img id="imagePreview" src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" />
+<img id="imagePreview" src="/img/ceramic_bowls.jpg" class="w-full h-full object-cover" />
 </div>
-<div class="flex-1">
+<div class="flex-1 space-y-2">
 <input id="imageInput" type="file" accept="image/*" class="w-full text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-semibold file:bg-sage-soft/30 file:text-primary hover:file:bg-sage-soft/50 transition-all cursor-pointer" />
+<input id="imageUrlInput" type="text" placeholder="Or enter image URL (e.g. /img/categories/art_prints.jpg)" class="w-full text-xs px-3 py-1.5 bg-white border border-sage-soft rounded-lg focus:ring-1 focus:ring-primary outline-none font-body-md" />
 </div>
 </div>
 </div>
@@ -256,6 +257,7 @@ const formTitle = document.getElementById('formTitle');
 const emojiBtn = document.getElementById('emojiBtn');
 const emojiSpan = document.getElementById('emojiSpan');
 const imageInput = document.getElementById('imageInput');
+const imageUrlInput = document.getElementById('imageUrlInput');
 const imagePreview = document.getElementById('imagePreview');
 const displayNameInput = document.getElementById('displayNameInput');
 const slugInput = document.getElementById('slugInput');
@@ -614,7 +616,8 @@ function startEditing(cat) {
   descriptionInput.value = cat.description || '';
   sortOrderInput.value = cat.sort_order;
   activeStatus.checked = !!cat.is_active;
-  imagePreview.src = (cat.image_url && !cat.image_url.includes('unsplash.com')) ? cat.image_url : '/img/ceramic_bowls.jpg';
+  imageUrlInput.value = cat.image_url || '';
+  imagePreview.src = cat.image_url || '/img/ceramic_bowls.jpg';
   imageInput.value = '';
 }
 
@@ -627,9 +630,17 @@ function resetForm() {
   slugPreview.textContent = '[slug]';
   sortOrderInput.value = 1;
   activeStatus.checked = true;
+  imageUrlInput.value = '';
   imagePreview.src = '/img/ceramic_bowls.jpg';
   imageInput.value = '';
 }
+
+imageUrlInput.addEventListener('input', (e) => {
+  const val = e.target.value.trim();
+  if (val) {
+    imagePreview.src = val;
+  }
+});
 
 // Auto slug generation from display name when creating (not when editing)
 displayNameInput.addEventListener('input', (e) => {
@@ -673,6 +684,9 @@ formEl.addEventListener('submit', async (e) => {
   
   if (imageInput.files[0]) {
     formData.append('image', imageInput.files[0]);
+  } else if (imageUrlInput.value.trim()) {
+    formData.append('image_url', imageUrlInput.value.trim());
+    formData.append('banner_image_url', imageUrlInput.value.trim());
   }
 
   try {
