@@ -1,5 +1,13 @@
 // Tohfa Unified Chatbot (Recommendations + FAQ + Problem Reporting)
 (function() {
+  // Early queuing support for AI Gift Guide clicks
+  if (!window.openTohfaChat) {
+    window.openTohfaChat = function(prefillQuery) {
+      if (!window.__tohfaChatQueue) window.__tohfaChatQueue = [];
+      window.__tohfaChatQueue.push(prefillQuery);
+    };
+  }
+
   // 1. Inject Stylesheets dynamically
   const style = document.createElement('style');
   style.textContent = `
@@ -545,6 +553,23 @@
         scrollMessages();
       }
     });
+
+    window.openTohfaChat = function(prefillQuery) {
+      panel.classList.add('open');
+      badge.style.display = 'none'; // Clear notification badge
+      if (prefillQuery) {
+        sendMessage(prefillQuery);
+      } else {
+        textInput.focus();
+        scrollMessages();
+      }
+    };
+
+    // Process queued triggers
+    if (window.__tohfaChatQueue && window.__tohfaChatQueue.length > 0) {
+      const q = window.__tohfaChatQueue.shift();
+      window.openTohfaChat(q);
+    }
 
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();

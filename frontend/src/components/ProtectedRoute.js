@@ -597,7 +597,7 @@
         '.tohfa-contact-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#F7F2E8;font-size:22px;cursor:pointer;opacity:.7;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}',
         '.tohfa-contact-close-btn:hover{opacity:1;background:rgba(255,255,255,.1);transform:scale(1.05);}',
         '.tohfa-contact-close-btn:active{transform:scale(.95);}',
-        '.tohfa-contact-card h3{font-family:\'Playfair Display\',serif;font-size:28px;margin:0 0 12px;color:#C9972C;}',
+        '.tohfa-contact-card h3{font-family:\'Playfair Display\',serif;font-size:28px;margin:0 0 12px;color:#FFFFFF;}',
         '.tohfa-contact-card p{font-family:\'DM Sans\',sans-serif;font-size:16px;line-height:1.5;margin-bottom:24px;color:#A8B89A;}',
         '.tohfa-contact-email-link{display:inline-flex;align-items:center;gap:8px;font-family:\'Space Mono\',monospace;font-size:16px;color:#C9972C;text-decoration:none;border:1px solid rgba(201,151,44,.3);padding:12px 24px;border-radius:8px;background:rgba(201,151,44,.05);transition:all .2s ease;}',
         '.tohfa-contact-email-link:hover{background:rgba(201,151,44,.15);border-color:rgba(201,151,44,.6);color:#F7F2E8;transform:translateY(-2px);}',
