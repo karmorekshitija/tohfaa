@@ -807,6 +807,7 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
+  updatePendingBadge();
   const urlParams = new URLSearchParams(window.location.search);
   const tab = urlParams.get('tab');
   if (tab === 'applications') {
