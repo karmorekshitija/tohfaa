@@ -358,6 +358,9 @@
     import apiClient from '/src/utils/apiClient.js';
     import { logout } from '/src/utils/auth.js';
     import Toast from '/src/components/Toast.js';
+    import { initSearchOverlay } from '/buyer/searchOverlay.js';
+
+    initSearchOverlay();
 
     // Auth redirection
     const token = sessionStorage.getItem('tohfa_access_token');

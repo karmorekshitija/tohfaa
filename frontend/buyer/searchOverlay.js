@@ -46,6 +46,15 @@ class SearchOverlay {
             --outline-variant: #c1c9c0;
             --violet: #7B5EA7;
           }
+          #global-search-scrim {
+            background-color: rgba(31, 27, 21, 0.65) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+          }
+          #global-search-card {
+            background-color: #FCFAF5 !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+          }
           .speech-bubble::after {
               content: '';
               position: absolute;
@@ -230,13 +239,10 @@ class SearchOverlay {
   bindEvents() {
     // Intercept clicks on search button in header
     document.addEventListener('click', (e) => {
-      const searchBtn = e.target.closest('#header-search-btn, a[href="/buyer/categories.html"], a[href="/buyer/search.html?focus=true"]');
+      const searchBtn = e.target.closest('#header-search-btn, a[href="/buyer/search.html?focus=true"], [data-action="open-search"]');
       if (searchBtn && !searchBtn.closest('#global-search-overlay')) {
-        const icon = searchBtn.querySelector('.material-symbols-outlined');
-        if (icon && icon.textContent.trim() === 'search') {
-          e.preventDefault();
-          this.open();
-        }
+        e.preventDefault();
+        this.open();
       }
     });
 
