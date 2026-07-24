@@ -1064,9 +1064,9 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       slides = rows.map(r => ({
         id: r.id,
         product_id: r.id,
-        image_url: r.image_url ? normalizeImageUrl(r.image_url, req) : '/img/ceramic_bowls.jpg',
+        image_url: r.image_url ? normalizeImageUrl(r.image_url, req) : null,
         alt_text: r.alt_text || 'Artisan Craft'
-      }));
+      })).filter(s => s.image_url !== null);
     }
 
     return res.status(200).json({
