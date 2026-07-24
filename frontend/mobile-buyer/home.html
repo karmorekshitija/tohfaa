@@ -350,6 +350,18 @@
 </div>
 </section>
 
+<!-- Seasonal Banner Section -->
+<section id="seasonal-banner-container" class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-8 md:mt-12 hidden">
+    <div class="relative rounded-2xl overflow-hidden shadow-lg border border-[#C8973A]/40 bg-[#FAF7F2] flex flex-col md:flex-row items-center">
+        <img id="seasonal-banner-image" class="w-full md:w-2/3 h-[180px] md:h-[280px] object-cover" src="" alt="Seasonal Banner">
+        <div class="p-5 md:p-8 flex flex-col justify-center items-start w-full md:w-1/3">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#C8973A] bg-[#C8973A]/10 px-3 py-1 rounded-full mb-2 md:mb-3">Seasonal Highlight</span>
+            <h3 id="seasonal-banner-label" class="font-['Playfair_Display'] text-xl md:text-3xl font-bold text-[#3D6B4F] mb-3 md:mb-4"></h3>
+            <button onclick="window.location.href='./categories.html'" class="bg-[#3D6B4F] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Explore Collection</button>
+        </div>
+    </div>
+</section>
+
 <!-- Sponsored Section -->
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
     <div class="flex justify-between items-end mb-lg">
@@ -365,6 +377,23 @@
     <!-- Sponsored Product Grid -->
     <div id="sponsored-product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
         <!-- Dynamic sponsored product cards will load here -->
+    </div>
+</section>
+
+<!-- Featured by Tohfa Section -->
+<section id="admin-featured-section" class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24 hidden">
+    <div class="flex justify-between items-end mb-xl">
+        <div>
+            <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                <span>Featured by Tohfa</span>
+            </h3>
+            <p class="font-body-md text-on-surface-variant">Handpicked signature items curated by our editors</p>
+        </div>
+    </div>
+    
+    <div id="admin-featured-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
+        <!-- Dynamic featured product cards will load here -->
     </div>
 </section>
 
@@ -802,6 +831,69 @@
         } finally {
             skeletons.classList.add('hidden');
         }
+
+    let publicUiSettings = null;
+    async function fetchPublicUiSettings() {
+        if (publicUiSettings) return publicUiSettings;
+        try {
+            const res = await apiClient.get('/ui-settings/public');
+            if (res.data && res.data.success) {
+                publicUiSettings = res.data.data;
+            }
+        } catch (err) {
+            console.error("Failed to fetch public UI settings:", err);
+            publicUiSettings = {};
+        }
+        return publicUiSettings || {};
+    }
+
+    async function loadSeasonalBanner() {
+        const container = document.getElementById('seasonal-banner-container');
+        const img = document.getElementById('seasonal-banner-image');
+        const label = document.getElementById('seasonal-banner-label');
+        if (!container || !img || !label) return;
+
+        const settings = await fetchPublicUiSettings();
+        const banner = settings.home_seasonal_banner;
+        if (banner && banner.content_url) {
+            img.src = banner.content_url;
+            label.textContent = banner.label || 'Special Seasonal Showcase';
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    async function loadAdminFeaturedProducts() {
+        const section = document.getElementById('admin-featured-section');
+        const grid = document.getElementById('admin-featured-grid');
+        if (!section || !grid) return;
+
+        const settings = await fetchPublicUiSettings();
+        const featuredSlots = [
+            settings.home_featured_product_1,
+            settings.home_featured_product_2,
+            settings.home_featured_product_3,
+            settings.home_featured_product_4,
+            settings.home_featured_product_5,
+            settings.home_featured_product_6
+        ];
+
+        const liveProducts = featuredSlots
+            .filter(slot => slot && slot.resolved_content)
+            .map(slot => slot.resolved_content);
+
+        if (liveProducts.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        grid.innerHTML = '';
+        liveProducts.forEach(product => {
+            const card = createProductCard(product);
+            grid.appendChild(card);
+        });
     }
 
     async function loadCategoryRows() {
@@ -809,6 +901,41 @@
         if (!container) return;
 
         try {
+            const settings = await fetchPublicUiSettings();
+            const spotlightSlots = [
+                settings.home_category_spotlight_1,
+                settings.home_category_spotlight_2,
+                settings.home_category_spotlight_3,
+                settings.home_category_spotlight_4
+            ];
+
+            const liveSpotlights = spotlightSlots
+                .filter(slot => slot && slot.resolved_content)
+                .map(slot => slot.resolved_content);
+
+            if (liveSpotlights.length > 0) {
+                const spotlightSection = document.createElement('div');
+                spotlightSection.className = 'mb-12 p-6 bg-[#FAF7F2] rounded-2xl border-2 border-[#C8973A]/60 shadow-sm';
+                spotlightSection.innerHTML = `
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                        <h3 class="font-['Playfair_Display'] text-xl font-bold text-[#3D6B4F]">Spotlight Categories</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        ${liveSpotlights.map(cat => `
+                            <a href="./category.html?slug=${cat.slug}" class="group relative rounded-xl overflow-hidden aspect-[4/3] border border-[#C8973A]/40 shadow-sm hover:shadow-md transition-all duration-300">
+                                <img src="${cat.image_url || '/img/ceramic_bowls.jpg'}" alt="${escapeHtml(cat.display_name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4">
+                                    <span class="text-white font-['Playfair_Display'] font-bold text-lg group-hover:text-[#C8973A] transition-colors">${escapeHtml(cat.display_name)}</span>
+                                    <span class="text-white/80 text-xs font-mono">${cat.product_count} items</span>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(spotlightSection);
+            }
+
             const categoriesRes = await apiClient.get('/categories');
             if (!categoriesRes.data || !categoriesRes.data.success) return;
 
@@ -833,10 +960,12 @@
                         </button>
                         
                         <!-- Horizontally Scrollable Content -->
-                        <div class="flex gap-3 overflow-x-auto scroll-smooth pb-4 px-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
+                        <div class="flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
                             <!-- Skeleton Placeholders -->
-                            <div class="w-[80vw] max-w-[320px] h-[340px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
-                            <div class="w-[80vw] max-w-[320px] h-[340px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
                         </div>
 
                         <!-- Scroll Right Button -->
@@ -940,18 +1069,54 @@
     ];
 
     async function loadHeroSlides() {
+        let customSlides = [];
         try {
-            const response = await apiClient.get('/hero-slides');
-            if (response.data && response.data.success && response.data.data.length > 0) {
-                slides = response.data.data;
+            const settings = await fetchPublicUiSettings();
+            if (settings.home_hero_primary && settings.home_hero_primary.content_url) {
+                customSlides.push({
+                    id: 'hero-primary',
+                    image_url: settings.home_hero_primary.content_url,
+                    alt_text: settings.home_hero_primary.label || 'Primary Hero Feature'
+                });
             }
-        } catch (error) {
-            console.error('Failed to load hero slides:', error);
+            if (settings.home_hero_secondary && settings.home_hero_secondary.content_url) {
+                customSlides.push({
+                    id: 'hero-secondary',
+                    image_url: settings.home_hero_secondary.content_url,
+                    alt_text: settings.home_hero_secondary.label || 'Secondary Hero Feature'
+                });
+            }
+        } catch (e) {
+            console.error('Failed to fetch public ui settings for hero:', e);
         }
 
-        if (slides.length === 0) {
-            slides = FALLBACK_SLIDES;
+        if (customSlides.length > 0) {
+            slides = customSlides;
+        } else {
+            try {
+                const response = await apiClient.get('/hero-slides');
+                if (response.data && response.data.success && response.data.data.slides && response.data.data.slides.length > 0) {
+                    slides = response.data.data.slides;
+                } else {
+                    slides = [];
+                }
+            } catch (error) {
+                console.error('Failed to load hero slides:', error);
+                slides = [];
+            }
         }
+
+        const heroContainer = document.getElementById('hero-slideshow-container');
+        const mobileContainer = document.getElementById('mobile-carousel-container');
+
+        if (slides.length === 0) {
+            if (heroContainer) heroContainer.classList.add('hidden');
+            if (mobileContainer) mobileContainer.classList.add('hidden');
+            return;
+        }
+
+        if (heroContainer) heroContainer.classList.remove('hidden');
+        if (mobileContainer) mobileContainer.classList.remove('hidden');
 
         // Setup desktop
         renderSlides();
@@ -1196,7 +1361,9 @@
 
     // Initialize
     loadHeroSlides();
+    loadSeasonalBanner();
     loadSponsoredProducts();
+    loadAdminFeaturedProducts();
     loadForYouProducts();
     loadCategoryRows();
 

@@ -32,6 +32,14 @@ function formatImg(url, req) {
   return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
 }
 
+function normalizeImageUrl(rawImg, req) {
+  if (!rawImg) return null;
+  if (rawImg.startsWith('/img/')) return rawImg;
+  if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) return rawImg;
+  if (rawImg.startsWith('/uploads/')) return `${getApiBaseUrl(req)}${rawImg}`;
+  return rawImg.startsWith('/') ? rawImg : `/${rawImg}`;
+}
+
 const REQUIRED_ENV_VARS = ['JWT_SECRET', 'RAZORPAY_KEY_SECRET', 'DATABASE_URL'];
 const missingEnvVars = REQUIRED_ENV_VARS.filter(v => !process.env[v]);
 if (missingEnvVars.length > 0) {
@@ -1041,7 +1049,7 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       SELECT 
         p.id, p.name AS alt_text,
         COALESCE(
-          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
+          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url
       FROM products p
@@ -1056,38 +1064,14 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       slides = rows.map(r => ({
         id: r.id,
         product_id: r.id,
-        image_url: r.image_url || 'https://placehold.co/800x600?text=Handcrafted+Treasure',
+        image_url: r.image_url ? normalizeImageUrl(r.image_url, req) : '/img/ceramic_bowls.jpg',
         alt_text: r.alt_text || 'Artisan Craft'
       }));
-    }
-    
-    if (slides.length === 0) {
-      // Fallback if no database products are active
-      slides = [
-        {
-          id: 1,
-          product_id: 1,
-          image_url: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&w=1200&q=80',
-          alt_text: 'Handcrafted Ceramics'
-        },
-        {
-          id: 2,
-          product_id: 2,
-          image_url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1200&q=80',
-          alt_text: 'Artisan Pottery Wheel'
-        },
-        {
-          id: 3,
-          product_id: 3,
-          image_url: 'https://images.unsplash.com/photo-1606744824163-985d376605aa?auto=format&fit=crop&w=1200&q=80',
-          alt_text: 'Weaving & Textiles'
-        }
-      ];
     }
 
     return res.status(200).json({
       success: true,
-      data: slides
+      data: { slides }
     });
   } catch (err) {
     console.error('Error in hero slides:', err);
@@ -1095,6 +1079,102 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       error: true,
       message: "Internal server error"
     });
+  }
+});
+
+// GET /api/ui-settings/public
+app.get('/api/ui-settings/public', rateLimit(120), async (req, res) => {
+  try {
+    const rows = await db.prepare(`
+      SELECT slot_name, slot_type, content_url, content_ref_id, label
+      FROM ui_settings
+      ORDER BY id ASC
+    `).all();
+
+    const data = {};
+
+    for (const row of rows) {
+      const normalizedUrl = normalizeImageUrl(row.content_url, req);
+      let resolved_content = null;
+
+      if (row.slot_type === 'featured_product_id' && row.content_ref_id) {
+        try {
+          const prod = await db.prepare(`
+            SELECT 
+              p.id, p.name, p.price_paise, p.seller_id, p.listing_type, p.type,
+              s.shop_name AS seller_name,
+              u.username AS seller_username,
+              COALESCE(
+                (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
+                (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+              ) AS image_url,
+              COALESCE((SELECT COUNT(*) FROM reviews WHERE listing_id = p.id), 0) AS review_count,
+              COALESCE((SELECT AVG(rating) FROM reviews WHERE listing_id = p.id), 4.5) AS avg_rating
+            FROM products p
+            JOIN users u ON p.seller_id = u.id
+            LEFT JOIN seller_profiles s ON s.user_id = u.id
+            WHERE p.id = ? AND p.status = 'active' AND u.is_banned = 0 AND u.is_active = 1
+          `).get(row.content_ref_id);
+
+          if (prod) {
+            resolved_content = {
+              id: prod.id,
+              name: prod.name,
+              price_paise: prod.price_paise,
+              image_url: normalizeImageUrl(prod.image_url, req),
+              seller_id: prod.seller_id,
+              seller_name: prod.seller_name || prod.seller_username || 'Artisan',
+              review_count: Number(prod.review_count || 0),
+              avg_rating: Number(prod.avg_rating || 4.5),
+              listing_type: prod.listing_type || 'physical',
+              type: prod.type || 'standard'
+            };
+          }
+        } catch (e) {
+          console.error(`Error resolving featured product for slot ${row.slot_name}:`, e);
+        }
+      } else if (row.slot_type === 'category_override' && row.content_ref_id) {
+        try {
+          const cat = await db.prepare(`
+            SELECT c.id, c.display_name, c.slug, c.image_url,
+              (
+                COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
+                +
+                COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
+              ) AS product_count
+            FROM categories c
+            WHERE c.id = ? AND c.is_active = 1
+          `).get(row.content_ref_id);
+
+          if (cat) {
+            resolved_content = {
+              id: cat.id,
+              display_name: cat.display_name,
+              slug: cat.slug,
+              image_url: normalizeImageUrl(cat.image_url, req),
+              product_count: Number(cat.product_count || 0)
+            };
+          }
+        } catch (e) {
+          console.error(`Error resolving category override for slot ${row.slot_name}:`, e);
+        }
+      }
+
+      data[row.slot_name] = {
+        slot_type: row.slot_type,
+        content_url: normalizedUrl,
+        label: row.label,
+        resolved_content
+      };
+    }
+
+    return res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (err) {
+    console.error('GET /api/ui-settings/public error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
