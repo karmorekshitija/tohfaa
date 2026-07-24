@@ -101,11 +101,11 @@
                 New here? 
                 <a class="text-[#3D6B4F] font-semibold hover:underline ml-1" href="signup-buyer.html" id="signup-link">Create an account</a>
             </p>
-            <a class="font-sans text-xs text-[#3D6B4F] hover:text-[#C8973A] transition-colors tracking-widest font-semibold uppercase flex items-center justify-center gap-2 mt-4" href="signup-seller.html">
+            <a class="font-sans text-xs text-[#3D6B4F] hover:text-[#C8973A] transition-colors tracking-widest font-semibold uppercase flex items-center justify-center gap-2 mt-4" href="/buyer/become-seller.html">
                 ✦ SELL ON TOHFA
             </a>
-            <a class="font-sans text-xs text-[#6B6B6B] hover:text-[#3D6B4F] transition-colors mt-2 block text-center" href="signup-seller.html">
-                Already a seller? Sign up here →
+            <a class="font-sans text-xs text-[#6B6B6B] hover:text-[#3D6B4F] transition-colors mt-2 block text-center" href="/buyer/become-seller.html">
+                Want to become a seller? Apply here →
             </a>
         </footer>
 
@@ -183,11 +183,18 @@
                         window.location.href = '/admin/sellers.html';
                     } else {
                         const urlParams = new URLSearchParams(window.location.search);
-                        const redirectUrl = urlParams.get('redirect');
-                        if (redirectUrl && (redirectUrl.startsWith('/') || redirectUrl.startsWith(window.location.origin))) {
-                            window.location.href = redirectUrl;
+                        const redirectUrl = urlParams.get('redirect') || urlParams.get('next');
+                        const isMobile = window.innerWidth < 768;
+                        if (redirectUrl) {
+                            if (redirectUrl === 'become-seller' || redirectUrl === '/become-seller') {
+                                window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+                            } else if (redirectUrl.startsWith('/') || redirectUrl.startsWith(window.location.origin)) {
+                                window.location.href = redirectUrl;
+                            } else {
+                                window.location.href = isMobile ? '/mobile-buyer/home.html' : '/buyer/home.html';
+                            }
                         } else {
-                            window.location.href = '/buyer/home.html';
+                            window.location.href = isMobile ? '/mobile-buyer/home.html' : '/buyer/home.html';
                         }
                     }
                 } else {

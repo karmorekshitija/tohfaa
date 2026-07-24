@@ -543,7 +543,7 @@ app.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
   }
 });
 
-// TASK 04: POST /api/auth/register/seller
+// TASK 04: POST /api/auth/register/seller (DEPRECATED - Path 2 direct signup route. Retained only for legacy compatibility; frontend now routes all seller onboarding through buyer application flow POST /api/seller/apply)
 app.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
   const { full_name, email, password, shop_name, shop_bio, ships_in_days, instagram_handle } = req.body;
   
