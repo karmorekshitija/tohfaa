@@ -95,17 +95,21 @@ class SearchOverlay {
         <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FCFAF5] rounded-2xl shadow-2xl border-2 border-[#717972] flex flex-col max-h-[80vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[99999] mt-6 md:mt-10">
           
           <!-- Search Header -->
-          <div class="relative flex items-center border-b border-[#c1c9c0]/50 px-6 py-4 bg-[#FCFAF5]">
-            <span class="material-symbols-outlined text-[#717972] absolute left-10 pointer-events-none select-none">search</span>
+          <div class="relative flex items-center justify-between gap-3 border-b border-[#c1c9c0]/50 px-6 py-4 bg-[#FCFAF5]">
+            <!-- Search Input Container (Pill) -->
+            <div class="relative flex-1 flex items-center">
+              <span class="material-symbols-outlined text-[#717972] absolute left-4 pointer-events-none select-none text-[22px]">search</span>
+              
+              <input type="text" id="global-search-input" placeholder="Search gifts, sellers, occasions..." class="w-full bg-white border-2 border-[#c1c9c0] focus:border-[#7B5EA7] rounded-full py-2.5 pl-11 pr-10 outline-none text-[#211b11] text-[15px] transition-all placeholder:text-[#717972]/60 focus:ring-0 shadow-sm" autocomplete="off">
+              
+              <button id="global-search-clear" class="absolute right-3 flex items-center justify-center w-7 h-7 text-[#717972] hover:text-[#3D6B4F] hover:bg-[#3D6B4F]/10 rounded-full transition-colors hidden" title="Clear input">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
             
-            <input type="text" id="global-search-input" placeholder="Search gifts, sellers, occasions..." class="w-full bg-white border-2 border-[#c1c9c0] focus:border-[#7B5EA7] rounded-full py-2.5 pl-12 pr-24 outline-none text-[#211b11] text-[15px] transition-all placeholder:text-[#717972]/60 focus:ring-0" autocomplete="off">
-            
-            <button id="global-search-clear" class="absolute right-20 flex items-center text-[#717972] hover:text-[#3D6B4F] transition-colors hidden" title="Clear input">
-              <span class="material-symbols-outlined text-[20px]">close</span>
-            </button>
-            
-            <button id="global-search-close" class="absolute right-10 flex items-center text-[#717972] hover:text-[#ba1a1a] transition-colors" title="Close Search">
-              <span class="material-symbols-outlined">close</span>
+            <!-- Exit Popup Close Button (Outside the Search Bar Pill) -->
+            <button id="global-search-close" class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-[#ba1a1a]/10 border-2 border-[#c1c9c0] hover:border-[#ba1a1a]/50 text-[#717972] hover:text-[#ba1a1a] transition-all active:scale-95 shadow-sm" title="Close Search">
+              <span class="material-symbols-outlined text-[22px]">close</span>
             </button>
           </div>
           
