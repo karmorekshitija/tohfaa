@@ -299,7 +299,7 @@
   let countdownIntervals = [];
 
   function getAuthToken() {
-    return localStorage.getItem('token') || sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+    return sessionStorage.getItem('tohfa_access_token');
   }
 
   function triggerToastError(msg) {

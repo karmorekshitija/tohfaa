@@ -1046,7 +1046,7 @@
     }
 
     async function handleTalkToSeller(productId, btn) {
-      const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+      const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
         window.location.href = '/auth/login.html';
         return;
