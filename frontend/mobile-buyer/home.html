@@ -1107,14 +1107,17 @@
             }
         }
 
+        if (slides.length === 0) {
+            slides = FALLBACK_SLIDES.map((s, idx) => ({
+                id: `fallback-${idx+1}`,
+                product_id: idx + 1,
+                image_url: s.imageUrl,
+                alt_text: s.altText
+            }));
+        }
+
         const heroContainer = document.getElementById('hero-slideshow-container');
         const mobileContainer = document.getElementById('mobile-carousel-container');
-
-        if (slides.length === 0) {
-            if (heroContainer) heroContainer.classList.add('hidden');
-            if (mobileContainer) mobileContainer.classList.add('hidden');
-            return;
-        }
 
         if (heroContainer) heroContainer.classList.remove('hidden');
         if (mobileContainer) mobileContainer.classList.remove('hidden');

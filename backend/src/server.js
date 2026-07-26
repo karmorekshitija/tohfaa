@@ -1069,6 +1069,15 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       })).filter(s => s.image_url !== null);
     }
 
+    if (slides.length === 0) {
+      slides = [
+        { id: 1, product_id: 1, image_url: '/img/ceramic_bowls.jpg', alt_text: 'Handcrafted Ceramic Bowls' },
+        { id: 2, product_id: 2, image_url: '/img/stoneware_vase.jpg', alt_text: 'Artisan Stoneware Vase' },
+        { id: 3, product_id: 3, image_url: '/img/linen_journal.jpg', alt_text: 'Handmade Linen Journal' },
+        { id: 4, product_id: 4, image_url: '/img/incense_holder.jpg', alt_text: 'Terracotta Incense Holder' }
+      ];
+    }
+
     return res.status(200).json({
       success: true,
       data: { slides }

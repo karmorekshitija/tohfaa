@@ -1009,12 +1009,18 @@
             }
         }
 
-        const heroContainer = document.getElementById('hero-slideshow-container');
+        const FALLBACK_SLIDES = [
+            { image_url: "/img/ceramic_bowls.jpg", alt_text: "Handcrafted Ceramic Bowls", product_id: 1 },
+            { image_url: "/img/stoneware_vase.jpg", alt_text: "Artisan Stoneware Vase", product_id: 2 },
+            { image_url: "/img/linen_journal.jpg", alt_text: "Handmade Linen Journal", product_id: 3 },
+            { image_url: "/img/incense_holder.jpg", alt_text: "Terracotta Incense Holder", product_id: 4 }
+        ];
+
         if (slides.length === 0) {
-            if (heroContainer) heroContainer.classList.add('hidden');
-            return;
+            slides = FALLBACK_SLIDES;
         }
 
+        const heroContainer = document.getElementById('hero-slideshow-container');
         if (heroContainer) heroContainer.classList.remove('hidden');
         renderSlides();
         startSlideshow();
