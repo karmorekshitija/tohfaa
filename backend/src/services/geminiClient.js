@@ -34,18 +34,23 @@ async function generateText(prompt, systemInstruction = null) {
     }
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
-    const result = await model.generateContent({ contents });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Gemini API call timed out")), 8000)
+    );
+
+    const apiPromise = model.generateContent({ contents });
+    const result = await Promise.race([apiPromise, timeoutPromise]);
     return result.response.text();
   };
 
   try {
-    return await runCall("gemini-2.5-flash");
+    return await runCall("gemini-1.5-flash");
   } catch (err) {
-    console.warn("[GEMINI CLIENT] gemini-2.5-flash text generation failed, trying gemini-1.5-flash...", err.message);
+    console.warn("[GEMINI CLIENT] gemini-1.5-flash text generation failed, trying gemini-2.0-flash...", err.message);
     try {
-      return await runCall("gemini-1.5-flash");
+      return await runCall("gemini-2.0-flash");
     } catch (fallbackErr) {
-      console.error("[GEMINI CLIENT] Both gemini-2.5-flash and gemini-1.5-flash text generation failed:", fallbackErr.message);
+      console.error("[GEMINI CLIENT] Text generation failed:", fallbackErr.message);
       throw fallbackErr;
     }
   }
@@ -71,31 +76,26 @@ async function generateJson(prompt, systemInstruction = null) {
     }
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
-    const result = await model.generateContent({ contents });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Gemini API JSON call timed out")), 8000)
+    );
+
+    const apiPromise = model.generateContent({ contents });
+    const result = await Promise.race([apiPromise, timeoutPromise]);
     const text = result.response.text();
     const cleaned = cleanJsonString(text);
     return JSON.parse(cleaned);
   };
 
-  const attemptJson = async () => {
-    try {
-      return await runCall("gemini-2.5-flash");
-    } catch (err) {
-      console.warn("[GEMINI CLIENT] gemini-2.5-flash JSON generation failed, trying gemini-1.5-flash...", err.message);
-      return await runCall("gemini-1.5-flash");
-    }
-  };
-
   try {
-    return await attemptJson();
-  } catch (firstErr) {
-    console.warn("First Gemini JSON attempt failed, retrying once...", firstErr.message);
+    return await runCall("gemini-1.5-flash");
+  } catch (err) {
+    console.warn("[GEMINI CLIENT] gemini-1.5-flash JSON generation failed, trying gemini-2.0-flash...", err.message);
     try {
-      // Retry once
-      return await attemptJson();
-    } catch (secondErr) {
-      console.error("Gemini JSON generation failed after retry:", secondErr);
-      throw secondErr;
+      return await runCall("gemini-2.0-flash");
+    } catch (fallbackErr) {
+      console.error("[GEMINI CLIENT] JSON generation failed:", fallbackErr.message);
+      throw fallbackErr;
     }
   }
 }

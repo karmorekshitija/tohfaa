@@ -58,7 +58,6 @@
       display: block;
       filter: drop-shadow(0 6px 16px rgba(61, 107, 79, 0.28));
       pointer-events: none;
-      mix-blend-mode: multiply;
     }
     /* Gold notification badge repositioned for bare image */
     #tohfa-chat-badge {
@@ -613,10 +612,22 @@
       scrollMessages();
     }
 
+    function formatBotHtml(rawText) {
+      if (!rawText) return "";
+      const div = document.createElement('div');
+      div.textContent = rawText;
+      let escaped = div.innerHTML;
+      // Convert markdown links [label](url) to clickable tags safely
+      escaped = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#3D6B4F;font-weight:bold;text-decoration:underline;" target="_blank">$1</a>');
+      // Convert newlines to <br>
+      escaped = escaped.replace(/\n/g, '<br>');
+      return escaped;
+    }
+
     function appendBotMessage(text) {
       const bubble = document.createElement('div');
       bubble.className = 'tohfa-chat-bubble bot';
-      bubble.textContent = text;
+      bubble.innerHTML = formatBotHtml(text);
       msgsList.appendChild(bubble);
       scrollMessages();
     }
