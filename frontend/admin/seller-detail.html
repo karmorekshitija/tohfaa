@@ -410,6 +410,20 @@ function renderActions(seller) {
         alert(err.response?.data?.message || 'Failed to ban seller');
       }
     });
+
+    const approveBtn = document.getElementById('approve-seller-detail-btn');
+    if (approveBtn) {
+      approveBtn.addEventListener('click', async () => {
+        if (confirm('Approve this seller and activate their studio?')) {
+          try {
+            await adminApiClient.post(`/admin/sellers/user/${seller.id}/approve`);
+            loadSellerDetails();
+          } catch (err) {
+            alert(err.response?.data?.message || 'Failed to approve seller');
+          }
+        }
+      });
+    }
   }
 
   const deleteBtn = document.getElementById('delete-seller-detail-btn');

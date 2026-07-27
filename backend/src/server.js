@@ -10370,7 +10370,9 @@ app.get('/api/admin/sellers/:seller_id', authenticateAdminToken, async (req, res
 
     // Active ban check
     const activeBan = await db.prepare("SELECT 1 FROM seller_bans WHERE seller_id = ? AND unbanned_at IS NULL").get(sellerId);
-    const sellerStatus = (user.is_banned === 1 || activeBan) ? 'banned' : 'active';
+    const sellerStatus = (user.is_banned === 1 || activeBan)
+      ? 'banned'
+      : (sp && sp.is_approved === 1 ? 'active' : 'pending_verification');
 
     // Recent products
     const recentProducts = await db.prepare(`
@@ -10430,6 +10432,7 @@ app.get('/api/admin/sellers/:seller_id', authenticateAdminToken, async (req, res
         joined_display: formatJoinedDisplay(user.created_at),
         bio: sp ? (sp.bio || sp.shop_bio) : null,
         status: sellerStatus,
+        is_approved: sp ? sp.is_approved : 0,
         total_products: productCount,
         total_sales_paise: totalSalesPaise,
         total_sales_display: formatMoney(totalSalesPaise),
