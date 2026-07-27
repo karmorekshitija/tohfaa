@@ -7485,6 +7485,8 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     const score = computeListingScore(updatedListing, photoCount);
     await db.prepare('UPDATE listings SET listing_score = ? WHERE id = ?').run(score, listingId);
 
+    await syncListingToProduct(listingId);
+
     return res.status(201).json({ success: true, data: { photo_id: photoId, url, is_cover: isCover, is_video: isVideo, sort_order: sortOrder } });
   } catch (err) {
     console.error('POST /api/seller/listings/:id/photos error:', err);
@@ -7532,6 +7534,8 @@ app.delete('/api/seller/listings/:id/photos/:photoId', rateLimit(20), requireSel
     const photoCount = await db.prepare('SELECT COUNT(*) as c FROM listing_photos WHERE listing_id = ?').get(listingId).c;
     const score = computeListingScore(listing, photoCount);
     await db.prepare('UPDATE listings SET listing_score = ? WHERE id = ?').run(score, listingId);
+
+    await syncListingToProduct(listingId);
 
     return res.json({ success: true, message: 'Photo deleted successfully' });
   } catch (err) {
