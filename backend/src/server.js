@@ -11425,11 +11425,11 @@ app.delete('/api/admin/products/:id', authenticateAdminToken, async (req, res) =
 
     const deleteTransaction = db.transaction(async () => {
       // 1. Soft delete product
-      await db.prepare("UPDATE products SET status = 'archived', updated_at = datetime('now') WHERE id = ?").run(productId);
+      await db.prepare("UPDATE products SET status = 'archived', updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(productId);
 
       // 2. Soft delete corresponding listing
       if (product.source_listing_id) {
-        await db.prepare("UPDATE listings SET status = 'deleted', updated_at = datetime('now') WHERE id = ?").run(product.source_listing_id);
+        await db.prepare("UPDATE listings SET status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(product.source_listing_id);
       }
 
       // 3. Remove from sponsored
@@ -11451,7 +11451,7 @@ app.delete('/api/admin/products/:id', authenticateAdminToken, async (req, res) =
     });
   } catch (err) {
     console.error('DELETE /api/admin/products/:id error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+    return res.status(500).json({ error: true, message: err.message || 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
