@@ -4564,7 +4564,15 @@ app.get('/api/wishlist', rateLimit(60), authenticateToken, async (req, res) => {
 // TASK 37: POST /api/wishlist/:productId
 app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
-  const productId = req.params.productId;
+  const productId = parseInt(req.params.productId, 10);
+
+  if (isNaN(productId)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid product ID",
+      code: "VALIDATION_ERROR"
+    });
+  }
 
   try {
     const product = await db.prepare("SELECT id, seller_id FROM products WHERE id = ? AND status != 'archived'").get(productId);
@@ -4602,7 +4610,7 @@ app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (re
     console.error('Error adding to wishlist:', err);
     return res.status(500).json({
       error: true,
-      message: "Internal server error",
+      message: err.message || "Internal server error",
       code: "INTERNAL_SERVER_ERROR"
     });
   }
@@ -4611,7 +4619,15 @@ app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (re
 // TASK 38: DELETE /api/wishlist/:productId
 app.delete('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
-  const productId = req.params.productId;
+  const productId = parseInt(req.params.productId, 10);
+
+  if (isNaN(productId)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid product ID",
+      code: "VALIDATION_ERROR"
+    });
+  }
 
   try {
     const product = await db.prepare("SELECT id FROM products WHERE id = ? AND status != 'archived'").get(productId);
@@ -4633,7 +4649,7 @@ app.delete('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (
     console.error('Error removing from wishlist:', err);
     return res.status(500).json({
       error: true,
-      message: "Internal server error",
+      message: err.message || "Internal server error",
       code: "INTERNAL_SERVER_ERROR"
     });
   }

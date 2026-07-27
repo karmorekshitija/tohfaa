@@ -353,7 +353,7 @@
                             <span id="filter-btn-text" class="text-sm font-body-md pr-1">Filter</span>
                         </button>
                     </div>
-                    <div id="category-pills-container" class="flex items-center gap-sm overflow-x-auto scrollbar-hide flex-grow">
+                    <div id="category-pills-container" class="flex flex-nowrap items-center gap-sm overflow-x-auto whitespace-nowrap scrollbar-hide flex-grow min-w-0">
                         <!-- Category pills will be injected dynamically -->
                     </div>
                 </div>
@@ -1084,7 +1084,7 @@
                 const activeClasses = "bg-primary-container text-white shadow-md font-bold";
                 const inactiveClasses = "bg-[#F7F3EC] border border-outline-variant text-on-surface-variant font-body-md text-sm hover:border-primary hover:text-primary";
                 return `
-                    <button class="flex-shrink-0 px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-id="${cat.id}">
+                    <button class="flex-shrink-0 whitespace-nowrap px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-id="${cat.id}">
                         ${cat.display_name || cat.name}
                     </button>
                 `;

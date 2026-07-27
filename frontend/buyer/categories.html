@@ -163,6 +163,21 @@
             </div>
         </section>
 
+        <!-- Category Search Bar -->
+        <div class="px-margin-desktop pb-md">
+          <div class="relative max-w-sm mx-auto">
+            <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:20px;color:#717972;pointer-events:none;">search</span>
+            <input
+              id="category-filter-input"
+              type="text"
+              placeholder="Search categories..."
+              style="width:100%;padding:12px 16px 12px 40px;border-radius:12px;border:1.5px solid #D4C9B8;background:#FFFFFF;font-family:'DM Sans',sans-serif;font-size:14px;color:#1f1b15;outline:none;box-sizing:border-box;transition:border-color 0.2s ease;"
+              onfocus="this.style.borderColor='#3D6B4F'"
+              onblur="this.style.borderColor='#D4C9B8'"
+            />
+          </div>
+        </div>
+
         <!-- Category Editorial Grid — Bulk tile always first -->
         <section class="px-margin-desktop pb-xl">
 
@@ -378,7 +393,7 @@
                 }
 
                 html += `
-                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="border-radius:14px;">
+                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" data-category-name="${displayName.toLowerCase()}" style="border-radius:14px;">
                     <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${displayName}" loading="lazy" onerror="this.onerror=null; this.src='/img/ceramic_bowls.jpg';">
                     <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.10) 55%, transparent 100%);border-radius:14px;"></div>
                     <div style="position:absolute;bottom:0;left:0;padding:20px;color:#fff;">
@@ -403,10 +418,54 @@
           }
         }
 
+        function initCategorySearch() {
+          const input = document.getElementById('category-filter-input');
+          if (!input) return;
+
+          input.addEventListener('input', () => {
+            const query = input.value.trim().toLowerCase();
+            const container = document.getElementById('categories-grid-container');
+            if (!container) return;
+
+            // All searchable cards have data-category-name (the bulk card does not, so it's always visible)
+            const allCards = Array.from(container.querySelectorAll('[data-category-name]'));
+
+            if (!query) {
+              allCards.forEach(card => (card.style.display = ''));
+              const emptyMsg = container.querySelector('#cat-empty-msg');
+              if (emptyMsg) emptyMsg.remove();
+              return;
+            }
+
+            let visibleCount = 0;
+            allCards.forEach(card => {
+              const name = (card.getAttribute('data-category-name') || '').toLowerCase();
+              const matches = name.includes(query);
+              card.style.display = matches ? '' : 'none';
+              if (matches) visibleCount++;
+            });
+
+            // Show / hide empty state
+            let emptyMsg = container.querySelector('#cat-empty-msg');
+            if (visibleCount === 0) {
+              if (!emptyMsg) {
+                emptyMsg = document.createElement('div');
+                emptyMsg.id = 'cat-empty-msg';
+                emptyMsg.style.cssText = 'grid-column:1/-1;text-align:center;padding:60px 0;font-family:Playfair Display,serif;font-style:italic;color:#717972;font-size:16px;';
+                emptyMsg.textContent = 'No categories match your search.';
+                container.appendChild(emptyMsg);
+              }
+            } else if (emptyMsg) {
+              emptyMsg.remove();
+            }
+          });
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
             initSearchOverlay();
             await checkAuthState();
             await loadCategories();
+            initCategorySearch(); // must run after loadCategories so data-category-name attrs exist
         });
     </script>
 

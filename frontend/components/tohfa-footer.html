@@ -346,6 +346,56 @@
         font-size: 17px;
       }
     }
+
+    /* ─── Mobile fixes: Contact & Refunds modals ─── */
+    @media (max-width: 640px) {
+      /* Contact modal overlay */
+      .tohfa-contact-modal {
+        padding: 16px;
+      }
+      /* Contact card */
+      .tohfa-contact-card {
+        padding: 28px 18px 24px 18px !important;
+        border-radius: 14px !important;
+      }
+      .tohfa-contact-card h3 {
+        font-size: 22px !important;
+        margin-bottom: 10px !important;
+      }
+      /* Make email link full-width so it never clips */
+      .tohfa-contact-email-link {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        word-break: break-all !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Refunds modal — bottom-sheet style on mobile */
+      .tohfa-refunds-modal {
+        padding: 16px;
+        align-items: flex-end !important;
+      }
+      .tohfa-refunds-card {
+        padding: 24px 18px 20px 18px !important;
+        border-radius: 14px 14px 0 0 !important;
+        max-height: 82vh !important;
+        overflow-y: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .tohfa-refunds-card h3 {
+        font-size: 21px !important;
+        margin-bottom: 14px !important;
+      }
+      .tohfa-refunds-card p {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        color: #D4E4C8 !important;
+      }
+    }
   </style>
 
   <!-- Contact Us Modal -->
