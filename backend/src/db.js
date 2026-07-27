@@ -392,6 +392,17 @@ async function initDb() {
 
     // Additional Table & Column Alterations
     try {
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned INTEGER DEFAULT 0');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active INTEGER DEFAULT 1');
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          token_hash TEXT NOT NULL UNIQUE,
+          expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
       await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
       await pool.query('ALTER TABLE addresses ADD COLUMN IF NOT EXISTS ithink_warehouse_id TEXT');
 

@@ -9,8 +9,20 @@ const emailService = require('../services/emailService');
 const {
   BCRYPT_SALT_ROUNDS,
   validateEmail,
-  generateTokens
+  generateTokens,
+  getJwtSecret
 } = require('../utils/helpers');
+
+function handleInternalError(res, label, err) {
+  console.error(`Error in ${label}:`, err);
+  const isDev = process.env.NODE_ENV !== 'production';
+  return res.status(500).json({
+    error: true,
+    message: isDev ? `Internal server error: ${err.message}` : "Internal server error",
+    code: "INTERNAL_SERVER_ERROR",
+    ...(isDev && { details: err.message, stack: err.stack })
+  });
+}
 
 // POST /api/auth/register/buyer
 router.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
@@ -62,12 +74,7 @@ router.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error in buyer registration:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
+    return handleInternalError(res, 'buyer registration', err);
   }
 });
 
@@ -151,12 +158,7 @@ router.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error in seller registration:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
+    return handleInternalError(res, 'seller registration', err);
   }
 });
 
@@ -234,12 +236,7 @@ router.post('/api/auth/login', rateLimit(10), async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error in login:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
+    return handleInternalError(res, 'login', err);
   }
 });
 
@@ -268,12 +265,7 @@ router.post('/api/auth/logout', authenticateToken, async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error in logout:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
+    return handleInternalError(res, 'logout', err);
   }
 });
 
@@ -333,12 +325,7 @@ router.post('/api/auth/refresh', rateLimit(30), async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error in token refresh:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
+    return handleInternalError(res, 'token refresh', err);
   }
 });
 
@@ -502,12 +489,7 @@ router.post('/api/auth/seller/login', rateLimit(10), async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error in seller login:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
+    return handleInternalError(res, 'seller login', err);
   }
 });
 
@@ -536,10 +518,9 @@ router.post('/api/admin/login', rateLimit(5), async (req, res) => {
     await db.prepare("UPDATE admin_users SET last_login_at = datetime('now') WHERE id = ?").run(admin.id);
 
     const jwt = require('jsonwebtoken');
-    const { JWT_SECRET } = require('../utils/helpers');
     const token = jwt.sign(
       { sub: admin.id, email: admin.email, role: admin.role, type: 'admin_access' },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: '8h' }
     );
 
@@ -554,8 +535,7 @@ router.post('/api/admin/login', rateLimit(5), async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Admin login error:', err);
-    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+    return handleInternalError(res, 'admin login', err);
   }
 });
 

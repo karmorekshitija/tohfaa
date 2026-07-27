@@ -1,7 +1,12 @@
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const { getJwtSecret } = require('../utils/helpers');
+const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_default_jwt_secret_dev_key_2026';
+
+function resolveJwtSecret() {
+  return getJwtSecret ? getJwtSecret() : JWT_SECRET;
+}
 
 async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -15,7 +20,7 @@ async function authenticateToken(req, res, next) {
     });
   }
   
-  jwt.verify(token, JWT_SECRET, async (err, user) => {
+  jwt.verify(token, resolveJwtSecret(), async (err, user) => {
     if (err) {
       return res.status(401).json({
         error: true,
@@ -64,7 +69,7 @@ async function optionalAuthenticateToken(req, res, next) {
     return next();
   }
   
-  jwt.verify(token, JWT_SECRET, async (err, user) => {
+  jwt.verify(token, resolveJwtSecret(), async (err, user) => {
     if (err) {
       req.user = null;
       return next();
@@ -136,7 +141,7 @@ async function authenticateAdminToken(req, res, next) {
     });
   }
   
-  jwt.verify(token, JWT_SECRET, async (err, decoded) => {
+  jwt.verify(token, resolveJwtSecret(), async (err, decoded) => {
     if (err) {
       return res.status(401).json({
         error: true,

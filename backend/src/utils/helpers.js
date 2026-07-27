@@ -4,7 +4,21 @@ const path = require('path');
 const sharp = require('sharp');
 const db = require('../db');
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const DEFAULT_DEV_JWT_SECRET = 'tohfa_default_jwt_secret_dev_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || DEFAULT_DEV_JWT_SECRET;
+
+if (!process.env.JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('CRITICAL: JWT_SECRET environment variable is missing in production deployment!');
+  } else {
+    console.warn('⚠️ WARNING: JWT_SECRET is not defined in process.env. Using development fallback secret.');
+  }
+}
+
+function getJwtSecret() {
+  return process.env.JWT_SECRET || DEFAULT_DEV_JWT_SECRET;
+}
+
 const BCRYPT_SALT_ROUNDS = 12;
 
 function getApiBaseUrl(req) {
@@ -153,9 +167,10 @@ function safeToISOString(dateStr) {
 }
 
 async function generateTokens(user) {
+  const secret = getJwtSecret();
   const accessToken = jwt.sign(
     { user_id: user.id, email: user.email, role: user.role },
-    JWT_SECRET,
+    secret,
     { expiresIn: '15m' }
   );
   
@@ -175,6 +190,7 @@ async function generateTokens(user) {
 
 module.exports = {
   JWT_SECRET,
+  getJwtSecret,
   BCRYPT_SALT_ROUNDS,
   getApiBaseUrl,
   formatImg,
