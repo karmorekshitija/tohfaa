@@ -334,11 +334,12 @@ function renderProducts() {
     const tr = document.createElement('tr');
     tr.className = `${product.is_sponsored ? 'bg-surface-ivory border-l-[3px] border-l-highlight-gold ' : 'bg-white '}hover:bg-surface-ivory/50 transition-colors`;
 
-    const imageHtml = `
-      <div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden border border-outline-variant">
-        <span class="material-symbols-outlined text-[32px] text-text-faint flex items-center justify-center h-full">image</span>
-      </div>
-    `;
+    const imageUrl = product.image_url;
+    const imageHtml = imageUrl
+      ? `<img src="${imageUrl}" alt="${product.name}" class="w-12 h-12 object-cover rounded-lg border border-outline-variant shrink-0" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-12 h-12 bg-surface-container rounded-lg overflow-hidden border border-outline-variant flex items-center justify-center\\'><span class=\\'material-symbols-outlined text-[24px] text-text-faint\\'>image</span></div>';"/>`
+      : `<div class="w-12 h-12 bg-surface-container rounded-lg overflow-hidden border border-outline-variant flex items-center justify-center">
+           <span class="material-symbols-outlined text-[24px] text-text-faint">image</span>
+         </div>`;
 
     const statusBadge = product.is_sponsored
       ? `<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-gold-soft text-highlight-gold rounded-full">
