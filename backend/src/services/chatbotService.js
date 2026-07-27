@@ -70,15 +70,29 @@ Respond with ONLY valid JSON: {"intent": "recommendation" | "faq" | "problem_rep
  */
 async function handleRecommendation(message) {
   try {
-    // 1. Fetch active products with primary images
-    const allProducts = await db.prepare(`
-      SELECT p.id, p.name, p.description, p.price_paise, c.name as category_name,
-             COALESCE(pi.url, (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1), '/img/ceramic_bowls.jpg') as image_url
-      FROM products p
-      LEFT JOIN categories c ON p.category_id = c.id
-      LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-      WHERE p.status = 'active'
-    `).all();
+    // 1. Fetch active products with primary images safely
+    let allProducts = [];
+    try {
+      allProducts = await db.prepare(`
+        SELECT p.id, p.name, p.description, p.price_paise, c.name as category_name,
+               COALESCE(
+                 (SELECT url FROM product_images WHERE product_id = p.id AND (is_primary = 1 OR is_primary IS TRUE) LIMIT 1),
+                 (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1),
+                 '/img/ceramic_bowls.jpg'
+               ) as image_url
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE LOWER(COALESCE(p.status, 'active')) != 'deleted'
+      `).all();
+    } catch (sqlErr) {
+      console.warn("[CHATBOT SERVICE] Initial products query failed, using fallback SELECT:", sqlErr.message);
+      try {
+        allProducts = await db.prepare(`SELECT id, name, description, price_paise, '/img/ceramic_bowls.jpg' as image_url FROM products LIMIT 20`).all();
+      } catch (fallbackSqlErr) {
+        console.error("[CHATBOT SERVICE] Fallback products query error:", fallbackSqlErr.message);
+        allProducts = [];
+      }
+    }
 
     // 2. Pre-filter in JS based on keyword matches
     const stopWords = new Set(["find", "please", "want", "show", "need", "like", "love", "with", "that", "this", "some", "handcrafted", "handmade", "artisan", "gift", "gifts", "product", "products", "item", "items", "for", "the", "and"]);
@@ -94,7 +108,7 @@ async function handleRecommendation(message) {
       });
     }
 
-    if (filtered.length === 0) {
+    if (!filtered || filtered.length === 0) {
       filtered = allProducts;
     }
     
@@ -133,7 +147,7 @@ ${JSON.stringify(filtered.map(p => ({ id: p.id, name: p.name, description: p.des
     }
 
     // 4. Rule-based catalog fallback if recList is empty
-    if (recList.length === 0) {
+    if (!recList || recList.length === 0) {
       const topP = filtered.slice(0, 5);
       recList = topP.map(p => ({
         product_id: String(p.id),
@@ -144,24 +158,10 @@ ${JSON.stringify(filtered.map(p => ({ id: p.id, name: p.name, description: p.des
       }
     }
 
-    // 5. Map recommendations back to full product details (including images)
-    const productIds = recList.map(r => parseInt(r.product_id)).filter(id => !isNaN(id));
-    let matchedProducts = [];
-    if (productIds.length > 0) {
-      const placeholders = productIds.map(() => '?').join(',');
-      matchedProducts = await db.prepare(`
-        SELECT p.id, p.name, p.price_paise, p.description,
-               COALESCE(pi.url, (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1), '/img/ceramic_bowls.jpg') as image_url
-        FROM products p
-        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-        WHERE p.id IN (${placeholders}) AND p.status = 'active'
-      `).all(productIds);
-    }
-
-    // Associate the reasons back and preserve original order
+    // 5. Map recommendations back to full product details
     const finalProducts = recList.map(rec => {
       const targetId = parseInt(rec.product_id);
-      const p = matchedProducts.find(item => item.id === targetId);
+      const p = filtered.find(item => item.id === targetId) || allProducts.find(item => item.id === targetId);
       if (!p) return null;
       return {
         id: p.id,
