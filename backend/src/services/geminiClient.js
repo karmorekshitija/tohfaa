@@ -84,7 +84,16 @@ async function generateJson(prompt, systemInstruction = null) {
     const result = await Promise.race([apiPromise, timeoutPromise]);
     const text = result.response.text();
     const cleaned = cleanJsonString(text);
-    return JSON.parse(cleaned);
+    
+    try {
+      return JSON.parse(cleaned);
+    } catch (parseErr) {
+      const intentMatch = text.match(/"intent"\s*:\s*"([^"]+)"/i);
+      if (intentMatch) {
+        return { intent: intentMatch[1].toLowerCase() };
+      }
+      throw parseErr;
+    }
   };
 
   try {

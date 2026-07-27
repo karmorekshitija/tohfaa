@@ -38,16 +38,17 @@ function classifyIntentRuleBased(message) {
  * Classifies the user message intent
  */
 async function classifyIntent(message) {
+  // 1. Check rule-based intent first for instant, accurate keyword resolution
+  const ruleIntent = classifyIntentRuleBased(message);
+  if (ruleIntent !== 'unclear') {
+    return ruleIntent;
+  }
+
+  // 2. Fall back to AI classification for complex/ambiguous queries if key is available
   if (process.env.GEMINI_API_KEY) {
-    const systemInstruction = `You are an intent classifier for an e-commerce chatbot for "Tohfa", an Indian handmade artisan marketplace. Classify the buyer's message into exactly ONE of these categories:
+    const systemInstruction = `You are an intent classifier for an e-commerce chatbot for "Tohfa", an Indian handmade artisan marketplace. Classify the buyer's message into Chatbot Intent: "recommendation", "faq", "problem_report", or "unclear".
 
-- "recommendation": buyer wants product suggestions, gift ideas, or is describing what they're looking for.
-- "faq": buyer is asking about policies, shipping, returns, payments, how the platform works, etc.
-- "problem_report": buyer is reporting an issue — damaged item, wrong item, late delivery, payment problem, account issue, complaint.
-- "unclear": message doesn't clearly fit any category above, or is just small talk / greeting.
-
-Respond with ONLY valid JSON, no markdown, no preamble:
-{"intent": "recommendation" | "faq" | "problem_report" | "unclear"}`;
+Respond with ONLY valid JSON: {"intent": "recommendation" | "faq" | "problem_report" | "unclear"}`;
 
     const prompt = `Buyer message: "${message}"`;
     
@@ -57,11 +58,11 @@ Respond with ONLY valid JSON, no markdown, no preamble:
         return result.intent;
       }
     } catch (err) {
-      console.warn("[CHATBOT SERVICE] AI Intent classification failed, using rule-based fallback:", err.message);
+      console.warn("[CHATBOT SERVICE] AI Intent classification failed:", err.message);
     }
   }
 
-  return classifyIntentRuleBased(message);
+  return 'unclear';
 }
 
 /**
