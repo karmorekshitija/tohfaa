@@ -14,10 +14,10 @@
     /* Floating Mascot Button — bare transparent PNG, no circle background */
     #tohfa-chat-mascot {
       position: fixed;
-      bottom: 80px;        /* above mobile bottom nav bar */
-      right: 12px;
-      width: 64px;
-      height: 64px;
+      bottom: 74px;        /* above mobile bottom nav bar */
+      right: 6px;
+      width: 48px;
+      height: 48px;
       background: none;
       border: none;
       border-radius: 0;
@@ -27,7 +27,8 @@
       justify-content: center;
       cursor: pointer;
       z-index: 99999;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0.92;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
       animation: mascotFloat 3.5s ease-in-out infinite;
     }
     @media (min-width: 769px) {
@@ -36,6 +37,7 @@
         height: 90px;
         bottom: 32px;
         right: 32px;
+        opacity: 1;
       }
     }
     #tohfa-chat-mascot:hover {
