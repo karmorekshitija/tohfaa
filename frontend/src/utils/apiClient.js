@@ -181,11 +181,13 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Global error toast for non-401 requests (suppressed for 404 GET read requests and when config.suppressToast is true)
+    // Global error toast for non-401 requests
+    // For GET read operations, suppress automatic error toasts so background data loads don't flood the UI with popups.
+    // For mutation requests (POST/PUT/PATCH/DELETE), show error toast unless suppressToast is set to true.
     if (error.response?.status !== 401 && !error.config?.suppressToast) {
       const isGet = (error.config?.method || 'get').toLowerCase() === 'get';
-      const is404 = error.response?.status === 404;
-      if (!is404 || !isGet) {
+      const forceShow = error.config?.showToastOnError === true;
+      if (!isGet || forceShow) {
         const msg = error.response?.data?.message || error.message || 'Request failed';
         Toast.show(msg, 'error');
       }
