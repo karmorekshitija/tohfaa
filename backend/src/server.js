@@ -4,10 +4,10 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
-const { execSync } = require('child_process');
+
 const multer = require('multer');
 const db = require('./db');
-const { router: sellerProfileRouter } = require('./sellerProfileRoutes');
+
 const paymentRouter = require('./paymentRoutes');
 const chatbotRouter = require('./chatbotRoutes');
 const whatsappRouter = require('./whatsappRoutes');
@@ -327,10 +327,23 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use(sellerProfileRouter);
+
 app.use(paymentRouter);
 app.use('/api', chatbotRouter);
 app.use('/api', whatsappRouter);
+
+// Domain Feature Routers
+app.use(require('./routes/authRoutes'));
+app.use(require('./routes/productRoutes'));
+app.use(require('./routes/cartRoutes'));
+app.use(require('./routes/addressRoutes'));
+app.use(require('./routes/occasionRoutes'));
+app.use(require('./routes/orderRoutes'));
+app.use(require('./routes/profileRoutes'));
+app.use(require('./routes/sellerRoutes'));
+app.use(require('./routes/adminRoutes'));
+app.use(require('./routes/customOrderRoutes'));
+
 // Serve /uploads with security headers to prevent execution of any slipped-through files
 app.use('/uploads', (req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -341,27 +354,6 @@ app.use('/uploads', (req, res, next) => {
   etag: true,
   immutable: false
 }));
-
-// Serve standard static screens for interactive flow if they exist
-const serveStitchScreen = (fileName) => {
-  return (req, res) => {
-    const filePath = path.join(__dirname, '..', '..', 'stitch_screens', fileName);
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      res.status(404).send(`Stitch screen ${fileName} not found. Please browse via the frontend development server (http://localhost:5173 or http://localhost:5174).`);
-    }
-  };
-};
-
-app.get('/', serveStitchScreen('20_tohfa_home_feed_-_pure_white_background_code.html'));
-app.get('/category', serveStitchScreen('12_tohfa_category_page_-_desktop_infinite_scroll_code.html'));
-app.get('/profile', serveStitchScreen('21_tohfa_buyer_profile_-_artisan_studio_desktop_code.html'));
-app.get('/cart', serveStitchScreen('19_tohfa_cart__checkout_-_artisan_studio_desktop_code.html'));
-app.get('/wishlist', serveStitchScreen('05_tohfa_wishlist_-_desktop_web_app_code.html'));
-
-// Serve all other stitch files under /stitch/
-app.use('/stitch', express.static(path.join(__dirname, '..', '..', 'stitch_screens')));
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const BCRYPT_SALT_ROUNDS = 12;

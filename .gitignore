@@ -13,3 +13,14 @@ node_modules/
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# Design mockups & temp stitch screens
+design_mockups/
+stitch_screens/
+stitch_front/
+stitch_ui_layout_replicator/
+stitch_end_bulk_unzipped/
+stitch_tofa_artisan_design_system/
+footer_mobile_extracted/
+footer_stitch_extracted/
+scratch/

@@ -196,6 +196,7 @@
       text-align: center;
       transform: scale(0.9);
       transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-sizing: border-box;
     }
     .tohfa-contact-modal.is-open .tohfa-contact-card {
       transform: scale(1);
@@ -357,6 +358,9 @@
       .tohfa-contact-card {
         padding: 28px 18px 24px 18px !important;
         border-radius: 14px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
       .tohfa-contact-card h3 {
         font-size: 22px !important;
@@ -365,6 +369,7 @@
       /* Make email link full-width so it never clips */
       .tohfa-contact-email-link {
         width: 100% !important;
+        max-width: 100% !important;
         display: flex !important;
         justify-content: center !important;
         font-size: 13px !important;
@@ -373,18 +378,25 @@
         box-sizing: border-box !important;
       }
 
-      /* Refunds modal — bottom-sheet style on mobile */
+      /* Refunds modal overlay — safe-area-aware bottom-sheet */
       .tohfa-refunds-modal {
-        padding: 16px;
+        padding: 0 !important;
         align-items: flex-end !important;
       }
       .tohfa-refunds-card {
         padding: 24px 18px 20px 18px !important;
-        border-radius: 14px 14px 0 0 !important;
-        max-height: 82vh !important;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+        border-radius: 20px 20px 0 0 !important;
+        /* Use dvh so the browser chrome is excluded from the height calculation */
+        max-height: 80dvh !important;
+        /* Fallback for browsers without dvh support */
+        max-height: min(80dvh, calc(100vh - 80px)) !important;
         overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        overscroll-behavior: contain !important;
         width: 100% !important;
         max-width: 100% !important;
+        box-sizing: border-box !important;
       }
       .tohfa-refunds-card h3 {
         font-size: 21px !important;

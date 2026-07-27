@@ -283,6 +283,7 @@
         text-align: center;
         transform: scale(0.9);
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-sizing: border-box;
       }
       .tohfa-contact-modal.is-open .tohfa-contact-card {
         transform: scale(1);
@@ -349,6 +350,34 @@
       }
       .tohfa-contact-email-link:active {
         transform: translateY(0);
+      }
+
+      /* Mobile fixes: Contact modal */
+      @media (max-width: 640px) {
+        .tohfa-contact-modal {
+          padding: 16px;
+        }
+        .tohfa-contact-card {
+          padding: 28px 18px 24px 18px !important;
+          border-radius: 14px !important;
+          box-sizing: border-box !important;
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .tohfa-contact-card h3 {
+          font-size: 22px !important;
+          margin-bottom: 10px !important;
+        }
+        .tohfa-contact-email-link {
+          width: 100% !important;
+          max-width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          font-size: 13px !important;
+          padding: 10px 12px !important;
+          word-break: break-all !important;
+          box-sizing: border-box !important;
+        }
       }
     </style>
 

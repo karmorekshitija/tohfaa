@@ -592,7 +592,7 @@
       s.textContent = [
         '.tohfa-contact-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;}',
         '.tohfa-contact-modal.is-open{display:flex!important;}',
-        '.tohfa-contact-card{background:#1E3D0F;color:#F7F2E8;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 32px 32px;width:100%;max-width:440px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}',
+        '.tohfa-contact-card{background:#1E3D0F;color:#F7F2E8;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 32px 32px;width:100%;max-width:440px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-sizing:border-box;}',
         '.tohfa-contact-modal.is-open .tohfa-contact-card{transform:scale(1);}',
         '.tohfa-contact-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#F7F2E8;font-size:22px;cursor:pointer;opacity:.7;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}',
         '.tohfa-contact-close-btn:hover{opacity:1;background:rgba(255,255,255,.1);transform:scale(1.05);}',
@@ -601,7 +601,13 @@
         '.tohfa-contact-card p{font-family:\'DM Sans\',sans-serif;font-size:16px;line-height:1.5;margin-bottom:24px;color:#A8B89A;}',
         '.tohfa-contact-email-link{display:inline-flex;align-items:center;gap:8px;font-family:\'Space Mono\',monospace;font-size:16px;color:#C9972C;text-decoration:none;border:1px solid rgba(201,151,44,.3);padding:12px 24px;border-radius:8px;background:rgba(201,151,44,.05);transition:all .2s ease;}',
         '.tohfa-contact-email-link:hover{background:rgba(201,151,44,.15);border-color:rgba(201,151,44,.6);color:#F7F2E8;transform:translateY(-2px);}',
-        '.tohfa-contact-email-link:active{transform:translateY(0);}'
+        '.tohfa-contact-email-link:active{transform:translateY(0);}',
+        '@media (max-width: 640px) {',
+        '  .tohfa-contact-modal{padding:16px;}',
+        '  .tohfa-contact-card{padding:28px 18px 24px 18px!important;border-radius:14px!important;box-sizing:border-box!important;width:100%!important;max-width:100%!important;}',
+        '  .tohfa-contact-card h3{font-size:22px!important;margin-bottom:10px!important;}',
+        '  .tohfa-contact-email-link{width:100%!important;max-width:100%!important;display:flex!important;justify-content:center!important;font-size:13px!important;padding:10px 12px!important;word-break:break-all!important;box-sizing:border-box!important;}',
+        '}'
       ].join('');
       document.head.appendChild(s);
     }
