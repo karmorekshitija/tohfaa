@@ -181,10 +181,14 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Global error toast for non-401 requests
-    if (error.response?.status !== 401) {
-      const msg = error.response?.data?.message || error.message || 'Request failed';
-      Toast.show(msg, 'error');
+    // Global error toast for non-401 requests (suppressed for 404 GET read requests and when config.suppressToast is true)
+    if (error.response?.status !== 401 && !error.config?.suppressToast) {
+      const isGet = (error.config?.method || 'get').toLowerCase() === 'get';
+      const is404 = error.response?.status === 404;
+      if (!is404 || !isGet) {
+        const msg = error.response?.data?.message || error.message || 'Request failed';
+        Toast.show(msg, 'error');
+      }
     }
 
     return Promise.reject(error);

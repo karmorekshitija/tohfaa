@@ -1528,13 +1528,30 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
   const sub = req.query.sub;
   
   try {
-    // 1. Resolve category
-    const category = await db.prepare('SELECT * FROM categories WHERE slug = ?').get(slug);
+    // 1. Resolve category with slug alias fallback
+    let category = await db.prepare('SELECT * FROM categories WHERE slug = ? OR REPLACE(slug, \'-\', \'\') = REPLACE(?, \'-\', \'\')').get(slug, slug);
     if (!category) {
-      return res.status(404).json({
-        error: true,
-        message: "Category not found",
-        code: "CATEGORY_NOT_FOUND"
+      const aliasMap = {
+        'ceramics': 'ceramics-pottery',
+        'journals': 'journals-stationery',
+        'candles': 'candles-fragrance',
+        'textiles': 'textile-arts',
+        'paper-crafts': 'journals-stationery',
+        'home': 'home-decor',
+        'art': 'art-portraits'
+      };
+      const targetSlug = aliasMap[slug.toLowerCase()] || slug;
+      category = await db.prepare('SELECT * FROM categories WHERE slug = ? OR slug LIKE ?').get(targetSlug, `%${targetSlug}%`);
+    }
+
+    if (!category) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          category: { id: 0, name: slug, slug: slug },
+          products: [],
+          pagination: { has_more: false, next_cursor: null, total: 0 }
+        }
       });
     }
     
