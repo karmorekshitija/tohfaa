@@ -11239,18 +11239,14 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
         COALESCE(u.full_name, '') AS seller_name,
         COALESCE(cat.name, 'Uncategorised') AS category_name,
         COALESCE(sp_prod.is_sponsored, 0) AS is_sponsored,
-        (
-          SELECT url FROM product_images 
-          WHERE product_id = p.id 
-          ORDER BY is_primary DESC, sort_order ASC 
-          LIMIT 1
-        ) AS image_url,
-        l.cover_photo_url
+        COALESCE(
+          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
+          (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+        ) AS image_url
       FROM products p
       LEFT JOIN users u ON u.id = p.seller_id
       LEFT JOIN categories cat ON cat.id = p.category_id
       LEFT JOIN sponsored_products sp_prod ON sp_prod.product_id = p.id
-      LEFT JOIN listings l ON l.id = p.source_listing_id
       ${whereClause}
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
@@ -11260,14 +11256,14 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
       id: r.id,
       sku: `PROD-${r.id}`,
       name: r.name,
-      image_url: r.image_url || r.cover_photo_url || null,
       seller_id: r.seller_id,
       seller_name: r.seller_name,
       category_name: r.category_name,
       price_paise: r.price_paise,
       price_display: formatMoney(r.price_paise),
       is_sponsored: !!r.is_sponsored,
-      sponsored_status_label: r.is_sponsored ? 'Sponsored' : '—'
+      sponsored_status_label: r.is_sponsored ? 'Sponsored' : '—',
+      image_url: normalizeImageUrl(r.image_url, req)
     }));
 
     return res.status(200).json({
