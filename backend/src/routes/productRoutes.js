@@ -158,24 +158,29 @@ router.get('/api/ui-settings/public', rateLimit(120), async (req, res) => {
 // GET /api/categories
 router.get('/api/categories', rateLimit(120), async (req, res) => {
   try {
-    const categories = await db.prepare(`
-      SELECT 
-        c.id, c.name, c.display_name, c.slug, c.description, c.image_url, c.banner_image_url, c.icon_emoji, c.emoji_icon, c.is_active, c.created_at,
-        (
-          COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
-          +
-          COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
-        ) AS product_count
-      FROM categories c
-      WHERE c.is_active = 1
-      ORDER BY c.name ASC
-    `).all();
+    let categories = [];
+    try {
+      categories = await db.prepare(`
+        SELECT 
+          c.id, c.name, c.display_name, c.slug, c.description, c.image_url, c.banner_image_url, c.icon_emoji, c.emoji_icon, c.is_active, c.created_at,
+          (
+            COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND LOWER(COALESCE(p.status, 'active')) = 'active'), 0)
+          ) AS product_count
+        FROM categories c
+        ORDER BY c.name ASC
+      `).all();
+    } catch (sqlErr) {
+      console.warn("Primary categories query failed, using fallback query:", sqlErr.message);
+      categories = await db.prepare(`SELECT * FROM categories`).all();
+    }
 
-    const formattedCategories = categories.map(cat => ({
+    const formattedCategories = (categories || []).map(cat => ({
       ...cat,
+      display_name: cat.display_name || cat.name || 'Category',
       image_url: normalizeImageUrl(cat.image_url, req),
       banner_image_url: normalizeImageUrl(cat.banner_image_url, req),
-      emoji_icon: cat.emoji_icon || cat.icon_emoji || '🏷️'
+      emoji_icon: cat.emoji_icon || cat.icon_emoji || '🏷️',
+      product_count: Number(cat.product_count || 0)
     }));
 
     return res.status(200).json({
