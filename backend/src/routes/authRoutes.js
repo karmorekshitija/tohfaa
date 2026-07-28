@@ -26,7 +26,8 @@ function handleInternalError(res, label, err) {
 
 // POST /api/auth/register/buyer
 router.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
-  const { full_name, email, password } = req.body;
+  const { full_name, password } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : req.body.email;
   
   if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2 ||
       !email || typeof email !== 'string' || !validateEmail(email) ||
@@ -80,7 +81,8 @@ router.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
 
 // POST /api/auth/register/seller (Legacy direct route)
 router.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
-  const { full_name, email, password, shop_name, shop_bio, ships_in_days, instagram_handle } = req.body;
+  const { full_name, password, shop_name, shop_bio, ships_in_days, instagram_handle } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : req.body.email;
   
   if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2 ||
       !email || typeof email !== 'string' || !validateEmail(email) ||
@@ -164,12 +166,13 @@ router.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
 
 // POST /api/auth/login
 router.post('/api/auth/login', rateLimit(10), async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : req.body.email;
   
   if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
     return res.status(400).json({
       error: true,
-      message: "Email and password required",
+      message: "Missing email or password",
       code: "VALIDATION_ERROR"
     });
   }
@@ -179,7 +182,7 @@ router.post('/api/auth/login', rateLimit(10), async (req, res) => {
     if (!user) {
       return res.status(401).json({
         error: true,
-        message: "Invalid email or password",
+        message: "Hm, that credential set doesn't seem right.",
         code: "INVALID_CREDENTIALS"
       });
     }
@@ -200,11 +203,20 @@ router.post('/api/auth/login', rateLimit(10), async (req, res) => {
       });
     }
     
+    if (!user.password_hash || typeof user.password_hash !== 'string') {
+      console.error(`Login attempt for user ${user.id} with missing/invalid password_hash`);
+      return res.status(401).json({
+        error: true,
+        message: "Hm, that credential set doesn't seem right.",
+        code: "INVALID_CREDENTIALS"
+      });
+    }
+
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({
         error: true,
-        message: "Invalid email or password",
+        message: "Hm, that credential set doesn't seem right.",
         code: "INVALID_CREDENTIALS"
       });
     }
@@ -347,8 +359,8 @@ router.post('/api/auth/forgot-password', rateLimit(5), async (req, res) => {
       const hashedToken = crypto.createHash('sha256').update(plainToken).digest('hex');
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
       
-      await db.prepare('DELETE FROM password_resets WHERE user_id = ?').run(user.id);
-      await db.prepare('INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?)').run(user.id, hashedToken, expiresAt);
+      await db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ?').run(user.id);
+      await db.prepare('INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)').run(user.id, hashedToken, expiresAt);
       
       await emailService.sendPasswordResetEmail({ email, token: plainToken });
     }
@@ -380,7 +392,7 @@ router.post('/api/auth/reset-password', rateLimit(10), async (req, res) => {
   
   try {
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    const resetRecord = await db.prepare('SELECT * FROM password_resets WHERE token_hash = ?').get(hashedToken);
+    const resetRecord = await db.prepare('SELECT * FROM password_reset_tokens WHERE token_hash = ?').get(hashedToken);
     
     if (!resetRecord) {
       return res.status(400).json({
@@ -391,7 +403,7 @@ router.post('/api/auth/reset-password', rateLimit(10), async (req, res) => {
     }
     
     if (new Date() > new Date(resetRecord.expires_at)) {
-      await db.prepare('DELETE FROM password_resets WHERE id = ?').run(resetRecord.id);
+      await db.prepare('DELETE FROM password_reset_tokens WHERE id = ?').run(resetRecord.id);
       return res.status(400).json({
         error: true,
         message: "Invalid or expired reset token",
@@ -403,7 +415,7 @@ router.post('/api/auth/reset-password', rateLimit(10), async (req, res) => {
     
     await db.transaction(async () => {
       await db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, resetRecord.user_id);
-      await db.prepare('DELETE FROM password_resets WHERE id = ?').run(resetRecord.id);
+      await db.prepare('DELETE FROM password_reset_tokens WHERE id = ?').run(resetRecord.id);
       await db.prepare('DELETE FROM refresh_tokens WHERE user_id = ?').run(resetRecord.user_id);
     })();
     
@@ -423,7 +435,8 @@ router.post('/api/auth/reset-password', rateLimit(10), async (req, res) => {
 
 // POST /api/auth/seller/login
 router.post('/api/auth/seller/login', rateLimit(10), async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : req.body.email;
   if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
     return res.status(400).json({
       error: true,
@@ -437,7 +450,7 @@ router.post('/api/auth/seller/login', rateLimit(10), async (req, res) => {
     if (!user) {
       return res.status(401).json({
         error: true,
-        message: "Invalid email or password for seller account",
+        message: "Hm, that credential set doesn't seem right.",
         code: "INVALID_CREDENTIALS"
       });
     }
@@ -458,11 +471,20 @@ router.post('/api/auth/seller/login', rateLimit(10), async (req, res) => {
       });
     }
     
+    if (!user.password_hash || typeof user.password_hash !== 'string') {
+      console.error(`Login attempt for user ${user.id} with missing/invalid password_hash`);
+      return res.status(401).json({
+        error: true,
+        message: "Hm, that credential set doesn't seem right.",
+        code: "INVALID_CREDENTIALS"
+      });
+    }
+
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({
         error: true,
-        message: "Invalid email or password",
+        message: "Hm, that credential set doesn't seem right.",
         code: "INVALID_CREDENTIALS"
       });
     }

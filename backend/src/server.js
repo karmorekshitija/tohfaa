@@ -325,7 +325,7 @@ app.use(cors({
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production' || origin.endsWith('.thetohfa.in')) {
       return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error('Not allowed by CORS'), false);
   },
   credentials: true
 }));
@@ -358,11 +358,27 @@ app.use('/uploads', (req, res, next) => {
   immutable: false
 }));
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_default_jwt_secret_dev_key_2026';
 const BCRYPT_SALT_ROUNDS = 12;
 
 // Custom Rate Limiter Middleware
 const rateLimiters = {};
+setInterval(() => {
+  const now = Date.now();
+  for (const ip in rateLimiters) {
+    let active = false;
+    for (const pathKey in rateLimiters[ip]) {
+      if (now - rateLimiters[ip][pathKey].startTime < 15 * 60 * 1000) {
+        active = true;
+      } else {
+        delete rateLimiters[ip][pathKey];
+      }
+    }
+    if (!active) {
+      delete rateLimiters[ip];
+    }
+  }
+}, 10 * 60 * 1000);
+
 function rateLimit(limit, windowMs = 60000) {
   return async (req, res, next) => {
     const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -480,265 +496,6 @@ async function generateTokens(user) {
     refreshToken: plainRefreshToken
   };
 }
-
-// TASK 03: POST /api/auth/register/buyer
-app.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
-  const { full_name, email, password } = req.body;
-  
-  // 1. Validation
-  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2 ||
-      !email || typeof email !== 'string' || !validateEmail(email) ||
-      !password || typeof password !== 'string' || password.length < 8) {
-    return res.status(400).json({
-      error: true,
-      message: "Missing or invalid fields",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  try {
-    // 2. Check if email exists
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existingUser) {
-      return res.status(409).json({
-        error: true,
-        message: "Email already registered",
-        code: "EMAIL_EXISTS"
-      });
-    }
-    
-    // 3. Hash password
-    const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-    
-    // 4. Insert user
-    const info = await db.prepare(
-      'INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)'
-    ).run(email, passwordHash, full_name, 'buyer');
-    
-    const userId = info.lastInsertRowid;
-    const user = {
-      id: userId,
-      email,
-      full_name,
-      role: 'buyer',
-      avatar_url: null
-    };
-    
-    // 5. Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(user);
-    
-    // 6. Return response
-    return res.status(201).json({
-      success: true,
-      data: {
-        user,
-        access_token: accessToken,
-        refresh_token: refreshToken
-      }
-    });
-  } catch (err) {
-    console.error('Error in buyer registration:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 04: POST /api/auth/register/seller (DEPRECATED - Path 2 direct signup route. Retained only for legacy compatibility; frontend now routes all seller onboarding through buyer application flow POST /api/seller/apply)
-app.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
-  const { full_name, email, password, shop_name, shop_bio, ships_in_days, instagram_handle } = req.body;
-  
-  // 1. Validation
-  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2 ||
-      !email || typeof email !== 'string' || !validateEmail(email) ||
-      !password || typeof password !== 'string' || password.length < 8 ||
-      !shop_name || typeof shop_name !== 'string' || shop_name.trim().length < 2) {
-    return res.status(400).json({
-      error: true,
-      message: "Missing or invalid fields",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  let finalShipsInDays = ships_in_days;
-  if (finalShipsInDays === undefined || finalShipsInDays === null) {
-    finalShipsInDays = 7;
-  } else if (!Number.isInteger(finalShipsInDays) || finalShipsInDays < 1) {
-    return res.status(400).json({
-      error: true,
-      message: "ships_in_days must be an integer >= 1",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  if (shop_bio && (typeof shop_bio !== 'string' || shop_bio.length > 500)) {
-    return res.status(400).json({
-      error: true,
-      message: "shop_bio must be a string up to 500 characters",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  let insta = instagram_handle;
-  if (typeof insta === 'string') {
-    insta = insta.trim();
-    if (insta.startsWith('@')) {
-      insta = insta.substring(1);
-    }
-  } else {
-    insta = null;
-  }
-  
-  try {
-    // 2. Check if email exists
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existingUser) {
-      return res.status(409).json({
-        error: true,
-        message: "Email already registered",
-        code: "EMAIL_EXISTS"
-      });
-    }
-    
-    // 3. Hash password
-    const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-    
-    // 4. DB Transactions for users and seller_profiles
-    const insertTransaction = db.transaction(async () => {
-      // Insert user
-      const userInfo = await db.prepare(
-        'INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)'
-      ).run(email, passwordHash, full_name, 'seller');
-      
-      const userId = userInfo.lastInsertRowid;
-      
-      // Insert seller profile
-      await db.prepare(
-        'INSERT INTO seller_profiles (user_id, shop_name, shop_bio, ships_in_days, instagram_handle) VALUES (?, ?, ?, ?, ?)'
-      ).run(userId, shop_name, shop_bio || null, finalShipsInDays, insta);
-      
-      return userId;
-    });
-    
-    const userId = await insertTransaction();
-    
-    const user = {
-      id: userId,
-      email,
-      full_name,
-      role: 'seller',
-      avatar_url: null
-    };
-    
-    const seller_profile = {
-      shop_name,
-      is_approved: false
-    };
-    
-    // 5. Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(user);
-    
-    // 6. Return response
-    return res.status(201).json({
-      success: true,
-      data: {
-        user,
-        seller_profile,
-        access_token: accessToken,
-        refresh_token: refreshToken
-      }
-    });
-  } catch (err) {
-    console.error('Error in seller registration:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 05: POST /api/auth/login
-app.post('/api/auth/login', rateLimit(20), async (req, res) => {
-  const { email, password } = req.body;
-  
-  // 1. Validation
-  if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
-    return res.status(400).json({
-      error: true,
-      message: "Missing email or password",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  try {
-    // 2. Look up user
-    const user = await db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-    if (!user) {
-      return res.status(401).json({
-        error: true,
-        message: "Hm, that credential set doesn't seem right.",
-        code: "INVALID_CREDENTIALS"
-      });
-    }
-    
-    // 3. Check password
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(401).json({
-        error: true,
-        message: "Hm, that credential set doesn't seem right.",
-        code: "INVALID_CREDENTIALS"
-      });
-    }
-    
-    // 4. Check active/banned status
-    if (user.is_banned === 1) {
-      return res.status(403).json({
-        error: true,
-        message: "Account banned",
-        code: "ACCOUNT_BANNED"
-      });
-    }
-    
-    if (user.is_active === 0) {
-      return res.status(403).json({
-        error: true,
-        message: "Account inactive",
-        code: "ACCOUNT_INACTIVE"
-      });
-    }
-    
-    // 5. Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(user);
-    
-    // 6. Return response
-    return res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          full_name: user.full_name,
-          role: user.role,
-          avatar_url: formatImg(user.avatar_url, req)
-        },
-        access_token: accessToken,
-        refresh_token: refreshToken
-      }
-    });
-  } catch (err) {
-    console.error('Error in login:', err);
-    return res.status(500).json({
-      error: true,
-      message: process.env.NODE_ENV === 'production' ? "Internal server error" : `Internal server error: ${err.message}`,
-      code: "INTERNAL_SERVER_ERROR",
-      ...(process.env.NODE_ENV !== 'production' && { details: err.message, stack: err.stack })
-    });
-  }
-});
 
 // Authentication middleware
 async function authenticateToken(req, res, next) {
