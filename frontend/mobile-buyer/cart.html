@@ -203,7 +203,7 @@
   async function initCart() {
     const token = sessionStorage.getItem('tohfa_access_token');
     if (!token) {
-      window.location.href = '/auth/login.html';
+      // login check bypassed
       return;
     }
     await fetchCart();
@@ -458,7 +458,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

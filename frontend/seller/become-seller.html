@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
             if (!token) {
-                window.location.href = '/auth/login.html?next=/become-seller';
+                // login redirect removed?next=/become-seller';
             } else {
                 // User is logged in, post to become seller
                 const displayName = prompt("Enter your shop display name:");
@@ -367,7 +367,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    // login redirect removed?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
     return;
   }
 

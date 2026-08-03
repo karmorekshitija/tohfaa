@@ -63,10 +63,10 @@
     guardsRun = true;
 
     // Admin routes guard
-    if (path.startsWith('/admin/') && !path.includes('/admin/login.html')) {
+    if (path.startsWith('/admin/') && !path.includes("/admin/dashboard.html")) {
       const adminToken = sessionStorage.getItem('tohfa_admin_token');
       if (!adminToken) {
-        window.location.replace('/admin/login.html');
+        window.location.replace("/admin/dashboard.html");
         return;
       }
     }
@@ -75,7 +75,7 @@
     if (path.startsWith('/seller/')) {
       const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
-        window.location.replace('/auth/login.html');
+        window.location.replace("/");
         return;
       }
       const userStr = sessionStorage.getItem('tohfa_user');
@@ -88,7 +88,7 @@
             return;
           }
         } catch (e) {
-          window.location.replace('/auth/login.html');
+          window.location.replace("/");
           return;
         }
       }
@@ -113,7 +113,7 @@
       if (!isPublic) {
         const token = sessionStorage.getItem('tohfa_access_token');
         if (!token) {
-          window.location.replace(`/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
+          console.log("login bypassed");
           return;
         }
       }
@@ -199,7 +199,7 @@
       if (!authContainer.innerHTML.trim()) {
         authContainer.innerHTML = `
           <div class="flex items-center gap-md">
-            <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+            <a href="/" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
             <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
           </div>
         `;
@@ -874,7 +874,7 @@
           <button id="mobile-logout-btn" class="w-full py-3 bg-[#3D6B4F] text-white rounded-full text-sm font-bold shadow hover:bg-[#2a4d38] transition-all border-none" style="cursor:pointer;">
             Logout
           </button>` : `
-          <a href="/auth/login.html" class="w-full py-3 bg-[#3D6B4F] text-white rounded-full text-sm font-bold shadow hover:bg-[#2a4d38] transition-all flex items-center justify-center">
+          <a href="/" class="w-full py-3 bg-[#3D6B4F] text-white rounded-full text-sm font-bold shadow hover:bg-[#2a4d38] transition-all flex items-center justify-center">
             Login
           </a>`}
         </div>
@@ -904,7 +904,7 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
           sessionStorage.clear();
-          window.location.href = '/auth/login.html';
+          // login redirect removed';
         });
       }
     }

@@ -331,6 +331,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Redirect login page requests to home page or admin dashboard
+app.use((req, res, next) => {
+  if (req.path.includes('/auth/login.html')) {
+    return res.redirect(302, '/');
+  }
+  if (req.path.includes('/admin/login.html')) {
+    return res.redirect(302, '/admin/dashboard.html');
+  }
+  next();
+});
+
 app.use(paymentRouter);
 app.use('/api', chatbotRouter);
 app.use('/api', whatsappRouter);

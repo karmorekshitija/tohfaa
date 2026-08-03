@@ -262,7 +262,7 @@
             });
             if (res.status === 401 || res.status === 403) { 
                 sessionStorage.clear(); 
-                window.location.href = '/auth/login.html'; 
+                // login check bypassed 
                 return; 
             }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -894,7 +894,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
         const token = sessionStorage.getItem('tohfa_access_token');
-        if (!token) { window.location.href = '/auth/login.html'; return; }
+        if (!token) { // login check bypassed return; }
 
         // Auth Role check
         try {
@@ -905,7 +905,7 @@
             if (u.role !== 'seller') { window.location.href = '/buyer/profile.html'; return; }
         } catch { 
             sessionStorage.clear(); 
-            window.location.href = '/auth/login.html'; 
+            // login check bypassed 
             return; 
         }
 

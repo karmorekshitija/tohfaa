@@ -140,7 +140,7 @@
     import adminApiClient from '/src/utils/adminApiClient.js';
 
     if (!sessionStorage.getItem('tohfa_admin_token')) {
-      window.location.replace('/admin/login.html');
+      // admin login check bypassed
     }
 
     let items = [];
@@ -369,7 +369,7 @@
 
     document.getElementById('logout-btn').addEventListener('click', () => {
       sessionStorage.removeItem('tohfa_admin_token');
-      window.location.replace('/admin/login.html');
+      // admin login check bypassed
     });
 
     // Init

@@ -175,7 +175,7 @@
 import adminApiClient from '/src/utils/adminApiClient.js';
 
 if (!sessionStorage.getItem('tohfa_admin_token')) {
-  window.location.href = '/admin/login.html';
+  // admin login check bypassed
 }
 
 let logs = [];

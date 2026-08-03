@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // 1. Auth check: if no token is found, redirect to login
   if (!token && (window.location.protocol.startsWith('http'))) {
-    window.location.href = '/auth/login.html?next=' + encodeURIComponent(window.location.pathname);
+    /* login bypassed */(window.location.pathname);
     return;
   }
   
@@ -770,7 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
       }
       sessionStorage.clear();
-      window.location.href = '/auth/login.html';
+      // login redirect removed
     });
   }
 });
@@ -785,7 +785,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

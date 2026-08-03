@@ -272,7 +272,7 @@ import adminApiClient from '/src/utils/adminApiClient.js';
 import { formatPaise } from '/src/utils/currency.js';
 
 if (!sessionStorage.getItem('tohfa_admin_token')) {
-  window.location.href = '/admin/login.html';
+  // admin login check bypassed
 }
 
 const orderId = new URLSearchParams(window.location.search).get('id');
@@ -466,7 +466,7 @@ document.getElementById('flag-refund-btn').addEventListener('click', async () =>
 // Logout
 document.getElementById('logout-btn').addEventListener('click', () => {
   sessionStorage.removeItem('tohfa_admin_token');
-  window.location.href = '/admin/login.html';
+  // admin login check bypassed
 });
 
 // Initial load

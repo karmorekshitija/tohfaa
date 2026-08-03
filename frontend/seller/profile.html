@@ -1084,7 +1084,7 @@ async function loadProfile() {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     });
     if (res.status === 401 || res.status === 403) {
-      sessionStorage.clear(); window.location.href = '/auth/login.html'; return;
+      sessionStorage.clear(); // login redirect removed'; return;
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const resp = await res.json();
@@ -1137,7 +1137,7 @@ function populateProfile(data) {
 // ─── DOMContentLoaded ─────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
-  if (!token) { window.location.href = '/auth/login.html'; return; }
+  if (!token) { // login redirect removed'; return; }
   try {
     const pr = await fetch(`${API}/api/profile/me`, { headers: { 'Authorization': `Bearer ${token}` } });
     if (!pr.ok) throw new Error();
@@ -1145,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const u  = pd.data || pd;
     if (u.role !== 'seller') { window.location.href = '/buyer/profile.html'; return; }
   } catch (_) {
-    sessionStorage.clear(); window.location.href = '/auth/login.html'; return;
+    sessionStorage.clear(); // login redirect removed'; return;
   }
   wireCounter('f-bio', 'bio-counter', 300);
   wireCounter('f-story-desc', 'story-counter', 1000);
@@ -1163,7 +1163,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    // login redirect removed?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
     return;
   }
 

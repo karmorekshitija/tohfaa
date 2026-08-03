@@ -32,7 +32,7 @@
     (async function verifySellerRole() {
         const token = getTohfaToken();
         if (!token) {
-            window.location.href = '/auth/login.html';
+            // login check bypassed
             return;
         }
         try {
@@ -46,7 +46,7 @@
                 window.location.href = '/mobile-buyer/profile.html';
             }
         } catch (e) {
-            window.location.href = '/auth/login.html';
+            // login check bypassed
         }
     })();
 
@@ -317,7 +317,7 @@
       } catch (err) {
           console.error("Seller profile approval check failed:", err);
       }
-      if (res.status === 401 || res.status === 403) { sessionStorage.clear(); window.location.href = '/auth/login.html'; return; }
+      if (res.status === 401 || res.status === 403) { sessionStorage.clear(); // login check bypassed return; }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const resp = await res.json();
       let raw = [];
@@ -610,7 +610,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-new-listing')?.addEventListener('click', async () => {
       const token = getTohfaToken();
-      if (!token) { window.location.href = '/auth/login.html'; return; }
+      if (!token) { // login check bypassed return; }
       const btn = document.getElementById('btn-new-listing');
       btn.disabled = true;
       btn.innerHTML = '<span class="text-base leading-none animate-spin inline-block">⏳</span> Creating…';

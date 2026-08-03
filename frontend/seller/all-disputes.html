@@ -141,7 +141,7 @@
         const res = await fetch(url, options);
         if (res.status === 401 || res.status === 403) {
             sessionStorage.clear();
-            window.location.href = '/auth/login.html';
+            // login redirect removed';
             throw new Error('Unauthorized session.');
         }
         return res;

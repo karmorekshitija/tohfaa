@@ -532,7 +532,7 @@
 
         const accessToken = sessionStorage.getItem('tohfa_access_token');
         if (!accessToken) {
-            window.location.href = '/auth/login.html';
+            // login redirect removed
             return;
         }
 
@@ -553,7 +553,7 @@
 
             if (response.status === 401 || response.status === 403) {
                 sessionStorage.clear();
-                window.location.href = '/auth/login.html';
+                // login redirect removed
                 return;
             }
 
@@ -636,7 +636,7 @@
     document.addEventListener('DOMContentLoaded', async function () {
         const accessToken = sessionStorage.getItem('tohfa_access_token');
         if (!accessToken) {
-            window.location.href = '/auth/login.html';
+            // login redirect removed
             return;
         }
 
@@ -667,7 +667,7 @@
             }
         } catch (e) {
             sessionStorage.clear();
-            window.location.href = '/auth/login.html';
+            // login redirect removed
             return;
         }
 
@@ -733,7 +733,7 @@
                     }).catch(() => {});
                 }
                 sessionStorage.clear();
-                window.location.href = '/auth/login.html';
+                // login redirect removed
             });
         }
 

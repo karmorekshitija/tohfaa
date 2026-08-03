@@ -264,7 +264,7 @@
 
     // Auth redirection
     const token = sessionStorage.getItem('tohfa_access_token');
-    if (!token) window.location.href = '/auth/login.html';
+    /* auth check bypassed */
 
     // State
     let allOccasions = [];

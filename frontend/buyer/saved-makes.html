@@ -266,7 +266,7 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
                         <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
@@ -310,7 +310,7 @@
         if (!isLoggedIn) {
             Toast.show("Please log in to contact the seller", "error");
             setTimeout(() => {
-                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                // login check bypassed
             }, 1500);
             return;
         }
@@ -508,7 +508,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

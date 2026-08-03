@@ -191,7 +191,7 @@ import adminApiClient from '/src/utils/adminApiClient.js';
 import { formatPaise } from '/src/utils/currency.js';
 
 if (!sessionStorage.getItem('tohfa_admin_token')) {
-  window.location.href = '/admin/login.html';
+  // admin login check bypassed
 }
 
 const sellerId = new URLSearchParams(window.location.search).get('id');

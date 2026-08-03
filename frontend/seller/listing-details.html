@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // 1. Auth check: if no token is found, redirect to login
   if (!token && (window.location.protocol.startsWith('http'))) {
-    window.location.href = '/auth/login.html?next=' + encodeURIComponent(window.location.pathname);
+    /* login bypassed */(window.location.pathname);
     return;
   }
   
@@ -524,7 +524,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 
@@ -622,4 +622,5 @@ if (!window.hasRefundsModalEscListener) {
   window.hasRefundsModalEscListener = true;
 }
 </script>
+</body></html>t>
 </body></html>

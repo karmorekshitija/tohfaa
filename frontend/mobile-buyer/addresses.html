@@ -256,7 +256,7 @@
     // Auth redirection
     const token = sessionStorage.getItem('tohfa_access_token');
     if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
     }
 
     let loadedAddresses = [];

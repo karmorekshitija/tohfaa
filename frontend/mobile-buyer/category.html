@@ -615,7 +615,7 @@
     async function handleTalkToSeller(productId, btn) {
       const token = getTohfaToken();
       if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return;
       }
 
@@ -648,7 +648,7 @@
     async function handleAddToCart(productId) {
       const token = getTohfaToken();
       if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return;
       }
       try {
@@ -667,7 +667,7 @@
     async function handleToggleWishlist(productId, isWishlisted, btn) {
       const token = getTohfaToken();
       if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return;
       }
       try {

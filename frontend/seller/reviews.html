@@ -398,7 +398,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
-        if (!token) { window.location.href = '/auth/login.html'; return; }
+        if (!token) { // login redirect removed return; }
 
         // Role verification
         try {
@@ -409,7 +409,7 @@
             if (u.role !== 'seller') { window.location.href = '/buyer/profile.html'; return; }
         } catch {
             sessionStorage.clear();
-            window.location.href = '/auth/login.html';
+            // login redirect removed
             return;
         }
 
@@ -496,7 +496,7 @@
             if (token && refresh) {
                 fetch('/api/auth/logout', { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({refresh_token:refresh}) }).catch(()=>{});
             }
-            sessionStorage.clear(); window.location.href = '/auth/login.html';
+            sessionStorage.clear(); // login redirect removed
         });
 
         // Auto-Request Settings Modal Handler

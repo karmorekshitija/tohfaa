@@ -515,7 +515,7 @@
 
         try {
             const res  = await fetch(`${API_BASE_URL}/api/seller/orders?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (res.status === 401 || res.status === 403) { sessionStorage.clear(); window.location.href = '/auth/login.html'; return; }
+            if (res.status === 401 || res.status === 403) { sessionStorage.clear(); // login check bypassed return; }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const resp   = await res.json();
@@ -936,7 +936,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
         const token = sessionStorage.getItem('tohfa_access_token');
-        if (!token) { window.location.href = '/auth/login.html'; return; }
+        if (!token) { // login check bypassed return; }
 
         // Auth Role check
         try {
@@ -947,7 +947,7 @@
             if (u.role !== 'seller') { window.location.href = '/mobile-buyer/profile.html'; return; }
         } catch { 
             sessionStorage.clear(); 
-            window.location.href = '/auth/login.html'; 
+            // login check bypassed 
             return; 
         }
 
@@ -1082,7 +1082,7 @@
             if (token && refresh) {
                 fetch('/api/auth/logout', { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({refresh_token:refresh}) }).catch(()=>{});
             }
-            sessionStorage.clear(); window.location.href = '/auth/login.html';
+            sessionStorage.clear(); // login check bypassed
         });
     });
 </script>

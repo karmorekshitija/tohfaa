@@ -568,7 +568,7 @@
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
           sessionStorage.clear();
-          window.location.href = '/auth/login.html';
+          // login check bypassed
           return;
         }
         throw new Error(`HTTP ${res.status}`);
@@ -778,7 +778,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

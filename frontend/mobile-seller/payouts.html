@@ -461,7 +461,7 @@
         const res = await fetch(url, options);
         if (res.status === 401 || res.status === 403) {
             sessionStorage.clear();
-            window.location.href = '/auth/login.html';
+            // login check bypassed
             throw new Error('Unauthorized session, redirecting to login.');
         }
         return res;
@@ -912,7 +912,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
         if (!token) {
-            window.location.href = '/auth/login.html?next=/mobile-seller/payouts.html';
+            // login check bypassed
             return;
         }
         loadInitialData();
@@ -934,7 +934,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

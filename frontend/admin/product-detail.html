@@ -226,7 +226,7 @@
   import { formatPaise } from '/src/utils/currency.js';
 
   if (!sessionStorage.getItem('tohfa_admin_token')) {
-    window.location.href = '/admin/login.html';
+    // admin login check bypassed
   }
 
   const productId = new URLSearchParams(window.location.search).get('id');

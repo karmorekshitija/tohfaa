@@ -868,7 +868,7 @@
                 if (authContainer) {
                     authContainer.innerHTML = `
                         <div class="flex items-center gap-4">
-                            <a href="/auth/login.html" class="text-primary hover:underline text-sm font-semibold font-label-md uppercase tracking-wider">Login</a>
+                            <a href="/" class="text-primary hover:underline text-sm font-semibold font-label-md uppercase tracking-wider">Login</a>
                             <a href="/auth/signup-buyer.html" class="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all font-label-md uppercase tracking-wider">Register</a>
                         </div>
                     `;
@@ -1553,7 +1553,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to follow artisans", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
             if (!sellerProfile) return;
@@ -1590,7 +1590,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to contact the seller", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1625,7 +1625,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to contact the seller", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1663,7 +1663,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to purchase items", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1689,7 +1689,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to add to wishlist", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1774,7 +1774,7 @@
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to request customization", "error");
                 setTimeout(() => {
-                    window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                    // login check bypassed
                 }, 1500);
                 return;
             }
@@ -2128,7 +2128,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

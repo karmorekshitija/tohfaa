@@ -254,7 +254,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
       const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
-          window.location.href = '/auth/login.html?next=become-seller';
+          // login check bypassed
           return;
       }
 

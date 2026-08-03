@@ -683,7 +683,7 @@
   async function loadConversations(isSilent = false) {
     const token = getAuthToken();
     if (!token) {
-      window.location.href = '/auth/login.html';
+      // login check bypassed
       return;
     }
     try {
@@ -1776,7 +1776,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     const token = getAuthToken();
     if (!token) {
-      window.location.href = '/auth/login.html';
+      // login check bypassed
       return;
     }
     
@@ -1865,7 +1865,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 

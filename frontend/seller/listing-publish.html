@@ -251,7 +251,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
         const token = sessionStorage.getItem('access_token') || sessionStorage.getItem('tohfa_access_token');
-        if (!token) { window.location.href = '/auth/login.html'; return; }
+        if (!token) { // login redirect removed return; }
 
         // Role verification
         try {
@@ -262,7 +262,7 @@
             if (u.role !== 'seller') { window.location.href = '/buyer/profile.html'; return; }
         } catch {
             sessionStorage.clear();
-            window.location.href = '/auth/login.html';
+            // login redirect removed
             return;
         }
 
@@ -307,7 +307,7 @@ async function handleFooterSellerLink(e) {
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
     sessionStorage.setItem('tohfa_redirect_seller', 'true');
-    window.location.href = '/auth/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 
@@ -406,4 +406,6 @@ if (!window.hasRefundsModalEscListener) {
 }
 </script>
 </body>
+</html>
+ody>
 </html>

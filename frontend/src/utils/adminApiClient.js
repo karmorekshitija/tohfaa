@@ -108,13 +108,13 @@ adminApiClient.interceptors.response.use(
           isRefreshing = false;
           sessionStorage.removeItem('tohfa_admin_token');
           sessionStorage.removeItem('tohfa_admin_refresh_token');
-          window.location.href = '/admin/login.html';
+          // login redirect removed';
           return Promise.reject(refreshError);
         }
       } else {
         isRefreshing = false;
         sessionStorage.removeItem('tohfa_admin_token');
-        window.location.href = '/admin/login.html';
+        // login redirect removed';
       }
     }
     return Promise.reject(error);
@@ -122,3 +122,4 @@ adminApiClient.interceptors.response.use(
 );
 
 export default adminApiClient;
+t;

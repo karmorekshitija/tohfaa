@@ -281,7 +281,7 @@ class SellerSidebar extends HTMLElement {
           }).catch(() => {});
         }
         sessionStorage.clear();
-        window.location.href = '/auth/login.html';
+        // login check bypassed
       });
     }
 

@@ -86,7 +86,7 @@ apiClient.interceptors.request.use((config) => {
   // Any other protected endpoint request from a guest user redirects to login
   const isPublicEndpoint = url.includes('/products') || url.includes('/categories') || url.includes('/hero-slides') || url.includes('/auth/') || url.includes('/sellers/');
   if (!isPublicEndpoint) {
-    window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+    // login check bypassed
     // Abort/Cancel request
     const cancelTokenSource = axios.CancelToken.source();
     config.cancelToken = cancelTokenSource.token;
@@ -174,7 +174,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         sessionStorage.clear();
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

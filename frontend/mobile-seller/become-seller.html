@@ -52,7 +52,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
       if (!token) {
-        window.location.href = '/auth/login.html?next=/mobile-seller/become-seller.html';
+        // login check bypassed
         return;
       }
 

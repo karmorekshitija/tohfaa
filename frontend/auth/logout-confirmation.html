@@ -71,7 +71,7 @@
                     }).catch(() => {});
                 }
                 sessionStorage.clear();
-                window.location.href = '/auth/login.html';
+                // login check bypassed
             };
 
             document.getElementById('cancel-logout-btn').addEventListener('click', handleCancel);

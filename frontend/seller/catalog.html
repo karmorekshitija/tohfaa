@@ -884,7 +884,7 @@ async function loadListings(forceFetch = false) {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.status === 401 || res.status === 403) {
-                sessionStorage.clear(); window.location.href = '/auth/login.html'; return;
+                sessionStorage.clear(); // login redirect removed return;
             }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -1168,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const pr = await fetch(`${API_BASE}/api/profile/me`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (pr.status === 401 || pr.status === 403) {
-                sessionStorage.clear(); window.location.href = '/auth/login.html'; return;
+                sessionStorage.clear(); // login redirect removed return;
             }
             if (!pr.ok) throw new Error();
             const pd = await pr.json();
@@ -1229,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }).catch(() => {});
         }
         sessionStorage.clear();
-        window.location.href = '/auth/login.html';
+        // login redirect removed
     });
 });
 
@@ -1370,3 +1370,4 @@ window.submitMerge = submitMerge;
 
 </body>
 </html>
+tml>
