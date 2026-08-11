@@ -6,161 +6,111 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Terms & Conditions | Tohfa</title>
-  <script src="/src/components/DeviceRedirect.js"></script>
-  <script src="/src/components/ReportWidget.js" defer></script>
-  <script src="/src/components/ProtectedRoute.js"></script>
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/tailwind.css">
-  <style>
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .card-shadow {
-        box-shadow: 0 16px 32px -12px rgba(45, 90, 61, 0.06);
-    }
-    .card-shadow:hover {
-        box-shadow: 0 20px 40px -8px rgba(45, 90, 61, 0.12);
-    }
-    .bullet-point::before {
-        content: "•";
-        color: #755b00; /* Secondary Gold */
-        font-weight: bold;
-        display: inline-block; 
-        width: 1em;
-        margin-left: -1em;
-    }
-    .transition-lift {
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .transition-lift:hover {
-        transform: translateY(-4px);
-    }
-  </style>
-</head>
-<body class="bg-[#F5F0E8] font-body-md text-on-surface">
-  <!-- Top Navigation -->
-  <nav class="fixed top-0 w-full z-50 bg-[#144227] text-white shadow-md h-20 flex items-center px-16">
-    <div class="flex justify-between items-center w-full max-w-[1280px] mx-auto">
-      <div class="font-['Playfair_Display'] text-[32px] italic font-bold">Tohfa.</div>
-      <div class="flex items-center gap-8">
-        <a class="text-[#ffe08f] font-bold hover:text-white transition-colors flex items-center gap-2" href="/buyer/home.html">
-          <span class="material-symbols-outlined">arrow_back</span>
-          Back
-        </a>
-      </div>
-    </div>
-  </nav>
+  <script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
 
-  <main class="pt-32 pb-32 px-5 md:px-16 max-w-[1280px] mx-auto">
-    <!-- Hero Section -->
-    <section class="max-w-[860px] mx-auto text-center mb-16">
-      <h1 class="font-['Playfair_Display'] text-[48px] font-bold text-[#2C2C2C] mb-6">Terms &amp; Conditions</h1>
-      <div class="w-20 h-1 bg-[#755b00] mx-auto mb-8"></div>
-      <p class="text-[#414942] text-[18px] opacity-80">
-        Last updated: June 2026 · Please read carefully before joining or purchasing on Tohfa.
-      </p>
-    </section>
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
 
-    <!-- Tab Switcher -->
-    <div class="max-w-[780px] mx-auto mb-12 flex justify-center gap-4" id="tab-switcher">
-      <button class="px-8 py-3 rounded-full font-bold transition-all duration-200 bg-white text-[#144227] border-2 border-[#144227] hover:bg-[#144227]/5" id="btn-sellers" onclick="switchTab('sellers')">
-        For Sellers
-      </button>
-      <button class="px-8 py-3 rounded-full font-bold transition-all duration-200 bg-[#144227] text-white border-b-4 border-[#755b00]" id="btn-buyers" onclick="switchTab('buyers')">
-        For Buyers
-      </button>
-    </div>
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
 
-    <!-- Content Container -->
-    <div class="max-w-[780px] mx-auto space-y-5 hidden" id="content-sellers">
-      <!-- Seller Cards -->
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">1. Who Can Join</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Individual artisans or small business owners creating handmade products.</li>
-          <li class="bullet-point">Must have an active Instagram presence for brand verification.</li>
-          <li class="bullet-point">Operating and shipping from within India.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">2. What Sellers Agree To</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Products must be genuinely handcrafted or artisan-designed.</li>
-          <li class="bullet-point">Strictly no mass-produced fakes or reselling of generic factory items.</li>
-          <li class="bullet-point">Provision of accurate product photography and descriptions.</li>
-          <li class="bullet-point">Full responsibility for order fulfillment and safe packaging.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">3. What Tohfa Promises</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Listing your products on a curated, high-traffic marketplace.</li>
-          <li class="bullet-point">Direct connection with a discerning community of buyers.</li>
-          <li class="bullet-point">Secure payment processing through integrated Razorpay gateways.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">4. If Rules Are Broken</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Tohfa reserves the right to remove any listing that doesn't meet quality standards.</li>
-          <li class="bullet-point">Immediate account suspension for providing false information or non-handmade goods.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">5. Liability</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Tohfa is a marketplace facilitator, not the manufacturer.</li>
-          <li class="bullet-point">The seller remains legally responsible for product defects or safety.</li>
-        </ul>
-      </div>
-    </div>
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
 
-    <div class="max-w-[780px] mx-auto space-y-5" id="content-buyers">
-      <!-- Buyer Cards -->
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">1. What Buyers Agree To</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">All purchases are final once the order is confirmed by the artisan.</li>
-          <li class="bullet-point">No cancellations once the handcrafting process has begun.</li>
-          <li class="bullet-point">Ensuring correct shipping and contact details are provided at checkout.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">2. Payments</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Secure payment processing handled via Razorpay.</li>
-          <li class="bullet-point">Full payment required at the time of order placement.</li>
-          <li class="bullet-point">Prices are inclusive of all applicable taxes unless stated otherwise.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">3. Delivery</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Timelines vary by artisan as products are often made-to-order.</li>
-          <li class="bullet-point">Tohfa is not liable for delays caused by third-party logistics partners.</li>
-          <li class="bullet-point">Failed delivery due to incorrect address is the buyer's responsibility.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">4. Refunds &amp; Disputes</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Items are non-refundable unless received in a damaged condition.</li>
-          <li class="bullet-point">Disputes must be raised within 48 hours of delivery with photo evidence.</li>
-          <li class="bullet-point">Tohfa will provide fair mediation between buyer and seller.</li>
-        </ul>
-      </div>
-      <div class="bg-white p-6 border-l-4 border-[#755b00] card-shadow rounded-r-lg transition-lift">
-        <h3 class="font-['Playfair_Display'] text-[24px] font-semibold text-[#2C2C2C] mb-4">5. What Tohfa Is Not Responsible For</h3>
-        <ul class="space-y-3 pl-5 text-[#2C2C2C] text-[15px] leading-[1.7]">
-          <li class="bullet-point">Final product quality is the sole responsibility of the individual artisan.</li>
-          <li class="bullet-point">Tohfa serves as a marketplace connector to discover artisan stories.</li>
-        </ul>
-      </div>
-    </div>
-  </main>
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
+</script>
 
   <script>
     function switchTab(tab) {

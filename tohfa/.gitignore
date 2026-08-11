@@ -1,0 +1,15 @@
+# Dependency directories
+node_modules/
+
+# Local env files
+.env
+.env.*
+
+# Keys and certificates
+*.pem
+*.key
+*.cert
+
+# Operating System files
+.DS_Store
+Thumbs.db

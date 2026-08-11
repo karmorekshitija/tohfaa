@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Tohfa | Frequently Asked Questions</title>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=DM+Sans:wght@400;500;700&amp;family=Space+Mono&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
+    body {
+        background-color: #F0EBE0;
+        font-family: 'DM Sans', sans-serif;
+        color: #1F1B15;
+        -webkit-font-smoothing: antialiased;
+    }
+    .faq-card.open {
+        border-left: 3px solid #C9972C;
+    }
+    .faq-card.open .icon-rotate {
+        transform: rotate(45deg);
+    }
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .sticky-tabs {
+        top: 80px; /* Height of desktop header */
+    }
+    .coming-soon-badge {
+        border: 1px solid #C9972C;
+        color: #C9972C;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-family: 'Space Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body class="bg-tohfa-cream min-h-screen flex flex-col justify-between">
+
+<!-- Top Navigation Bar (will be managed by ProtectedRoute) -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
+    </a>
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="/buyer/search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+
+<!-- Header Section -->
+<header class="pt-20 pb-8 text-center">
+  <h1 class="font-display italic text-[42px] leading-tight text-[#1E3D0F] mb-4" style="font-family: 'Playfair Display', serif;">Frequently Asked Questions</h1>
+  <p class="font-label-sm text-xs tracking-[0.2em] text-[#3B5E3F] uppercase" style="font-family: 'Space Mono', monospace;">Thoughtful Gifting, Made Effortless.</p>
+</header>
+
+<!-- Sticky Tab Switcher -->
+<div class="sticky sticky-tabs z-50 flex justify-center mb-12">
+  <div class="inline-flex bg-white/60 backdrop-blur-md p-1.5 rounded-full border border-outline-variant/50 shadow-sm">
+    <button class="px-8 py-2.5 rounded-full font-button-text text-sm transition-all duration-300 bg-[#C9972C] text-white shadow-md" id="btn-buyers" onclick="switchTab('buyers')">
+      For Buyers
+    </button>
+    <button class="px-8 py-2.5 rounded-full font-button-text text-sm transition-all duration-300 text-[#1E3D0F] hover:bg-surface-container-high/50" id="btn-sellers" onclick="switchTab('sellers')">
+      For Sellers
+    </button>
+  </div>
+</div>
+
+<!-- FAQ Grid Container -->
+<main class="max-w-[960px] mx-auto px-6 pb-24 flex-grow">
+  <!-- Buyers Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="buyers-grid">
+    <div class="flex flex-col gap-4" id="buyers-col-left"></div>
+    <div class="flex flex-col gap-4" id="buyers-col-right"></div>
+  </div>
+
+  <!-- Sellers Section -->
+  <div class="hidden grid grid-cols-1 md:grid-cols-2 gap-4" id="sellers-grid">
+    <div class="flex flex-col gap-4" id="sellers-col-left"></div>
+    <div class="flex flex-col gap-4" id="sellers-col-right"></div>
+  </div>
+
+  <!-- Contact Banner -->
+  <div class="mt-24 relative overflow-hidden bg-[#1E3D0F] rounded-[20px] p-12 text-white flex flex-col md:flex-row items-center justify-between">
+    <div class="absolute -bottom-10 -right-10 opacity-[0.05] pointer-events-none">
+      <span class="material-symbols-outlined text-[240px]">spa</span>
+    </div>
+    <div class="z-10 text-center md:text-left mb-8 md:mb-0">
+      <h2 class="font-display italic text-3xl mb-2" style="font-family: 'Playfair Display', serif;">Still have questions?</h2>
+      <p class="text-on-primary/70 font-body text-sm max-w-sm" style="font-family: 'DM Sans', sans-serif;">Our dedicated concierge team is here to assist you with any inquiries regarding heritage and gifting.</p>
+    </div>
+    <button class="z-10 bg-[#C9972C] hover:bg-[#C9972C]/90 text-white font-button-text px-10 py-4 rounded-full transition-transform active:scale-95 shadow-lg" style="font-family: 'DM Sans', sans-serif;">
+      Contact Us
+    </button>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-10%;right:-5%;opacity:0.04;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:600px;color:white;">local_florist</span>
+  </div>
+  <!-- Main grid -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(1,1fr);gap:48px;margin-bottom:80px;position:relative;z-index:10;" class="tohfa-footer-grid">
+    <!-- Brand -->
+    <div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-style:italic;color:#C9972C;margin-bottom:16px;">Tohfa.</h2>
+      <p style="font-family:'DM Sans',sans-serif;color:#F7F2E8;margin-bottom:8px;font-weight:500;">Thoughtful Gifting, Made Effortless.</p>
+      <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;margin-bottom:32px;line-height:1.6;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+      
+    </div>
+    <!-- Company -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Company</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+      </ul>
+    </div>
+    <!-- For Sellers -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+      </ul>
+    </div>
+    <!-- For Buyers -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </div>
+    <!-- Support -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- Divider -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:32px;">
+    <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);position:relative;">
+      <div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);display:flex;gap:16px;color:rgba(201,151,44,0.3);">
+        <span class="material-symbols-outlined" style="font-size:16px;">stars</span>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom bar -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:10;" class="tohfa-footer-bottom">
+    
+    <div style="display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:18px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import apiClient from '/src/utils/apiClient.js';
+  import { logout } from '/src/utils/auth.js';
+
+  const buyerFAQs = [
+    { q: "What is Tohfa?", a: "Tohfa is a curated marketplace for artisanal, handcrafted heritage products from across India." },
+    { q: "How do I place an order?", a: "Browse our collections, add items to your cart, and proceed to checkout with our secure payment gateway." },
+    { q: "Are the products authentic?", a: "Yes, every product is sourced directly from verified master artisans and heritage craft clusters." },
+    { q: "What are the shipping charges?", a: "Shipping is calculated at checkout based on weight and destination. We offer free shipping on orders over ₹5000." },
+    { q: "Do you ship internationally?", a: "Currently, we ship within India. International shipping is in our immediate roadmap." },
+    { q: "How can I track my order?", a: "Once shipped, you will receive a tracking link via email and SMS." },
+    { q: "What is the return policy?", a: "We accept returns for damaged or defective items within 48 hours of delivery." },
+    { q: "Can I customize a gift?", a: "Many of our artisans offer personalization. Look for the 'Customize' tag on product pages." },
+    { q: "What payment methods are accepted?", a: "We accept UPI, Credit/Debit Cards, and Net Banking." },
+    { q: "Is cash on delivery available?", a: "Yes, COD is available for select pincodes for orders below ₹2000." },
+    { q: "How do I care for handcrafted products?", a: "Care instructions specifically for each craft are included in the product description and packaging." },
+    { q: "Do you offer gift wrapping?", a: "Yes, we offer premium, eco-friendly gift wrapping inspired by traditional textiles." },
+    { q: "Can I include a gift message?", a: "Absolutely. You can add a handwritten note during the checkout process." },
+    { q: "What if I receive a broken item?", a: "Please take a photo and contact our support team immediately for a replacement or refund." },
+    { q: "How long does delivery take?", a: "Standard delivery takes 5-7 business days. Custom items may take longer." },
+    { q: "Can I cancel my order?", a: "Orders can be cancelled within 12 hours of placement, before they are processed by artisans." },
+    { q: "Do you have a loyalty program?", a: "Our Patron Circle is coming soon, offering early access to limited collections.", badge: true },
+    { q: "Can I book an artisan workshop?", a: "We are preparing to launch virtual 'Meet the Maker' sessions soon.", badge: true },
+    { q: "Is there a Tohfa mobile app?", a: "Our mobile experience is currently being handcrafted for iOS and Android.", badge: true }
+  ];
+
+  const sellerFAQs = [
+    { q: "How do I become a Tohfa seller?", a: "Apply through our Founding Sellers portal with photos of your craftwork." },
+    { q: "What crafts are eligible?", a: "We focus on GI-tagged crafts, heritage handlooms, and traditional Indian handicrafts." },
+    { q: "What is the commission fee?", a: "Tohfa charges a nominal commission on successful sales to maintain the platform and logistics." },
+    { q: "How do I get paid?", a: "Payments are settled directly to your registered bank account 7 days after successful delivery." },
+    { q: "Who handles the shipping?", a: "Tohfa provides integrated logistics. You just need to pack the item securely." },
+    { q: "What are the packaging guidelines?", a: "We require specific sustainable packaging standards to ensure product safety and brand consistency." },
+    { q: "Do I need a GST number?", a: "Yes, as per Indian e-commerce regulations, a valid GSTIN is required for all sellers." },
+    { q: "Can I sell personalized items?", a: "Yes, we encourage artisans to offer bespoke services through our customization tool." },
+    { q: "How do I manage my inventory?", a: "Our Seller Hub provides a simple dashboard to update stock and manage orders." },
+    { q: "Is there a registration fee?", a: "No, there is zero upfront cost to join Tohfa as an artisan." },
+    { q: "Can I list products on other platforms?", a: "Yes, we do not require exclusivity, though we encourage unique collections for Tohfa." },
+    { q: "What support do you offer artisans?", a: "We provide professional photography, story-writing, and digital marketing support." },
+    { q: "How are returns handled?", a: "In case of manufacturing defects, sellers are responsible. For other cases, Tohfa assists." },
+    { q: "Do you help with export?", a: "We are currently streamlining export documentation for our sellers." },
+    { q: "How do I update my artisan story?", a: "You can edit your profile and craft history via the Seller Hub at any time." },
+    { q: "Can I see sales analytics?", a: "Advanced insights and trend forecasting for artisans is launching next quarter.", badge: true }
+  ];
+
+  function renderFAQGrid(faqs, gridPrefix) {
+      const leftCol = document.getElementById(`${gridPrefix}-col-left`);
+      const rightCol = document.getElementById(`${gridPrefix}-col-right`);
+      if (!leftCol || !rightCol) return;
+      
+      leftCol.innerHTML = '';
+      rightCol.innerHTML = '';
+
+      faqs.forEach((item, index) => {
+          const cardHtml = `
+              <div class="faq-card bg-white p-6 rounded-14px border border-outline-variant/30 cursor-pointer transition-all duration-300 group hover:shadow-md" onclick="toggleFaq(this)">
+                  <div class="flex justify-between items-start gap-4">
+                      <div class="flex-1">
+                          <h3 class="font-body font-medium text-[#1E3D0F] pr-8">
+                              ${item.q}
+                              ${item.badge ? '<span class="ml-2 inline-block bg-[#C9972C]/10 text-[#C9972C] text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border border-[#C9972C]/20">Coming Soon</span>' : ''}
+                          </h3>
+                      </div>
+                      <span class="material-symbols-outlined text-[#C9972C] icon-rotate transition-transform duration-300">add</span>
+                  </div>
+                  <div class="faq-content hidden mt-4 text-[#3B5E3F] text-sm leading-[1.75]">
+                      ${item.a}
+                  </div>
+              </div>
+          `;
+          if (index % 2 === 0) {
+              leftCol.insertAdjacentHTML('beforeend', cardHtml);
+          } else {
+              rightCol.insertAdjacentHTML('beforeend', cardHtml);
+          }
+      });
+  }
+
+  window.toggleFaq = function(card) {
+      const content = card.querySelector('.faq-content');
+      const icon = card.querySelector('.icon-rotate');
+      const isOpen = card.classList.contains('open');
+
+      if (isOpen) {
+          card.classList.remove('open');
+          content.classList.add('hidden');
+      } else {
+          card.classList.add('open');
+          content.classList.remove('hidden');
+      }
+  };
+
+  window.switchTab = function(tab) {
+      const buyersBtn = document.getElementById('btn-buyers');
+      const sellersBtn = document.getElementById('btn-sellers');
+      const buyersGrid = document.getElementById('buyers-grid');
+      const sellersGrid = document.getElementById('sellers-grid');
+
+      if (tab === 'buyers') {
+          buyersBtn.classList.add('bg-[#C9972C]', 'text-white', 'shadow-md');
+          buyersBtn.classList.remove('text-[#1E3D0F]');
+          sellersBtn.classList.remove('bg-[#C9972C]', 'text-white', 'shadow-md');
+          sellersBtn.classList.add('text-[#1E3D0F]');
+          
+          buyersGrid.classList.remove('hidden');
+          sellersGrid.classList.add('hidden');
+      } else {
+          sellersBtn.classList.add('bg-[#C9972C]', 'text-white', 'shadow-md');
+          sellersBtn.classList.remove('text-[#1E3D0F]');
+          buyersBtn.classList.remove('bg-[#C9972C]', 'text-white', 'shadow-md');
+          buyersBtn.classList.add('text-[#1E3D0F]');
+
+          sellersGrid.classList.remove('hidden');
+          buyersGrid.classList.add('hidden');
+      }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+      renderFAQGrid(buyerFAQs, 'buyers');
+      renderFAQGrid(sellerFAQs, 'sellers');
+  });
+</script>
+</body>
+</html>

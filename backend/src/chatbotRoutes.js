@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('./db');
 const chatbotService = require('./services/chatbotService');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Optional Authentication Middleware
 async function optionalAuthenticateToken(req, res, next) {
@@ -65,6 +65,17 @@ router.post('/chatbot/message', optionalAuthenticateToken, async (req, res) => {
       code: "INTERNAL_SERVER_ERROR"
     });
   }
+});
+
+// TEMPORARY DEBUG ENDPOINT - DO NOT LEAVE IN PRODUCTION LONG-TERM
+router.get('/chatbot/debug-env', (req, res) => {
+  const key = process.env.GEMINI_API_KEY || "";
+  return res.status(200).json({
+    hasKey: !!key,
+    keyLength: key.length,
+    prefix: key ? key.substring(0, 4) : "",
+    suffix: key ? key.substring(key.length - 4) : ""
+  });
 });
 
 module.exports = router;

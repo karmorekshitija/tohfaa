@@ -4,6 +4,16 @@ node_modules/
 # Local env files
 .env
 .env.*
+*.env
+backend/.env
+frontend/.env
+
+# Database and uploaded files
+*.db
+tohfa.db
+backend/tohfa.db
+backend/uploads/
+uploads/
 
 # Keys and certificates
 *.pem
@@ -13,3 +23,14 @@ node_modules/
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# Design mockups & temp stitch screens
+design_mockups/
+stitch_screens/
+stitch_front/
+stitch_ui_layout_replicator/
+stitch_end_bulk_unzipped/
+stitch_tofa_artisan_design_system/
+footer_mobile_extracted/
+footer_stitch_extracted/
+scratch/

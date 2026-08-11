@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <title>Tohfa | Explore Crafts</title>
     <meta name="description" content="Browse handcrafted treasures by craft category directly from independent makers."/>
@@ -25,7 +25,7 @@
         }
         .paper-texture {
             background-color: #FFFFFF;
-            background-image: url(/img/textures/natural-paper.png);
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCL8HlWj3d7Jn4Rr8_Omv5ZuBBtt-PIgqkz6U0QXXzOoK5q0e2iSq3bOoqpTXh2YvRiqLxaCe5OhuMhLl4jceRshlhkOmGhbfFCTjJh3-xwIm5HZjubNr6bGDaUtGGUFXPBbtpSV5Dp4_OnQRqkj_K7lty0Zr5u7smkvT4F08O58kmMBsY6p-pt3_E4nOm_pM_Ea5de71J1n0EgSHpKPNJ7oL5rYlXXv8H9ZKYxP6h94AtGHixEvqCj_3MaC6RC_BwGgTNXM2ZNx-8);
         }
         /* Editorial category layout styles */
         .dot-grid-overlay {
@@ -163,6 +163,21 @@
             </div>
         </section>
 
+        <!-- Category Search Bar -->
+        <div class="px-margin-desktop pb-md">
+          <div class="relative max-w-sm mx-auto">
+            <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:20px;color:#717972;pointer-events:none;">search</span>
+            <input
+              id="category-filter-input"
+              type="text"
+              placeholder="Search categories..."
+              style="width:100%;padding:12px 16px 12px 40px;border-radius:12px;border:1.5px solid #D4C9B8;background:#FFFFFF;font-family:'DM Sans',sans-serif;font-size:14px;color:#1f1b15;outline:none;box-sizing:border-box;transition:border-color 0.2s ease;"
+              onfocus="this.style.borderColor='#3D6B4F'"
+              onblur="this.style.borderColor='#D4C9B8'"
+            />
+          </div>
+        </div>
+
         <!-- Category Editorial Grid — Bulk tile always first -->
         <section class="px-margin-desktop pb-xl">
 
@@ -221,7 +236,7 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -230,19 +245,16 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </div>
     <!-- Support -->
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -280,86 +292,8 @@
 
         let isLoggedIn = false;
 
-        const GRID_SLOTS = [
-          {
-            slugs: ['textile-arts', 'hand-knits'],
-            defaultSlug: 'textile-arts',
-            type: 'standard',
-            displayName: 'Crochet & Knitting',
-            image: '/img/categories/crochet.jpg',
-            badge: 'Textile Arts'
-          },
-          {
-            slugs: ['jewellery', 'jewelry'],
-            defaultSlug: 'jewellery',
-            type: 'standard',
-            displayName: 'Jewellery',
-            image: '/img/categories/jewellery.jpg',
-            icon: 'colors_spark',
-            bg: 'bg-tertiary-container/10'
-          },
-          {
-            slugs: ['ceramics-pottery'],
-            defaultSlug: 'ceramics-pottery',
-            type: 'standard',
-            displayName: 'Ceramics & Pottery',
-            image: '/img/categories/ceramics.jpg',
-            bg: 'bg-secondary-container/10'
-          },
-          {
-            slugs: ['journals-stationery'],
-            defaultSlug: 'journals-stationery',
-            type: 'standard',
-            displayName: 'Journals',
-            image: '/img/categories/journals.jpg',
-            icon: 'ink_pen'
-          },
-          {
-            slugs: ['candles-fragrance'],
-            defaultSlug: 'candles-fragrance',
-            type: 'standard',
-            displayName: 'Candles',
-            image: '/img/categories/candles.jpg'
-          },
-          {
-            slugs: ['paintings', 'wall-art-prints'],
-            defaultSlug: 'paintings',
-            type: 'standard',
-            displayName: 'Art Prints',
-            image: '/img/categories/art_prints.jpg'
-          },
-          {
-            slugs: ['home-decor'],
-            defaultSlug: 'home-decor',
-            type: 'standard',
-            displayName: 'Dried Florals',
-            image: '/img/categories/dried_florals.jpg',
-            icon: 'eco'
-          },
-          {
-            slugs: ['skincare'],
-            defaultSlug: 'skincare',
-            type: 'standard',
-            displayName: 'Skincare',
-            image: '/img/categories/skincare.jpg'
-          },
-          {
-            slugs: ['woodcraft'],
-            defaultSlug: 'woodcraft',
-            type: 'standard',
-            displayName: 'Woodcraft',
-            image: '/img/categories/woodcraft.jpg'
-          },
-          {
-            slugs: ['customized-gifts'],
-            defaultSlug: 'customized-gifts',
-            type: 'standard',
-            displayName: 'Custom Portraits',
-            image: '/img/categories/custom_portraits.jpg',
-            icon: 'palette',
-            buttonText: 'Request Quote'
-          }
-        ];
+        // Fallback placeholder category image URL. Keep in sync with frontend/admin/categories.html
+        const FALLBACK_IMAGE = '/img/ceramic_bowls.jpg';
 
         async function checkAuthState() {
             const token = sessionStorage.getItem('tohfa_access_token');
@@ -388,7 +322,7 @@
                 } else {
                     avatarHtml = `
                         <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
-                            ${initial}
+                             ${initial}
                         </a>
                     `;
                 }
@@ -405,7 +339,7 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
                         <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
@@ -424,11 +358,10 @@
                 return;
               }
 
-              const displayedSlugs = new Set();
               let html = `
                 <!-- Slot 1: Bulk Orders (Full-bleed Photographic Anchor) -->
                 <div onclick="window.location.href='/buyer/bulk.html'" class="md:col-span-2 md:row-span-2 relative rounded-xl overflow-hidden group category-card bulk-card cursor-pointer">
-                  <img alt="Premium artisan gift boxes stack" class="absolute inset-0 w-full h-full object-cover" src="/img/categories/jewellery.jpg"/>
+                  <img alt="Premium artisan gift boxes stack" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-nKoLNKY0QI9MzRM1uw0JF089sUq7PQjGNR1pW7jfieV5gyAyGKtaCAbQ6oDqDrHd4YPk_ChLd3NFY2ctGe7R85F2P2-_0fXAzPTdyyhfMPtquaB1BPm9nCTURZeM5rJal8gJhAgIzikTUJrPSptlF4jbBZmYqw7p6Eu-Z2S2Cu4M76qCCK9LiF_FS-G1U1rFcRrj8rEKCN9M6wOL8DQ3UY_WmTr5TDwu6UhL-muiMX2z5jqlwjCGpR8Txk40c0ACp8vzpMuN11c"/>
                   <div class="absolute inset-0 bg-[#C8973A]/5 pointer-events-none"></div>
                   <div class="absolute inset-y-0 left-0 w-1 bg-[#C8973A] z-20"></div>
                   <div class="absolute inset-0 bulk-gradient z-10"></div>
@@ -446,53 +379,29 @@
                 </div>
               `;
 
-              GRID_SLOTS.forEach(slot => {
-                // Find matching category in the API list
-                const cat = categories.find(c => slot.slugs.includes(c.slug));
-                const slugToUse = cat ? cat.slug : slot.defaultSlug;
-                const count = cat ? (cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)) : null;
-                const imageToUse = (cat && cat.image_url) ? cat.image_url : slot.image;
-
-                if (cat) {
-                  slot.slugs.forEach(s => displayedSlugs.add(s));
+              categories.forEach(cat => {
+                const displayName = cat.display_name || cat.name;
+                const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
+                const clickAction = `onclick="window.location.href='category.html?slug=${cat.slug}'"`;
+                let imageToUse = cat.image_url || FALLBACK_IMAGE;
+                if (imageToUse.includes('/img/categories/')) {
+                  const match = imageToUse.match(/(\/img\/categories\/[^?#]+)/);
+                  if (match) imageToUse = match[1];
+                } else if (imageToUse.includes('/img/')) {
+                  const match = imageToUse.match(/(\/img\/[^?#]+)/);
+                  if (match) imageToUse = match[1];
                 }
 
-                const clickAction = `onclick="window.location.href='category.html?slug=${slugToUse}'"`;
-                // Unified editorial card for all slot types
-                const colSpan = 'grid-column:span 1;';
-                const rowSpan = '';
-                const countText = count !== null ? `${count} makes` : '';
                 html += `
-                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="${colSpan}${rowSpan}border-radius:14px;">
-                    <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${slot.displayName}" loading="lazy">
+                  <div ${clickAction} class="category-card-editorial relative cursor-pointer" data-category-name="${displayName.toLowerCase()}" style="border-radius:14px;">
+                    <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${displayName}" loading="lazy" onerror="this.onerror=null; this.src='/img/ceramic_bowls.jpg';">
                     <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.10) 55%, transparent 100%);border-radius:14px;"></div>
                     <div style="position:absolute;bottom:0;left:0;padding:20px;color:#fff;">
-                      <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;line-height:1.2;margin-bottom:${countText ? '6px' : '0'};">${slot.displayName}</h3>
-                      ${countText ? `<span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.72;">${countText}</span>` : ''}
+                      <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;line-height:1.2;margin-bottom:6px;">${displayName}</h3>
+                      <span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.72;">${count} makes</span>
                     </div>
                   </div>
                 `;
-              });
-
-              // Now append any other categories from the API that were not mapped to the main 10 slots
-              categories.forEach(cat => {
-                if (!displayedSlugs.has(cat.slug)) {
-                  const displayName = cat.display_name || cat.name;
-                  const count = cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0);
-                  const clickAction = `onclick="window.location.href='category.html?slug=${cat.slug}'"`;
-                  const imageToUse = cat.image_url || "https://placehold.co/400x400/f4ede3/516447?text=Handcrafted";
-
-                  html += `
-                    <div ${clickAction} class="category-card-editorial relative cursor-pointer" style="border-radius:14px;">
-                      <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;" src="${imageToUse}" alt="${displayName}" loading="lazy">
-                      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.70) 0%,transparent 55%);border-radius:14px;"></div>
-                      <div style="position:absolute;bottom:0;left:0;padding:20px;color:#fff;">
-                        <h3 style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;">${displayName}</h3>
-                        <span style="font-family:'Space Mono',monospace;font-size:10px;opacity:0.75;">${count} makes</span>
-                      </div>
-                    </div>
-                  `;
-                }
               });
 
               container.innerHTML = html;
@@ -509,11 +418,162 @@
           }
         }
 
+        function initCategorySearch() {
+          const input = document.getElementById('category-filter-input');
+          if (!input) return;
+
+          input.addEventListener('input', () => {
+            const query = input.value.trim().toLowerCase();
+            const container = document.getElementById('categories-grid-container');
+            if (!container) return;
+
+            // All searchable cards have data-category-name (the bulk card does not, so it's always visible)
+            const allCards = Array.from(container.querySelectorAll('[data-category-name]'));
+
+            if (!query) {
+              allCards.forEach(card => (card.style.display = ''));
+              const emptyMsg = container.querySelector('#cat-empty-msg');
+              if (emptyMsg) emptyMsg.remove();
+              return;
+            }
+
+            let visibleCount = 0;
+            allCards.forEach(card => {
+              const name = (card.getAttribute('data-category-name') || '').toLowerCase();
+              const matches = name.includes(query);
+              card.style.display = matches ? '' : 'none';
+              if (matches) visibleCount++;
+            });
+
+            // Show / hide empty state
+            let emptyMsg = container.querySelector('#cat-empty-msg');
+            if (visibleCount === 0) {
+              if (!emptyMsg) {
+                emptyMsg = document.createElement('div');
+                emptyMsg.id = 'cat-empty-msg';
+                emptyMsg.style.cssText = 'grid-column:1/-1;text-align:center;padding:60px 0;font-family:Playfair Display,serif;font-style:italic;color:#717972;font-size:16px;';
+                emptyMsg.textContent = 'No categories match your search.';
+                container.appendChild(emptyMsg);
+              }
+            } else if (emptyMsg) {
+              emptyMsg.remove();
+            }
+          });
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
             initSearchOverlay();
             await checkAuthState();
             await loadCategories();
+            initCategorySearch(); // must run after loadCategories so data-category-name attrs exist
         });
     </script>
+
+
+<script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
+</script>
 </body>
 </html>

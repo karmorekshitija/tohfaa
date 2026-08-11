@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <title>Tohfa | Chat Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -348,7 +348,9 @@
         }
     }
 
-  const API_BASE = window.location.origin;
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://api.thetohfa.in';
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -370,7 +372,7 @@
 
 
   function getAuthToken() {
-    return localStorage.getItem('token') || getTohfaToken() || getTohfaToken();
+    return getTohfaToken();
   }
 
   function triggerToastError(msg) {
@@ -566,7 +568,7 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -578,10 +580,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </details>
     <!-- Support -->
@@ -591,9 +591,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -684,7 +683,7 @@
   async function loadConversations(isSilent = false) {
     const token = getAuthToken();
     if (!token) {
-      window.location.href = '/auth/login.html';
+      // login check bypassed
       return;
     }
     try {
@@ -989,6 +988,20 @@
         container.appendChild(separator);
       }
 
+      if (msg.type === 'bot_intake_header') {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = "flex items-center justify-center my-6 w-full";
+        headerDiv.innerHTML = `
+          <div class="flex-1 border-t border-[#8FAF82]/40"></div>
+          <span class="bg-[#F0F5EE] border border-[#8FAF82]/60 text-[#3D6B4F] px-4 py-1.5 rounded-full text-xs font-eyebrow font-bold tracking-wider uppercase shadow-sm flex items-center gap-1.5 mx-3">
+            <span class="material-symbols-outlined text-sm">sparkles</span> ${escapeHtml(msg.content)}
+          </span>
+          <div class="flex-1 border-t border-[#8FAF82]/40"></div>
+        `;
+        container.appendChild(headerDiv);
+        return;
+      }
+
       if (msg.message_type === 'system_notice') {
         const sysDiv = document.createElement('div');
         sysDiv.className = "flex justify-center my-3 w-full";
@@ -1023,11 +1036,17 @@
           ? `₹${(orderData.draft_price / 100).toFixed(2)}` 
           : `<span class="text-amber-600 italic">Pending review</span>`;
 
-        const statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
-        const statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+        let statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
+        let statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+        if (msg.is_historical) {
+          statusBadgeColor = 'bg-gray-200 text-gray-700';
+          statusLabel = 'PREVIOUS REQUEST';
+        }
+
+        const cardStyle = msg.is_historical ? 'opacity-70 bg-gray-50/60 pointer-events-none' : 'bg-[#FFFDFB]';
 
         draftCardDiv.innerHTML = `
-          <div class="w-full max-w-[340px] bg-[#FFFDFB] border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative interactive-hover">
+          <div class="w-full max-w-[340px] ${cardStyle} border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative interactive-hover">
             <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
               ${statusLabel}
             </div>
@@ -1064,7 +1083,7 @@
       if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
         const offerDiv = document.createElement('div');
         offerDiv.className = "flex justify-start w-full";
-        offerDiv.innerHTML = renderOfferCardHtml(msg.offer);
+        offerDiv.innerHTML = renderOfferCardHtml(msg.offer, msg.is_historical);
         container.appendChild(offerDiv);
         return;
       }
@@ -1229,7 +1248,7 @@
     initCountdownTimers();
   }
 
-  function renderOfferCardHtml(offer) {
+  function renderOfferCardHtml(offer, isHistorical) {
     if (!offer) return `<div class="p-4 bg-white border border-outline-variant rounded-xl text-xs text-gray-400 italic">Offer record missing.</div>`;
     
     let statusBadgeColor = 'bg-amber-100 text-amber-800';
@@ -1243,10 +1262,15 @@
     } else if (offer.status === 'expired') {
       statusBadgeColor = 'bg-gray-100 text-gray-800';
       statusLabel = 'EXPIRED';
+    } else if (offer.status === 'superseded' || isHistorical) {
+      statusBadgeColor = 'bg-gray-200 text-gray-700';
+      statusLabel = 'PREVIOUS OFFER';
     }
 
+    const historicalClass = (isHistorical || offer.status === 'superseded') ? 'opacity-70 bg-gray-50/60' : 'bg-[#FFFDFB]';
+
     return `
-      <div class="max-w-[380px] w-full bg-[#FFFDFB] border border-outline-variant rounded-xl overflow-hidden shadow-sm relative my-2 interactive-hover" id="offer-card-${offer.id}">
+      <div class="max-w-[380px] w-full ${historicalClass} border border-outline-variant rounded-xl overflow-hidden shadow-sm relative my-2 interactive-hover" id="offer-card-${offer.id}">
         <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow" id="offer-badge-${offer.id}">
           ${statusLabel}
         </div>
@@ -1313,7 +1337,7 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -1325,10 +1349,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </details>
     <!-- Support -->
@@ -1338,9 +1360,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -1755,7 +1776,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     const token = getAuthToken();
     if (!token) {
-      window.location.href = '/auth/login.html';
+      // login check bypassed
       return;
     }
     
@@ -1835,5 +1856,112 @@
   initMobileBuyerNav('');
 </script>
 
+
+
+<script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
+</script>
 </body>
 </html>

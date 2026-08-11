@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+<meta charset="utf-8"/>
+<title>TOFA Artisan Studio | Messages</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+<script src="/components/seller-components.js"></script>
+  <style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .bg-parchment { background-color: #F7F3EC; }
+  .text-on-surface { color: #211b11; }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #E8E2D5;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #C8973A;
+  }
+  .interactive-hover {
+    transition: all 0.2s ease;
+  }
+  .interactive-hover:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+  .pulse-green {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+  }
+  .shimmer {
+    background: linear-gradient(90deg, #F7F3EC 25%, #E8E2D5 50%, #F7F3EC 75%);
+    background-size: 200% 100%;
+    animation: shimmer-anim 1.5s infinite;
+  }
+  @keyframes shimmer-anim {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+</head>
+<body class="bg-white text-on-surface font-body h-screen flex flex-col overflow-hidden">
+
+<!-- Offline Banner -->
+<div id="offline-banner" class="hidden bg-[#7B5EA7] text-white text-center py-2 px-4 text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
+  <span class="material-symbols-outlined text-base">wifi_off</span>
+  <span>You are currently offline. Polling paused.</span>
+</div>
+
+<seller-layout active-tab="messages">
+<div class="h-[calc(100vh-5rem)] flex relative w-full overflow-hidden bg-white">
+  
+  <!-- COLUMN A: SIDEBAR (320px) -->
+  <aside class="w-80 border-r border-outline-variant bg-white flex flex-col shrink-0 h-full relative z-10">
+    <div class="p-4 space-y-4 border-b border-outline-variant">
+      <div class="flex items-center justify-between">
+        <h2 class="font-display text-2xl text-primary font-bold">Messages</h2>
+        <span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">edit_note</span>
+      </div>
+      <div class="relative group">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+        <input id="sidebar-search" oninput="renderSidebarList()" class="w-full pl-10 pr-4 py-2 bg-surface-variant rounded-lg border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary text-xs outline-none transition-all" placeholder="Search chats..." type="text"/>
+      </div>
+      <!-- Filter Tabs -->
+      <div class="flex border-b border-outline-variant">
+        <button onclick="setSidebarFilter('all')" id="tab-all" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-primary text-primary transition-all">All</button>
+        <button onclick="setSidebarFilter('overflow')" id="tab-overflow" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-transparent text-gray-500 hover:text-primary transition-all">Overflow</button>
+        <button onclick="setSidebarFilter('custom')" id="tab-custom" class="flex-1 pb-2 text-center text-xs font-eyebrow font-bold border-b-2 border-transparent text-gray-500 hover:text-primary transition-all">Custom</button>
+      </div>
+    </div>
+    <!-- Conversation list -->
+    <div id="conversation-list" class="flex-grow overflow-y-auto custom-scrollbar divide-y divide-outline-variant">
+      <!-- Loading shimmer state -->
+      <div class="p-4 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full shimmer"></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-3 shimmer rounded w-1/2"></div>
+            <div class="h-2 shimmer rounded w-3/4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- COLUMN B: CHAT AREA (flex-grow) -->
+  <section id="chat-area-empty" class="flex-grow flex flex-col items-center justify-center bg-[#FFFDFB] text-center p-8 space-y-4">
+    <div class="w-20 h-20 rounded-full bg-surface-variant flex items-center justify-center text-primary">
+      <span class="material-symbols-outlined text-4xl">chat_bubble_outline</span>
+    </div>
+    <h3 class="font-display text-xl font-bold text-primary italic">No Conversation Selected</h3>
+    <p class="text-xs text-gray-500 max-w-[280px]">Choose an artisan inquiry from the left sidebar to start collaborating.</p>
+  </section>
+
+  <section id="chat-area" class="flex-grow flex flex-col bg-white h-full relative hidden">
+    <!-- Chat Header -->
+    <header class="h-16 border-b border-outline-variant flex items-center justify-between px-6 bg-white shrink-0 z-10 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div id="chat-avatar" class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-display text-sm font-bold shadow-inner">KB</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="chat-name" class="font-display text-base font-bold text-primary">Buyer Name</h3>
+            <div class="w-2.5 h-2.5 rounded-full bg-green-500 pulse-green"></div>
+          </div>
+          <div id="chat-context-badges" class="flex items-center gap-1.5 mt-0.5">
+            <!-- Context badge chip -->
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="toggleRightPanel()" class="flex items-center gap-1 px-3 py-1.5 border border-primary text-primary hover:bg-primary/5 rounded-lg text-xs font-bold transition-all" id="btn-custom-order-toggle">
+          <span class="material-symbols-outlined text-sm">assignment</span>
+          <span>Custom Order</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Pinned banner when an offer is pending -->
+    <div id="pending-offer-banner" class="bg-surface-variant border-b border-primary/20 px-6 py-2 flex items-center justify-between text-xs text-primary font-medium hidden">
+      <span>✦ A custom offer has been sent — awaiting buyer response</span>
+      <button onclick="openCustomOrderPanel(true)" class="text-gold hover:underline font-bold transition-all">Edit Offer</button>
+    </div>
+
+    <!-- Intake Summary Card (for Seller to see collected fields at a glance) -->
+    <div id="intake-summary-banner" class="bg-[#F7F3EC] border-b border-[#3D6B4F]/20 px-6 py-3 hidden">
+      <div class="flex flex-col gap-2 bg-white border border-[#E8E2D5] rounded-xl p-4 shadow-sm text-xs font-body text-[#211b11]">
+        <div class="flex justify-between items-center border-b border-[#E8E2D5] pb-2 mb-1">
+          <span class="font-display font-bold text-[#3D6B4F] text-sm flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">assignment</span>
+            Buyer Intake Summary
+          </span>
+          <span class="text-[9px] font-mono bg-[#8FAF82]/20 text-[#3D6B4F] px-2 py-0.5 rounded font-bold uppercase" id="intake-summary-type">CUSTOMIZATION</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2" id="intake-summary-fields">
+          <!-- Fields will be dynamically injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="messages-container" class="flex-grow overflow-y-auto p-6 space-y-6 bg-surface-variant/20 custom-scrollbar flex flex-col">
+      <!-- Injected dynamically -->
+    </div>
+
+    <!-- Image Attachment Preview Strip -->
+    <div id="attachment-preview-strip" class="bg-white px-6 py-2 border-t border-outline-variant hidden">
+      <div class="flex items-center gap-4 overflow-x-auto no-scrollbar py-1" id="preview-thumbnails">
+        <!-- Preview cards -->
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="p-4 bg-white border-t border-outline-variant shrink-0">
+      <div class="flex items-center gap-3">
+        <input type="file" id="file-picker" accept="image/*" class="hidden" multiple onchange="handleFileSelection(event)">
+        <button onclick="triggerFilePicker()" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-gray-100 rounded-xl transition-all">
+          <span class="material-symbols-outlined">attach_file</span>
+        </button>
+        <div class="flex-grow relative">
+          <textarea id="message-input" rows="1" class="w-full pl-4 pr-12 py-3 bg-surface-variant rounded-xl border border-outline-variant focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none text-sm" placeholder="Write a message..." onkeydown="handleInputKeydown(event)"></textarea>
+          <button id="send-msg-btn" onclick="submitMessage()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-sm">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLUMN C: RIGHT ORDER PANEL (360px) -->
+  <div id="right-panel-backdrop" onclick="toggleRightPanel()" class="fixed inset-0 bg-black/40 z-20 xl:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+  <aside id="right-panel" class="w-[360px] border-l border-outline-variant bg-[#FFFDFB] flex flex-col shrink-0 h-full relative z-30 transition-transform duration-300 transform translate-x-full hidden">
+    <header class="h-16 border-b border-outline-variant flex items-center justify-between px-6 shrink-0 bg-[#FFFDFB]">
+      <h3 id="panel-title" class="font-display text-lg font-bold text-primary">Custom Order</h3>
+      <button onclick="toggleRightPanel()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 rounded-lg transition-all">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </header>
+
+    <div class="flex-grow overflow-y-auto p-6 space-y-6 custom-scrollbar">
+      <!-- Order Creation / Edit Form -->
+      <form id="custom-order-form" onsubmit="handleOfferSubmit(event)" class="space-y-4">
+        <input type="hidden" id="form-offer-id">
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Product Name</label>
+          <input type="text" id="form-product-name" required class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Price ₹</label>
+            <input type="number" id="form-price" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Quantity</label>
+            <input type="number" id="form-quantity" required min="1" value="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Delivery Date</label>
+          <input type="date" id="form-delivery-date" required class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider">Custom Notes</label>
+            <span id="char-counter" class="text-[10px] text-gray-400">0/300</span>
+          </div>
+          <textarea id="form-custom-notes" maxlength="300" oninput="updateCharCounter(this)" rows="3" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all resize-none" placeholder="Add custom notes or personalization requirements..."></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Offer Expiry</label>
+          <select id="form-expiry" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all">
+            <option value="24">24 Hours</option>
+            <option value="48" selected>48 Hours</option>
+            <option value="72">72 Hours</option>
+          </select>
+        </div>
+        <button type="submit" id="btn-send-offer" class="w-full py-3 bg-primary text-white hover:bg-primary/95 text-xs font-eyebrow font-bold rounded-lg transition-all tracking-widest uppercase">Send Offer</button>
+      </form>
+
+      <!-- Finalize Quote Form (Concierge Chat) -->
+      <form id="finalize-quote-form" onsubmit="handleFinalizeQuoteSubmit(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Final Price (₹)</label>
+          <input type="number" id="finalize-price" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all" placeholder="e.g. 1500">
+        </div>
+        <div>
+          <label class="block text-xs font-eyebrow font-bold text-gray-500 uppercase tracking-wider mb-1">Delivery Timeline (Days)</label>
+          <input type="number" id="finalize-days" required min="1" class="w-full px-3 py-2 bg-surface-variant border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary text-sm outline-none transition-all" placeholder="e.g. 5">
+        </div>
+        <button type="submit" id="btn-finalize-quote" class="w-full py-3 bg-[#3D6B4F] text-white hover:bg-[#C8973A] text-xs font-eyebrow font-bold rounded-lg transition-all tracking-widest uppercase">Confirm & Finalize Quote</button>
+      </form>
+
+      <!-- Read-Only Order Details Card -->
+      <div id="accepted-order-card" class="space-y-4 hidden">
+        <h4 class="font-eyebrow text-xs text-gray-500 font-bold tracking-widest uppercase border-b border-outline-variant pb-1">Order Details</h4>
+        <div class="bg-[#FFFDFB] border-2 border-primary/20 p-4 rounded-xl space-y-3 relative shadow-sm">
+          <div class="absolute top-3 right-3 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[9px] font-bold">CONFIRMED</div>
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">ORDER CODE</p>
+            <p id="accepted-order-code" class="text-sm font-bold text-primary font-mono"></p>
+          </div>
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">PRODUCT</p>
+            <p id="accepted-order-product" class="text-xs text-primary font-medium"></p>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">DELIVERY DATE</p>
+              <p id="accepted-order-date" class="text-xs text-primary font-medium"></p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 font-bold font-eyebrow uppercase">TOTAL AMOUNT</p>
+              <p id="accepted-order-amount" class="text-xs text-gold font-bold font-mono"></p>
+            </div>
+          </div>
+          <a class="block text-center text-[10px] font-eyebrow text-primary hover:underline pt-2 border-t border-outline-variant font-bold uppercase tracking-widest" href="/seller/orders.html">View Studio Orders →</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</seller-layout>
+
+<!-- Branded Error Toast / Dismissible Snackbar -->
+<div id="error-toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 bg-white border-2 border-gold rounded-xl shadow-2xl text-on-surface text-sm font-medium transform translate-y-20 transition-all duration-300 pointer-events-none opacity-0">
+  <span class="material-symbols-outlined text-gold">error</span>
+  <span id="error-toast-msg" class="flex-grow">An error occurred</span>
+  <button onclick="dismissErrorToast()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-primary rounded transition-all">
+    <span class="material-symbols-outlined text-base">close</span>
+  </button>
+</div>
+
+<!-- Image Lightbox Overlay -->
+<div id="lightbox-overlay" onclick="closeLightbox()" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+  <img id="lightbox-img" class="max-w-[90%] max-h-[90%] object-contain rounded-lg" src="" loading="lazy">
+</div>
+
+<script>
+  const API_BASE = window.location.origin;
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+  let activeConversationId = null;
+  let conversations = [];
+  let currentMessages = [];
+  let sidebarFilter = 'all';
+  let activePollingInterval = null;
+  let sidebarPollingInterval = null;
+  let selectedFiles = [];
+  let countdownIntervals = [];
+
+  function getAuthToken() {
+    return localStorage.getItem('token') || sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+  }
+
+  // Set default min date for form
+  const dateInput = document.getElementById('form-delivery-date');
+  if (dateInput) {
+    const today = new Date();
+    const minDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+  }
+
+  function triggerToastError(msg) {
+    const toast = document.getElementById('error-toast');
+    const msgContainer = document.getElementById('error-toast-msg');
+    msgContainer.textContent = msg;
+    toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(dismissErrorToast, 5000);
+  }
+
+  function dismissErrorToast() {
+    const toast = document.getElementById('error-toast');
+    toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+    toast.classList.remove('translate-y-0', 'opacity-100');
+  }
+
+  async function parseErrorResponse(res, defaultMsg = "An error occurred.") {
+    try {
+      const data = await res.json();
+      return data.error || data.message || defaultMsg;
+    } catch (_) {
+      try {
+        const text = await res.text();
+        if (text && text.length < 150) return text;
+      } catch (_) {}
+      return defaultMsg;
+    }
+  }
+
+  function openLightbox(url) {
+    const overlay = document.getElementById('lightbox-overlay');
+    const img = document.getElementById('lightbox-img');
+    img.src = url;
+    overlay.classList.remove('pointer-events-none', 'opacity-0');
+    overlay.classList.add('opacity-100');
+  }
+
+  function closeLightbox() {
+    const overlay = document.getElementById('lightbox-overlay');
+    overlay.classList.add('pointer-events-none', 'opacity-0');
+    overlay.classList.remove('opacity-100');
+  }
+
+  function toggleRightPanel() {
+    const panel = document.getElementById('right-panel');
+    const backdrop = document.getElementById('right-panel-backdrop');
+    const isOpen = panel.classList.contains('translate-x-0');
+
+    if (isOpen) {
+      panel.classList.remove('translate-x-0');
+      panel.classList.add('translate-x-full');
+      panel.classList.add('hidden');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+      backdrop.classList.remove('opacity-100');
+    } else {
+      panel.classList.remove('hidden');
+      panel.offsetHeight;
+      panel.classList.remove('translate-x-full');
+      panel.classList.add('translate-x-0');
+      backdrop.classList.remove('pointer-events-none', 'opacity-0');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
+    }
+  }
+
+  function openCustomOrderPanel(isEdit = false, pendingOffer = null) {
+    const panel = document.getElementById('right-panel');
+    if (panel.classList.contains('translate-x-full') || panel.classList.contains('hidden')) {
+      toggleRightPanel();
+    }
+    
+    const title = document.getElementById('panel-title');
+    const submitBtn = document.getElementById('btn-send-offer');
+    
+    if (isEdit) {
+      title.textContent = "Edit Custom Offer";
+      submitBtn.textContent = "Update Offer";
+      
+      const offer = pendingOffer || (currentMessages.find(m => m.type === 'offer' && m.offer)?.offer) || {};
+      document.getElementById('form-offer-id').value = offer.id || '';
+      document.getElementById('form-product-name').value = offer.product_name || '';
+      document.getElementById('form-price').value = offer.price || '';
+      document.getElementById('form-quantity').value = offer.quantity || 1;
+      document.getElementById('form-delivery-date').value = offer.delivery_date || '';
+      const notesField = document.getElementById('form-custom-notes');
+      notesField.value = offer.custom_notes || '';
+      updateCharCounter(notesField);
+      document.getElementById('form-expiry').value = offer.expiry_hours || 48;
+    } else {
+      title.textContent = "Send Custom Offer";
+      submitBtn.textContent = "Send Offer";
+      document.getElementById('custom-order-form').reset();
+      document.getElementById('form-offer-id').value = '';
+      updateCharCounter(document.getElementById('form-custom-notes'));
+    }
+  }
+
+  function updateCharCounter(el) {
+    const counter = document.getElementById('char-counter');
+    counter.textContent = `${el.value.length}/300`;
+  }
+
+  function updateIntakeSummaryBanner(data) {
+    const banner = document.getElementById('intake-summary-banner');
+    if (!banner) return;
+
+    // Prefer intake_summary if intake is complete; fall back to collected_fields
+    let fields = {};
+    let useLabel = data.request_type || 'customization';
+
+    if (data.intake_summary) {
+      try {
+        const summary = typeof data.intake_summary === 'string'
+          ? JSON.parse(data.intake_summary)
+          : data.intake_summary;
+        // Build display-fields from questions_and_answers array if present
+        if (Array.isArray(summary.questions_and_answers)) {
+          summary.questions_and_answers.forEach(qa => {
+            if (qa.answer !== null && qa.answer !== undefined && qa.answer !== '') {
+              fields[qa.question] = qa.answer;
+            }
+          });
+        } else {
+          fields = data.collected_fields || {};
+        }
+      } catch (e) {
+        fields = data.collected_fields || {};
+      }
+    } else {
+      fields = data.collected_fields || {};
+    }
+
+    const hasFields = Object.keys(fields).length > 0;
+
+    if (!hasFields) {
+      banner.classList.add('hidden');
+      return;
+    }
+
+    banner.classList.remove('hidden');
+    document.getElementById('intake-summary-type').textContent = useLabel.toUpperCase();
+
+    // Human-readable label map
+    const FIELD_LABELS = {
+      quantity: 'Qty',
+      customization_type: 'Customization',
+      color_material: 'Color / Material',
+      inspiration_reference: 'Reference',
+      other_notes: 'Notes',
+      needed_by_date: 'Needed By'
+    };
+
+    const fieldsContainer = document.getElementById('intake-summary-fields');
+    fieldsContainer.innerHTML = Object.entries(fields).map(([key, val]) => {
+      const label = FIELD_LABELS[key] || (key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+      let displayVal = Array.isArray(val) ? val.join(', ') : String(val);
+      if (displayVal.length > 60) displayVal = displayVal.slice(0, 60) + '…';
+      return `
+        <div class="flex flex-col">
+          <span class="text-[10px] text-gray-400 font-medium">${label}</span>
+          <span class="text-xs font-semibold text-[#3D6B4F]">${displayVal}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function getDecodedToken() {
+    const token = getAuthToken();
+    if (!token) return null;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function loadConversations(isSilent = false) {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = '/auth/login.html';
+      return;
+    }
+    try {
+      const decoded = getDecodedToken();
+      const sellerId = decoded ? decoded.user_id : null;
+      const url = sellerId ? `${API_BASE}/api/requests?seller_id=${sellerId}` : `${API_BASE}/api/requests`;
+
+      const res = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to load inbox conversations.");
+      const data = await res.json();
+      conversations = Array.isArray(data) ? data : (data.conversations || []);
+      renderSidebarList();
+    } catch (e) {
+      if (!isSilent) triggerToastError(e.message);
+    }
+  }
+
+  function setSidebarFilter(filter) {
+    sidebarFilter = filter;
+    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+      btn.classList.remove('border-primary', 'text-primary');
+      btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    const activeBtn = document.getElementById(`tab-${filter}`);
+    activeBtn.classList.remove('border-transparent', 'text-gray-500');
+    activeBtn.classList.add('border-primary', 'text-primary');
+    renderSidebarList();
+  }
+
+  function renderSidebarList() {
+    const listContainer = document.getElementById('conversation-list');
+    const searchQuery = document.getElementById('sidebar-search').value.toLowerCase().trim();
+    
+    // Hide conversations in 'intake_in_progress' or 'bot_collecting' from the seller
+    let filtered = conversations.filter(c => c.status !== 'intake_in_progress' && c.status !== 'bot_collecting');
+    
+    if (sidebarFilter !== 'all') {
+      if (sidebarFilter === 'custom') {
+        filtered = filtered.filter(c => c.product_type_tag !== 'overflow');
+      } else {
+        filtered = filtered.filter(c => c.product_type_tag === sidebarFilter);
+      }
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(c => c.other_party_name.toLowerCase().includes(searchQuery) || c.product_name.toLowerCase().includes(searchQuery));
+    }
+    
+    if (filtered.length === 0) {
+      listContainer.innerHTML = `<p class="p-6 text-center text-xs text-gray-400 italic">No conversations found.</p>`;
+      return;
+    }
+
+    listContainer.innerHTML = filtered.map(c => {
+      const isActive = c.conversation_id === activeConversationId;
+      const activeClass = isActive ? 'bg-parchment border-l-4 border-primary' : 'hover:bg-gray-50';
+      const initials = (c.other_party_name || 'User').split(' ').map(n => n[0] || '').join('').substring(0, 2).toUpperCase() || 'U';
+      const lastMsgText = c.last_message_preview || "No messages yet";
+      const timestamp = c.last_message_at ? formatRelativeTime(c.last_message_at) : '';
+      const unreadDot = c.unread_count > 0 ? `<span class="w-2.5 h-2.5 bg-primary rounded-full shrink-0"></span>` : '';
+      const tagBadge = c.product_type_tag === 'overflow' 
+        ? `<span class="text-[9px] font-eyebrow font-bold bg-sage/20 text-primary px-2 py-0.5 rounded">OVERFLOW</span>`
+        : `<span class="text-[9px] font-eyebrow font-bold bg-gold/20 text-gold px-2 py-0.5 rounded">CUSTOM</span>`;
+      const waitingBadge = c.status === 'ESCALATION_PENDING'
+        ? `<span class="text-[9px] font-eyebrow font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded animate-pulse">BUYER WAITING</span>`
+        : '';
+
+      return `
+        <div onclick="selectConversation(${c.conversation_id})" class="p-4 cursor-pointer flex gap-3 ${activeClass} transition-colors">
+          <div class="w-10 h-10 rounded-full bg-sage text-white flex items-center justify-center font-display text-sm font-bold shadow-inner shrink-0">${initials}</div>
+          <div class="flex-grow min-w-0">
+            <div class="flex justify-between items-start">
+              <h4 class="text-xs font-bold text-primary truncate">${c.other_party_name}</h4>
+              <span class="text-[9px] text-gray-400 font-mono">${timestamp}</span>
+            </div>
+            <p class="text-xs text-gray-500 truncate mt-0.5">${lastMsgText}</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex gap-1.5 items-center">
+                ${tagBadge}
+                ${waitingBadge}
+              </div>
+              ${unreadDot}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectConversation(id) {
+    activeConversationId = id;
+    renderSidebarList();
+    
+    const url = new URL(window.location);
+    url.searchParams.set('conversationId', id);
+    window.history.pushState({}, '', url);
+
+    document.getElementById('chat-area-empty').classList.add('hidden');
+    document.getElementById('chat-area').classList.remove('hidden');
+
+    loadConversation(id);
+  }
+
+  async function loadConversation(id) {
+    if (activePollingInterval) clearInterval(activePollingInterval);
+    
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/requests/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to load conversation details.");
+      const data = await res.json();
+      
+      document.getElementById('chat-name').textContent = data.other_party.name;
+      const initials = ((data.other_party && data.other_party.name) || 'User').split(' ').map(n => n[0] || '').join('').substring(0, 2).toUpperCase() || 'U';
+      document.getElementById('chat-avatar').textContent = initials;
+      
+      const badgesContainer = document.getElementById('chat-context-badges');
+      const isAccepted = data.status === 'completed' || data.status === 'accepted_paid';
+      const typeLabel = isAccepted ? 'ACCEPTED & PAID' : data.status.replace(/_/g, ' ').toUpperCase();
+      const typeBadgeClass = isAccepted ? 'bg-green-100 text-green-800' : 'bg-primary/10 text-primary';
+      
+      badgesContainer.innerHTML = `
+        <span class="text-[9px] font-eyebrow font-bold ${typeBadgeClass} px-2.5 py-0.5 rounded">${typeLabel}</span>
+        <span class="text-[9px] font-mono text-gray-400">#${data.listing.product_name || 'custom'}</span>
+      `;
+
+      updateIntakeSummaryBanner(data);
+
+      const banner = document.getElementById('pending-offer-banner');
+      if (data.active_offer) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      const orderForm = document.getElementById('custom-order-form');
+      const finalizeForm = document.getElementById('finalize-quote-form');
+      const orderCard = document.getElementById('accepted-order-card');
+      const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
+      
+      const isConcierge = data.messages.some(m => m.message_type === 'order_draft_card');
+
+      if (data.order_details) {
+        orderForm.classList.add('hidden');
+        if (finalizeForm) finalizeForm.classList.add('hidden');
+        orderCard.classList.remove('hidden');
+        document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
+        document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
+        document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
+        document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
+        
+        toggleBtnText.textContent = "Order Details";
+      } else {
+        orderCard.classList.add('hidden');
+        
+        if (isConcierge) {
+          orderForm.classList.add('hidden');
+          if (finalizeForm) {
+            finalizeForm.classList.remove('hidden');
+            if (data.status === 'SELLER_FINALIZED' && data.quoted_price) {
+              document.getElementById('finalize-price').value = data.quoted_price / 100;
+              if (data.active_offer && data.active_offer.delivery_date) {
+                const diffTime = Math.abs(new Date(data.active_offer.delivery_date) - new Date());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('finalize-days').value = diffDays;
+              }
+            }
+          }
+          toggleBtnText.textContent = "Finalize Quote";
+        } else {
+          orderForm.classList.remove('hidden');
+          if (finalizeForm) finalizeForm.classList.add('hidden');
+          toggleBtnText.textContent = "Custom Order";
+          
+          if (data.active_offer) {
+            document.getElementById('form-offer-id').value = data.active_offer.id;
+            document.getElementById('form-product-name').value = data.active_offer.product_name || '';
+            document.getElementById('form-price').value = data.active_offer.price || '';
+            document.getElementById('form-quantity').value = data.active_offer.quantity || 1;
+            document.getElementById('form-delivery-date').value = data.active_offer.delivery_date || '';
+            document.getElementById('form-custom-notes').value = data.active_offer.custom_notes || '';
+            document.getElementById('form-expiry').value = data.active_offer.expiry_hours || 48;
+            updateCharCounter(document.getElementById('form-custom-notes'));
+          } else {
+            const orderForm = document.getElementById('custom-order-form');
+            if (orderForm) {
+              orderForm.reset();
+            }
+            const offerIdInput = document.getElementById('form-offer-id');
+            if (offerIdInput) {
+              offerIdInput.value = '';
+            }
+            const notesInput = document.getElementById('form-custom-notes');
+            if (notesInput) {
+              notesInput.value = '';
+              updateCharCounter(notesInput);
+            }
+          }
+        }
+      }
+
+      currentMessages = data.messages || [];
+      renderMessagesList(data.active_offer);
+      
+      const container = document.getElementById('messages-container');
+      container.scrollTop = container.scrollHeight;
+
+    } catch (e) {
+      triggerToastError(e.message);
+    }
+
+    activePollingInterval = setInterval(() => {
+      pollMessages(id);
+    }, 5000);
+  }
+
+  async function pollMessages(id) {
+    const token = getAuthToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/requests/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        
+        const banner = document.getElementById('pending-offer-banner');
+        if (data.active_offer) {
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+        }
+
+        updateIntakeSummaryBanner(data);
+
+        const container = document.getElementById('messages-container');
+        const isNearBottom = container.scrollHeight - container.clientHeight - container.scrollTop < 120;
+        
+        currentMessages = data.messages || [];
+        renderMessagesList(data.active_offer);
+
+        if (isNearBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+
+        const orderForm = document.getElementById('custom-order-form');
+        const finalizeForm = document.getElementById('finalize-quote-form');
+        const orderCard = document.getElementById('accepted-order-card');
+        const toggleBtnText = document.querySelector('#btn-custom-order-toggle span:last-child');
+        
+        const isConcierge = data.messages.some(m => m.message_type === 'order_draft_card');
+
+        if (data.order_details) {
+          orderForm.classList.add('hidden');
+          if (finalizeForm) finalizeForm.classList.add('hidden');
+          orderCard.classList.remove('hidden');
+          document.getElementById('accepted-order-code').textContent = data.order_details.order_code;
+          document.getElementById('accepted-order-product').textContent = data.order_details.product_name;
+          document.getElementById('accepted-order-date').textContent = data.order_details.delivery_date;
+          document.getElementById('accepted-order-amount').textContent = `₹${data.order_details.amount}`;
+          toggleBtnText.textContent = "Order Details";
+        } else {
+          if (isConcierge) {
+            orderForm.classList.add('hidden');
+            if (finalizeForm) finalizeForm.classList.remove('hidden');
+            toggleBtnText.textContent = "Finalize Quote";
+          } else {
+            orderForm.classList.remove('hidden');
+            if (finalizeForm) finalizeForm.classList.add('hidden');
+            toggleBtnText.textContent = "Custom Order";
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  function renderMessagesList(activeOffer) {
+    const container = document.getElementById('messages-container');
+    container.innerHTML = '';
+    
+    let lastDate = null;
+    
+    currentMessages.forEach(msg => {
+      const date = new Date(msg.sent_at);
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+      if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        const separator = document.createElement('div');
+        separator.className = "flex justify-center my-4";
+        separator.innerHTML = `<span class="bg-[#E8E2D5] px-3 py-1 rounded-full text-[10px] font-eyebrow font-bold text-[#9C8E82] tracking-wider uppercase">${dateStr}</span>`;
+        container.appendChild(separator);
+      }
+
+      if (msg.message_type === 'system_notice') {
+        const sysDiv = document.createElement('div');
+        sysDiv.className = "flex justify-center my-3 w-full";
+        sysDiv.innerHTML = `<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-medium border border-gray-200">${escapeHtml(msg.content)}</span>`;
+        container.appendChild(sysDiv);
+        return;
+      }
+
+      if (msg.message_type === 'order_draft_card') {
+        let orderData = {};
+        try {
+          orderData = JSON.parse(msg.content);
+        } catch (e) {
+          console.error(e);
+        }
+        
+        const draftCardDiv = document.createElement('div');
+        draftCardDiv.className = "flex justify-center w-full my-4";
+        
+        const specsList = Object.keys(orderData.specs || {}).map(k => `
+          <div class="flex justify-between text-xs py-1 border-b border-dashed border-gray-100">
+            <span class="text-gray-400 capitalize">${k.replace(/_/g, ' ')}</span>
+            <span class="font-semibold text-primary text-right max-w-[160px] break-words">${orderData.specs[k] || '—'}</span>
+          </div>
+        `).join('');
+
+        const imagesHtml = (orderData.ref_images || []).map(img => `
+          <img src="${img.startsWith('http') ? img : API_BASE + img}" class="w-12 h-12 object-cover rounded border border-gray-200 cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openLightbox('${img.startsWith('http') ? img : API_BASE + img}')" />
+        `).join('');
+
+        const priceLabel = orderData.draft_price 
+          ? `₹${(orderData.draft_price / 100).toFixed(2)}` 
+          : `<span class="text-amber-600 italic">Pending review</span>`;
+
+        const statusBadgeColor = orderData.status === 'finalized' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800';
+        const statusLabel = orderData.status === 'finalized' ? 'FINALIZED' : 'PENDING REVIEW';
+
+        draftCardDiv.innerHTML = `
+          <div class="w-full max-w-[340px] bg-[#FFFDFB] border border-[#8FAF82]/30 rounded-xl overflow-hidden shadow-sm relative border-dashed">
+            <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
+              ${statusLabel}
+            </div>
+            <div class="p-5 space-y-3">
+              <p class="font-eyebrow text-[9px] text-gray-400 tracking-wider uppercase font-bold">CUSTOM ORDER SPECIFICATIONS</p>
+              <h4 class="font-display text-sm font-bold text-primary leading-tight">${orderData.product_name || 'Custom order'}</h4>
+              
+              <div class="space-y-1 pt-2">
+                <div class="flex justify-between text-xs py-1 border-b border-dashed border-gray-100">
+                  <span class="text-gray-400">Quantity</span>
+                  <span class="font-semibold text-primary">${orderData.qty || 1}</span>
+                </div>
+                ${specsList}
+              </div>
+
+              ${imagesHtml ? `
+                <div class="space-y-1.5 pt-2">
+                  <p class="text-[9px] font-eyebrow text-gray-400 font-bold uppercase">Reference Photos</p>
+                  <div class="flex gap-2 flex-wrap">${imagesHtml}</div>
+                </div>
+              ` : ''}
+
+              <div class="flex justify-between items-center pt-3 border-t border-outline-variant/30">
+                <span class="text-gray-400 text-xs font-bold">Price</span>
+                <span class="font-mono text-sm text-gold font-bold">${priceLabel}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(draftCardDiv);
+        return;
+      }
+
+      if (msg.type === 'offer' || msg.type === 'offer_updated' || msg.type === 'offer_response') {
+        const offerDiv = document.createElement('div');
+        offerDiv.className = "flex justify-start w-full";
+        offerDiv.innerHTML = renderOfferCardHtml(msg.offer);
+        container.appendChild(offerDiv);
+        return;
+      }
+
+      if (msg.type === 'product_inquiry') {
+        let inquiry = {};
+        try {
+          inquiry = typeof msg.content === 'string' ? JSON.parse(msg.content) : msg.content;
+        } catch(e) {
+          console.error("Failed to parse product_inquiry content:", e);
+        }
+        
+        const product_id = inquiry.product_id || '';
+        const product_name = inquiry.product_name || 'Product';
+        const quantity = inquiry.quantity || 1;
+        const base_price = inquiry.base_price || 0;
+        const product_type_tag = inquiry.product_type_tag || '';
+        
+        const isCustom = product_type_tag === 'custom';
+        const tagColor = isCustom ? '#3D6B4F' : '#C8973A';
+        const tagLabel = isCustom ? 'Custom Order Request' : 'Overflow Order Request';
+        
+        const imgSrc = msg.image_url ? (msg.image_url.startsWith('http') ? msg.image_url : `${API_BASE}${msg.image_url}`) : '/placeholder.jpg';
+        
+        const isOutgoing = msg.sender_role === 'seller';
+        const div = document.createElement('div');
+        
+        const cardHtml = `
+          <div class="product-inquiry-card bg-[#FFFDFB] border border-[#E8E2D5] rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer flex flex-col gap-3 max-w-[280px] sm:max-w-[320px] w-full text-left" onclick="window.location.href='/buyer/product.html?id=${product_id}'">
+            <div class="flex items-center">
+              <span class="font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold text-white" style="background-color: ${tagColor};">
+                ${tagLabel}
+              </span>
+            </div>
+            <div class="flex gap-3 items-start">
+              <img class="w-16 h-16 object-cover rounded-lg border border-[#E8E2D5] shrink-0" src="${imgSrc}" alt="${product_name}" loading="lazy">
+              <div class="flex flex-col min-w-0 flex-1">
+                <h4 class="font-display text-sm font-bold text-on-surface truncate leading-snug mb-1">
+                  ${product_name}
+                </h4>
+                <div class="font-body text-xs text-gray-500 space-y-0.5">
+                  <p>Qty: <span class="font-semibold text-gray-700">${quantity}</span></p>
+                  <p>Price: <span class="font-semibold text-gray-700">₹${(base_price / 100).toFixed(2)}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        if (isOutgoing) {
+          div.className = "flex justify-end w-full";
+          div.innerHTML = `
+            <div class="flex flex-col items-end gap-1 max-w-[80%]">
+              ${cardHtml}
+              <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
+            </div>
+          `;
+        } else {
+          div.className = "flex justify-start w-full";
+          div.innerHTML = `
+            <div class="flex items-start gap-3 max-w-[80%]">
+              <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">BY</div>
+              <div class="flex flex-col gap-1">
+                ${cardHtml}
+                <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
+              </div>
+            </div>
+          `;
+        }
+        container.appendChild(div);
+        return;
+      }
+
+      if (msg.sender_role === 'bot') {
+        const botDiv = document.createElement('div');
+        botDiv.className = "flex justify-start w-full";
+        botDiv.innerHTML = `
+          <div class="flex flex-col gap-1 max-w-[80%]">
+            <div class="bg-surface-variant p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+              <p class="text-xs text-primary font-bold mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs">smart_toy</span> BOT ASSISTANT</p>
+              <p class="text-sm leading-relaxed text-on-surface">${escapeHtml(msg.content)}</p>
+            </div>
+            <span class="text-[9px] text-gray-400 font-mono mt-1">${formatTime(msg.sent_at)}</span>
+          </div>
+        `;
+        container.appendChild(botDiv);
+        return;
+      }
+
+      const isOutgoing = msg.sender_role === 'seller' || msg.sender_role === 'bot_as_seller';
+      const div = document.createElement('div');
+      
+      if (isOutgoing) {
+        div.className = "flex justify-end w-full";
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-white">${escapeHtml(msg.content)}</p>` : '';
+        if (msg.image_url) {
+          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-white/20 hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}" loading="lazy">`;
+        }
+        div.innerHTML = `
+          <div class="flex flex-col items-end gap-1 max-w-[80%]">
+            <div class="bg-primary p-4 rounded-xl rounded-tr-none shadow-sm border border-primary/20">
+              ${contentHtml}
+            </div>
+            <span class="text-[9px] text-gray-400 font-mono mt-1 mr-2">${formatTime(msg.sent_at)}</span>
+          </div>
+        `;
+      } else {
+        const chatNameEl = document.getElementById('chat-name');
+        const initials = (chatNameEl && chatNameEl.textContent) ? chatNameEl.textContent.split(' ').map(n => n[0] || '').join('').substring(0, 2).toUpperCase() || 'BY' : 'BY';
+        div.className = "flex justify-start w-full";
+        let contentHtml = msg.content ? `<p class="text-sm leading-relaxed text-on-surface">${escapeHtml(msg.content)}</p>` : '';
+        if (msg.image_url) {
+          contentHtml += `<img onclick="openLightbox('${API_BASE}${msg.image_url}')" class="max-w-[200px] rounded-lg mt-2 cursor-zoom-in border border-outline-variant hover:opacity-90 transition-opacity" src="${API_BASE}${msg.image_url}" loading="lazy">`;
+        }
+        div.innerHTML = `
+          <div class="flex items-start gap-3 max-w-[80%]">
+            <div class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-display text-xs shrink-0 shadow-inner">${initials}</div>
+            <div class="flex flex-col gap-1">
+              <div class="bg-[#FFFDFB] p-4 rounded-xl rounded-tl-none border border-outline-variant shadow-sm">
+                ${contentHtml}
+              </div>
+              <span class="text-[9px] text-gray-400 font-mono mt-1 ml-2">${formatTime(msg.sent_at)}</span>
+            </div>
+          </div>
+        `;
+      }
+      container.appendChild(div);
+    });
+
+    initCountdownTimers();
+  }
+
+  function renderOfferCardHtml(offer) {
+    if (!offer) return `<div class="p-4 bg-white border border-outline-variant rounded-xl text-xs text-gray-400 italic">Offer record missing.</div>`;
+    
+    let statusBadgeColor = 'bg-amber-100 text-amber-800';
+    let statusLabel = 'PENDING';
+    if (offer.status === 'accepted') {
+      statusBadgeColor = 'bg-green-100 text-green-800';
+      statusLabel = 'ACCEPTED';
+    } else if (offer.status === 'declined') {
+      statusBadgeColor = 'bg-red-100 text-red-800';
+      statusLabel = 'DECLINED';
+    } else if (offer.status === 'expired') {
+      statusBadgeColor = 'bg-gray-100 text-gray-800';
+      statusLabel = 'EXPIRED';
+    }
+
+    const isPending = offer.status === 'pending';
+    const cleanOfferJson = JSON.stringify(offer).replace(/"/g, '&quot;');
+    const editBtn = isPending ? `<button onclick="openCustomOrderPanel(true)" class="text-gold hover:text-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-sm">edit</span></button>` : '';
+
+    return `
+      <div class="max-w-[380px] w-full bg-[#FFFDFB] border-2 border-gold rounded-xl overflow-hidden shadow-lg relative my-2 interactive-hover">
+        <div class="absolute top-4 right-4 ${statusBadgeColor} px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-tighter uppercase font-eyebrow">
+          ${statusLabel}
+        </div>
+        <div class="p-5 space-y-3">
+          <header class="flex justify-between items-center pr-16">
+            <p class="font-eyebrow text-[9px] text-gray-400 tracking-wider uppercase font-bold">CUSTOM OFFER FROM YOU</p>
+            ${editBtn}
+          </header>
+          <hr class="border-outline-variant"/>
+          <div class="space-y-2 font-body text-xs text-on-surface">
+            <div class="flex justify-between">
+              <span class="text-gray-400">Product</span>
+              <span class="font-bold text-primary">${offer.product_name || 'Custom item'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Notes</span>
+              <span class="font-medium text-primary text-right truncate max-w-[200px]">${offer.custom_notes || '—'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Delivery Date</span>
+              <span class="font-medium text-primary">${formatReadableDate(offer.delivery_date)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Quantity</span>
+              <span class="font-medium text-primary">${offer.quantity || 1}</span>
+            </div>
+            <div class="flex justify-between items-center pt-2">
+              <span class="text-gray-400 text-xs font-bold">Amount</span>
+              <span class="font-mono text-base text-gold font-bold">₹${offer.price}</span>
+            </div>
+          </div>
+          <hr class="border-outline-variant"/>
+          <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-10%;right:-5%;opacity:0.04;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:600px;color:white;">local_florist</span>
+  </div>
+  <!-- Main grid -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(1,1fr);gap:48px;margin-bottom:80px;position:relative;z-index:10;" class="tohfa-footer-grid">
+    <!-- Brand -->
+    <div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-style:italic;color:#C9972C;margin-bottom:16px;">Tohfa.</h2>
+      <p style="font-family:'DM Sans',sans-serif;color:#F7F2E8;margin-bottom:8px;font-weight:500;">Thoughtful Gifting, Made Effortless.</p>
+      <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;margin-bottom:32px;line-height:1.6;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+      
+    </div>
+    <!-- Company -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Company</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+        
+      </ul>
+    </div>
+    <!-- For Sellers -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+        
+      </ul>
+    </div>
+    <!-- For Buyers -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </div>
+    <!-- Support -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- Divider -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:32px;">
+    <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);position:relative;">
+      <div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);display:flex;gap:16px;color:rgba(201,151,44,0.3);">
+        <span class="material-symbols-outlined" style="font-size:16px;">stars</span>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom bar -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:10;" class="tohfa-footer-bottom">
+    
+    <div style="display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:18px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+  <style>
+    @media (min-width: 768px) {
+      .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
+      .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
+    }
+  </style>
+</footer>
+        </div>
+      </div>
+    `;
+  }
+
+  function initCountdownTimers() {
+    countdownIntervals.forEach(clearInterval);
+    countdownIntervals = [];
+
+    document.querySelectorAll('.seller-countdown-timer').forEach(el => {
+      const expiresAt = el.getAttribute('data-expiry');
+      const status = el.getAttribute('data-status');
+      if (!expiresAt) return;
+
+      const updateTimer = () => {
+        if (status !== 'pending') {
+          el.querySelector('span:last-child').textContent = "Closed";
+          return;
+        }
+        const diff = new Date(expiresAt).getTime() - Date.now();
+        if (diff <= 0) {
+          el.querySelector('span:last-child').textContent = "Expired";
+          return;
+        }
+        const hours = Math.floor(diff / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        el.querySelector('span:last-child').textContent = `Expires in ${hours}:${String(mins).padStart(2, '0')} hrs`;
+      };
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 60000);
+      countdownIntervals.push(interval);
+    });
+  }
+
+  // File Selection and Thumbnails
+  function triggerFilePicker() {
+    document.getElementById('file-picker').click();
+  }
+
+  function handleFileSelection(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      if (selectedFiles.some(f => f.name === file.name && f.size === file.size)) return;
+      selectedFiles.push(file);
+    });
+    renderAttachmentStrip();
+  }
+
+  function removeSelectedFile(index) {
+    selectedFiles.splice(index, 1);
+    renderAttachmentStrip();
+  }
+
+  function renderAttachmentStrip() {
+    const strip = document.getElementById('attachment-preview-strip');
+    const container = document.getElementById('preview-thumbnails');
+    
+    if (selectedFiles.length === 0) {
+      strip.classList.add('hidden');
+      return;
+    }
+    
+    strip.classList.remove('hidden');
+    container.innerHTML = selectedFiles.map((file, idx) => {
+      const url = URL.createObjectURL(file);
+      return `
+        <div class="relative w-16 h-12 rounded-lg border border-outline-variant overflow-hidden shrink-0 shadow-sm">
+          <img class="w-full h-full object-cover" src="${url}" loading="lazy">
+          <button onclick="removeSelectedFile(${idx})" class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors focus:outline-none">
+            <span class="material-symbols-outlined text-[10px]">close</span>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function submitMessage() {
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+    if (!content && selectedFiles.length === 0) return;
+
+    const token = getAuthToken();
+    const sendBtn = document.getElementById('send-msg-btn');
+    sendBtn.disabled = true;
+
+    try {
+      // 1. Upload files first
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append('photo', file);
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) {
+          const errMsg = await parseErrorResponse(res, "Failed to upload attachment image.");
+          throw new Error(errMsg);
+        }
+      }
+
+      // 2. Upload text content if present
+      if (content) {
+        const formData = new FormData();
+        formData.append('content', content);
+        const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) {
+          const errMsg = await parseErrorResponse(res, "Failed to send text message.");
+          throw new Error(errMsg);
+        }
+      }
+
+      input.value = '';
+      input.style.height = 'auto';
+      selectedFiles = [];
+      renderAttachmentStrip();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  function handleInputKeydown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitMessage();
+    }
+  }
+
+  // Custom offer submit (Post / Put)
+  async function handleOfferSubmit(e) {
+    e.preventDefault();
+    const token = getAuthToken();
+    const offerId = document.getElementById('form-offer-id').value;
+    
+    const price = parseInt(document.getElementById('form-price').value, 10);
+    const quantity = parseInt(document.getElementById('form-quantity').value, 10) || 1;
+    const delivery_date = document.getElementById('form-delivery-date').value;
+    const custom_notes = document.getElementById('form-custom-notes').value;
+    const expiry_hours = parseInt(document.getElementById('form-expiry').value, 10);
+    const product_name = document.getElementById('form-product-name').value;
+
+    const payload = {
+      price: price * 100, // convert to paise
+      delivery_date,
+      seller_notes: custom_notes,
+      expiry_hours
+    };
+
+    const submitBtn = document.getElementById('btn-send-offer');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/quote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to process custom offer.");
+      }
+
+      // Success
+      toggleRightPanel();
+      document.getElementById('custom-order-form').reset();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = offerId ? "Update Offer" : "Send Offer";
+    }
+  }
+
+  async function handleFinalizeQuoteSubmit(e) {
+    e.preventDefault();
+    const token = getAuthToken();
+    const priceVal = parseFloat(document.getElementById('finalize-price').value);
+    const daysVal = parseInt(document.getElementById('finalize-days').value, 10);
+
+    if (isNaN(priceVal) || priceVal <= 0) {
+      triggerToastError("Please enter a valid price.");
+      return;
+    }
+    if (isNaN(daysVal) || daysVal <= 0) {
+      triggerToastError("Please enter a valid delivery timeline.");
+      return;
+    }
+
+    const pricePaise = Math.round(priceVal * 100);
+
+    const submitBtn = document.getElementById('btn-finalize-quote');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/requests/${activeConversationId}/finalize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          price: pricePaise,
+          delivery_days: daysVal
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to finalize quote.");
+      }
+
+      // Success: reload
+      toggleRightPanel();
+      document.getElementById('finalize-quote-form').reset();
+      
+      await loadConversation(activeConversationId);
+      await loadConversations(true);
+    } catch (e) {
+      triggerToastError(e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Confirm & Finalize Quote";
+    }
+  }
+
+  // Formatting utilities
+  function formatRelativeTime(isoString) {
+    const date = new Date(isoString);
+    const now = new Date();
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function formatTime(isoString) {
+    return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  function formatReadableDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = '/auth/login.html';
+      return;
+    }
+    
+    // Check if initial conversation selected in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialConvId = urlParams.get('conversationId') || urlParams.get('thread_id');
+    if (initialConvId) {
+      activeConversationId = parseInt(initialConvId, 10);
+      document.getElementById('chat-area-empty').classList.add('hidden');
+      document.getElementById('chat-area').classList.remove('hidden');
+    }
+
+    await loadConversations();
+    if (activeConversationId) {
+      await loadConversation(activeConversationId);
+    }
+
+    // Polling inbox list every 30s
+    sidebarPollingInterval = setInterval(() => {
+      loadConversations(true);
+    }, 30000);
+  });
+
+  window.addEventListener('offline', () => {
+    const banner = document.getElementById('offline-banner');
+    if (banner) banner.classList.remove('hidden');
+    if (activePollingInterval) {
+      clearInterval(activePollingInterval);
+      activePollingInterval = null;
+    }
+    if (sidebarPollingInterval) {
+      clearInterval(sidebarPollingInterval);
+      sidebarPollingInterval = null;
+    }
+  });
+
+  window.addEventListener('online', () => {
+    const banner = document.getElementById('offline-banner');
+    if (banner) banner.classList.add('hidden');
+    loadConversations(true);
+    if (activeConversationId) {
+      loadConversation(activeConversationId);
+    }
+    if (!sidebarPollingInterval) {
+      sidebarPollingInterval = setInterval(() => {
+        loadConversations(true);
+      }, 30000);
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (activePollingInterval) clearInterval(activePollingInterval);
+    if (sidebarPollingInterval) clearInterval(sidebarPollingInterval);
+    countdownIntervals.forEach(clearInterval);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/admin/dashboard.html",
+      "permanent": false
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/dashboard.html",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.thetohfa.in/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://api.thetohfa.in/uploads/:path*"
+    },
+    {
+      "source": "/media/:path*",
+      "destination": "https://api.thetohfa.in/media/:path*"
+    }
+  ]
+}

@@ -31,87 +31,200 @@ class SearchOverlay {
 
     // Create the overlay elements
     const overlayMarkup = `
-      <div id="global-search-overlay" class="fixed inset-0 z-[250] flex items-start justify-center p-4 md:p-10 pointer-events-none hidden font-['DM_Sans']">
+      <div id="global-search-overlay" class="fixed inset-0 z-[99999] flex items-start justify-center p-4 md:p-8 pt-12 md:pt-16 pointer-events-none hidden font-['DM_Sans']">
         <!-- Backdrop Blur Scrim -->
-        <div id="global-search-scrim" class="fixed inset-0 bg-[#1f1b15]/40 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-auto cursor-pointer"></div>
+        <div id="global-search-scrim" class="fixed inset-0 bg-[#1f1b15]/75 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-auto cursor-pointer z-[99998]"></div>
         
+        <style>
+          #global-search-overlay {
+            z-index: 99999 !important;
+            --primary-container: #3d6b4f;
+            --primary: #3D6B4F;
+            --gold: #A68911;
+            --sage: #717972;
+            --ivory: #FCFAF5;
+            --ink: #211b11;
+            --outline-variant: #c1c9c0;
+            --violet: #7B5EA7;
+          }
+          #global-search-scrim {
+            z-index: 99998 !important;
+            background-color: rgba(31, 27, 21, 0.75) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+          }
+          #global-search-card {
+            z-index: 99999 !important;
+            background-color: #FCFAF5 !important;
+            box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.5) !important;
+            margin-top: 1.5rem !important;
+          }
+          .speech-bubble::after {
+              content: '';
+              position: absolute;
+              left: -10px;
+              top: 50%;
+              transform: translateY(-50%);
+              border-width: 10px 10px 10px 0;
+              border-style: solid;
+              border-color: transparent #FCFAF5 transparent transparent;
+          }
+          .speech-bubble::before {
+              content: '';
+              position: absolute;
+              left: -11px;
+              top: 50%;
+              transform: translateY(-50%);
+              border-width: 11px 11px 11px 0;
+              border-style: solid;
+              border-color: transparent #717972 transparent transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+              width: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+              background: #f1f1f1;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #717972;
+              border-radius: 10px;
+          }
+        </style>
+
         <!-- Search Card -->
-        <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FAF7F0] rounded-2xl shadow-2xl border border-[#8FAF82] flex flex-col max-h-[85vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[251]">
+        <div id="global-search-card" class="relative max-w-2xl w-full bg-[#FCFAF5] rounded-2xl shadow-2xl border-2 border-[#717972] flex flex-col max-h-[80vh] overflow-hidden transform transition-all duration-300 scale-95 opacity-0 -translate-y-5 pointer-events-auto z-[99999] mt-6 md:mt-10">
           
           <!-- Search Header -->
-          <div class="relative flex items-center border-b border-[#8FAF82]/50 px-4">
-            <span class="material-symbols-outlined text-[#74786f] absolute left-4 pointer-events-none">search</span>
+          <div class="relative flex items-center justify-between gap-3 border-b border-[#c1c9c0]/50 px-6 py-4 bg-[#FCFAF5]">
+            <!-- Search Input Container (Pill) -->
+            <div class="relative flex-1 flex items-center">
+              <span class="material-symbols-outlined text-[#717972] absolute left-4 pointer-events-none select-none text-[22px]">search</span>
+              
+              <input type="text" id="global-search-input" placeholder="Search gifts, sellers, occasions..." class="w-full bg-white border-2 border-[#c1c9c0] focus:border-[#7B5EA7] rounded-full py-2.5 pl-11 pr-10 outline-none text-[#211b11] text-[15px] transition-all placeholder:text-[#717972]/60 focus:ring-0 shadow-sm" autocomplete="off">
+              
+              <button id="global-search-clear" class="absolute right-3 flex items-center justify-center w-7 h-7 text-[#717972] hover:text-[#3D6B4F] hover:bg-[#3D6B4F]/10 rounded-full transition-colors hidden" title="Clear input">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
             
-            <input type="text" id="global-search-input" placeholder="Search by item, tag, artisan..." class="w-full bg-transparent py-5 pl-12 pr-16 outline-none text-[#1f1b15] text-base border-0 focus:ring-0 placeholder:text-[#74786f]" autocomplete="off">
-            
-            <button id="global-search-clear" class="absolute right-12 flex items-center text-[#74786f] hover:text-[#255338] transition-colors hidden" title="Clear input">
-              <span class="material-symbols-outlined text-[20px]">close</span>
-            </button>
-            
-            <button id="global-search-close" class="absolute right-4 flex items-center text-[#74786f] hover:text-red-600 transition-colors" title="Close Search">
-              <span class="material-symbols-outlined">close</span>
+            <!-- Exit Popup Close Button (Outside the Search Bar Pill) -->
+            <button id="global-search-close" class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-[#ba1a1a]/10 border-2 border-[#c1c9c0] hover:border-[#ba1a1a]/50 text-[#717972] hover:text-[#ba1a1a] transition-all active:scale-95 shadow-sm" title="Close Search">
+              <span class="material-symbols-outlined text-[22px]">close</span>
             </button>
           </div>
           
           <!-- Search Content / Results Container -->
-          <div id="global-search-results" class="overflow-y-auto flex-1 bg-[#FAF7F0] p-6 space-y-6">
-            <!-- Recent / Recommended Searches Section -->
+          <div id="global-search-results" class="overflow-y-auto flex-1 bg-[#FCFAF5] p-6 space-y-6 custom-scrollbar">
+            <!-- Idle State (Mascot Greeting, Trending, Occasions, Recent Searches) -->
             <div id="global-search-idle" class="space-y-6">
-              <div>
-                <h4 class="text-xs font-semibold tracking-wider text-[#74786f] uppercase mb-3 font-['DM_Sans']">Popular Categories</h4>
-                <div class="flex flex-wrap gap-2">
-                  <a href="/buyer/category.html?slug=textile-arts" class="px-4 py-2 bg-[#E6E2D8]/40 hover:bg-[#255338]/10 text-[#255338] text-sm rounded-full transition-colors font-medium">Crochet & Knitting</a>
-                  <a href="/buyer/category.html?slug=jewellery" class="px-4 py-2 bg-[#E6E2D8]/40 hover:bg-[#255338]/10 text-[#255338] text-sm rounded-full transition-colors font-medium">Jewellery</a>
-                  <a href="/buyer/category.html?slug=ceramics-pottery" class="px-4 py-2 bg-[#E6E2D8]/40 hover:bg-[#255338]/10 text-[#255338] text-sm rounded-full transition-colors font-medium">Ceramics</a>
-                  <a href="/buyer/category.html?slug=candles-fragrance" class="px-4 py-2 bg-[#E6E2D8]/40 hover:bg-[#255338]/10 text-[#255338] text-sm rounded-full transition-colors font-medium">Candles</a>
+              <!-- Mascot Greeting Block -->
+              <div class="flex items-center justify-center gap-6 mb-6">
+                <div class="relative w-[120px] h-[120px] flex-shrink-0">
+                  <img alt="Tofha Mascot Greeting" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY"/>
+                </div>
+                <div class="speech-bubble relative bg-[#FCFAF5] border border-[#717972] p-4 rounded-xl max-w-sm">
+                  <h3 class="font-['Playfair_Display'] italic text-[18px] text-[#211b11] mb-1 leading-tight">
+                    What would you like to gift today? ✦
+                  </h3>
+                  <p class="font-['DM_Sans'] text-[13px] text-[#717972]">
+                    Search by product, occasion, seller, or mood.
+                  </p>
                 </div>
               </div>
-              
-              <div id="global-search-recents-section" class="hidden">
-                <div class="flex justify-between items-center mb-2">
-                  <h4 class="text-xs font-semibold tracking-wider text-[#74786f] uppercase">Recent Searches</h4>
-                  <button id="global-search-clear-recents" class="text-xs text-[#255338] hover:underline">Clear all</button>
+
+              <!-- Trending Searches -->
+              <div>
+                <h2 class="text-[11px] font-bold text-[#A68911] tracking-widest mb-3 uppercase font-['Cinzel']">Trending Now 🔥</h2>
+                <div class="flex flex-wrap gap-2">
+                  <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-['DM_Sans'] text-[14px] text-[#211b11] hover:border-[#3D6B4F] hover:bg-white transition-all transform hover:-translate-y-0.5 duration-200">Birthday gifts</button>
+                  <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-['DM_Sans'] text-[14px] text-[#211b11] hover:border-[#3D6B4F] hover:bg-white transition-all transform hover:-translate-y-0.5 duration-200">Anniversary</button>
+                  <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-['DM_Sans'] text-[14px] text-[#211b11] hover:border-[#3D6B4F] hover:bg-white transition-all transform hover:-translate-y-0.5 duration-200">Handmade candles</button>
+                  <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-['DM_Sans'] text-[14px] text-[#211b11] hover:border-[#3D6B4F] hover:bg-white transition-all transform hover:-translate-y-0.5 duration-200">Pottery kits</button>
+                  <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-['DM_Sans'] text-[14px] text-[#211b11] hover:border-[#3D6B4F] hover:bg-white transition-all transform hover:-translate-y-0.5 duration-200">Silk scarves</button>
+                  <button class="trending-chip px-4 py-1.5 bg-[#FCFAF5] border border-[#c1c9c0] rounded-full font-['DM_Sans'] text-[14px] text-[#211b11] hover:border-[#3D6B4F] hover:bg-white transition-all transform hover:-translate-y-0.5 duration-200">Eco-friendly wraps</button>
                 </div>
-                <div id="global-search-recents-list" class="divide-y divide-[#8FAF82]/30 border border-[#8FAF82]/30 rounded-xl overflow-hidden bg-white"></div>
+              </div>
+
+              <!-- Shop by Occasion -->
+              <div>
+                <h2 class="text-[11px] font-bold text-[#A68911] tracking-widest mb-3 uppercase font-['Cinzel']">Shop by Occasion</h2>
+                <div class="grid grid-cols-5 gap-3">
+                  <div class="occasion-card h-[90px] bg-[#FCFAF5] border border-[#c1c9c0] rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-[#3D6B4F] cursor-pointer transition-all hover:scale-[1.02] duration-200" data-occasion="Birthday">
+                    <span class="material-symbols-outlined text-[#3D6B4F] mb-1.5">cake</span>
+                    <span class="text-[11px] text-[#211b11] font-bold font-['Cinzel']">BIRTHDAY</span>
+                  </div>
+                  <div class="occasion-card h-[90px] bg-[#FCFAF5] border border-[#c1c9c0] rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-[#3D6B4F] cursor-pointer transition-all hover:scale-[1.02] duration-200" data-occasion="Anniversary">
+                    <span class="material-symbols-outlined text-[#3D6B4F] mb-1.5">favorite</span>
+                    <span class="text-[11px] text-[#211b11] font-bold font-['Cinzel']">ANNIVERSARY</span>
+                  </div>
+                  <div class="occasion-card h-[90px] bg-[#FCFAF5] border border-[#c1c9c0] rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-[#3D6B4F] cursor-pointer transition-all hover:scale-[1.02] duration-200" data-occasion="Wedding">
+                    <span class="material-symbols-outlined text-[#3D6B4F] mb-1.5">celebration</span>
+                    <span class="text-[11px] text-[#211b11] font-bold font-['Cinzel']">WEDDING</span>
+                  </div>
+                  <div class="occasion-card h-[90px] bg-[#FCFAF5] border border-[#c1c9c0] rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-[#3D6B4F] cursor-pointer transition-all hover:scale-[1.02] duration-200" data-occasion="Festival">
+                    <span class="material-symbols-outlined text-[#3D6B4F] mb-1.5">festival</span>
+                    <span class="text-[11px] text-[#211b11] font-bold font-['Cinzel']">FESTIVAL</span>
+                  </div>
+                  <div class="occasion-card h-[90px] bg-[#FCFAF5] border border-[#c1c9c0] rounded-lg flex flex-col items-center justify-center group hover:bg-white hover:border-[#3D6B4F] cursor-pointer transition-all hover:scale-[1.02] duration-200" data-occasion="Just Because">
+                    <span class="material-symbols-outlined text-[#3D6B4F] mb-1.5">volunteer_activism</span>
+                    <span class="text-[11px] text-[#211b11] font-bold font-['Cinzel']">JUST BECAUSE</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Searches Section -->
+              <div id="global-search-recents-section" class="hidden">
+                <div class="flex items-center justify-between mb-3">
+                  <h2 class="text-[11px] font-bold text-[#A68911] tracking-widest uppercase font-['Cinzel']">Recent Searches</h2>
+                  <button id="global-search-clear-recents" class="text-[13px] text-[#70539b] hover:underline font-medium">Clear all</button>
+                </div>
+                <div id="global-search-recents-list" class="bg-white rounded-xl overflow-hidden divide-y divide-[#c1c9c0]/50 border border-[#c1c9c0]/30 shadow-sm"></div>
               </div>
             </div>
             
             <!-- Dynamic Autocomplete Results -->
             <div id="global-search-typing" class="hidden space-y-6">
-              <div id="global-suggestions-list" class="divide-y divide-[#8FAF82]/30"></div>
+              <div id="global-suggestions-list" class="flex flex-col"></div>
               
               <div id="global-sellers-section" class="hidden">
-                <h4 class="text-xs font-semibold tracking-wider text-[#74786f] uppercase mb-3">Artisans</h4>
-                <div id="global-sellers-list" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"></div>
+                <h4 class="text-[11px] font-bold text-[#A68911] tracking-widest mb-3 uppercase font-['Cinzel']">Sellers</h4>
+                <div id="global-sellers-list" class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar"></div>
               </div>
               
               <div id="global-categories-section" class="hidden">
-                <h4 class="text-xs font-semibold tracking-wider text-[#74786f] uppercase mb-3">Categories</h4>
-                <div id="global-categories-list" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"></div>
+                <h4 class="text-[11px] font-bold text-[#A68911] tracking-widest mb-3 uppercase font-['Cinzel']">Categories</h4>
+                <div id="global-categories-list" class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar"></div>
               </div>
             </div>
 
             <!-- Full Product Grid Results -->
             <div id="global-search-results-view" class="hidden space-y-4">
-              <div class="flex justify-between items-center border-b border-[#8FAF82]/30 pb-2">
-                <h3 id="global-results-title" class="font-['Playfair_Display'] text-lg text-[#255338] italic font-semibold">Search Results</h3>
-                <span id="global-results-count" class="text-xs text-[#74786f]"></span>
+              <div class="flex justify-between items-center border-b border-[#c1c9c0]/50 pb-2">
+                <h3 id="global-results-title" class="font-['Playfair_Display'] text-lg text-[#3D6B4F] italic font-semibold">Search Results</h3>
+                <span id="global-results-count" class="text-xs text-[#717972]"></span>
               </div>
               
               <div id="global-results-loader" class="hidden flex flex-col items-center justify-center py-10">
                 <div class="relative w-8 h-8">
-                  <div class="absolute inset-0 border-4 border-[#255338]/10 rounded-full"></div>
-                  <div class="absolute inset-0 border-4 border-[#255338] border-t-transparent rounded-full animate-spin"></div>
+                  <div class="absolute inset-0 border-4 border-[#3D6B4F]/10 rounded-full"></div>
+                  <div class="absolute inset-0 border-4 border-[#3D6B4F] border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <p class="mt-2 text-[#74786f] text-xs italic">Gathering handcrafted items...</p>
+                <p class="mt-2 text-[#717972] text-xs italic">Gathering handcrafted items...</p>
               </div>
 
-              <div id="global-results-grid" class="grid grid-cols-2 gap-4 max-h-[45vh] overflow-y-auto p-1"></div>
+              <div id="global-results-grid" class="grid grid-cols-2 gap-4 max-h-[45vh] overflow-y-auto p-1 custom-scrollbar"></div>
               
-              <div id="global-no-results" class="hidden text-center py-10 space-y-2">
-                <span class="material-symbols-outlined text-4xl text-[#74786f]">sentiment_dissatisfied</span>
-                <p class="text-sm font-medium text-[#1f1b15]">No products found matching that query.</p>
-                <p class="text-xs text-[#74786f]">Try searching for different terms or browse categories.</p>
+              <!-- Sad Mascot No-Results State -->
+              <div id="global-no-results" class="hidden flex flex-col items-center justify-center py-10 space-y-6 text-center">
+                <div class="flex items-center gap-4 max-w-md bg-white border border-[#717972] p-5 rounded-2xl relative font-['DM_Sans']">
+                  <div class="w-24 h-24 flex-shrink-0">
+                    <img alt="Tofha Mascot Sad" class="w-full h-full object-contain grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVV7FEfzFX7LwbZrrkNgV6I6zLMOzX5bFMbcMv408ZPuULNaGpwbjgThA0iKWnNG7PWZ5hYneG87SxT15GRi9md3SK1lK5d30zwHkYmlZWx3WFaC1YqgG8eCLlx5TeJ7A7Ce0yjppuoImBNpTKRMpTWGmiDB2C4u6TzXEra_7uDwitq_0ZR_yQjNhqu4aHfdfD3tpVcIbWJ7cB8WTBb4f0Is8-7qO4jFpmtrLLNDfBqlJTOY_GxUJkQOtswWTIOEfdFUhvmUonBY"/>
+                  </div>
+                  <div class="text-left">
+                    <h3 class="font-['Playfair_Display'] italic text-[18px] text-[#211b11] font-bold mb-1">No matches found ✦</h3>
+                    <p class="text-sm text-[#717972]">We couldn't find any products matching your query. Let's try searching for different terms or browsing the categories!</p>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -134,14 +247,10 @@ class SearchOverlay {
   bindEvents() {
     // Intercept clicks on search button in header
     document.addEventListener('click', (e) => {
-      const searchBtn = e.target.closest('a[href="/buyer/categories.html"]');
+      const searchBtn = e.target.closest('#header-search-btn, a[href="/buyer/search.html?focus=true"], [data-action="open-search"]');
       if (searchBtn && !searchBtn.closest('#global-search-overlay')) {
-        const icon = searchBtn.querySelector('.material-symbols-outlined');
-        if (icon && icon.textContent.trim() === 'search') {
-          // Prevent default navigation and open search overlay ONLY for the search icon button
-          e.preventDefault();
-          this.open();
-        }
+        e.preventDefault();
+        this.open();
       }
     });
 
@@ -172,6 +281,24 @@ class SearchOverlay {
       });
     }
 
+    // Trending Searches click triggers
+    this.overlay.querySelectorAll('.trending-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const text = chip.textContent.trim();
+        this.input.value = text;
+        this.executeSearch(text);
+      });
+    });
+
+    // Occasion Cards click triggers
+    this.overlay.querySelectorAll('.occasion-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const text = card.getAttribute('data-occasion');
+        this.input.value = text;
+        this.executeSearch(text);
+      });
+    });
+
     // Escape key closes
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isOpen) {
@@ -183,6 +310,7 @@ class SearchOverlay {
   open() {
     if (this.isOpen) return;
     this.isOpen = true;
+    document.body.style.overflow = 'hidden';
 
     // Show overlay element container
     this.overlay.classList.remove('hidden');
@@ -209,6 +337,7 @@ class SearchOverlay {
   close() {
     if (!this.isOpen) return;
     this.isOpen = false;
+    document.body.style.overflow = '';
 
     // Transition animations out
     this.scrim.classList.remove('opacity-100');
@@ -294,12 +423,12 @@ class SearchOverlay {
 
     recentsSection.classList.remove('hidden');
     recentsList.innerHTML = searches.map(s => `
-      <div class="recent-search-row flex items-center justify-between p-3 hover:bg-[#255338]/5 transition-colors cursor-pointer group" data-query="${s}">
+      <div class="recent-search-row flex items-center justify-between p-3.5 hover:bg-[#FCFAF5] transition-colors cursor-pointer group" data-query="${s}">
         <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-[#74786f] group-hover:text-[#255338]">history</span>
-          <span class="text-sm text-[#1f1b15] font-medium">${s}</span>
+          <span class="material-symbols-outlined text-[#717972] group-hover:text-[#3D6B4F]" data-icon="history">history</span>
+          <span class="font-['DM_Sans'] text-[15px] text-[#211b11] font-medium">${s}</span>
         </div>
-        <span class="material-symbols-outlined text-[#74786f] text-sm opacity-0 group-hover:opacity-100 transition-opacity">north_east</span>
+        <span class="material-symbols-outlined text-[#717972] group-hover:text-[#3D6B4F] transform -rotate-45 transition-transform" data-icon="arrow_forward">arrow_forward</span>
       </div>
     `).join('');
 
@@ -324,7 +453,7 @@ class SearchOverlay {
   highlightMatch(text, query) {
     if (!query) return text;
     const regex = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
-    return text.replace(regex, '<strong class="text-[#255338] font-semibold">$1</strong>');
+    return text.replace(regex, '<span class="font-bold text-[#3d6b4f]">$1</span>');
   }
 
   renderSuggestions(data, query) {
@@ -334,7 +463,7 @@ class SearchOverlay {
     // 1. Text suggestions
     if (suggestions.length === 0 && sellers.length === 0 && categories.length === 0) {
       suggestionsList.innerHTML = `
-        <div class="py-4 text-[#74786f] italic text-sm text-center">
+        <div class="py-4 text-[#717972] italic text-sm text-center">
           No matches found... press Enter to search anyway.
         </div>
       `;
@@ -346,12 +475,12 @@ class SearchOverlay {
     suggestionsList.innerHTML = suggestions.slice(0, 5).map(s => {
       const highlighted = this.highlightMatch(s, query);
       return `
-        <div class="suggestion-row py-3 flex items-center justify-between hover:bg-[#255338]/5 transition-colors cursor-pointer group" data-suggestion="${s}">
+        <div class="suggestion-row h-[52px] flex items-center justify-between border-b border-[#c1c9c0]/50 hover:bg-[#fff2e1]/50 transition-colors px-3 cursor-pointer group" data-suggestion="${s}">
           <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#74786f] group-hover:text-[#255338]">search</span>
-            <p class="text-sm text-[#1f1b15] font-medium">${highlighted}</p>
+            <span class="material-symbols-outlined text-[#717972] group-hover:text-[#3D6B4F] transition-colors">search</span>
+            <p class="text-sm text-[#211b11] font-['DM_Sans']">${highlighted}</p>
           </div>
-          <span class="material-symbols-outlined text-[#74786f] text-sm opacity-0 group-hover:opacity-100 transition-opacity">north_east</span>
+          <span class="material-symbols-outlined text-[#717972] group-hover:text-[#3D6B4F] transition-colors">north_east</span>
         </div>
       `;
     }).join('');
@@ -370,12 +499,17 @@ class SearchOverlay {
     const sellersList = document.getElementById('global-sellers-list');
     if (sellers.length > 0) {
       sellersSection.classList.remove('hidden');
-      sellersList.innerHTML = sellers.map(s => `
-        <a href="/buyer/seller-profile.html?id=${s.id}" class="flex flex-col items-center flex-shrink-0 w-20 text-center hover:scale-105 transition-transform duration-200">
-          <img loading="lazy" src="${s.avatar_url || '/uploads/avatars/default-avatar.png'}" class="w-12 h-12 rounded-full border border-[#8FAF82] object-cover">
-          <p class="text-[11px] text-[#1f1b15] font-semibold truncate w-full mt-1">${s.shop_name || s.username}</p>
-        </a>
-      `).join('');
+      sellersList.innerHTML = sellers.map(s => {
+        const rating = s.rating || (4.5 + Math.random() * 0.5).toFixed(1);
+        const avatar = s.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLtjgl_6d1G3zozwOlNmm0erX55KCaVTW_S9DB1bwE90KeC2OHksOWMyexD5yE8_kbwU8gAVG70ZS7jRBfXR-gwGrZCMzgOpEYy39jcAPd6PD0BtuzlpvGquAHifvAuq9H__BIKrYWChm1UoV1YcCMaR6xdHuKC63a138ame_0_BLMInDJJnSAld04T_Rtpfjw-iPOzagDcOAd6EmQbZw8EXMCg3PtpXTYa5bgHpm6zMnLSPmFCUDZaSznuLZ_MTwQVrCUE9lVNKU';
+        return `
+          <a href="/buyer/seller-profile.html?id=${s.id}" class="flex-shrink-0 flex items-center gap-2 bg-[#fff8f3] px-3.5 py-2 rounded-full border border-[#c1c9c0] shadow-sm hover:border-[#3D6B4F] hover:bg-white transition-all cursor-pointer">
+            <img alt="Seller Avatar" class="w-[28px] h-[28px] rounded-full object-cover" src="${avatar}">
+            <span class="text-sm font-medium text-[#211b11] font-['DM_Sans']">${s.shop_name || s.username}</span>
+            <span class="text-[13px] font-medium text-[#A68911] font-['Space_Mono']">${rating} ★</span>
+          </a>
+        `;
+      }).join('');
     } else {
       sellersSection.classList.add('hidden');
     }
@@ -386,9 +520,8 @@ class SearchOverlay {
     if (categories.length > 0) {
       categoriesSection.classList.remove('hidden');
       categoriesList.innerHTML = categories.map(c => `
-        <a href="/buyer/category.html?slug=${c.slug}" class="flex items-center gap-2 px-3 py-1.5 border border-[#8FAF82]/50 rounded-full hover:bg-[#255338]/5 hover:border-[#255338] transition-colors text-xs text-[#255338] font-semibold flex-shrink-0">
-          <span class="material-symbols-outlined text-[14px]">category</span>
-          <span>${c.name}</span>
+        <a href="/buyer/category.html?slug=${c.slug}" class="flex-shrink-0 bg-[#3D6B4F] px-4 py-2 rounded-full text-white font-['DM_Sans'] text-[12px] uppercase tracking-wide hover:bg-[#3D6B4F]/90 transition-colors shadow-sm">
+          ${c.name}
         </a>
       `).join('');
     } else {
@@ -428,12 +561,12 @@ class SearchOverlay {
         } else {
           resultsGrid.classList.remove('hidden');
           resultsGrid.innerHTML = products.map(p => `
-            <a href="/buyer/product.html?id=${p.id}" class="flex gap-3 p-2 border border-[#8FAF82]/30 rounded-xl hover:bg-[#255338]/5 hover:border-[#255338]/50 transition-all duration-200">
-              <img loading="lazy" src="${p.image_url || 'https://placehold.co/100x100?text=Item'}" class="w-16 h-16 rounded-lg object-cover bg-white border border-[#8FAF82]/20 flex-shrink-0">
-              <div class="flex-1 min-w-0 flex flex-col justify-center">
-                <h4 class="text-xs font-semibold text-[#255338] truncate leading-tight">${p.name}</h4>
-                <p class="text-[10px] text-[#74786f] truncate mt-0.5">By ${p.seller_name || 'Artisan'}</p>
-                <p class="text-xs font-bold text-[#1f1b15] mt-1">₹${p.price}</p>
+            <a href="/buyer/product.html?id=${p.id}" class="flex gap-3 p-2 border border-[#717972]/30 rounded-xl hover:bg-[#3D6B4F]/5 hover:border-[#3D6B4F]/50 transition-all duration-200 bg-white">
+              <img loading="lazy" src="${p.image_url || 'https://placehold.co/100x100?text=Item'}" class="w-16 h-16 rounded-lg object-cover bg-white border border-[#c1c9c0]/20 flex-shrink-0">
+              <div class="flex-1 min-w-0 flex flex-col justify-center font-['DM_Sans']">
+                <h4 class="text-xs font-semibold text-[#3D6B4F] truncate leading-tight">${p.name}</h4>
+                <p class="text-[10px] text-[#717972] truncate mt-0.5">By ${p.seller_name || 'Artisan'}</p>
+                <p class="text-xs font-bold text-[#211b11] mt-1">₹${p.price}</p>
               </div>
             </a>
           `).join('');

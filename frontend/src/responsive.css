@@ -62,12 +62,7 @@ html, body {
     padding-right: 16px !important;
   }
   
-  /* Reset grid columns */
-  [class*="grid-cols-"] {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-
-  /* Specific exceptions: Product listings grid usually switches to 2 columns for a better catalog experience */
+  /* Enforce 2 columns for product listing feeds on all mobile viewports */
   #product-grid,
   #results-grid,
   #related-treasures-grid,
@@ -80,26 +75,9 @@ html, body {
   .product-grid,
   .search-results-grid,
   .category-product-grid {
+    display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
-  }
-  
-  /* On very small devices, even product grid is 1 column */
-  @media (max-width: 374px) {
-    #product-grid,
-    #results-grid,
-    #related-treasures-grid,
-    #catalog-grid,
-    #custom-grid,
-    #product-feed-grid,
-    #sponsored-product-grid,
-    #feed-skeletons,
-    #makes-grid,
-    .product-grid,
-    .search-results-grid,
-    .category-product-grid {
-      grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-    }
+    gap: 10px !important;
   }
 
   /* Flex row stacks */

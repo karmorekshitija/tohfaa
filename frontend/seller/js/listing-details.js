@@ -586,7 +586,7 @@ async function saveDetails(shouldRedirect) {
     if (!token) {
         showToast('Details validated! (Offline mode)', 'success');
         if (shouldRedirect) {
-            window.location.href = 'listing-photos.html';
+            window.location.href = 'listing-pricing-a.html';
         }
         return;
     }
@@ -638,7 +638,7 @@ async function saveDetails(shouldRedirect) {
 
         showToast('Details saved as draft!', 'success');
         if (shouldRedirect) {
-            window.location.href = 'listing-photos.html';
+            window.location.href = 'listing-pricing-a.html';
         }
     } catch (err) {
         showToast(err.message, 'error');

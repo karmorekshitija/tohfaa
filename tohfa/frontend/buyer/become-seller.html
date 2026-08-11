@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ReportWidget.js" defer></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+  <title>Become a Seller | Tohfa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #C9A84C;
+        border-radius: 10px;
+    }
+    .gold-rule {
+        width: 60px;
+        height: 2px;
+        background-color: #C9A84C;
+    }
+    .error-border {
+        border-color: #ba1a1a !important;
+    }
+    .error-text {
+        color: #ba1a1a;
+        font-size: 12px;
+        margin-top: 4px;
+        display: block;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed top-20 right-6 z-[300] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium">
+    <span id="toast-icon" class="material-symbols-outlined text-lg"></span>
+    <span id="toast-msg"></span>
+</div>
+
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#2d5a3d] shadow-sm flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
+  <div class="text-2xl italic text-white" style="font-family:'Playfair Display', serif;">Tohfa.</div>
+  <div class="flex items-center gap-2">
+    <span class="font-body-md text-white opacity-80">Already a seller?</span>
+    <a class="font-body-md text-[#ffe08f] font-bold hover:text-white transition-colors duration-200 cursor-pointer" href="/seller/dashboard.html">Sign In</a>
+  </div>
+</nav>
+
+<main class="flex min-h-screen pt-[72px]" id="main-content">
+  <!-- Left Column: Brand Identity (40%) -->
+  <section class="hidden lg:flex lg:w-[40%] bg-[#2d5a3d] flex-col justify-between p-16 sticky top-[72px] h-[calc(100vh-72px)] overflow-hidden">
+    <div class="space-y-12">
+      <div class="text-4xl italic text-white" style="font-family:'Playfair Display', serif;">Tohfa.</div>
+      <div class="space-y-4">
+        <h1 class="text-3xl text-white font-bold" style="font-family:'Playfair Display', serif;">Start Selling on Tohfa.</h1>
+        <div class="gold-rule"></div>
+        <p class="font-body-lg text-white/80 max-w-md mt-6">
+          Join India's first organised marketplace for handmade and customised gifts. Reach a discerning audience looking for the human touch.
+        </p>
+      </div>
+      <div class="space-y-6 pt-4">
+        <div class="flex items-center gap-4 group">
+          <span class="material-symbols-outlined text-[#C9A84C]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+          <span class="font-body-md text-white">Real buyers, zero spam</span>
+        </div>
+        <div class="flex items-center gap-4 group">
+          <span class="material-symbols-outlined text-[#C9A84C]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+          <span class="font-body-md text-white">Secure Razorpay payments</span>
+        </div>
+        <div class="flex items-center gap-4 group">
+          <span class="material-symbols-outlined text-[#C9A84C]" style="font-variation-settings: 'FILL' 1;">dashboard_customize</span>
+          <span class="font-body-md text-white">Your own seller dashboard</span>
+        </div>
+      </div>
+    </div>
+    <div class="pt-8 border-t border-white/10">
+      <p class="font-label-sm text-xs text-white/60 tracking-wider">
+        TOHFA · THOUGHTFUL GIFTING, MADE EFFORTLESS
+      </p>
+    </div>
+    <!-- Background Texture -->
+    <div class="absolute bottom-0 right-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
+      <span class="material-symbols-outlined text-[300px] text-white">card_giftcard</span>
+    </div>
+  </section>
+
+  <!-- Right Column: Form (60%) -->
+  <section class="w-full lg:w-[60%] bg-[#F5F0E8] flex justify-center py-16 px-6 lg:px-20 overflow-y-auto">
+    <div class="max-w-[520px] w-full space-y-8">
+      <div class="space-y-2">
+        <h2 class="text-3xl text-[#3c3a35] font-bold" style="font-family:'Playfair Display', serif;">Seller Signup</h2>
+        <p class="font-body-md text-on-surface-variant">Fill in your details to start your artisan journey.</p>
+      </div>
+      <!-- Form Card -->
+      <div class="bg-white rounded-xl shadow-[0_16px_32px_rgba(45,90,61,0.04)] p-8 border-b-4 border-[#C9A84C]">
+        <form class="space-y-8" id="signup-form" novalidate>
+          <!-- Row 1: Personal Details -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="font-label-md text-on-surface-variant font-bold">Full Name *</label>
+              <input id="full-name" class="w-full h-12 px-4 rounded-lg border border-[#D0C9B8] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="Arjun Sharma" type="text" required/>
+              <span id="error-full-name" class="error-text hidden">Full Name is required.</span>
+            </div>
+            <div class="space-y-2">
+              <label class="font-label-md text-on-surface-variant font-bold">Email Address *</label>
+              <input id="email" class="w-full h-12 px-4 rounded-lg border border-[#D0C9B8] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="arjun@studio.com" type="email" required/>
+              <span id="error-email" class="error-text hidden">Valid Email Address is required.</span>
+            </div>
+          </div>
+          <!-- Row 2: Contact Details -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="font-label-md text-on-surface-variant font-bold">Phone Number *</label>
+              <div class="relative flex items-center">
+                <span class="absolute left-4 font-body-md text-on-surface-variant">+91</span>
+                <input id="phone" class="w-full h-12 pl-12 pr-4 rounded-lg border border-[#D0C9B8] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="9876543210" type="tel" required/>
+              </div>
+              <span id="error-phone" class="error-text hidden">Valid 10-digit Phone Number is required.</span>
+            </div>
+            <div class="space-y-2">
+              <label class="font-label-md text-on-surface-variant">WhatsApp Number</label>
+              <div class="relative flex items-center">
+                <span class="absolute left-4 font-body-md text-on-surface-variant">+91</span>
+                <input id="whatsapp" class="w-full h-12 pl-12 pr-4 rounded-lg border border-[#D0C9B8] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="9876543210" type="tel"/>
+              </div>
+              <span id="error-whatsapp" class="error-text hidden">Please enter a valid 10-digit WhatsApp number or leave blank.</span>
+            </div>
+          </div>
+          <!-- Shop Details -->
+          <div class="space-y-6 pt-4 border-t border-outline-variant/30">
+            <div class="space-y-2">
+              <label class="font-label-md text-on-surface-variant">Instagram Handle</label>
+              <div class="relative flex items-center">
+                <span class="absolute left-4 font-body-md text-on-surface-variant">@</span>
+                <input id="instagram" class="w-full h-12 pl-8 pr-4 rounded-lg border border-[#D0C9B8] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md" placeholder="the_gift_studio" type="text"/>
+              </div>
+              <span id="error-instagram" class="error-text hidden">Please enter a valid Instagram handle.</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between items-end">
+                <label class="font-label-md text-on-surface-variant">Short Bio</label>
+                <span class="text-[10px] text-on-surface-variant/60" id="char-counter">0/200</span>
+              </div>
+              <textarea id="bio" class="w-full p-4 rounded-lg border border-[#D0C9B8] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md resize-none" maxlength="200" placeholder="Tell us about your craft..." rows="3"></textarea>
+              <span id="error-bio" class="error-text hidden">Bio cannot exceed 200 characters.</span>
+            </div>
+            <div class="space-y-3">
+              <label class="font-label-md text-on-surface-variant font-bold">Product Categories *</label>
+              <div class="flex flex-wrap gap-2" id="categories-container">
+                <button class="chip h-9 px-4 rounded-full border border-[#D0C9B8] text-sm font-medium text-on-surface-variant hover:border-[#C9A84C] transition-all" data-value="Handmade Jewelry" type="button">Handmade Jewelry</button>
+                <button class="chip h-9 px-4 rounded-full border border-[#D0C9B8] text-sm font-medium text-on-surface-variant hover:border-[#C9A84C] transition-all" data-value="Ceramics" type="button">Ceramics</button>
+                <button class="chip h-9 px-4 rounded-full border border-[#D0C9B8] text-sm font-medium text-on-surface-variant hover:border-[#C9A84C] transition-all" data-value="Textiles" type="button">Textiles</button>
+                <button class="chip h-9 px-4 rounded-full border border-[#D0C9B8] text-sm font-medium text-on-surface-variant hover:border-[#C9A84C] transition-all" data-value="Custom Art" type="button">Custom Art</button>
+                <button class="chip h-9 px-4 rounded-full border border-[#D0C9B8] text-sm font-medium text-on-surface-variant hover:border-[#C9A84C] transition-all" id="other-chip" type="button">Other</button>
+              </div>
+              <div class="hidden overflow-hidden transition-all duration-300" id="other-input-container">
+                <div class="mt-4 p-4 rounded-lg bg-surface border border-[#C9A84C]">
+                  <label class="block text-xs font-bold text-on-surface-variant mb-2">Tell us more</label>
+                  <input id="other-category-input" class="w-full h-10 px-4 bg-white rounded-md border border-[#C9A84C] outline-none font-body-md" placeholder="What do you specialize in?" type="text"/>
+                </div>
+              </div>
+              <span id="error-categories" class="error-text hidden">Select at least one product category.</span>
+            </div>
+          </div>
+          <!-- Confirmation -->
+          <div class="space-y-4 pt-6">
+            <label class="flex items-start gap-3 cursor-pointer group">
+              <div class="relative flex items-center justify-center mt-1">
+                <input id="terms-checkbox" class="peer h-5 w-5 rounded border-[#D0C9B8] text-primary focus:ring-primary cursor-pointer appearance-none checked:bg-primary border-2 transition-all" type="checkbox"/>
+                <span class="material-symbols-outlined absolute text-white scale-0 peer-checked:scale-100 transition-transform pointer-events-none text-sm font-bold">check</span>
+              </div>
+              <span class="font-body-md text-on-surface-variant text-sm leading-snug select-none">
+                I agree to the <a class="text-primary underline font-bold" href="/buyer/terms-conditions.html">Terms &amp; Conditions</a> and Seller Agreement. *
+              </span>
+            </label>
+            <span id="error-terms" class="error-text hidden">You must agree to the Terms &amp; Conditions.</span>
+
+            <label class="flex items-start gap-3 cursor-pointer group">
+              <div class="relative flex items-center justify-center mt-1">
+                <input id="handmade-checkbox" class="peer h-5 w-5 rounded border-[#D0C9B8] text-primary focus:ring-primary cursor-pointer appearance-none checked:bg-primary border-2 transition-all" type="checkbox"/>
+                <span class="material-symbols-outlined absolute text-white scale-0 peer-checked:scale-100 transition-transform pointer-events-none text-sm font-bold">check</span>
+              </div>
+              <span class="font-body-md text-on-surface-variant text-sm leading-snug select-none">
+                I confirm all products are handmade or customized. *
+              </span>
+            </label>
+            <span id="error-handmade" class="error-text hidden">You must confirm that products are handmade or customized.</span>
+          </div>
+          <!-- Submit Button -->
+          <div class="pt-8 flex justify-center">
+            <button id="submit-btn" class="w-full max-w-[280px] h-14 bg-primary text-white rounded-lg font-bold hover:bg-[#2d5a3d] shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95" type="submit">
+              Submit &amp; Join Tohfa
+            </button>
+          </div>
+        </form>
+      </div>
+      <!-- Helper Footer -->
+      <p class="text-center text-sm text-on-surface-variant/60 pb-8">
+        Need help with signup? <a class="text-primary underline" href="#">Contact Seller Support</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<!-- Success Modal Overlay -->
+<div id="success-modal" class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4" style="background: rgba(15, 30, 20, 0.6); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl flex flex-col items-center text-center relative overflow-hidden border border-[#D0C9B8]">
+    <span class="text-[10px] font-bold uppercase tracking-wider text-[#C9A84C] mb-4" style="font-family: 'Space Mono', monospace;">✦ APPLICATION SUBMITTED</span>
+    <h2 class="text-2xl font-bold text-[#144227] mb-2" style="font-family: 'Playfair Display', serif;">Thank you for applying!</h2>
+    <p class="text-sm text-on-surface-variant/70 mb-8" style="font-family: 'DM Sans', sans-serif;">The Tohfa team will reach out to you within 48 hours.</p>
+    <button id="ok-btn" class="w-full bg-[#144227] text-white font-bold text-sm py-4 rounded-xl hover:bg-[#2d5a3d] active:scale-[0.98] transition-all">
+      OK
+    </button>
+  </div>
+</div>
+
+<script type="module">
+  import apiClient from '/src/utils/apiClient.js';
+
+  // Toast Functionality
+  function showToast(msg, type='error') {
+      const t = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const text = document.getElementById('toast-msg');
+      if (!t) return;
+      icon.textContent = type === 'success' ? 'check_circle' : 'error';
+      text.textContent = msg;
+      t.className = `fixed top-20 right-6 z-[300] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium ${
+          type === 'success' ? 'bg-[#bceec8] text-[#00210f]' : 'bg-[#ffdad6] text-[#93000a]'
+      }`;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+  }
+
+  // Check login state and redirect if already seller
+  document.addEventListener('DOMContentLoaded', async () => {
+      const token = sessionStorage.getItem('tohfa_access_token');
+      if (!token) {
+          window.location.href = '/auth/login.html?next=become-seller';
+          return;
+      }
+
+      try {
+          const res = await apiClient.get('/profile/me');
+          if (res.data?.success) {
+              const user = res.data.data;
+              if (user.role === 'seller') {
+                  window.location.href = '/seller/dashboard.html';
+                  return;
+              }
+              // Pre-fill email
+              if (user.email) {
+                  document.getElementById('email').value = user.email;
+              }
+          }
+      } catch (err) {
+          console.error("Failed to load user profile:", err);
+      }
+  });
+
+  // Bio Character Counter
+  const bioArea = document.getElementById('bio');
+  const counter = document.getElementById('char-counter');
+  bioArea.addEventListener('input', () => {
+      const count = bioArea.value.length;
+      counter.textContent = `${count}/200`;
+  });
+
+  // Categories Selection
+  const chips = document.querySelectorAll('.chip:not(#other-chip)');
+  const otherChip = document.getElementById('other-chip');
+  const otherContainer = document.getElementById('other-input-container');
+
+  chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+          chip.classList.toggle('bg-[#144227]');
+          chip.classList.toggle('text-white');
+          chip.classList.toggle('border-[#144227]');
+          chip.classList.toggle('text-on-surface-variant');
+      });
+  });
+
+  otherChip.addEventListener('click', () => {
+      otherChip.classList.toggle('bg-[#C9A84C]');
+      otherChip.classList.toggle('text-white');
+      otherChip.classList.toggle('border-[#C9A84C]');
+      otherChip.classList.toggle('text-on-surface-variant');
+      otherContainer.classList.toggle('hidden');
+  });
+
+  // Form submission
+  const form = document.getElementById('signup-form');
+  form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Reset errors
+      document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('input, textarea').forEach(el => el.classList.remove('error-border'));
+
+      const fullName = document.getElementById('full-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phoneInput = document.getElementById('phone').value.trim();
+      const whatsappInput = document.getElementById('whatsapp').value.trim();
+      const instagram = document.getElementById('instagram').value.trim();
+      const bio = document.getElementById('bio').value.trim();
+      const termsChecked = document.getElementById('terms-checkbox').checked;
+      const handmadeChecked = document.getElementById('handmade-checkbox').checked;
+
+      let isValid = true;
+
+      // Validate name
+      if (!fullName) {
+          document.getElementById('full-name').classList.add('error-border');
+          document.getElementById('error-full-name').classList.remove('hidden');
+          isValid = false;
+      }
+
+      // Validate email
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          document.getElementById('email').classList.add('error-border');
+          document.getElementById('error-email').classList.remove('hidden');
+          isValid = false;
+      }
+
+      // Validate phone (10 digits)
+      const cleanPhone = phoneInput.replace(/\D/g, '');
+      if (cleanPhone.length !== 10) {
+          document.getElementById('phone').classList.add('error-border');
+          document.getElementById('error-phone').classList.remove('hidden');
+          isValid = false;
+      }
+
+      // Validate whatsapp (10 digits if provided)
+      if (whatsappInput && whatsappInput.replace(/\D/g, '').length !== 10) {
+          document.getElementById('whatsapp').classList.add('error-border');
+          document.getElementById('error-whatsapp').classList.remove('hidden');
+          isValid = false;
+      }
+
+      // Collect categories
+      const selectedCategories = [];
+      chips.forEach(chip => {
+          if (chip.classList.contains('bg-[#144227]')) {
+              selectedCategories.push(chip.dataset.value);
+          }
+      });
+
+      if (otherChip.classList.contains('bg-[#C9A84C]')) {
+          const otherVal = document.getElementById('other-category-input').value.trim();
+          if (otherVal) {
+              selectedCategories.push(otherVal);
+          } else {
+              selectedCategories.push('Other');
+          }
+      }
+
+      if (selectedCategories.length === 0) {
+          document.getElementById('error-categories').classList.remove('hidden');
+          isValid = false;
+      }
+
+      // Validate checkboxes
+      if (!termsChecked) {
+          document.getElementById('error-terms').classList.remove('hidden');
+          isValid = false;
+      }
+
+      if (!handmadeChecked) {
+          document.getElementById('error-handmade').classList.remove('hidden');
+          isValid = false;
+      }
+
+      if (!isValid) {
+          showToast('Please fix validation errors');
+          return;
+      }
+
+      // Disable submit button
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Submitting your application…';
+
+      try {
+          const res = await apiClient.post('/seller/apply', {
+              full_name: fullName,
+              email: email,
+              phone: '+91' + cleanPhone,
+              whatsapp: whatsappInput ? '+91' + whatsappInput.replace(/\D/g, '') : null,
+              instagram_handle: instagram ? (instagram.startsWith('@') ? instagram : '@' + instagram) : null,
+              bio: bio || null,
+              categories: selectedCategories,
+              agreed_terms: true,
+              agreed_handmade: true
+          });
+
+          if (res.data?.success) {
+              // Success overlay
+              document.getElementById('main-content').style.filter = 'blur(4px)';
+              document.getElementById('success-modal').classList.remove('hidden');
+          }
+      } catch (err) {
+          console.error(err);
+          const errMsg = err.response?.data?.message || 'Failed to submit application. Please try again.';
+          showToast(errMsg);
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Submit & Join Tohfa';
+      }
+  });
+
+  // Handle OK button redirection
+  document.getElementById('ok-btn').addEventListener('click', () => {
+      window.location.href = '/buyer/home.html';
+  });
+</script>
+</body>
+</html>

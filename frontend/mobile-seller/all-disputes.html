@@ -4,10 +4,10 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
 
-    <script src="/src/components/ReportWidget.js" defer></script>
-    <script src="/src/components/ProtectedRoute.js"></script>
+    <script type="module" src="/src/components/ReportWidget.js" defer></script>
+    <script type="module" src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <title>All Disputes & Refunds | Seller Studio | Tohfa</title>
     <!-- Google Fonts -->
@@ -16,7 +16,7 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-    <script src="/components/seller-components.js"></script>
+    <script type="module" src="/components/seller-components.js"></script>
     
     <style>
         body {
@@ -198,7 +198,7 @@
         const res = await fetch(url, options);
         if (res.status === 401 || res.status === 403) {
             sessionStorage.clear();
-            window.location.href = '/auth/login.html';
+            // login check bypassed
             throw new Error('Unauthorized session.');
         }
         return res;

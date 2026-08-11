@@ -5,7 +5,8 @@ const fs = require('fs');
 const path = require('path');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 const dbStorage = new AsyncLocalStorage();
@@ -65,7 +66,12 @@ function translateSql(sql) {
   if (isInsert && !cleanSql.toUpperCase().includes('RETURNING')) {
     if (cleanSql.toLowerCase().includes('store_config') || cleanSql.toLowerCase().includes('review_request_settings')) {
       cleanSql = cleanSql.trim() + ' RETURNING seller_id';
-    } else if (cleanSql.toLowerCase().includes('follows') || cleanSql.toLowerCase().includes('daily_order_tracking')) {
+    } else if (
+      cleanSql.toLowerCase().includes('follows') || 
+      cleanSql.toLowerCase().includes('daily_order_tracking') ||
+      cleanSql.toLowerCase().includes('listing_subcategories') ||
+      cleanSql.toLowerCase().includes('product_subcategories')
+    ) {
       // No single auto-increment id column
     } else {
       cleanSql = cleanSql.trim() + ' RETURNING id';
@@ -275,310 +281,379 @@ async function initDb() {
     }
     
     // Seed default categories if empty
-    const catCheck = await pool.query('SELECT COUNT(*) FROM categories');
-    if (parseInt(catCheck.rows[0].count) === 0) {
-      console.log('PostgreSQL: Seeding default categories...');
-      const seedCats = [
-        ['Customized Gifts', 'customized-gifts', 'Personalised & bespoke handmade pieces', '🎁'],
-        ['Jewellery', 'jewellery', 'Handcrafted rings, necklaces & bangles', '💍'],
-        ['Hampers', 'hampers', 'Curated gift hampers for all occasions', '🧺'],
-        ['Wedding & Rituals', 'wedding-rituals', 'Traditional wedding essentials & decor', '🔱'],
-        ['Crochet', 'crochet', 'Hand-stitched crochet yarn creations', '🧶'],
-        ['Fabric Crafts', 'fabric-crafts', 'Handmade bags, totes & embroidery', '👜'],
-        ['Festivals', 'festivals', 'Festive decorations & handmade gifts', '🎉'],
-        ['Couples', 'couples', 'Curated & matching gifts for couples', '👩‍❤️‍👨'],
-        ['Home Decor', 'home-decor', 'Hand-carved, woven & crafted home objects', '🏡'],
-        ['Art & Portraits', 'art-portraits', 'Custom digital drawings, paintings & sketches', '🎨']
-      ];
-      for (const cat of seedCats) {
-        await pool.query(
-          'INSERT INTO categories (name, slug, description, icon_emoji, item_count, is_active) VALUES ($1, $2, $3, $4, 0, 1)',
-          cat
-        );
+    try {
+      await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL');
+      await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS banner_image_url TEXT DEFAULT NULL');
+    } catch (e) {
+      console.warn('initDb: categories image columns ALTER warning:', e.message);
+    }
+
+    try {
+      const catCheck = await pool.query('SELECT COUNT(*) FROM categories');
+      if (parseInt(catCheck.rows[0].count) === 0) {
+        console.log('PostgreSQL: Seeding default categories...');
+        const seedCats = [
+          ['Customized Gifts', 'customized-gifts', 'Personalised & bespoke handmade pieces', '🎁'],
+          ['Jewellery', 'jewellery', 'Handcrafted rings, necklaces & bangles', '💍'],
+          ['Hampers', 'hampers', 'Curated gift hampers for all occasions', '🧺'],
+          ['Home Decor', 'home-decor', 'Hand-carved, woven & crafted home objects', '🏡'],
+          ['Crochet', 'crochet', 'Hand-stitched crochet yarn creations', '🧶'],
+          ['Festivals', 'festivals', 'Festive decorations & handmade gifts', '🎉'],
+          ['Fabric Crafts', 'fabric-crafts', 'Handmade bags, totes & embroidery', '👜'],
+          ['Couples', 'couples', 'Curated & matching gifts for couples', '👩‍❤️‍👨'],
+          ['Wedding & Rituals', 'wedding-rituals', 'Traditional wedding essentials & decor', '🔱'],
+          ['Art & Portraits', 'art-portraits', 'Custom digital drawings, paintings & sketches', '🎨']
+        ];
+        for (const cat of seedCats) {
+          await pool.query(
+            'INSERT INTO categories (name, slug, description, icon_emoji, item_count, is_active) VALUES ($1, $2, $3, $4, 0, 1)',
+            cat
+          );
+        }
       }
+    } catch (e) {
+      console.warn('initDb: category seeding warning:', e.message);
+    }
+
+    // Ensure all category rows have valid default image_urls
+    try {
+      const catImageMap = {
+        'customized-gifts': '/img/categories/art_prints.jpg',
+        'jewellery': '/img/categories/jewellery.jpg',
+        'hampers': '/img/categories/dried_florals.jpg',
+        'wedding-rituals': '/img/categories/candles.jpg',
+        'crochet': '/img/categories/journals.jpg',
+        'fabric-crafts': '/img/categories/skincare.jpg',
+        'festivals': '/img/categories/candles.jpg',
+        'couples': '/img/categories/custom_portraits.jpg',
+        'home-decor': '/img/categories/ceramics.jpg',
+        'art-portraits': '/img/categories/art_prints.jpg'
+      };
+      for (const [slug, imgPath] of Object.entries(catImageMap)) {
+        await pool.query('UPDATE categories SET image_url = COALESCE(NULLIF(image_url, \'\'), $1), banner_image_url = COALESCE(NULLIF(banner_image_url, \'\'), $1) WHERE slug = $2', [imgPath, slug]);
+      }
+      await pool.query("UPDATE categories SET image_url = '/img/categories/ceramics.jpg' WHERE image_url IS NULL OR image_url = ''");
+      await pool.query("UPDATE categories SET banner_image_url = image_url WHERE banner_image_url IS NULL OR banner_image_url = ''");
+    } catch (e) {
+      console.warn('initDb: category image update warning:', e.message);
     }
 
     // Seed default admin users if empty
-    const adminCheck = await pool.query('SELECT COUNT(*) FROM admin_users');
-    if (parseInt(adminCheck.rows[0].count) === 0) {
-      console.log('PostgreSQL: Seeding default admin users...');
-      await pool.query(`
-        INSERT INTO admin_users (username, email, password_hash, display_name, role)
-        VALUES ($1, $2, $3, $4, $5)
-      `, ['admin', 'admin@tohfa.in', '$2b$10$CnAUCQOxmhfKawrSsoEVzOvCUZgTLtNilYIFo.K8dJwfrfV8Uk5Ue', 'Tohfa Admin', 'super_admin']);
-      
-      await pool.query(`
-        INSERT INTO admin_users (username, email, password_hash, display_name, role)
-        VALUES ($1, $2, $3, $4, $5)
-      `, ['admin_test', 'admin_test@test.com', '$2b$10$U7GcNaYTwYCjRMDTI7zry.HggpIuapr2ngadFYHnh1iucqbTTlIb2', 'Test Admin', 'super_admin']);
+    try {
+      const adminCheck = await pool.query('SELECT COUNT(*) FROM admin_users');
+      if (parseInt(adminCheck.rows[0].count) === 0) {
+        console.log('PostgreSQL: Seeding default admin users...');
+        await pool.query(`
+          INSERT INTO admin_users (username, email, password_hash, display_name, role)
+          VALUES ($1, $2, $3, $4, $5)
+        `, ['admin', 'admin@tohfa.in', '$2b$10$CnAUCQOxmhfKawrSsoEVzOvCUZgTLtNilYIFo.K8dJwfrfV8Uk5Ue', 'Tohfa Admin', 'super_admin']);
+        
+        await pool.query(`
+          INSERT INTO admin_users (username, email, password_hash, display_name, role)
+          VALUES ($1, $2, $3, $4, $5)
+        `, ['admin_test', 'admin_test@test.com', '$2b$10$U7GcNaYTwYCjRMDTI7zry.HggpIuapr2ngadFYHnh1iucqbTTlIb2', 'Test Admin', 'super_admin']);
+      }
+    } catch (e) {
+      console.warn('initDb: admin seeding warning:', e.message);
     }
 
     // Seed default UI settings slots if empty
-    const uiCheck = await pool.query('SELECT COUNT(*) FROM ui_settings');
-    if (parseInt(uiCheck.rows[0].count) === 0) {
-      console.log('PostgreSQL: Seeding default UI settings slots...');
-      const seedSlots = [
-        ['home_hero_primary', 'hero_image', 'Hero Primary Banner', 'Primary background image for buyer home page hero.'],
-        ['home_hero_secondary', 'hero_image', 'Hero Secondary Banner', 'Overlay or secondary image for buyer home page hero.'],
-        ['home_seasonal_banner', 'banner', 'Home Seasonal Banner', 'Active seasonal highlight banner on homepage.'],
-        ['home_featured_product_1', 'featured_product_id', 'Featured Product 1', 'Featured product slot 1.'],
-        ['home_featured_product_2', 'featured_product_id', 'Featured Product 2', 'Featured product slot 2.'],
-        ['home_featured_product_3', 'featured_product_id', 'Featured Product 3', 'Featured product slot 3.'],
-        ['home_featured_product_4', 'featured_product_id', 'Featured Product 4', 'Featured product slot 4.'],
-        ['home_featured_product_5', 'featured_product_id', 'Featured Product 5', 'Featured product slot 5.'],
-        ['home_featured_product_6', 'featured_product_id', 'Featured Product 6', 'Featured product slot 6.'],
-        ['home_category_spotlight_1', 'category_override', 'Category Spotlight 1', 'Category Highlight 1.'],
-        ['home_category_spotlight_2', 'category_override', 'Category Spotlight 2', 'Category Highlight 2.'],
-        ['home_category_spotlight_3', 'category_override', 'Category Spotlight 3', 'Category Highlight 3.'],
-        ['home_category_spotlight_4', 'category_override', 'Category Spotlight 4', 'Category Highlight 4.'],
-        ['rakhi_banner', 'banner', 'Rakhi Banner (Preset)', 'Seasonal preset for Raksha Bandhan.'],
-        ['diwali_banner', 'banner', 'Diwali Banner (Preset)', 'Seasonal preset for Diwali festival.'],
-        ['christmas_banner', 'banner', 'Christmas Banner (Preset)', 'Seasonal preset for Christmas.']
-      ];
-      for (const slot of seedSlots) {
-        await pool.query(
-          'INSERT INTO ui_settings (slot_name, slot_type, label, description) VALUES ($1, $2, $3, $4)',
-          slot
-        );
+    try {
+      const uiCheck = await pool.query('SELECT COUNT(*) FROM ui_settings');
+      if (parseInt(uiCheck.rows[0].count) === 0) {
+        console.log('PostgreSQL: Seeding default UI settings slots...');
+        const seedSlots = [
+          ['home_hero_primary', 'hero_image', 'Hero Primary Banner', 'Primary background image for buyer home page hero.'],
+          ['home_hero_secondary', 'hero_image', 'Hero Secondary Banner', 'Overlay or secondary image for buyer home page hero.'],
+          ['home_seasonal_banner', 'banner', 'Home Seasonal Banner', 'Active seasonal highlight banner on homepage.'],
+          ['home_featured_product_1', 'featured_product_id', 'Featured Product 1', 'Featured product slot 1.'],
+          ['home_featured_product_2', 'featured_product_id', 'Featured Product 2', 'Featured product slot 2.'],
+          ['home_featured_product_3', 'featured_product_id', 'Featured Product 3', 'Featured product slot 3.'],
+          ['home_featured_product_4', 'featured_product_id', 'Featured Product 4', 'Featured product slot 4.'],
+          ['home_featured_product_5', 'featured_product_id', 'Featured Product 5', 'Featured product slot 5.'],
+          ['home_featured_product_6', 'featured_product_id', 'Featured Product 6', 'Featured product slot 6.'],
+          ['home_category_spotlight_1', 'category_override', 'Category Spotlight 1', 'Category Highlight 1.'],
+          ['home_category_spotlight_2', 'category_override', 'Category Spotlight 2', 'Category Highlight 2.'],
+          ['home_category_spotlight_3', 'category_override', 'Category Spotlight 3', 'Category Highlight 3.'],
+          ['home_category_spotlight_4', 'category_override', 'Category Spotlight 4', 'Category Highlight 4.'],
+          ['rakhi_banner', 'banner', 'Rakhi Banner (Preset)', 'Seasonal preset for Raksha Bandhan.'],
+          ['diwali_banner', 'banner', 'Diwali Banner (Preset)', 'Seasonal preset for Diwali festival.'],
+          ['christmas_banner', 'banner', 'Christmas Banner (Preset)', 'Seasonal preset for Christmas.']
+        ];
+        for (const slot of seedSlots) {
+          await pool.query(
+            'INSERT INTO ui_settings (slot_name, slot_type, label, description) VALUES ($1, $2, $3, $4)',
+            slot
+          );
+        }
       }
+    } catch (e) {
+      console.warn('initDb: UI settings seeding warning:', e.message);
     }
 
-    // Add bank_name to seller_payout_accounts if not exists
-    await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
-
-    // Add ithink_warehouse_id to addresses if not exists
-    await pool.query('ALTER TABLE addresses ADD COLUMN IF NOT EXISTS ithink_warehouse_id TEXT');
-
-    // Create seller_applications table if not exists
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS seller_applications (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        full_name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        whatsapp TEXT,
-        instagram_handle TEXT,
-        bio TEXT,
-        categories TEXT[] NOT NULL,
-        agreed_terms BOOLEAN NOT NULL DEFAULT false,
-        agreed_handmade BOOLEAN NOT NULL DEFAULT false,
-        status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
-        admin_notes TEXT,
-        submitted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        reviewed_at TIMESTAMP WITH TIME ZONE,
-        reviewed_by INTEGER REFERENCES admin_users(id) ON DELETE SET NULL
-      )
-    `);
-
-    // Add whatsapp fields to sellers table if not exists
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp TEXT');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_count INTEGER DEFAULT 0');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_pending_number TEXT');
-    await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_pending_action TEXT');
-
-    // Add whatsapp fields to seller_profiles table if not exists
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp TEXT');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_count INTEGER DEFAULT 0');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_pending_number TEXT');
-    await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_pending_action TEXT');
-
-    // Create chat_logs table if not exists
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS chat_logs (
-        id SERIAL PRIMARY KEY,
-        buyer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-        session_id TEXT NOT NULL,
-        message TEXT NOT NULL,
-        intent TEXT NOT NULL,
-        response TEXT NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Create problem_reports table if not exists
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS problem_reports (
-        id SERIAL PRIMARY KEY,
-        buyer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-        session_id TEXT NOT NULL,
-        category TEXT,
-        description TEXT NOT NULL,
-        related_order_id TEXT,
-        related_product_id TEXT,
-        status TEXT NOT NULL DEFAULT 'open',
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Create trending_searches table if not exists
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS trending_searches (
-        query TEXT PRIMARY KEY,
-        search_count INTEGER DEFAULT 1,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    // ─── Phase 2: Pause/Resume fields on products ──────────────────────────────
-    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS pause_reason TEXT');
-    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS resume_estimate_date DATE');
-    await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS remake_eligible BOOLEAN DEFAULT FALSE');
-
-    // ─── Phase 2: remake_eligible on listings ──────────────────────────────────
-    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS remake_eligible BOOLEAN DEFAULT FALSE');
-    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
-    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS pause_reason TEXT');
-    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS resume_estimate_date DATE');
-
-    // ─── Phase 1: Index for similar-products query ────────────────────────────
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_products_cat_status_stock ON products(category_id, status, stock_qty)');
-
-    // ─── Phase 4: checkout_contention_attempts table ──────────────────────────
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS checkout_contention_attempts (
-        id SERIAL PRIMARY KEY,
-        product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-        buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        quantity INTEGER NOT NULL DEFAULT 1,
-        status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','won','lost')),
-        requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        resolved_at TIMESTAMP WITH TIME ZONE
-      )
-    `);
-    await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS address_id INTEGER');
-    await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS razorpay_order_id TEXT');
-    await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL');
-
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_product_status ON checkout_contention_attempts(product_id, status)');
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_buyer ON checkout_contention_attempts(buyer_id)');
-
-    // ─── Phase 4: Index on orders(buyer_id, status) for tiebreak query ────────
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_buyer_status ON orders(buyer_id, status)');
-
-    // Categories and Subcategories Overhaul
-    await pool.query('ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL');
-    await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL');
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS subcategories (
-        id          SERIAL PRIMARY KEY,
-        category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-        name        TEXT NOT NULL,
-        slug        TEXT NOT NULL UNIQUE,
-        description TEXT,
-        created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS product_subcategories (
-        product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-        subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
-        PRIMARY KEY (product_id, subcategory_id)
-      )
-    `);
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS listing_subcategories (
-        listing_id     INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
-        subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
-        PRIMARY KEY (listing_id, subcategory_id)
-      )
-    `);
-
-    // Concierge Chat alterations
-    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP');
-    await pool.query('ALTER TABLE conversation_messages DROP CONSTRAINT IF EXISTS conversation_messages_sender_role_check');
-    await pool.query("ALTER TABLE conversation_messages ADD CONSTRAINT conversation_messages_sender_role_check CHECK(sender_role IN ('buyer','seller','bot','bot_as_seller'))");
-    await pool.query('ALTER TABLE conversation_messages DROP CONSTRAINT IF EXISTS conversation_messages_message_type_check');
-    await pool.query("ALTER TABLE conversation_messages ADD CONSTRAINT conversation_messages_message_type_check CHECK(message_type IN ('text','photo','system','order_draft_card','system_notice','product_inquiry'))");
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS custom_orders (
-        id SERIAL PRIMARY KEY,
-        thread_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
-        qty INTEGER NOT NULL DEFAULT 1,
-        customization_specs JSONB DEFAULT '{}',
-        reference_images TEXT[] DEFAULT '{}',
-        draft_price INTEGER DEFAULT NULL,
-        final_price INTEGER DEFAULT NULL,
-        delivery_days INTEGER DEFAULT NULL,
-        status TEXT NOT NULL DEFAULT 'pending_seller_review',
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    
-    await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_seller_status ON conversations(seller_id, status)');
-    await pool.query('ALTER TABLE order_items ADD COLUMN IF NOT EXISTS variant_name TEXT DEFAULT NULL');
-
-    // ─── Delayed courier pickup columns and constraints on orders ──────────────
-    await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_eligible_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');
-    await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS scheduled_pickup_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');
-    await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_status TEXT DEFAULT NULL');
-    
-    await pool.query('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check');
-    await pool.query(`
-      ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (
-        status IN (
-          'awaiting_payment', 'processing', 'in_production',
-          'packed', 'ready_for_pickup', 'dispatched', 'delivered', 'cancelled', 'rto',
-          'Awaiting Payment', 'Processing', 'Dispatched', 'Delivered', 'Cancelled',
-          'in_transit', 'on_hold'
+    // Additional Table & Column Alterations
+    try {
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned INTEGER DEFAULT 0');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active INTEGER DEFAULT 1');
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          token_hash TEXT NOT NULL UNIQUE,
+          expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )
-      )
-    `);
+      `);
+      await pool.query('ALTER TABLE seller_payout_accounts ADD COLUMN IF NOT EXISTS bank_name TEXT');
+      await pool.query('ALTER TABLE addresses ADD COLUMN IF NOT EXISTS ithink_warehouse_id TEXT');
 
-    await pool.query('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_pickup_status_check');
-    await pool.query(`
-      ALTER TABLE orders ADD CONSTRAINT orders_pickup_status_check CHECK (
-        pickup_status IS NULL OR pickup_status IN ('pending', 'queued', 'scheduled', 'picked_up')
-      )
-    `);
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS seller_applications (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          full_name TEXT NOT NULL,
+          email TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          whatsapp TEXT,
+          instagram_handle TEXT,
+          bio TEXT,
+          categories TEXT[] NOT NULL,
+          agreed_terms BOOLEAN NOT NULL DEFAULT false,
+          agreed_handmade BOOLEAN NOT NULL DEFAULT false,
+          status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+          admin_notes TEXT,
+          submitted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          reviewed_at TIMESTAMP WITH TIME ZONE,
+          reviewed_by INTEGER REFERENCES admin_users(id) ON DELETE SET NULL
+        )
+      `);
+
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp TEXT');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_count INTEGER DEFAULT 0');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_pending_number TEXT');
+      await pool.query('ALTER TABLE sellers ADD COLUMN IF NOT EXISTS whatsapp_pending_action TEXT');
+
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_number TEXT UNIQUE');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_verified_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp TEXT');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_expires_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_count INTEGER DEFAULT 0');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_otp_count_reset_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_pending_number TEXT');
+      await pool.query('ALTER TABLE seller_profiles ADD COLUMN IF NOT EXISTS whatsapp_pending_action TEXT');
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS chat_logs (
+          id SERIAL PRIMARY KEY,
+          buyer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+          session_id TEXT NOT NULL,
+          message TEXT NOT NULL,
+          intent TEXT NOT NULL,
+          response TEXT NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS problem_reports (
+          id SERIAL PRIMARY KEY,
+          buyer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+          session_id TEXT NOT NULL,
+          category TEXT,
+          description TEXT NOT NULL,
+          related_order_id TEXT,
+          related_product_id TEXT,
+          status TEXT NOT NULL DEFAULT 'open',
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS trending_searches (
+          query TEXT PRIMARY KEY,
+          search_count INTEGER DEFAULT 1,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+    } catch (e) {
+      console.warn('initDb: support tables ALTER warning:', e.message);
+    }
+
+    // ─── Phase 2: Pause/Resume fields on products & listings ──────────────────
+    try {
+      await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS pause_reason TEXT');
+      await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS resume_estimate_date DATE');
+      await pool.query('ALTER TABLE products ADD COLUMN IF NOT EXISTS remake_eligible BOOLEAN DEFAULT FALSE');
+
+      await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS remake_eligible BOOLEAN DEFAULT FALSE');
+      await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS paused_at TIMESTAMP WITH TIME ZONE');
+      await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS pause_reason TEXT');
+      await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS resume_estimate_date DATE');
+    } catch (e) {
+      console.warn('initDb: pause/resume fields ALTER warning:', e.message);
+    }
+
+    // ─── Phase 1 & 4: Indexes & Contention ────────────────────────────────────
+    try {
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_products_cat_status_stock ON products(category_id, status, stock_qty)');
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS checkout_contention_attempts (
+          id SERIAL PRIMARY KEY,
+          product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+          buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          quantity INTEGER NOT NULL DEFAULT 1,
+          status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','won','lost')),
+          requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          resolved_at TIMESTAMP WITH TIME ZONE
+        )
+      `);
+      await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS address_id INTEGER');
+      await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS razorpay_order_id TEXT');
+      await pool.query('ALTER TABLE checkout_contention_attempts ADD COLUMN IF NOT EXISTS order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL');
+
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_product_status ON checkout_contention_attempts(product_id, status)');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_cca_buyer ON checkout_contention_attempts(buyer_id)');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_buyer_status ON orders(buyer_id, status)');
+
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_products_status_seller ON products(status, seller_id)');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_order_items_product_order ON order_items(product_id, order_id)');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_listings_cat_status ON listings(category_id, status)');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_products_status_rating ON products(status, avg_rating DESC)');
+    } catch (e) {
+      console.warn('initDb: indexes & contention warning:', e.message);
+    }
+
+    // Subcategories Overhaul
+    try {
+      await pool.query('ALTER TABLE listings ADD COLUMN IF NOT EXISTS category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL');
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS subcategories (
+          id          SERIAL PRIMARY KEY,
+          category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+          name        TEXT NOT NULL,
+          slug        TEXT NOT NULL UNIQUE,
+          description TEXT,
+          created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS product_subcategories (
+          product_id     INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+          subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+          PRIMARY KEY (product_id, subcategory_id)
+        )
+      `);
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS listing_subcategories (
+          listing_id     INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+          subcategory_id INTEGER NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+          PRIMARY KEY (listing_id, subcategory_id)
+        )
+      `);
+    } catch (e) {
+      console.warn('initDb: subcategories schema warning:', e.message);
+    }
+
+    // Concierge Chat & Custom Orders
+    try {
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP');
+      await pool.query('ALTER TABLE conversation_messages DROP CONSTRAINT IF EXISTS conversation_messages_sender_role_check');
+      await pool.query("ALTER TABLE conversation_messages ADD CONSTRAINT conversation_messages_sender_role_check CHECK(sender_role IN ('buyer','seller','bot','bot_as_seller'))");
+      await pool.query('ALTER TABLE conversation_messages DROP CONSTRAINT IF EXISTS conversation_messages_message_type_check');
+      await pool.query("ALTER TABLE conversation_messages ADD CONSTRAINT conversation_messages_message_type_check CHECK(message_type IN ('text','photo','system','order_draft_card','system_notice','product_inquiry'))");
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS custom_orders (
+          id SERIAL PRIMARY KEY,
+          thread_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+          qty INTEGER NOT NULL DEFAULT 1,
+          customization_specs JSONB DEFAULT '{}',
+          reference_images TEXT[] DEFAULT '{}',
+          draft_price INTEGER DEFAULT NULL,
+          final_price INTEGER DEFAULT NULL,
+          delivery_days INTEGER DEFAULT NULL,
+          status TEXT NOT NULL DEFAULT 'pending_seller_review',
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_conversations_seller_status ON conversations(seller_id, status)');
+      await pool.query('ALTER TABLE order_items ADD COLUMN IF NOT EXISTS variant_name TEXT DEFAULT NULL');
+    } catch (e) {
+      console.warn('initDb: chat & custom orders warning:', e.message);
+    }
+
+    // Delayed courier pickup columns and constraints on orders
+    try {
+      await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_eligible_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');
+      await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS scheduled_pickup_at TIMESTAMP WITH TIME ZONE DEFAULT NULL');
+      await pool.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS pickup_status TEXT DEFAULT NULL');
+      
+      await pool.query('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check');
+      await pool.query(`
+        ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (
+          status IN (
+            'awaiting_payment', 'processing', 'in_production',
+            'packed', 'ready_for_pickup', 'dispatched', 'delivered', 'cancelled', 'rto',
+            'Awaiting Payment', 'Processing', 'Dispatched', 'Delivered', 'Cancelled',
+            'in_transit', 'on_hold'
+          )
+        )
+      `);
+
+      await pool.query('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_pickup_status_check');
+      await pool.query(`
+        ALTER TABLE orders ADD CONSTRAINT orders_pickup_status_check CHECK (
+          pickup_status IS NULL OR pickup_status IN ('pending', 'queued', 'scheduled', 'picked_up')
+        )
+      `);
+    } catch (e) {
+      console.warn('initDb: order pickup fields warning:', e.message);
+    }
 
     // Catalog & Variants schema updates
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS product_variants (
-        id                SERIAL PRIMARY KEY,
-        product_id        INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-        source_variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE SET NULL,
-        variant_name      TEXT    NOT NULL,
-        price_paise       INTEGER DEFAULT NULL,
-        stock_qty         INTEGER NOT NULL DEFAULT 0,
-        sku               TEXT    DEFAULT NULL,
-        created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    await pool.query(`
-      ALTER TABLE products 
-      ADD COLUMN IF NOT EXISTS source_listing_id INTEGER DEFAULT NULL REFERENCES listings(id) ON DELETE SET NULL
-    `);
-
-    await pool.query(`
-      ALTER TABLE product_images 
-      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE CASCADE
-    `);
-
-    await pool.query(`
-      ALTER TABLE cart_items 
-      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE SET NULL
-    `);
-
-    // UNIQUE constraint on cart_items
     try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS product_variants (
+          id                SERIAL PRIMARY KEY,
+          product_id        INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+          source_variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE SET NULL,
+          variant_name      TEXT    NOT NULL,
+          price_paise       INTEGER DEFAULT NULL,
+          stock_qty         INTEGER NOT NULL DEFAULT 0,
+          sku               TEXT    DEFAULT NULL,
+          created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      await pool.query(`
+        ALTER TABLE products 
+        ADD COLUMN IF NOT EXISTS source_listing_id INTEGER DEFAULT NULL REFERENCES listings(id) ON DELETE SET NULL
+      `);
+
+      await pool.query(`
+        ALTER TABLE product_images 
+        ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE CASCADE
+      `);
+
+      await pool.query(`
+        ALTER TABLE cart_items 
+        ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id) ON DELETE SET NULL
+      `);
+
       const constraintsRes = await pool.query(`
         SELECT conname 
         FROM pg_constraint 
@@ -594,38 +669,38 @@ async function initDb() {
           ADD CONSTRAINT cart_items_user_id_product_id_variant_id_key UNIQUE(user_id, product_id, variant_id)
         `);
       }
+
+      await pool.query(`
+        ALTER TABLE listing_photos 
+        ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE CASCADE
+      `);
+
+      await pool.query(`
+        ALTER TABLE order_items 
+        ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id)
+      `);
+
+      await pool.query(`
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_products_source_listing_id ON products(source_listing_id) WHERE source_listing_id IS NOT NULL
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_listing_photos_variant_id ON listing_photos(variant_id)
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_order_items_variant_id ON order_items(variant_id)
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_product_images_variant_id ON product_images(variant_id)
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_product_variants_product_id ON product_variants(product_id)
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_product_variants_source_variant_id ON product_variants(source_variant_id)
+      `);
     } catch (e) {
-      console.error('Error migrating cart_items unique constraint:', e.message);
+      console.warn('initDb: catalog & variants warning:', e.message);
     }
-
-    await pool.query(`
-      ALTER TABLE listing_photos 
-      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES listing_variants(id) ON DELETE CASCADE
-    `);
-
-    await pool.query(`
-      ALTER TABLE order_items 
-      ADD COLUMN IF NOT EXISTS variant_id INTEGER DEFAULT NULL REFERENCES product_variants(id)
-    `);
-
-    await pool.query(`
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_products_source_listing_id ON products(source_listing_id) WHERE source_listing_id IS NOT NULL
-    `);
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_listing_photos_variant_id ON listing_photos(variant_id)
-    `);
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_order_items_variant_id ON order_items(variant_id)
-    `);
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_product_images_variant_id ON product_images(variant_id)
-    `);
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_product_variants_product_id ON product_variants(product_id)
-    `);
-    await pool.query(`
-      CREATE INDEX IF NOT EXISTS idx_product_variants_source_variant_id ON product_variants(source_variant_id)
-    `);
 
   } catch (err) {
     console.error('PostgreSQL: Initialization error:', err.message);

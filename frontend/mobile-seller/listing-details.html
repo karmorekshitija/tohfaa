@@ -4,7 +4,7 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
 
 <meta charset="utf-8"/>
 <title>Tohfa - Craft New Listing</title>
@@ -14,7 +14,7 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-  <script src="/components/seller-components.js"></script>
+  <script type="module" src="/components/seller-components.js"></script>
 </head>
 <body class="bg-parchment text-forest">
 <seller-layout active-tab="catalog">
@@ -130,7 +130,7 @@
 <div class="space-y-2">
 <h2 class="text-xl font-playfair">Listing Title</h2>
 <div class="relative">
-<input id="input-title" maxlength="80" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
+<input id="listing-title" data-mobile-id="input-title" maxlength="80" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-4 italic font-sans focus:ring-forest focus:border-forest text-lg" placeholder="e.g. Moonlight Jasmine Resin Study" type="text"/>
 <div class="text-right mt-2">
 <span id="title-char-count" class="text-[10px] font-mono uppercase text-sage">0/80 characters</span>
 </div>
@@ -163,19 +163,19 @@
 <div class="grid grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">L (CM)</label>
-<input id="input-length" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
+<input id="length-input" data-mobile-id="input-length" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="L" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">W (CM)</label>
-<input id="input-width" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
+<input id="width-input" data-mobile-id="input-width" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="W" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">H (CM)</label>
-<input id="input-height" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
+<input id="height-input" data-mobile-id="input-height" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="H" type="number"/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-mono uppercase tracking-widest opacity-60">Weight (G)</label>
-<input id="input-weight" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
+<input id="weight-input" data-mobile-id="input-weight" class="w-full bg-white border border-forest/10 rounded-xl px-4 py-3 focus:ring-forest focus:border-forest" placeholder="Weight" type="number"/>
 </div>
 </div>
 </div>
@@ -183,7 +183,7 @@
 <!-- BEGIN: Product Description -->
 <div class="space-y-4">
 <h2 class="text-xl font-playfair">Product Description</h2>
-<textarea id="textarea-description" class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
+<textarea id="listing-description" data-mobile-id="textarea-description" class="w-full bg-white border border-forest/10 rounded-2xl px-4 py-4 font-sans focus:ring-forest focus:border-forest resize-none" placeholder="Provide a detailed description of the product that you are offering..." rows="6"></textarea>
 </div>
 <!-- END: Product Description -->
 </form>
@@ -244,7 +244,7 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -256,10 +256,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </details>
     <!-- Support -->
@@ -269,9 +267,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -309,6 +306,11 @@
   let categoriesList = [];
   let selectedSubcategoryIds = [];
   let selectedCategoryId = '';
+
+  function getEl(id) {
+    if (!id) return null;
+    return document.getElementById(id) || document.querySelector(`[data-mobile-id="${id}"]`) || document.querySelector(`[data-desktop-id="${id}"]`);
+  }
 
   function getToken() {
     try {
@@ -689,16 +691,22 @@
   }
 
   function gatherFormData() {
-    const isCustom = document.getElementById('input-product-type-custom').checked;
+    const isCustom = document.getElementById('input-product-type-custom')?.checked;
+    const titleEl = document.getElementById('listing-title') || document.getElementById('input-title');
+    const lengthEl = document.getElementById('length-input') || document.getElementById('input-length');
+    const widthEl = document.getElementById('width-input') || document.getElementById('input-width');
+    const heightEl = document.getElementById('height-input') || document.getElementById('input-height');
+    const weightEl = document.getElementById('weight-input') || document.getElementById('input-weight');
+    const descEl = document.getElementById('listing-description') || document.getElementById('textarea-description');
 
     return {
       product_type: isCustom ? 'custom' : 'pre-made',
-      title: document.getElementById('input-title').value.trim(),
-      length_cm: parseFloat(document.getElementById('input-length').value) || null,
-      width_cm: parseFloat(document.getElementById('input-width').value) || null,
-      height_cm: parseFloat(document.getElementById('input-height').value) || null,
-      weight_g: parseFloat(document.getElementById('input-weight').value) || null,
-      description: document.getElementById('textarea-description').value.trim(),
+      title: titleEl ? titleEl.value.trim() : '',
+      length_cm: lengthEl ? parseFloat(lengthEl.value) || null : null,
+      width_cm: widthEl ? parseFloat(widthEl.value) || null : null,
+      height_cm: heightEl ? parseFloat(heightEl.value) || null : null,
+      weight_g: weightEl ? parseFloat(weightEl.value) || null : null,
+      description: descEl ? descEl.value.trim() : '',
       category: selectedCategory,
       category_id: selectedCategoryId ? parseInt(selectedCategoryId, 10) : null,
       subcategory_ids: selectedSubcategoryIds
@@ -957,5 +965,112 @@
     init();
   });
 })();
+</script>
+
+
+<script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
 </script>
 </body></html>

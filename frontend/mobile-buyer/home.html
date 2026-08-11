@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <title>Tohfa | Handcrafted Treasures</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -324,7 +324,7 @@
 </div>
 </div>
 <!-- Floating Quote Card -->
-<div class="absolute -bottom-10 -right-10 md:right-12 bg-surface-bright p-lg rounded-xl border border-outline-variant shadow-lg max-w-xs z-20">
+<div class="absolute -bottom-10 right-2 md:right-12 bg-surface-bright p-md md:p-lg rounded-xl border border-outline-variant shadow-lg max-w-[260px] md:max-w-xs z-20">
 
 <p class="font-title-serif italic text-body-md text-on-surface-variant leading-relaxed">
                             "Every piece tells a story of the hands that shaped it."
@@ -350,6 +350,18 @@
 </div>
 </section>
 
+<!-- Seasonal Banner Section -->
+<section id="seasonal-banner-container" class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-8 md:mt-12 hidden">
+    <div class="relative rounded-2xl overflow-hidden shadow-lg border border-[#C8973A]/40 bg-[#FAF7F2] flex flex-col md:flex-row items-center">
+        <img id="seasonal-banner-image" class="w-full md:w-2/3 h-[180px] md:h-[280px] object-cover" src="" alt="Seasonal Banner">
+        <div class="p-5 md:p-8 flex flex-col justify-center items-start w-full md:w-1/3">
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#C8973A] bg-[#C8973A]/10 px-3 py-1 rounded-full mb-2 md:mb-3">Seasonal Highlight</span>
+            <h3 id="seasonal-banner-label" class="font-['Playfair_Display'] text-xl md:text-3xl font-bold text-[#3D6B4F] mb-3 md:mb-4"></h3>
+            <button onclick="window.location.href='./categories.html'" class="bg-[#3D6B4F] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Explore Collection</button>
+        </div>
+    </div>
+</section>
+
 <!-- Sponsored Section -->
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
     <div class="flex justify-between items-end mb-lg">
@@ -368,6 +380,23 @@
     </div>
 </section>
 
+<!-- Featured by Tohfa Section -->
+<section id="admin-featured-section" class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24 hidden">
+    <div class="flex justify-between items-end mb-xl">
+        <div>
+            <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                <span>Featured by Tohfa</span>
+            </h3>
+            <p class="font-body-md text-on-surface-variant">Handpicked signature items curated by our editors</p>
+        </div>
+    </div>
+    
+    <div id="admin-featured-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
+        <!-- Dynamic featured product cards will load here -->
+    </div>
+</section>
+
 <!-- For You (Capped at 15 products) -->
 <section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
     <div class="flex justify-between items-end mb-xl">
@@ -378,7 +407,7 @@
     </div>
     
     <!-- Product Grid: 2 columns on mobile, 4 columns on desktop -->
-    <div id="product-feed-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
+    <div id="product-feed-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-lg relative">
         <!-- Dynamic product cards will load here -->
     </div>
     
@@ -462,7 +491,7 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -474,10 +503,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </details>
     <!-- Support -->
@@ -487,9 +514,8 @@
         <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
       </summary>
       <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -515,6 +541,9 @@
 </footer>
 
 <script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
     function getTohfaToken() {
         try {
             const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
@@ -523,9 +552,6 @@
             return sessionStorage.getItem('tohfa_access_token') || null;
         }
     }
-
-    import apiClient from '../src/utils/apiClient.js';
-    import { logout } from '/src/utils/auth.js';
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -589,7 +615,7 @@
         if (!isLoggedIn) {
             window.Toast?.show("Please log in to contact the seller", "error");
             setTimeout(() => {
-                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                // login redirect removed
             }, 1500);
             return;
         }
@@ -622,7 +648,7 @@
         if (!isLoggedIn) {
             window.Toast?.show("Please log in to purchase items", "error");
             setTimeout(() => {
-                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                // login redirect removed
             }, 1500);
             return;
         }
@@ -642,7 +668,7 @@
         if (!isLoggedIn) {
             window.Toast?.show("Please log in to add to wishlist", "error");
             setTimeout(() => {
-                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                // login redirect removed
             }, 1500);
             return;
         }
@@ -675,41 +701,14 @@
                     window.Toast?.show("Added to wishlist!", "success");
                 }
             }
-            await updateWishlistBadge();
+            if (window.updateWishlistBadge) {
+                await window.updateWishlistBadge();
+            }
         } catch (err) {
             console.error("Wishlist error:", err);
         } finally {
             isWishlistUpdating[productId] = false;
         }
-    }
-
-    async function updateWishlistBadge() {
-        try {
-            const res = await apiClient.get('/wishlist');
-            if (res.data && res.data.success) {
-                const items = res.data.data.items || res.data.data || [];
-                const count = res.data.data.count !== undefined ? res.data.data.count : items.length;
-                const badge = document.getElementById('nav-wishlist-badge');
-                if (badge) {
-                    badge.innerText = count;
-                    badge.classList.remove('hidden');
-                }
-            }
-        } catch (e) { /* ignore */ }
-    }
-
-    async function updateCartBadge() {
-        try {
-            const res = await apiClient.get('/cart');
-            if (res.data && res.data.success) {
-                const count = res.data.data.item_count || 0;
-                const badge = document.getElementById('nav-cart-badge');
-                if (badge) {
-                    badge.innerText = count;
-                    badge.classList.remove('hidden');
-                }
-            }
-        } catch (e) { /* ignore */ }
     }
 
     // Helper to create product card template (reusable)
@@ -834,26 +833,118 @@
         }
     }
 
+    let publicUiSettings = null;
+    async function fetchPublicUiSettings() {
+        if (publicUiSettings) return publicUiSettings;
+        try {
+            const res = await apiClient.get('/ui-settings/public');
+            if (res.data && res.data.success) {
+                publicUiSettings = res.data.data;
+            }
+        } catch (err) {
+            console.error("Failed to fetch public UI settings:", err);
+            publicUiSettings = {};
+        }
+        return publicUiSettings || {};
+    }
+
+    async function loadSeasonalBanner() {
+        const container = document.getElementById('seasonal-banner-container');
+        const img = document.getElementById('seasonal-banner-image');
+        const label = document.getElementById('seasonal-banner-label');
+        if (!container || !img || !label) return;
+
+        const settings = await fetchPublicUiSettings();
+        const banner = settings.home_seasonal_banner;
+        if (banner && banner.content_url) {
+            img.src = banner.content_url;
+            label.textContent = banner.label || 'Special Seasonal Showcase';
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    async function loadAdminFeaturedProducts() {
+        const section = document.getElementById('admin-featured-section');
+        const grid = document.getElementById('admin-featured-grid');
+        if (!section || !grid) return;
+
+        const settings = await fetchPublicUiSettings();
+        const featuredSlots = [
+            settings.home_featured_product_1,
+            settings.home_featured_product_2,
+            settings.home_featured_product_3,
+            settings.home_featured_product_4,
+            settings.home_featured_product_5,
+            settings.home_featured_product_6
+        ];
+
+        const liveProducts = featuredSlots
+            .filter(slot => slot && slot.resolved_content)
+            .map(slot => slot.resolved_content);
+
+        if (liveProducts.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        grid.innerHTML = '';
+        liveProducts.forEach(product => {
+            const card = createProductCard(product);
+            grid.appendChild(card);
+        });
+    }
+
     async function loadCategoryRows() {
         const container = document.getElementById('category-rows-container');
         if (!container) return;
 
         try {
+            const settings = await fetchPublicUiSettings();
+            const spotlightSlots = [
+                settings.home_category_spotlight_1,
+                settings.home_category_spotlight_2,
+                settings.home_category_spotlight_3,
+                settings.home_category_spotlight_4
+            ];
+
+            const liveSpotlights = spotlightSlots
+                .filter(slot => slot && slot.resolved_content)
+                .map(slot => slot.resolved_content);
+
+            if (liveSpotlights.length > 0) {
+                const spotlightSection = document.createElement('div');
+                spotlightSection.className = 'mb-12 p-6 bg-[#FAF7F2] rounded-2xl border-2 border-[#C8973A]/60 shadow-sm';
+                spotlightSection.innerHTML = `
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">stars</span>
+                        <h3 class="font-['Playfair_Display'] text-xl font-bold text-[#3D6B4F]">Spotlight Categories</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        ${liveSpotlights.map(cat => `
+                            <a href="./category.html?slug=${cat.slug}" class="group relative rounded-xl overflow-hidden aspect-[4/3] border border-[#C8973A]/40 shadow-sm hover:shadow-md transition-all duration-300">
+                                <img src="${cat.image_url || '/img/ceramic_bowls.jpg'}" alt="${escapeHtml(cat.display_name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4">
+                                    <span class="text-white font-['Playfair_Display'] font-bold text-lg group-hover:text-[#C8973A] transition-colors">${escapeHtml(cat.display_name)}</span>
+                                    <span class="text-white/80 text-xs font-mono">${cat.product_count} items</span>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(spotlightSection);
+            }
+
             const categoriesRes = await apiClient.get('/categories');
             if (!categoriesRes.data || !categoriesRes.data.success) return;
 
             const categories = categoriesRes.data.data.categories;
 
             for (const category of categories) {
-                // Fetch products for each category
-                const productsRes = await apiClient.get(`/categories/${category.slug}/products?limit=20`);
-                if (!productsRes.data || !productsRes.data.success) continue;
-
-                const products = productsRes.data.data.products || [];
-                if (products.length === 0) continue; // Only show row if it has products
-
                 const rowWrapper = document.createElement('div');
-                rowWrapper.className = 'category-row-wrapper relative';
+                rowWrapper.className = 'category-row-wrapper relative mb-12 min-h-[300px]';
 
                 rowWrapper.innerHTML = `
                     <div class="flex justify-between items-baseline mb-6 px-4">
@@ -865,49 +956,87 @@
                     </div>
                     <div class="relative group">
                         <!-- Scroll Left Button -->
-                        <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#3D6B4F] text-primary hover:text-white p-2 rounded-full border border-[#8FAF82] shadow-md z-10 opacity-100 active:scale-95 duration-200 transition-all scroll-left-btn">
+                        <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#3D6B4F] text-primary hover:text-white p-2 rounded-full border border-[#8FAF82] shadow-md z-10 opacity-100 active:scale-95 duration-200 transition-all scroll-left-btn hidden">
                             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
                         </button>
                         
                         <!-- Horizontally Scrollable Content -->
-                        <div class="flex gap-3 overflow-x-auto scroll-smooth pb-4 px-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
-                            <!-- Product Cards will load here -->
+                        <div class="flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
+                            <!-- Skeleton Placeholders -->
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
+                            <div class="w-[280px] h-[380px] bg-gray-50/80 animate-pulse rounded-xl border border-gray-100 flex-shrink-0"></div>
                         </div>
 
                         <!-- Scroll Right Button -->
-                        <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#3D6B4F] text-primary hover:text-white p-2 rounded-full border border-[#8FAF82] shadow-md z-10 opacity-100 active:scale-95 duration-200 transition-all scroll-right-btn">
+                        <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#3D6B4F] text-primary hover:text-white p-2 rounded-full border border-[#8FAF82] shadow-md z-10 opacity-100 active:scale-95 duration-200 transition-all scroll-right-btn hidden">
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
                 `;
 
+                container.appendChild(rowWrapper);
+
                 const scrollContent = rowWrapper.querySelector('.scrollbar-none');
                 const leftBtn = rowWrapper.querySelector('.scroll-left-btn');
                 const rightBtn = rowWrapper.querySelector('.scroll-right-btn');
 
-                products.forEach(product => {
-                    // Render using the same card layout with fixed width for horizontal scrolling and mobile peaking
-                    const card = createProductCard(product, 'w-[80vw] max-w-[320px] flex-shrink-0 snap-start');
-                    scrollContent.appendChild(card);
-                });
+                let isLoaded = false;
+                const observer = new IntersectionObserver(async (entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && !isLoaded) {
+                            isLoaded = true;
+                            observer.disconnect();
 
-                const getCardStep = () => {
-                    const card = scrollContent.firstElementChild;
-                    return card ? (card.offsetWidth + 12) : 292; // card width + 12px gap
-                };
+                            try {
+                                const productsRes = await apiClient.get(`/categories/${category.slug}/products?limit=20`);
+                                if (productsRes.data && productsRes.data.success) {
+                                    const products = productsRes.data.data.products || [];
+                                    if (products.length === 0) {
+                                        rowWrapper.remove();
+                                        return;
+                                    }
 
-                // Left & Right arrow actions (mobile scrolls card-by-card)
-                leftBtn.onclick = () => {
-                    const targetScroll = scrollContent.scrollLeft - getCardStep();
-                    scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
-                };
+                                    // Clear skeletons
+                                    scrollContent.innerHTML = '';
+                                    
+                                    // Show buttons
+                                    leftBtn.classList.remove('hidden');
+                                    rightBtn.classList.remove('hidden');
 
-                rightBtn.onclick = () => {
-                    const targetScroll = scrollContent.scrollLeft + getCardStep();
-                    scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
-                };
+                                    products.forEach(product => {
+                                        const card = createProductCard(product, 'w-[80vw] max-w-[320px] flex-shrink-0 snap-start');
+                                        scrollContent.appendChild(card);
+                                    });
 
-                container.appendChild(rowWrapper);
+                                    const getCardStep = () => {
+                                        const card = scrollContent.firstElementChild;
+                                        return card ? (card.offsetWidth + 12) : 292;
+                                    };
+
+                                    // Left & Right arrow actions (mobile scrolls card-by-card)
+                                    leftBtn.onclick = () => {
+                                        const targetScroll = scrollContent.scrollLeft - getCardStep();
+                                        scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                                    };
+
+                                    rightBtn.onclick = () => {
+                                        const targetScroll = scrollContent.scrollLeft + getCardStep();
+                                        scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                                    };
+                                } else {
+                                    rowWrapper.remove();
+                                }
+                            } catch (err) {
+                                console.error(`Failed to load products for category ${category.slug}:`, err);
+                                rowWrapper.remove();
+                            }
+                        }
+                    }
+                }, { rootMargin: '150px 0px' });
+
+                observer.observe(rowWrapper);
             }
         } catch (error) {
             console.error('Failed to load category rows:', error);
@@ -941,18 +1070,57 @@
     ];
 
     async function loadHeroSlides() {
+        let customSlides = [];
         try {
-            const response = await apiClient.get('/hero-slides');
-            if (response.data && response.data.success && response.data.data.length > 0) {
-                slides = response.data.data;
+            const settings = await fetchPublicUiSettings();
+            if (settings.home_hero_primary && settings.home_hero_primary.content_url) {
+                customSlides.push({
+                    id: 'hero-primary',
+                    image_url: settings.home_hero_primary.content_url,
+                    alt_text: settings.home_hero_primary.label || 'Primary Hero Feature'
+                });
             }
-        } catch (error) {
-            console.error('Failed to load hero slides:', error);
+            if (settings.home_hero_secondary && settings.home_hero_secondary.content_url) {
+                customSlides.push({
+                    id: 'hero-secondary',
+                    image_url: settings.home_hero_secondary.content_url,
+                    alt_text: settings.home_hero_secondary.label || 'Secondary Hero Feature'
+                });
+            }
+        } catch (e) {
+            console.error('Failed to fetch public ui settings for hero:', e);
+        }
+
+        if (customSlides.length > 0) {
+            slides = customSlides;
+        } else {
+            try {
+                const response = await apiClient.get('/hero-slides');
+                if (response.data && response.data.success && response.data.data.slides && response.data.data.slides.length > 0) {
+                    slides = response.data.data.slides;
+                } else {
+                    slides = [];
+                }
+            } catch (error) {
+                console.error('Failed to load hero slides:', error);
+                slides = [];
+            }
         }
 
         if (slides.length === 0) {
-            slides = FALLBACK_SLIDES;
+            slides = FALLBACK_SLIDES.map((s, idx) => ({
+                id: `fallback-${idx+1}`,
+                product_id: idx + 1,
+                image_url: s.imageUrl,
+                alt_text: s.altText
+            }));
         }
+
+        const heroContainer = document.getElementById('hero-slideshow-container');
+        const mobileContainer = document.getElementById('mobile-carousel-container');
+
+        if (heroContainer) heroContainer.classList.remove('hidden');
+        if (mobileContainer) mobileContainer.classList.remove('hidden');
 
         // Setup desktop
         renderSlides();
@@ -1197,7 +1365,9 @@
 
     // Initialize
     loadHeroSlides();
+    loadSeasonalBanner();
     loadSponsoredProducts();
+    loadAdminFeaturedProducts();
     loadForYouProducts();
     loadCategoryRows();
 
@@ -1211,16 +1381,34 @@
             try {
                 let avatarUrl = null;
                 let initial = 'A';
-                try {
-                    const res = await apiClient.get('/profile/me');
-                    if (res.data && res.data.success) {
-                        avatarUrl = res.data.data.avatar_url;
-                        if (res.data.data.full_name) {
-                            initial = res.data.data.full_name.charAt(0).toUpperCase();
+                
+                const cachedUser = sessionStorage.getItem('tohfa_user');
+                if (cachedUser) {
+                    try {
+                        const user = JSON.parse(cachedUser);
+                        avatarUrl = user.avatar_url;
+                        if (user.full_name) {
+                            initial = user.full_name.charAt(0).toUpperCase();
                         }
+                    } catch (e) {
+                        console.error("Failed to parse cached user:", e);
                     }
-                } catch (err) {
-                    console.error("Failed to fetch profile avatar:", err);
+                }
+
+                // If not cached, fetch in background without blocking rendering
+                if (!avatarUrl) {
+                    try {
+                        const res = await apiClient.get('/profile/me');
+                        if (res.data && res.data.success) {
+                            avatarUrl = res.data.data.avatar_url;
+                            if (res.data.data.full_name) {
+                                initial = res.data.data.full_name.charAt(0).toUpperCase();
+                            }
+                            sessionStorage.setItem('tohfa_user', JSON.stringify(res.data.data));
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch profile avatar:", err);
+                    }
                 }
                 
                 let avatarHtml = '';
@@ -1237,8 +1425,6 @@
                 if (authContainer) {
                     authContainer.innerHTML = '';
                 }
-                updateWishlistBadge();
-                updateCartBadge();
             } catch(e) {
                 console.error("Failed to parse token:", e);
                 logout();
@@ -1248,7 +1434,7 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
                         <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
@@ -1257,6 +1443,110 @@
     }
 
     checkAuthState();
+
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+</head>
+<body class="bg-white"><!-- Standardised Top Navigation Bar (Task 57) -->
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- ZipGift -->
+    <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
+    </a>
+    <!-- Profile -->
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="/buyer/categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+  
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+<!-- Top App Bar -->
+<section class="flex justify-between items-center w-full px-margin-desktop bg-background relative z-20 py-4">
+<div class="flex-1">
+<span class="font-headline-lg text-primary italic">Tohfa<span class="text-[#C8973A]">.</span></span>
+</div>
+<div class="flex-[2] text-center">
+<h1 class="font-headline-lg text-on-surface">Complete your order</h1>
+</div>
+<div class="flex-1 flex justify-end">
+<button class="flex items-center text-on-surface-variant hover:opacity-80 transition-opacity transition-active">
+<span class="material-symbols-outlined mr-2">arrow_back</span>
+<span class="font-body-md">Back</span>
+</button>
+</div>
+</section>
+<main class="relative flex flex-col items-center justify-start min-h-[calc(100vh-100px)] py-12 px-margin-desktop overflow-hidden">
+<!-- Ink Splatter Background Effect -->
+<div class="absolute inset-0 ink-splatter opacity-[0.04] pointer-events-none"></div>
+<!-- Order Summary Container -->
+<div class="w-full max-w-[600px] relative z-10">
+<!-- Summary Card -->
+<section class="bg-surface-ivory border border-outline-variant rounded-xl p-8 shadow-sm relative overflow-hidden mb-10">
+
+<div class="mb-6">
+<p class="font-data-price text-on-surface-variant tracking-widest text-xs uppercase">ORDER #TF-2024-8842</p>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-start">
+<span class="font-lora text-on-surface text-body-md">Midnight Lily Ceramics (Set of 2)</span>
+<span class="font-lora text-on-surface text-body-md">₹1,850</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="font-lora text-on-surface text-body-md">Organic Cotton Loom Wrap</span>
+<span class="font-lora text-on-surface text-body-md">₹850</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="font-lora text-on-surface text-body-md">Shipping &amp; Hand-crafted Packing</span>
+<span class="font-lora text-on-surface text-body-md">₹220</span>
+</div>
+</div>
+<div class="border-t border-outline-variant/40 pt-6 flex justify-between items-center">
+<span class="font-lora text-on-surface text-lg font-bold">Total Amount</span>
+<span class="font-data-price text-[#C8973A] text-[22px] font-bold">₹2,920</span>
+</div>
+</section>
+<!-- Payment Method Section -->
+<section class="space-y-4">
+<h2 class="font-label-caps text-on-surface-variant text-[11px] px-2">PAYING WITH</h2>
+<div class="bg-white border border-surface-ivory rounded-lg p-4 flex items-center shadow-sm">
+<div class="bg-surface-ivory rounded-md px-3 py-1 mr-4 border border-outline-variant/20">
+<span class="text-on-surface-variant font-bold text-sm tracking-tighter">Razorpay</span>
+</div>
+<p class="font-body-md text-on-surface-variant text-sm">Secured by Razorpay</p>
+<span class="material-symbols-outlined ml-auto text-on-surface-variant opacity-40">verified_user</span>
+</div>
+</section>
+<!-- Action Button -->
+<div class="mt-10 space-y-4">
+<button class="w-full h-[52px] bg-primary text-on-primary font-body-md font-bold rounded-lg shadow-md hover:opacity-95 transition-all transition-active flex items-center justify-center">
+                    Pay ₹2,920
+                </button>
+<p class="text-center font-body-md text-on-surface-variant text-[13px] opacity-70 px-8">
+                    You'll only be charged once. Your card details never touch our server.
+                </p>
+<div class="pt-4 text-center">
+<a class="font-body-md text-tertiary underline decoration-tertiary/30 underline-offset-4 hover:text-primary transition-colors" href="#">
+                        Pay later
+                    </a>
+</div>
+</div>
+</div>
+</main>
+<!-- Mascot -->
+<div class="artisan-mascot hidden md:block">
+<img class="w-full h-auto drop-shadow-lg animate-bounce" data-alt="A charming Chibi-style artisan mascot, a young girl with a messy bun and a paint-stained apron, smiling and waving warmly. She is rendered in a soft watercolor and ink style, fitting perfectly into a handcrafted sketchbook aesthetic. The background is pure white to match the minimal UI, and her presence adds a touch of human warmth and craftsmanship to the payment screen." src="/img/artisan-mascot.png" style="animation-duration: 3s;" loading="lazy">
+</div>
+<!-- Background Decoration Textures -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-[0.03] z-0 overflow-hidden">
+<div class="absolute top-20 left-10 transform -rotate-12">
+<img alt="" class="grayscale" src="/img/textures/pinstripe.png" loading="lazy">
+</div>
+<div class="absolute bottom-40 right-10 transform rotate-45">
+<img alt="" class="grayscale" src="/img/textures/pinstripe.png" loading="lazy">
+</div>
+</div>
+<script>
+        // Simple micro-interaction for the pay button
+        const payButton = document.querySelector('button');
+        payButton.addEventListener('click', function() {
+            this.innerHTML = '<span class="flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Securely Redirecting...</span>';
+            this.classList.add('opacity-80');
+            this.disabled = true;
+            
+            setTimeout(() => {
+                // Simulation of transition
+                console.log('Redirecting to payment gateway...');
+            }, 1500);
+        });
+    </script>
+
+<script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
+    let isLoggedIn = false;
+    async function checkAuthState() {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        const authContainer = document.getElementById('auth-buttons-container');
+        
+        if (token) {
+            isLoggedIn = true;
+            try {
+                let avatarUrl = null;
+                let initial = 'A';
+                try {
+                    const res = await apiClient.get('/profile/me');
+                    if (res.data && res.data.success) {
+                        avatarUrl = res.data.data.avatar_url;
+                        if (res.data.data.full_name) {
+                            initial = res.data.data.full_name.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile avatar:", err);
+                }
+                
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
+                } else {
+                    avatarHtml = `
+                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                            ${initial}
+                        </a>
+                    `;
+                }
+
+                if (authContainer) {
+                    authContainer.innerHTML = avatarHtml;
+                }
+            } catch(e) {
+                console.error("Failed to parse token:", e);
+                logout();
+            }
+        } else {
+            isLoggedIn = false;
+            if (authContainer) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-md">
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    checkAuthState();
+</script>
+
+</body>
+</html>

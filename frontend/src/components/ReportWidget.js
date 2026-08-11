@@ -1,15 +1,23 @@
 // Tohfa Unified Chatbot (Recommendations + FAQ + Problem Reporting)
 (function() {
+  // Early queuing support for AI Gift Guide clicks
+  if (!window.openTohfaChat) {
+    window.openTohfaChat = function(prefillQuery) {
+      if (!window.__tohfaChatQueue) window.__tohfaChatQueue = [];
+      window.__tohfaChatQueue.push(prefillQuery);
+    };
+  }
+
   // 1. Inject Stylesheets dynamically
   const style = document.createElement('style');
   style.textContent = `
     /* Floating Mascot Button — bare transparent PNG, no circle background */
     #tohfa-chat-mascot {
       position: fixed;
-      bottom: 80px;        /* above mobile bottom nav bar */
-      right: 12px;
-      width: 64px;
-      height: 64px;
+      bottom: 74px;        /* above mobile bottom nav bar */
+      right: 6px;
+      width: 48px;
+      height: 48px;
       background: none;
       border: none;
       border-radius: 0;
@@ -19,7 +27,8 @@
       justify-content: center;
       cursor: pointer;
       z-index: 99999;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0.92;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
       animation: mascotFloat 3.5s ease-in-out infinite;
     }
     @media (min-width: 769px) {
@@ -28,6 +37,7 @@
         height: 90px;
         bottom: 32px;
         right: 32px;
+        opacity: 1;
       }
     }
     #tohfa-chat-mascot:hover {
@@ -50,7 +60,6 @@
       display: block;
       filter: drop-shadow(0 6px 16px rgba(61, 107, 79, 0.28));
       pointer-events: none;
-      mix-blend-mode: multiply;
     }
     /* Gold notification badge repositioned for bare image */
     #tohfa-chat-badge {
@@ -546,6 +555,23 @@
       }
     });
 
+    window.openTohfaChat = function(prefillQuery) {
+      panel.classList.add('open');
+      badge.style.display = 'none'; // Clear notification badge
+      if (prefillQuery) {
+        sendMessage(prefillQuery);
+      } else {
+        textInput.focus();
+        scrollMessages();
+      }
+    };
+
+    // Process queued triggers
+    if (window.__tohfaChatQueue && window.__tohfaChatQueue.length > 0) {
+      const q = window.__tohfaChatQueue.shift();
+      window.openTohfaChat(q);
+    }
+
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       panel.classList.remove('open');
@@ -588,10 +614,22 @@
       scrollMessages();
     }
 
+    function formatBotHtml(rawText) {
+      if (!rawText) return "";
+      const div = document.createElement('div');
+      div.textContent = rawText;
+      let escaped = div.innerHTML;
+      // Convert markdown links [label](url) to clickable tags safely
+      escaped = escaped.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#3D6B4F;font-weight:bold;text-decoration:underline;" target="_blank">$1</a>');
+      // Convert newlines to <br>
+      escaped = escaped.replace(/\n/g, '<br>');
+      return escaped;
+    }
+
     function appendBotMessage(text) {
       const bubble = document.createElement('div');
       bubble.className = 'tohfa-chat-bubble bot';
-      bubble.textContent = text;
+      bubble.innerHTML = formatBotHtml(text);
       msgsList.appendChild(bubble);
       scrollMessages();
     }

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+  <script src="/src/components/ProtectedRoute.js"></script>
+<meta charset="utf-8"/>
+<title>Payment Failed - Tohfa Artisan Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ink-splat {
+            background-image: radial-gradient(circle, rgba(177,75,62,0.1) 0%, transparent 70%);
+        }
+        .sketch-overlay {
+            background-image: url("/img/textures/natural-paper.png");
+            opacity: 0.05;
+        }
+        .terracotta-glow {
+            box-shadow: 0 0 30px rgba(177,75,62,0.15);
+        }
+        .warm-card-shadow {
+            box-shadow: 0 10px 30px -5px rgba(58, 51, 40, 0.08);
+        }
+        @keyframes gentle-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .mascot-float {
+            animation: gentle-float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#FFFFFF] text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col font-body-md">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-[#F7F3EC] border-b border-[#8FAF82]">
+<div class="flex flex-col md:flex-row items-center justify-between px-margin-mobile md:px-margin-desktop py-md max-w-full mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-display-hero text-headline-lg italic text-primary">Tohfa<span class="text-[#967b4c]">.</span></span>
+</div>
+<nav class="hidden md:flex items-center gap-xl">
+<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Home</a>
+<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Category</a>
+<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Reels</a>
+<a class="font-title-serif text-title-serif text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Profile</a>
+</nav>
+<div class="flex items-center gap-lg">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity">shopping_bag</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center py-xl px-margin-mobile">
+<div class="max-w-2xl w-full flex flex-col items-center text-center space-y-lg">
+<!-- Failure Icon -->
+<div class="relative">
+<div class="absolute inset-0 terracotta-glow rounded-full scale-150"></div>
+<div class="w-20 h-20 rounded-full bg-error-container flex items-center justify-center z-10 relative">
+<span class="material-symbols-outlined text-terracotta text-4xl font-bold">close</span>
+</div>
+</div>
+<!-- Header Text -->
+<div class="space-y-sm">
+<h1 class="font-headline-lg text-[26px] italic text-primary leading-tight">Payment unsuccessful</h1>
+<p class="font-body-md text-[14px] text-on-surface-variant">We couldn't process your payment. No amount was deducted.</p>
+<p class="font-data-price text-[12px] text-outline tracking-wider uppercase">ERROR CODE: PAYMENT_FAILED · ORDER NOT PLACED</p>
+</div>
+<!-- Details Section with Mascot -->
+<div class="w-full flex flex-col md:flex-row items-center md:items-end justify-center gap-lg mt-md">
+<!-- Details Card -->
+<div class="relative bg-ivory border border-outline-variant rounded-xl p-lg warm-card-shadow text-left max-w-sm w-full overflow-hidden">
+<!-- Subtle Ink Sketch Texture Overlay -->
+<div class="absolute inset-0 opacity-[0.07] pointer-events-none flex items-center justify-center">
+<span class="material-symbols-outlined text-9xl">heart_broken</span>
+</div>
+<div class="relative z-10">
+<h2 class="font-label-caps text-[10px] text-gold mb-md">WHAT HAPPENED?</h2>
+<ul class="space-y-sm text-[13px] text-on-surface-variant list-none">
+<li class="flex items-start gap-sm">
+<span class="text-gold mt-1">◈</span> Bank declined the transaction
+                            </li>
+<li class="flex items-start gap-sm">
+<span class="text-gold mt-1">◈</span> Session timed out
+                            </li>
+<li class="flex items-start gap-sm">
+<span class="text-gold mt-1">◈</span> Incorrect card details
+                            </li>
+<li class="flex items-start gap-sm">
+<span class="text-gold mt-1">◈</span> Network issue during payment
+                            </li>
+</ul>
+</div>
+</div>
+<!-- Mascot -->
+<div class="mascot-float hidden md:block">
+<img class="w-32 h-32 object-contain" data-alt="A charming Chibi-style artisan girl mascot for a boutique studio, wearing a sage green apron over a cream dress. She holds a small notepad and pencil with a sympathetic, kind expression. The illustration is in a soft watercolor style with hand-drawn ink outlines on an ivory background, reflecting a warm and intentional artisan brand identity." src="/img/ceramic_bowls.jpg" loading="lazy" />
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-md w-full max-w-xs mt-xl">
+<button class="h-12 bg-primary text-white font-body-md rounded-lg active:scale-95 transition-all hover:opacity-90">
+                    Try again
+                </button>
+<button class="h-12 bg-white border border-outline text-primary font-body-md rounded-lg active:scale-95 transition-all hover:bg-surface">
+                    Try a different method
+                </button>
+<a class="text-tertiary font-body-md text-sm mt-sm hover:underline flex items-center justify-center gap-xs" href="#">
+                    Contact support <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-5%;right:-10%;opacity:0.03;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:320px;color:white;">local_florist</span>
+  </div>
+  <!-- Brand -->
+  <div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#C9972C;margin-bottom:12px;">Tohfa.</h2>
+    <p style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#F7F2E8;margin-bottom:8px;text-transform:uppercase;">Thoughtful Gifting, Made Effortless.</p>
+    <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;font-size:13px;line-height:1.6;margin-bottom:24px;max-width:320px;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+    
+  </div>
+  <!-- Accordions -->
+  <div style="border-top:1px solid rgba(255,255,255,0.1);margin-bottom:32px;">
+    <!-- Company -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Company</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/mobile-buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Sellers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Sellers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Buyers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Buyers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </details>
+    <!-- Support -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Support</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </details>
+  </div>
+  <!-- Bottom bar -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+    
+    <div style="display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:16px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+  <style>
+    .tohfa-footer-details summary::-webkit-details-marker {
+      display: none !important;
+    }
+    .tohfa-footer-details[open] summary span.material-symbols-outlined {
+      transform: rotate(180deg) !important;
+    }
+  </style>
+</footer>
+<script>
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token') || null;
+        } catch(e) {
+            return sessionStorage.getItem('tohfa_access_token') || null;
+        }
+    }
+
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

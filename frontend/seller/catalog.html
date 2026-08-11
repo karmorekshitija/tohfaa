@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
 <meta charset="utf-8"/>
 <title>Tohfa Artisan Studio - Catalog</title>
 <!-- Google Fonts -->
@@ -17,7 +17,7 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/tailwind.css">
-<script src="/components/seller-components.js"></script>
+<script type="module" src="/components/seller-components.js"></script>
 
 <style>
         .material-symbols-outlined {
@@ -884,7 +884,7 @@ async function loadListings(forceFetch = false) {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.status === 401 || res.status === 403) {
-                sessionStorage.clear(); window.location.href = '/auth/login.html'; return;
+                sessionStorage.clear(); // login redirect removed return;
             }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -1168,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const pr = await fetch(`${API_BASE}/api/profile/me`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (pr.status === 401 || pr.status === 403) {
-                sessionStorage.clear(); window.location.href = '/auth/login.html'; return;
+                sessionStorage.clear(); // login redirect removed return;
             }
             if (!pr.ok) throw new Error();
             const pd = await pr.json();
@@ -1229,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }).catch(() => {});
         }
         sessionStorage.clear();
-        window.location.href = '/auth/login.html';
+        // login redirect removed
     });
 });
 
@@ -1370,3 +1370,4 @@ window.submitMerge = submitMerge;
 
 </body>
 </html>
+tml>

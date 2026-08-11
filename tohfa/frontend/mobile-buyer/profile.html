@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="/src/components/DeviceRedirect.js"></script>
+    <script src="/src/components/ReportWidget.js" defer></script>
+    <script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <title>Tohfa | My Profile</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
+        .ink-wash-gradient {
+            background: linear-gradient(135deg, #8FAF82 0%, #8FAF82 50%, #F7F3EC 100%);
+        }
+        .artisan-card-hover {
+            transition: all 0.2s ease;
+        }
+        .artisan-card-hover:active {
+            transform: scale(0.97);
+        }
+        .edit-input-field {
+            width: 100%;
+            background: white;
+            border: 1px solid #c5d6bc;
+            border-radius: 0.5rem;
+            padding: 10px 14px;
+            font-size: 14px;
+            line-height: 20px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .edit-input-field:focus {
+            border-color: #3D6B4F;
+            box-shadow: 0 0 0 3px rgba(37,83,56,0.08);
+        }
+        .edit-input-field.error {
+            border-color: #ba1a1a;
+            box-shadow: 0 0 0 3px rgba(186,26,26,0.08);
+        }
+        .edit-field-error {
+            display: none;
+            color: #ba1a1a;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+        .edit-field-error.visible { display: block; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-dm-sans min-h-screen pb-24">
+
+<!-- Mobile Header Bar -->
+<header class="flex justify-between items-center px-4 h-16 w-full z-50 bg-[#F7F3EC] border-b border-[#8FAF82] sticky top-0">
+    <button class="p-2 -ml-2 text-primary flex items-center justify-center min-h-[44px] min-w-[44px]" onclick="window.location.href='home.html'">
+        <span class="material-symbols-outlined text-2xl">arrow_back</span>
+    </button>
+    <h1 class="font-playfair text-xl font-bold text-primary">My Profile</h1>
+    <a href="notifications.html" class="p-2 text-primary flex items-center justify-center min-h-[44px] min-w-[44px] relative">
+        <span class="material-symbols-outlined text-2xl">notifications</span>
+        <span id="nav-notif-badge" class="absolute top-2 right-2 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+</header>
+
+<main class="px-4 py-6 space-y-6 max-w-md mx-auto">
+    <!-- Ink Wash Banner & Profile Overlay -->
+    <div class="relative w-full rounded-xl overflow-hidden shadow-sm bg-white border border-[#8FAF82]/20 pb-6">
+        <div class="w-full h-28 ink-wash-gradient opacity-60"></div>
+        <div class="flex flex-col items-center -mt-12 relative z-10">
+            <div class="relative w-24 h-24 rounded-full border-[3px] border-primary overflow-hidden bg-surface-variant shadow-md">
+                <img id="profile-avatar-img" class="w-full h-full object-cover" src="https://placehold.co/150x150/f4ede3/516447?text=Artisan" alt="Profile Avatar" loading="lazy">
+            </div>
+            <h2 id="profile-name" class="mt-3 font-playfair text-2xl font-bold text-on-surface">Loading User...</h2>
+            <p id="profile-email" class="text-xs text-secondary mt-0.5">loading...</p>
+            
+            <button id="mobile-edit-profile-btn" class="mt-4 px-6 py-2 border-2 border-primary/20 text-primary font-semibold text-xs tracking-wider uppercase rounded-full hover:bg-primary/5 transition-all active:scale-95">
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Activity Hub Section -->
+    <section class="space-y-3">
+        <h3 class="font-playfair text-lg font-bold text-primary px-1">Activity Hub</h3>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <a href="orders.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-primary text-2xl">package_2</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">My Orders</p>
+                    <p id="hub-orders-count" class="text-[10px] text-secondary mt-0.5">0 active shipments</p>
+                </div>
+            </a>
+            
+
+            
+            <a href="addresses.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-tertiary text-2xl">location_on</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Addresses</p>
+                    <p id="hub-addresses-count" class="text-[10px] text-secondary mt-0.5">0 saved locations</p>
+                </div>
+            </a>
+            
+            <a href="occasions.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-red-400 text-2xl">celebration</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Occasions</p>
+                    <p id="hub-occasions-count" class="text-[10px] text-secondary mt-0.5">0 occasions saved</p>
+                </div>
+            </a>
+
+            <a href="notifications.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover">
+                <span class="material-symbols-outlined text-secondary text-2xl">notifications</span>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Notifications</p>
+                    <p class="text-[10px] text-secondary mt-0.5">Recent alerts</p>
+                </div>
+            </a>
+
+            <a href="followers.html" class="p-4 bg-white rounded-xl border border-[#8FAF82]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover col-span-2">
+                <div class="flex justify-between items-center w-full">
+                    <span class="material-symbols-outlined text-blue-500 text-2xl">group</span>
+                    <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+                </div>
+                <div>
+                    <p id="hub-followers-title" class="font-playfair text-sm font-bold text-on-surface">Artisans You Follow</p>
+                    <p id="hub-followers-count" class="text-[10px] text-secondary mt-0.5">0 followed artisans</p>
+                </div>
+            </a>
+
+            <a href="chat.html" class="p-4 bg-gradient-to-br from-[#7B5EA7]/20 to-[#8FAF82]/20 rounded-xl border border-[#7B5EA7]/20 flex flex-col justify-between h-28 shadow-sm artisan-card-hover col-span-2">
+                <div class="flex justify-between items-center w-full">
+                    <span class="material-symbols-outlined text-tertiary text-2xl">chat</span>
+                    <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+                </div>
+                <div>
+                    <p class="font-playfair text-sm font-bold text-on-surface">Custom Orders Chat</p>
+                    <p id="chat-card-subtitle" class="text-[10px] text-secondary mt-0.5">0 conversations</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Shipping & Payment Cards -->
+    <section class="space-y-3">
+        <h3 class="font-playfair text-lg font-bold text-primary px-1">Shipping & Payment</h3>
+        
+        <div class="p-4 border border-[#8FAF82]/20 rounded-xl bg-white shadow-sm space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="font-space-mono text-[10px] text-secondary uppercase tracking-wider">Default Shipping Address</span>
+                <a href="addresses.html" class="text-primary hover:underline text-xs font-bold">Edit</a>
+            </div>
+            <div id="shipping-address-container" class="text-sm text-on-surface space-y-0.5">
+                <p id="shipping-line1" class="font-semibold text-on-surface">No shipping address</p>
+                <p id="shipping-line2" class="text-secondary text-xs">Please add an address in settings.</p>
+                <p id="shipping-country" class="text-secondary text-xs"></p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Join Studio Card -->
+    <div id="join-studio-card" class="hidden relative p-5 bg-tertiary rounded-xl overflow-hidden shadow-sm text-white flex flex-col justify-between min-h-[120px]">
+        <div class="relative z-10">
+            <p class="font-playfair text-lg font-bold">Join the Studio</p>
+            <p class="text-xs text-white/80 mt-1">Become a certified Tohfa Artisan and share your craft with the world.</p>
+        </div>
+        <button class="mt-4 bg-white text-tertiary font-bold text-xs px-4 py-2 rounded-full self-start active:scale-95 transition-transform">
+            Apply Now
+        </button>
+        <div class="absolute -right-4 -bottom-4 opacity-10">
+            <span class="material-symbols-outlined text-[100px]">palette</span>
+        </div>
+    </div>
+
+    <!-- Preferences & Account Actions -->
+    <section class="bg-white border border-[#8FAF82]/20 rounded-xl shadow-sm overflow-hidden">
+        <a href="notifications.html" class="flex justify-between items-center p-4 border-b border-surface-variant hover:bg-primary/5 active:bg-primary/5 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">notifications_active</span>
+                <span class="text-sm font-semibold text-on-surface">Notifications</span>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+        </a>
+        <a href="saved-makes.html" class="flex justify-between items-center p-4 border-b border-surface-variant hover:bg-primary/5 active:bg-primary/5 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                <span class="text-sm font-semibold text-on-surface">Wishlist</span>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+        </a>
+        <a href="#" class="flex justify-between items-center p-4 border-b border-surface-variant hover:bg-primary/5 active:bg-primary/5 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">help_center</span>
+                <span class="text-sm font-semibold text-on-surface">Help & Support</span>
+            </div>
+            <span class="material-symbols-outlined text-secondary text-sm">chevron_right</span>
+        </a>
+        <button id="profile-logout-btn" class="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-50 active:bg-red-50 transition-colors text-left border-none bg-transparent">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="text-sm font-bold">Log out</span>
+        </button>
+    </section>
+</main>
+
+<!-- Bottom Navigation Bar removed dynamically by ProtectedRoute.js -->
+
+<script type="module">
+    import apiClient from '/src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
+    let profileData = null;
+
+    async function handleSellerEntryPoint(e) {
+        if (e) e.preventDefault();
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html?next=become-seller';
+            return;
+        }
+        try {
+            const res = await apiClient.get('/profile/me');
+            if (res.data?.success) {
+                const role = res.data.data.role;
+                if (role === 'seller') {
+                    window.location.href = '/seller/dashboard.html';
+                    return;
+                }
+            }
+        } catch(err) {}
+        window.location.href = '/mobile-buyer/become-seller.html';
+    }
+    window.handleSellerEntryPoint = handleSellerEntryPoint;
+
+    async function init() {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        if (!token) {
+            window.location.href = '/auth/login.html';
+            return;
+        }
+
+        await fetchProfile();
+        await fetchDefaultAddress();
+        await fetchOccasionsCount();
+        await checkCustomOrders();
+        await updateCartBadge();
+    }
+
+    async function fetchProfile() {
+        try {
+            const res = await apiClient.get('/profile/me');
+            if (res.data && res.data.success) {
+                profileData = res.data.data;
+                updateProfileUI(profileData);
+            }
+        } catch (err) {
+            console.error("Failed to load profile details:", err);
+        }
+    }
+
+    function updateProfileUI(profile) {
+        // Name & Email
+        document.getElementById('profile-name').innerText = profile.display_name || profile.full_name || 'Artisan';
+        document.getElementById('profile-email').innerText = profile.email || '';
+
+        // Avatar
+        const avatarImg = document.getElementById('profile-avatar-img');
+        const initialChar = (profile.display_name || profile.full_name || 'A').charAt(0).toUpperCase();
+        const svgFallback = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%233D6B4F'/><text x='50' y='55' font-family='DM Sans, sans-serif' font-size='40' font-weight='bold' fill='white' dominant-baseline='middle' text-anchor='middle'>${initialChar}</text></svg>`;
+
+        if (avatarImg) {
+            avatarImg.onerror = () => {
+                avatarImg.src = svgFallback;
+            };
+            if (profile.avatar_url) {
+                avatarImg.src = profile.avatar_url;
+            } else {
+                avatarImg.src = svgFallback;
+            }
+        }
+
+        // Activity Hub counts
+        document.getElementById('hub-orders-count').innerText = `${profile.active_orders_count || 0} active shipments`;
+        
+        document.getElementById('hub-addresses-count').innerText = `${profile.address_count || 0} saved locations`;
+
+        // Follower counts based on role
+        const followersCountEl = document.getElementById('hub-followers-count');
+        const followersTitleEl = document.getElementById('hub-followers-title');
+        if (profile.role === 'buyer') {
+            if (followersTitleEl) followersTitleEl.innerText = "Artisans You Follow";
+            if (followersCountEl) {
+                followersCountEl.innerText = `${profile.following_count || 0} followed artisan${profile.following_count !== 1 ? 's' : ''}`;
+            }
+        } else {
+            if (followersTitleEl) followersTitleEl.innerText = "Followers & Following";
+            if (followersCountEl) {
+                followersCountEl.innerText = `${profile.followers_count || 0} follower${profile.followers_count !== 1 ? 's' : ''} • ${profile.following_count || 0} following`;
+            }
+        }
+
+        // Join studio card (hide for sellers)
+        const joinCard = document.getElementById('join-studio-card');
+        if (joinCard) {
+            if (profile.role === 'buyer') {
+                joinCard.classList.remove('hidden');
+                joinCard.addEventListener('click', handleSellerEntryPoint);
+            } else {
+                joinCard.classList.add('hidden');
+            }
+        }
+    }
+
+    async function fetchDefaultAddress() {
+        try {
+            const addRes = await apiClient.get('/addresses');
+            if (addRes.data && addRes.data.success && addRes.data.data.addresses.length > 0) {
+                const addresses = addRes.data.data.addresses;
+                const defaultAddr = addresses.find(a => a.is_default === 1) || addresses[0];
+                document.getElementById('shipping-line1').innerText = defaultAddr.full_name || defaultAddr.line1;
+                document.getElementById('shipping-line2').innerText = defaultAddr.line1 + (defaultAddr.line2 ? `, ${defaultAddr.line2}` : '');
+                document.getElementById('shipping-country').innerText = `${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.pincode}`;
+            }
+        } catch (e) {
+            console.error("Failed to fetch address:", e);
+        }
+    }
+
+    async function fetchOccasionsCount() {
+        try {
+            const occRes = await apiClient.get('/occasions');
+            if (occRes.data && occRes.data.success) {
+                const count = occRes.data.data.total || 0;
+                const occEl = document.getElementById('hub-occasions-count');
+                if (occEl) {
+                    occEl.innerText = count === 1 ? '1 occasion saved' : `${count} occasions saved`;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to fetch occasions:", e);
+        }
+    }
+
+    async function checkCustomOrders() {
+        try {
+            const res = await apiClient.get('/conversations');
+            if (res.data && res.data.conversations) {
+                const count = res.data.conversations.length;
+                const subtitle = document.getElementById('chat-card-subtitle');
+                if (subtitle) {
+                    subtitle.textContent = `${count} conversation${count !== 1 ? 's' : ''}`;
+                }
+            }
+        } catch (_) {
+            const subtitle = document.getElementById('chat-card-subtitle');
+            if (subtitle) subtitle.textContent = '0 conversations';
+        }
+    }
+
+    async function updateCartBadge() {
+        try {
+            const res = await apiClient.get('/cart');
+            if (res.data && res.data.success) {
+                const count = res.data.data.item_count;
+                const notifBadge = document.getElementById('nav-notif-badge');
+                if (notifBadge && count > 0) {
+                    notifBadge.classList.remove('hidden');
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Handle logout click
+    const logoutBtn = document.getElementById('profile-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.clear();
+            window.location.href = '/auth/login.html';
+        });
+    }
+
+    /* ── Edit Profile Sheet Logic ── */
+    const editOverlay = document.getElementById('edit-profile-overlay');
+    const editSheet = document.getElementById('edit-profile-sheet');
+    const fileInput = document.getElementById('edit-avatar-file');
+    let selectedAvatarFile = null;
+
+    function openEditProfile() {
+        if (!editOverlay || !editSheet || !profileData) return;
+
+        // Populate inputs
+        document.getElementById('edit-display-name').value = profileData.display_name || profileData.full_name || '';
+        document.getElementById('edit-email').value = profileData.email || '';
+        document.getElementById('edit-phone').value = profileData.phone || '';
+
+        const previewImg = document.getElementById('edit-avatar-preview');
+        if (previewImg) {
+            previewImg.src = profileData.avatar_url || `https://placehold.co/150x150/f4ede3/516447?text=${encodeURIComponent((profileData.display_name || profileData.full_name || 'A').charAt(0).toUpperCase())}`;
+        }
+
+        editOverlay.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            editSheet.style.transform = 'translateY(0)';
+        });
+    }
+
+    function closeEditProfile() {
+        if (!editOverlay || !editSheet) return;
+        editSheet.style.transform = 'translateY(100%)';
+        selectedAvatarFile = null;
+        setTimeout(() => {
+            editOverlay.classList.add('hidden');
+        }, 300);
+    }
+
+    document.getElementById('mobile-edit-profile-btn')?.addEventListener('click', openEditProfile);
+    document.getElementById('edit-sheet-cancel')?.addEventListener('click', closeEditProfile);
+    document.getElementById('edit-sheet-close-btn')?.addEventListener('click', closeEditProfile);
+
+    editOverlay?.addEventListener('click', (e) => {
+        if (e.target === editOverlay) {
+            closeEditProfile();
+        }
+    });
+
+    // File selection trigger
+    document.getElementById('edit-avatar-trigger-div')?.addEventListener('click', () => {
+        fileInput?.click();
+    });
+
+    fileInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        selectedAvatarFile = file;
+
+        // Preview locally immediately
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const previewImg = document.getElementById('edit-avatar-preview');
+            if (previewImg) previewImg.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+
+
+    // Save profile handler
+    window.handleEditProfileSave = async function() {
+        const displayName = document.getElementById('edit-display-name').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+
+        let hasErrors = false;
+
+        // Name validate
+        if (!displayName) {
+            document.getElementById('edit-display-name').classList.add('error');
+            document.getElementById('edit-error-display-name').classList.add('visible');
+            hasErrors = true;
+        } else {
+            document.getElementById('edit-display-name').classList.remove('error');
+            document.getElementById('edit-error-display-name').classList.remove('visible');
+        }
+
+        // Email validate
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            document.getElementById('edit-email').classList.add('error');
+            document.getElementById('edit-error-email').classList.add('visible');
+            hasErrors = true;
+        } else {
+            document.getElementById('edit-email').classList.remove('error');
+            document.getElementById('edit-error-email').classList.remove('visible');
+        }
+
+        // Phone validate
+        let cleanedPhone = phone.replace(/[\s\-\+\(\)]/g, '');
+        if (cleanedPhone.startsWith('91') && cleanedPhone.length > 10) {
+            cleanedPhone = cleanedPhone.substring(2);
+        }
+        if (!/^[6-9]\d{9}$/.test(cleanedPhone)) {
+            document.getElementById('edit-phone').classList.add('error');
+            document.getElementById('edit-error-phone').classList.add('visible');
+            hasErrors = true;
+        } else {
+            document.getElementById('edit-phone').classList.remove('error');
+            document.getElementById('edit-error-phone').classList.remove('visible');
+        }
+
+        if (hasErrors) return;
+
+        const saveBtn = document.getElementById('edit-sheet-save');
+        saveBtn.disabled = true;
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> Saving...';
+
+        try {
+            // Upload Avatar File first if selected
+            let finalAvatarUrl = profileData.avatar_url;
+            if (selectedAvatarFile) {
+                try {
+                    const formData = new FormData();
+                    formData.append('avatar', selectedAvatarFile);
+                    const uploadRes = await apiClient.post('/profile/me/avatar', formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    if (uploadRes.data && uploadRes.data.success) {
+                        finalAvatarUrl = uploadRes.data.data.avatar_url;
+                    }
+                } catch (uploadErr) {
+                    console.warn("Avatar upload failed:", uploadErr);
+                }
+            }
+
+            // Save display name, email, phone, and optional avatar_url
+            const payload = {
+                display_name: displayName,
+                email: email,
+                phone: phone,
+                avatar_url: finalAvatarUrl
+            };
+
+            const response = await apiClient.patch('/profile/me', payload);
+            if (response.data && response.data.success) {
+                profileData = response.data.data;
+
+                // Sync session storage
+                const userStr = sessionStorage.getItem('tohfa_user');
+                if (userStr) {
+                    try {
+                        const userObj = JSON.parse(userStr);
+                        userObj.display_name = profileData.display_name;
+                        userObj.email = profileData.email;
+                        userObj.phone = profileData.phone;
+                        userObj.avatar_url = profileData.avatar_url;
+                        sessionStorage.setItem('tohfa_user', JSON.stringify(userObj));
+                    } catch (_) {}
+                }
+
+                // Update UI dynamically in-place!
+                updateProfileUI(profileData);
+
+                // Show Success Toast
+                const successToast = document.getElementById('success-toast');
+                if (successToast) {
+                    successToast.classList.remove('hidden');
+                    setTimeout(() => successToast.classList.add('hidden'), 2500);
+                }
+
+                closeEditProfile();
+            }
+        } catch (saveErr) {
+            console.error("Failed to save changes:", saveErr);
+            alert(saveErr.response?.data?.message || "Failed to save profile changes. Please try again.");
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+</script>
+<!-- Success Toast Notification -->
+<div id="success-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[10000] hidden">
+  <div class="bg-inverse-surface text-inverse-on-surface px-6 py-3 rounded-full shadow-2xl flex items-center space-x-3 text-sm font-semibold">
+    <span class="font-serif">Profile updated ✦</span>
+    <span class="material-symbols-outlined text-[#8FAF82]">check_circle</span>
+  </div>
+</div>
+
+<!-- Edit Profile Bottom Sheet (Mobile Overlay) -->
+<div id="edit-profile-overlay" class="hidden fixed inset-0 z-[9999] flex items-end justify-center" style="background: rgba(30,61,15,0.45); backdrop-filter: blur(12px);">
+    <div id="edit-profile-sheet" class="w-full bg-[#F7F3EC] rounded-t-[24px] shadow-2xl transition-transform duration-300 ease-out translate-y-full flex flex-col max-h-[85vh]" style="padding-bottom: env(safe-area-inset-bottom, 24px);">
+        <!-- Drag Handle / Top Indicator -->
+        <div class="w-full flex justify-center pt-3 pb-2 flex-shrink-0">
+            <div class="w-12 h-1.5 bg-[#8FAF82]/40 rounded-full"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="px-5 pb-3 border-b border-[#8FAF82]/20 flex justify-between items-center flex-shrink-0">
+            <div>
+                <h2 class="font-playfair font-bold text-lg text-[#1A1A1A]">Edit Profile</h2>
+                <p class="text-[10px] text-[#6B6B6B]">Update your account details</p>
+            </div>
+            <button id="edit-sheet-close-btn" class="text-[#6B6B6B] hover:text-[#ba1a1a] p-1 flex items-center justify-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Scrollable Form Body -->
+        <div class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+            
+            <!-- Avatar Section -->
+            <div class="flex flex-col items-center gap-2">
+                <div id="edit-avatar-trigger-div" class="relative group cursor-pointer w-20 h-20 rounded-full border-2 border-[#3D6B4F]/30 overflow-hidden bg-[#F7F3EC] flex-shrink-0">
+                    <img id="edit-avatar-preview" class="w-full h-full object-cover" src="https://placehold.co/150x150/f4ede3/516447?text=U" alt="Preview" loading="lazy">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <span class="material-symbols-outlined text-white text-lg">photo_camera</span>
+                    </div>
+                </div>
+                <p class="text-[10px] text-[#6B6B6B]">Tap photo to upload (JPG, PNG up to 5MB)</p>
+                <input type="file" id="edit-avatar-file" class="hidden" accept="image/*">
+
+
+            </div>
+
+            <!-- Full Name -->
+            <div class="space-y-1">
+                <label class="font-sans text-xs font-semibold text-[#6B6B6B] uppercase tracking-wider" for="edit-display-name">Full Name</label>
+                <input id="edit-display-name" class="edit-input-field" type="text" placeholder="Your display name">
+                <p id="edit-error-display-name" class="edit-field-error">Full name cannot be empty.</p>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-1">
+                <label class="font-sans text-xs font-semibold text-[#6B6B6B] uppercase tracking-wider" for="edit-email">Email Address</label>
+                <input id="edit-email" class="edit-input-field" type="email" placeholder="you@example.com">
+                <p id="edit-error-email" class="edit-field-error">Please enter a valid email address.</p>
+            </div>
+
+            <!-- Phone -->
+            <div class="space-y-1">
+                <label class="font-sans text-xs font-semibold text-[#6B6B6B] uppercase tracking-wider" for="edit-phone">Phone Number</label>
+                <input id="edit-phone" class="edit-input-field" type="tel" placeholder="10-digit mobile number">
+                <p id="edit-error-phone" class="edit-field-error">Please enter a valid 10-digit Indian mobile number.</p>
+            </div>
+        </div>
+
+        <!-- Sticky Actions -->
+        <div class="px-5 pt-3 pb-2 border-t border-[#8FAF82]/20 flex gap-3 flex-shrink-0">
+            <button id="edit-sheet-cancel" class="flex-1 bg-transparent border-[1.5px] border-[#3D6B4F] text-[#3D6B4F] font-semibold text-sm py-3 rounded-[10px] active:scale-[0.98]">
+                Cancel
+            </button>
+            <button id="edit-sheet-save" onclick="handleEditProfileSave()" class="flex-1 bg-[#3D6B4F] text-white font-semibold text-sm py-3 rounded-[10px] active:scale-[0.98] flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">save</span>
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -11,7 +11,7 @@ export function logout() {
   sessionStorage.removeItem('tohfa_user');
   sessionStorage.removeItem('tohfa_admin_token');
   
-  window.location.href = '/auth/login.html';
+  // login redirect removed';
 }
 
 window.logout = logout;

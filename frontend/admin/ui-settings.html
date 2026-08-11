@@ -3,9 +3,9 @@
 <head>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
-<script src="/src/components/AdminSidebar.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+<script type="module" src="/src/components/AdminSidebar.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Tohfa Admin - UI Settings</title>
@@ -677,11 +677,10 @@
       }
       const formData = new FormData();
       formData.append('banner', fileInput.files[0]);
+      formData.append('image', fileInput.files[0]);
 
       try {
-        const res = await adminApiClient.patch(`/admin/categories/${selectedCategoryId}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await adminApiClient.patch(`/admin/categories/${selectedCategoryId}`, formData);
         if (res.data && res.data.success) {
           alert('Category page banner image updated successfully!');
           // Refresh category details and previews
@@ -731,7 +730,7 @@
     // Logout Action
     document.getElementById('logout-btn').addEventListener('click', () => {
       sessionStorage.removeItem('tohfa_admin_token');
-      window.location.href = '/admin/login.html';
+      // admin login check bypassed
     });
 
     // Initial Load

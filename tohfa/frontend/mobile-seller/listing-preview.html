@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+
+<meta charset="utf-8"/>
+<title>Tohfa - Craft New Listing Preview</title>
+<!-- Google Fonts -->
+  <!-- Tailwind CSS CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <script src="/components/seller-components.js"></script>
+</head>
+<body class="bg-parchment font-dmsans text-forest min-h-screen pb-24">
+<seller-layout active-tab="catalog">
+<!-- BEGIN: Progress Indicator -->
+<section class="mt-16 lg:mt-24 px-4 py-8 max-w-5xl mx-auto overflow-x-auto no-scrollbar" data-purpose="stepper">
+<div class="relative flex justify-between items-start min-w-[600px] lg:min-w-0">
+<div class="step-connector"></div>
+<!-- Step 1: Details -->
+<a href="/mobile-seller/listing-details.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
+<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold">Details</span>
+</a>
+<!-- Step 2: Pricing -->
+<a href="/mobile-seller/listing-pricing-a.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
+<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold">Pricing</span>
+</a>
+<!-- Step 3: Photos -->
+<a href="/mobile-seller/listing-photos.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
+<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold">Photos</span>
+</a>
+<!-- Step 4: Shipping -->
+<a href="/mobile-seller/listing-shipping.html" class="relative z-10 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center">
+<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold">Shipping</span>
+</a>
+<!-- Step 5: Preview (Active) -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-forest flex items-center justify-center ring-2 ring-forest/30">
+<svg class="w-5 h-5 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold border-b-2 border-forest pb-0.5">Preview</span>
+</div>
+<!-- Step 6: Publish -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-offwhite border-2 border-sage/40 flex items-center justify-center">
+<svg class="w-5 h-5 text-sage/40" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold text-sage/40">Publish</span>
+</div>
+</div>
+</section>
+<!-- END: Progress Indicator -->
+<!-- BEGIN: Main Content Container -->
+<main class="max-w-7xl mx-auto px-4 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Previews -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- Customer Perspective Section -->
+<section data-purpose="customer-perspective">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-playfair text-xl italic">Customer Perspective</h2>
+<button class="flex items-center gap-2 px-3 py-1 bg-offwhite border border-sage/30 rounded-lg text-xs font-medium">
+            🖥️ Desktop Preview
+          </button>
+</div>
+<div class="flex flex-col md:flex-row gap-6">
+<!-- Main Image Preview -->
+<div class="flex-grow aspect-[4/5] bg-white rounded-2xl border border-sage/20 relative p-4 flex flex-col shadow-sm items-center justify-center overflow-hidden">
+<img id="preview-cover-image" alt="Preview Cover" class="hidden w-full h-full object-cover rounded-xl" src="" />
+<div id="preview-image-placeholder" class="text-sage/40 font-playfair italic">
+              [Preview Image Placeholder]
+            </div>
+<div class="absolute bottom-4 right-4">
+<span class="px-3 py-1 bg-offwhite border border-sage/20 rounded-full text-[10px] uppercase font-mono tracking-widest">Master View</span>
+</div>
+</div>
+<!-- Description Preview -->
+<div class="md:w-64 h-32 md:h-auto bg-white rounded-2xl border border-sage/20 p-6 shadow-sm overflow-y-auto">
+<h3 class="font-playfair font-semibold text-sage text-sm mb-2">Description</h3>
+<p id="preview-description" class="text-sage/40 text-sm italic">No description provided...</p>
+</div>
+</div>
+</section>
+<!-- Listing Summary & Review Card -->
+<section class="bg-white rounded-[2rem] border border-sage/20 p-6 lg:p-10 shadow-sm" data-purpose="listing-summary">
+<div class="flex items-start gap-4 mb-8">
+<div class="p-2 border border-sage rounded-lg">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<h2 class="font-playfair text-2xl lg:text-3xl text-sage font-medium">Listing Summary &amp; Review</h2>
+</div>
+<div class="space-y-4">
+<!-- 01. Photos -->
+<div class="bg-offwhite rounded-xl p-4 flex justify-between items-center border border-sage/10">
+<span class="font-mono text-xs uppercase tracking-widest font-bold">01. Photos</span>
+<span id="preview-photo-count" class="font-mono text-xs uppercase tracking-widest font-bold">0 Photos</span>
+</div>
+<!-- 02. Core Details -->
+<div class="bg-offwhite rounded-xl p-6 border border-sage/10">
+<span class="font-mono text-xs uppercase tracking-widest font-bold mb-4 block">02. Core Details</span>
+<div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
+<div><span class="text-sage font-medium">Name:</span> <span id="preview-name" class="text-sage font-semibold">—</span></div>
+<div><span class="text-sage font-medium">Type:</span> <span id="preview-type" class="text-sage font-semibold">—</span></div>
+<div><span class="text-sage font-medium">Category:</span> <span id="preview-category" class="text-sage font-semibold">—</span></div>
+<div><span class="text-sage font-medium">Tags:</span> <span id="preview-tags" class="text-sage font-semibold">—</span></div>
+</div>
+</div>
+<!-- 03. Pricing & Inventory -->
+<div class="bg-offwhite rounded-xl p-6 border border-sage/10">
+<span class="font-mono text-xs uppercase tracking-widest font-bold mb-4 block">03. Pricing &amp; Inventory</span>
+<div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
+<div><span class="text-sage font-medium">Price:</span> <span id="preview-price" class="text-sage font-semibold">—</span></div>
+<div><span class="text-sage font-medium">Stock:</span> <span id="preview-stock" class="text-sage font-semibold">—</span></div>
+
+</div>
+</div>
+<!-- 04. Pickup Address -->
+<div class="bg-offwhite rounded-xl p-4 border border-sage/10">
+<span class="font-mono text-xs uppercase tracking-widest font-bold mb-2 block">04. Pickup Address</span>
+<div class="text-sm">
+<span class="text-sage font-medium">Pickup Address Name:</span>
+<span id="preview-pickup-address" class="font-bold text-sage">N/A</span>
+</div>
+</div>
+<!-- 05. Dimensions & Weight -->
+<div class="bg-offwhite rounded-xl p-6 border border-sage/10">
+<span class="font-mono text-xs uppercase tracking-widest font-bold mb-4 block">05. Dimensions &amp; Weight</span>
+<div class="grid grid-cols-4 gap-4 text-[10px] lg:text-xs">
+<div class="flex flex-col gap-1">
+<span class="text-sage/60">L:</span>
+<span id="preview-length" class="font-bold text-sage">N/A</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-sage/60">W:</span>
+<span id="preview-width" class="font-bold text-sage">N/A</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-sage/60">H:</span>
+<span id="preview-height" class="font-bold text-sage">N/A</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-sage/60">Weight:</span>
+<span id="preview-weight" class="font-bold text-sage">N/A</span>
+</div>
+</div>
+</div>
+<!-- Large Action Button -->
+<button id="btn-publish-main" class="w-full mt-6 bg-forest text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-forest/90 transition-all duration-200 active:scale-95">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            Publish Listing
+          </button>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<aside class="lg:col-span-4 flex flex-col gap-6" data-purpose="status-sidebar">
+<!-- Ready to Publish Card -->
+<div class="bg-white rounded-[2rem] border border-sage/20 p-8 shadow-sm">
+<h2 class="font-playfair text-2xl mb-8">Ready to Publish?</h2>
+<ul class="space-y-5 mb-10">
+<li class="flex items-center gap-3 text-sm">
+<div id="check-images" class="w-5 h-5 rounded-full border border-sage flex items-center justify-center text-sage">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span id="text-images" class="text-sage/60">Images verified (0/3)</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<div id="check-desc" class="w-5 h-5 rounded-full border border-sage flex items-center justify-center text-sage">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span id="text-desc" class="text-sage/60">Description complete</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<div id="check-price" class="w-5 h-5 rounded-full border border-sage flex items-center justify-center text-sage">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span id="text-price" class="text-sage/60">Price set</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<div id="check-shipping" class="w-5 h-5 rounded-full border border-sage flex items-center justify-center text-sage">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span id="text-shipping" class="text-sage/60">Shipping profile linked</span>
+</li>
+</ul>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-mono font-bold uppercase tracking-widest">
+<span>Score</span>
+<span id="preview-score-percent">0%</span>
+</div>
+<div class="w-full h-2 bg-sage/10 rounded-full overflow-hidden">
+<div id="preview-score-bar" class="w-0 h-full bg-sage transition-all duration-300"></div>
+</div>
+</div>
+</div>
+
+<!-- BEGIN: Sticky Actions Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-forest/10 p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden">
+  <div class="flex items-center gap-3">
+    <button id="btn-discard-mobile" class="flex-1 bg-white border border-red-200 text-red-600 py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-red-50 transition-all duration-200 active:scale-95">
+      Discard
+    </button>
+    <button id="btn-draft-mobile" class="flex-1 bg-white border border-forest py-3 px-2 rounded-full font-sans font-bold text-xs whitespace-nowrap min-h-[48px] hover:bg-forest/5 transition-all duration-200 active:scale-95">
+      Keep Draft
+    </button>
+    <button id="btn-publish-mobile" class="flex-[2] bg-forest text-white py-3 px-4 rounded-full font-sans font-bold text-sm min-h-[48px] flex items-center justify-center gap-2 hover:bg-forest/90 transition-all duration-200 active:scale-95">
+      Publish Listing
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+<!-- END: Sticky Actions Bar -->
+
+</main>
+<!-- END: Main Content Container -->
+
+<!-- BEGIN: Persistent Mobile Action Bar -->
+<!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-5%;right:-10%;opacity:0.03;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:320px;color:white;">local_florist</span>
+  </div>
+  <!-- Brand -->
+  <div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#C9972C;margin-bottom:12px;">Tohfa.</h2>
+    <p style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#F7F2E8;margin-bottom:8px;text-transform:uppercase;">Thoughtful Gifting, Made Effortless.</p>
+    <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;font-size:13px;line-height:1.6;margin-bottom:24px;max-width:320px;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+    
+  </div>
+  <!-- Accordions -->
+  <div style="border-top:1px solid rgba(255,255,255,0.1);margin-bottom:32px;">
+    <!-- Company -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Company</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/mobile-buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Sellers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Sellers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Buyers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Buyers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </details>
+    <!-- Support -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Support</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </details>
+  </div>
+  <!-- Bottom bar -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+    
+    <div style="display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:16px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+  <style>
+    .tohfa-footer-details summary::-webkit-details-marker {
+      display: none !important;
+    }
+    .tohfa-footer-details[open] summary span.material-symbols-outlined {
+      transform: rotate(180deg) !important;
+    }
+  </style>
+</footer>
+<!-- END: Persistent Mobile Action Bar -->
+
+</seller-layout>
+
+<script>
+(function() {
+  const DRAFT_ID = sessionStorage.getItem('draft_id');
+  const API_BASE = window.location.origin;
+  let globalPhotos = [];
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-preview');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-preview'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  }
+
+  function setChecked(checkEl, textEl, isOk, okText, failText) {
+    if (isOk) {
+      checkEl.innerHTML = `<svg class="w-3 h-3 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>`;
+      checkEl.className = "w-5 h-5 rounded-full bg-forest/10 flex items-center justify-center text-forest";
+      textEl.className = "text-forest font-semibold text-xs";
+      textEl.textContent = okText;
+    } else {
+      checkEl.innerHTML = `<svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>`;
+      checkEl.className = "w-5 h-5 rounded-full bg-red-100 flex items-center justify-center text-red-500";
+      textEl.className = "text-slate-400 text-xs";
+      textEl.textContent = failText;
+    }
+  }
+
+  async function loadPreview() {
+    if (!DRAFT_ID) {
+      showToast('No active draft found. Please start from Details step.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return;
+    }
+
+    let draftData = {};
+    // Pull fresh data from API to align images and other fields
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        headers: { 'Authorization': `Bearer ${getToken()}` }
+      });
+      if (res.ok) {
+        const body = await res.json();
+        draftData = body.data || body;
+      } else {
+        throw new Error('Failed to load draft details.');
+      }
+    } catch (err) {
+      console.warn('Could not sync with backend draft, using local session state.', err);
+      try {
+        draftData = JSON.parse(sessionStorage.getItem('draft_data') || '{}');
+      } catch {}
+    }
+
+    // Step Validation Guards
+    if (!draftData.title || !draftData.category) {
+      showToast('Please complete the Details step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return;
+    }
+    if (!draftData.price_paise || draftData.price_paise <= 0) {
+      showToast('Please complete the Pricing step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-pricing-b.html';
+      }, 1500);
+      return;
+    }
+    if (!draftData.photos || draftData.photos.length === 0) {
+      showToast('Please upload at least one photo first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-photos.html';
+      }, 1500);
+      return;
+    }
+    if (!draftData.shipping_method) {
+      showToast('Please complete the Shipping step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-shipping.html';
+      }, 1500);
+      return;
+    }
+
+    sessionStorage.setItem('draft_data', JSON.stringify(draftData));
+
+    // Render 01. Photos count
+    const photos = draftData.photos || [];
+    globalPhotos = photos;
+    togglePublishGuard(photos.length);
+    document.getElementById('preview-photo-count').textContent = `${photos.length} Photo${photos.length === 1 ? '' : 's'}`;
+
+    // Render Cover Image
+    const coverImage = document.getElementById('preview-cover-image');
+    const placeholder = document.getElementById('preview-image-placeholder');
+    if (coverImage) {
+      if (draftData.cover_photo_url) {
+        coverImage.src = draftData.cover_photo_url;
+        coverImage.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      } else if (photos.length > 0) {
+        const coverObj = photos.find(p => p.is_cover) || photos[0];
+        coverImage.src = coverObj.url;
+        coverImage.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      } else {
+        coverImage.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+      }
+    }
+
+    // Render Description
+    const descEl = document.getElementById('preview-description');
+    if (descEl) {
+      if (draftData.description) {
+        descEl.textContent = draftData.description;
+        descEl.className = "text-sage text-sm whitespace-pre-wrap leading-relaxed";
+      } else {
+        descEl.textContent = "No description provided...";
+        descEl.className = "text-sage/40 text-sm italic";
+      }
+    }
+
+    // Render 02. Core Details
+    document.getElementById('preview-name').textContent = draftData.title || 'Untitled Draft';
+    document.getElementById('preview-type').textContent = draftData.product_type === 'custom' ? 'Customisable' : 'Pre-made';
+    document.getElementById('preview-category').textContent = draftData.category || 'N/A';
+    document.getElementById('preview-tags').textContent = Array.isArray(draftData.tags) && draftData.tags.length > 0 ? draftData.tags.join(', ') : (draftData.tags || 'None');
+
+    // Render 03. Pricing & Inventory
+    if (draftData.price_paise !== undefined && draftData.price_paise !== null) {
+      document.getElementById('preview-price').textContent = `₹ ${(draftData.price_paise / 100).toFixed(2)}`;
+    } else {
+      document.getElementById('preview-price').textContent = '—';
+    }
+    document.getElementById('preview-stock').textContent = draftData.stock_count !== undefined ? draftData.stock_count : '—';
+
+    // Render 04. Pickup Address
+    let addressName = "Kshitija's Studio";
+    if (draftData.pickup_address_type === 'warehouse') {
+      addressName = "Tohfa Main Warehouse";
+    } else if (draftData.pickup_address_type && draftData.pickup_address_type !== 'studio') {
+      try {
+        const token = getToken();
+        const addrRes = await fetch(`${API_BASE}/api/addresses`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (addrRes.ok) {
+          const addrBody = await addrRes.json();
+          const addresses = addrBody.data || addrBody || [];
+          const found = addresses.find(a => String(a.id) === String(draftData.pickup_address_type));
+          if (found) {
+            addressName = found.full_name;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to resolve address name', err);
+      }
+    }
+    document.getElementById('preview-pickup-address').textContent = addressName;
+
+    // Render 05. Dimensions
+    document.getElementById('preview-length').textContent = draftData.length_cm ? `${draftData.length_cm} cm` : 'N/A';
+    document.getElementById('preview-width').textContent = draftData.width_cm ? `${draftData.width_cm} cm` : 'N/A';
+    document.getElementById('preview-height').textContent = draftData.height_cm ? `${draftData.height_cm} cm` : 'N/A';
+    document.getElementById('preview-weight').textContent = draftData.weight_g ? `${draftData.weight_g} g` : 'N/A';
+
+    // Checklist completeness calculations
+    const checkImg = document.getElementById('check-images');
+    const txtImg = document.getElementById('text-images');
+    const hasImages = photos.length >= 1;
+    setChecked(checkImg, txtImg, hasImages, `Images verified (${photos.length}/3)`, `Add photos (${photos.length}/3)`);
+
+    const checkDesc = document.getElementById('check-desc');
+    const txtDesc = document.getElementById('text-desc');
+    const hasDesc = !!draftData.description;
+    setChecked(checkDesc, txtDesc, hasDesc, 'Description complete', 'Add description');
+
+    const checkPrice = document.getElementById('check-price');
+    const txtPrice = document.getElementById('text-price');
+    const hasPrice = draftData.price_paise > 0;
+    setChecked(checkPrice, txtPrice, hasPrice, 'Price set', 'Set price');
+
+    const checkShip = document.getElementById('check-shipping');
+    const txtShip = document.getElementById('text-shipping');
+    const hasShip = !!draftData.dispatch_sla_days;
+    setChecked(checkShip, txtShip, hasShip, 'Shipping profile linked', 'Configure shipping');
+
+    // Score calculation
+    let completedSteps = 0;
+    if (hasImages) completedSteps++;
+    if (hasDesc) completedSteps++;
+    if (hasPrice) completedSteps++;
+    if (hasShip) completedSteps++;
+
+    const percent = Math.round((completedSteps / 4) * 100);
+    document.getElementById('preview-score-percent').textContent = `${percent}%`;
+    document.getElementById('preview-score-bar').style.width = `${percent}%`;
+  }
+
+  // Toggle publish buttons state and warning badge
+  function togglePublishGuard(photoCount) {
+    const mainPublishBtn = document.getElementById('btn-publish-main');
+    const mobilePublishBtn = document.getElementById('btn-publish-mobile');
+    
+    document.querySelectorAll('.publish-warning-msg').forEach(el => el.remove());
+    
+    if (photoCount === 0) {
+      if (mainPublishBtn) {
+        mainPublishBtn.disabled = true;
+        mainPublishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // Add a warning message below the main publish button
+        const warningMsg = document.createElement('p');
+        warningMsg.className = 'text-xs text-[#BA1A1A] font-medium mt-2 text-center publish-warning-msg';
+        warningMsg.textContent = '⚠ Upload at least 1 photo to publish';
+        mainPublishBtn.parentNode.insertBefore(warningMsg, mainPublishBtn.nextSibling);
+      }
+      if (mobilePublishBtn) {
+        mobilePublishBtn.disabled = true;
+        mobilePublishBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    } else {
+      if (mainPublishBtn) {
+        mainPublishBtn.disabled = false;
+        mainPublishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+      if (mobilePublishBtn) {
+        mobilePublishBtn.disabled = false;
+        mobilePublishBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+  }
+
+  async function handlePublish(btn) {
+    if (globalPhotos.length === 0) {
+      showToast('Please upload at least one product photo before publishing.', 'error');
+      return;
+    }
+    // Navigate straight to publishing handler step which commits the status = active
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+    window.location.href = '/mobile-seller/listing-publish.html';
+  }
+
+  async function handleDiscard(btn) {
+    if (!confirm('Are you sure you want to discard this draft? This will permanently delete it.')) return;
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>`;
+
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/seller/listings/${DRAFT_ID}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete draft');
+      sessionStorage.removeItem('draft_id');
+      sessionStorage.removeItem('draft_data');
+      showToast('Draft discarded', 'success');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/catalog.html';
+      }, 1000);
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = 'Discard';
+    }
+  }
+
+  document.getElementById('btn-publish-main').addEventListener('click', function() { handlePublish(this); });
+  document.getElementById('btn-publish-mobile').addEventListener('click', function() { handlePublish(this); });
+
+  document.getElementById('btn-draft-mobile').addEventListener('click', () => {
+    showToast('Draft saved successfully', 'success');
+    setTimeout(() => { window.location.href = '/mobile-seller/catalog.html'; }, 1000);
+  });
+
+  document.getElementById('btn-discard-mobile').addEventListener('click', function() { handleDiscard(this); });
+
+  loadPreview();
+})();
+</script>
+</body></html>

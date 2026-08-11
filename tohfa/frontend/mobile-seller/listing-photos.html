@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+
+<meta charset="utf-8"/>
+<title>Craft New Listing - Visual Documentation</title>
+<!-- Google Fonts -->
+  <!-- Tailwind CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+  <script src="/components/seller-components.js"></script>
+<style>
+  .slot-spinner {
+    border: 3px solid #8FAF82;
+    border-top-color: #3D6B4F;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body class="min-h-screen pb-32">
+<seller-layout active-tab="catalog">
+<main>
+<!-- Top Progress Header (Desktop Style) -->
+<div class="hidden md:flex items-center justify-between px-8 py-6 bg-parchment border-b border-gray-100">
+<div class="flex items-center gap-3">
+<svg class="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<h1 class="font-serif text-3xl text-forest">Craft New Listing</h1>
+</div>
+<div class="flex gap-4">
+<button id="btn-keep-draft-desktop" class="px-6 py-2 border border-forest text-forest rounded-full font-medium hover:bg-forest/5 active:scale-95 transition-all">Save as Draft</button>
+<button id="btn-continue-desktop" class="px-6 py-2 bg-forest text-white rounded-full font-medium flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">Continue <span class="text-xl">→</span></button>
+<button id="btn-discard-desktop" class="px-6 py-2 border border-red-200 text-red-500 rounded-full font-medium hover:bg-red-50 active:scale-95 transition-all">Discard Draft</button>
+</div>
+</div>
+<!-- Multi-step Progress Indicator -->
+<div class="bg-parchment/50 border-b border-gray-100 overflow-x-auto no-scrollbar">
+<div class="flex justify-between px-4 md:px-32 py-8 min-w-max">
+<div class="flex flex-col items-center gap-2 px-4 opacity-60">
+<a href="/mobile-seller/listing-details.html" class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center text-forest bg-white mb-2">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Details</span>
+</a>
+</div>
+<div class="flex flex-col items-center gap-2 px-4 opacity-60">
+<a href="/mobile-seller/listing-pricing-a.html" class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full border-2 border-forest flex items-center justify-center text-forest bg-white mb-2">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+</div>
+<span class="font-mono text-[10px] tracking-widest uppercase">Pricing</span>
+</a>
+</div>
+<div class="flex flex-col items-center gap-2 px-4 step-active">
+<div class="w-8 h-8 rounded-full bg-forest flex items-center justify-center text-white mb-2 ring-4 ring-forest/10">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest font-bold text-forest border-b-2 border-forest pb-0.5">Photos</span>
+</div>
+<div class="flex flex-col items-center gap-2 px-4 opacity-40">
+<div class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">
+<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest">Shipping</span>
+</div>
+<div class="flex flex-col items-center gap-2 px-4 opacity-40">
+<div class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">
+<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest">Preview</span>
+</div>
+<div class="flex flex-col items-center gap-2 px-4 opacity-40">
+<div class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center">
+<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<span class="font-mono text-[10px] uppercase tracking-widest">Publish</span>
+</div>
+</div>
+</div>
+<!-- Section Content -->
+<section class="max-w-6xl mx-auto p-6 md:py-12">
+<div class="flex flex-col lg:flex-row gap-12">
+<!-- BEGIN: Instructions -->
+<div class="lg:w-1/3" data-purpose="instructions-container">
+<h2 class="text-forest font-serif text-2xl mb-4">Visual Documentation</h2>
+<p class="text-forest/70 leading-relaxed mb-8">
+            Capture your work from multiple angles under soft, natural sunlight for the best presentation in your studio.
+          </p>
+<div class="bg-sage/10 rounded-xl p-6 border border-sage/20 space-y-4">
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Minimum 1 photo required</div>
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Cover photo auto-selected</div>
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Tap ★ to change cover</div>
+<div class="flex items-center text-forest text-xs font-mono font-bold tracking-widest uppercase check-list-item">Neutral backgrounds</div>
+</div>
+</div>
+<!-- END: Instructions -->
+<!-- BEGIN: Upload Grid -->
+<div class="lg:w-2/3" data-purpose="upload-grid">
+  <div id="photo-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- Dynamically rendered by JS -->
+  </div>
+
+  <!-- Video Upload Section -->
+  <div class="mt-8">
+    <label class="block font-headline-sm text-sm text-primary mb-2">Product Video (Optional)</label>
+    <div id="video-drag-zone" class="border-2 border-dashed border-sage/60 rounded-2xl p-6 flex flex-col items-center justify-center bg-sage/5 hover:bg-sage/10 transition-all group relative cursor-pointer overflow-hidden min-h-[140px]">
+      <input type="file" id="video-file-input" accept="video/*" class="hidden"/>
+      <div id="video-upload-prompt" class="flex flex-col items-center justify-center text-center">
+        <span class="material-symbols-outlined text-3xl text-forest mb-2 group-hover:scale-110 transition-transform">videocam</span>
+        <span class="text-[11px] font-bold text-forest uppercase tracking-widest">Upload Video (Max 10s, 20MB)</span>
+        <span class="text-[9px] text-on-surface-variant font-medium mt-1 leading-normal">MP4, WebM, OGG</span>
+      </div>
+      <div id="video-preview-container" class="hidden absolute inset-0 bg-white flex items-center justify-center">
+        <video id="video-preview" class="w-full h-full object-cover rounded-xl" autoplay loop muted playsinline></video>
+        <button id="remove-video-btn" type="button" class="absolute top-2 right-2 bg-error text-white p-1 rounded-full shadow-md hover:bg-error-container hover:text-on-error-container transition-all flex items-center justify-center" onclick="event.stopPropagation(); removeSelectedVideo();">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END: Upload Grid -->
+</div>
+</section>
+</main>
+<!-- END: Main Content Area -->
+
+<!-- BEGIN: Mobile Fixed Footer -->
+<!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-5%;right:-10%;opacity:0.03;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:320px;color:white;">local_florist</span>
+  </div>
+  <!-- Brand -->
+  <div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#C9972C;margin-bottom:12px;">Tohfa.</h2>
+    <p style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#F7F2E8;margin-bottom:8px;text-transform:uppercase;">Thoughtful Gifting, Made Effortless.</p>
+    <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;font-size:13px;line-height:1.6;margin-bottom:24px;max-width:320px;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+    
+  </div>
+  <!-- Accordions -->
+  <div style="border-top:1px solid rgba(255,255,255,0.1);margin-bottom:32px;">
+    <!-- Company -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Company</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/mobile-buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Sellers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Sellers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Buyers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Buyers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </details>
+    <!-- Support -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Support</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </details>
+  </div>
+  <!-- Bottom bar -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+    
+    <div style="display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:16px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+  <style>
+    .tohfa-footer-details summary::-webkit-details-marker {
+      display: none !important;
+    }
+    .tohfa-footer-details[open] summary span.material-symbols-outlined {
+      transform: rotate(180deg) !important;
+    }
+  </style>
+</footer>
+<!-- END: Mobile Fixed Footer -->
+
+</seller-layout>
+
+<script>
+(function() {
+  const API_BASE = window.location.origin;
+  const MAX_PHOTOS = 5;
+  let photos = []; // { url, photo_id, is_cover }
+  let selectedVideoFile = null;
+
+  function getToken() {
+    try {
+      const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+      return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token');
+    } catch { return null; }
+  }
+
+  function showToast(msg, type = 'success') {
+    let t = document.getElementById('toast-photos');
+    if (!t) { t = document.createElement('div'); t.id = 'toast-photos'; document.body.appendChild(t); }
+    t.className = `fixed top-5 left-1/2 -translate-x-1/2 z-[300] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+      type === 'success' ? 'bg-forest text-white' : 'bg-red-500 text-white'
+    }`;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.display = 'block';
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => { t.style.display = 'none'; }, 300); }, 3500);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const videoInput = document.getElementById('video-file-input');
+    const videoDragZone = document.getElementById('video-drag-zone');
+
+    if (videoDragZone && videoInput) {
+        videoDragZone.addEventListener('click', () => videoInput.click());
+        
+        videoDragZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            videoDragZone.classList.add('bg-sage/10');
+        });
+        videoDragZone.addEventListener('dragleave', () => {
+            videoDragZone.classList.remove('bg-sage/10');
+        });
+        videoDragZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            videoDragZone.classList.remove('bg-sage/10');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleVideoSelect(files[0]);
+            }
+        });
+
+        videoInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleVideoSelect(files[0]);
+            }
+        });
+    }
+  });
+
+  function handleVideoSelect(file) {
+    if (!file.type.startsWith('video/')) {
+        showToast('Please select a valid video file.', 'error');
+        return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+        showToast('Video size must not exceed 20MB.', 'error');
+        return;
+    }
+
+    const videoElement = document.createElement('video');
+    videoElement.preload = 'metadata';
+    videoElement.src = URL.createObjectURL(file);
+    videoElement.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(videoElement.src);
+        if (videoElement.duration > 10) {
+            showToast('Video duration must be 10 seconds or less.', 'error');
+        } else {
+            selectedVideoFile = file;
+            uploadVideo(file);
+        }
+    };
+    videoElement.onerror = () => {
+        showToast('Failed to load video metadata.', 'error');
+    };
+  }
+
+  async function uploadVideo(file) {
+    const draftId = sessionStorage.getItem('draft_id');
+    const token = getToken();
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('is_video', 'true');
+    fd.append('sort_order', '0');
+    
+    const prompt = document.getElementById('video-upload-prompt');
+    if (prompt) {
+      prompt.innerHTML = '<div class="w-8 h-8 border-4 border-forest border-t-transparent rounded-full animate-spin"></div>';
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}/photos`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: fd
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `Upload failed: HTTP ${res.status}`);
+      }
+      const resp = await res.json();
+      const videoData = resp.data || resp;
+      
+      renderVideoPreview(videoData.url);
+      showToast('Video uploaded successfully!', 'success');
+    } catch (err) {
+      showToast('Video upload failed: ' + err.message, 'error');
+      if (prompt) {
+        prompt.innerHTML = `
+          <span class="material-symbols-outlined text-3xl text-forest mb-2 group-hover:scale-110 transition-transform">videocam</span>
+          <span class="text-[11px] font-bold text-forest uppercase tracking-widest">Upload Video (Max 10s, 20MB)</span>
+          <span class="text-[9px] text-on-surface-variant font-medium mt-1 leading-normal">MP4, WebM, OGG</span>
+        `;
+      }
+    }
+  }
+
+  function renderVideoPreview(url) {
+    const preview = document.getElementById('video-preview');
+    const container = document.getElementById('video-preview-container');
+    const prompt = document.getElementById('video-upload-prompt');
+    
+    if (url) {
+        preview.src = url;
+        container.classList.remove('hidden');
+        prompt.classList.add('hidden');
+    } else {
+        preview.src = '';
+        container.classList.add('hidden');
+        prompt.classList.remove('hidden');
+        if (prompt) {
+          prompt.innerHTML = `
+            <span class="material-symbols-outlined text-3xl text-forest mb-2 group-hover:scale-110 transition-transform">videocam</span>
+            <span class="text-[11px] font-bold text-forest uppercase tracking-widest">Upload Video (Max 10s, 20MB)</span>
+            <span class="text-[9px] text-on-surface-variant font-medium mt-1 leading-normal">MP4, WebM, OGG</span>
+          `;
+        }
+    }
+  }
+
+  window.removeSelectedVideo = async function() {
+    const draftId = sessionStorage.getItem('draft_id');
+    const token = getToken();
+    
+    // Find video photo from all existing listing photos
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const resp = await res.json();
+        const listing = resp.data || resp;
+        const allPhotos = listing.photos || [];
+        const videoPhoto = allPhotos.find(p => p.is_video === 1 || p.is_video === 'true');
+        if (videoPhoto) {
+          await fetch(`${API_BASE}/api/seller/listings/${draftId}/photos/${videoPhoto.photo_id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Error deleting video:', e);
+    }
+    
+    selectedVideoFile = null;
+    renderVideoPreview(null);
+    const videoInput = document.getElementById('video-file-input');
+    if (videoInput) videoInput.value = '';
+    showToast('Video removed.', 'success');
+  };
+
+  async function loadListingPhotos() {
+    const draftId = sessionStorage.getItem('draft_id');
+    if (!draftId) {
+      showToast('Please complete the Details step first.', 'error');
+      setTimeout(() => {
+        window.location.href = '/mobile-seller/listing-details.html';
+      }, 1500);
+      return;
+    }
+
+    const token = getToken();
+    try {
+      const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const resp = await res.json();
+        const listing = resp.data || resp;
+
+        if (!listing.title || !listing.category) {
+          showToast('Please complete the Details step first.', 'error');
+          setTimeout(() => {
+            window.location.href = '/mobile-seller/listing-details.html';
+          }, 1500);
+          return;
+        }
+
+        const allPhotos = listing.photos || [];
+        photos = allPhotos.filter(p => p.is_video !== 1 && p.is_video !== 'true');
+        const videoPhoto = allPhotos.find(p => p.is_video === 1 || p.is_video === 'true');
+        if (videoPhoto) {
+            renderVideoPreview(videoPhoto.url);
+        }
+        renderGrid();
+      } else {
+        showToast('Failed to load draft details.', 'error');
+        setTimeout(() => {
+          window.location.href = '/mobile-seller/listing-details.html';
+        }, 1500);
+      }
+    } catch (err) {
+      console.error('Error loading listing photos:', err);
+    }
+  }
+
+  async function uploadPhoto(file, slotIndex) {
+    const draftId = sessionStorage.getItem('draft_id');
+    const token = getToken();
+    const fd = new FormData();
+    fd.append('file', file);
+    const isCoverUpload = (slotIndex === 0 || photos.length === 0);
+    if (isCoverUpload) fd.append('is_cover', 'true');
+    const res = await fetch(`${API_BASE}/api/seller/listings/${draftId}/photos`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: fd
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || `Upload failed: HTTP ${res.status}`);
+    }
+    return await res.json(); // { data: { photo_id, url, is_cover, ... } }
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('photo-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Render filled photo slots
+    photos.forEach((photo, idx) => {
+      const isCover = photo.is_cover;
+      const isFirstSlot = idx === 0;
+      const slotDiv = document.createElement('div');
+      slotDiv.className = `relative rounded-2xl overflow-hidden border-2 ${isCover ? 'border-forest ring-4 ring-forest/10' : 'border-sage/30'} ${isFirstSlot ? 'col-span-2 row-span-2' : ''} aspect-square`;
+      slotDiv.dataset.slot = idx;
+      slotDiv.innerHTML = `
+        <img src="${photo.url}" class="w-full h-full object-cover" loading="lazy" alt="Photo ${idx + 1}"/>
+        ${isCover ? '<div class="absolute inset-x-0 bottom-0 bg-black/40 p-1 text-[8px] font-mono text-white uppercase tracking-widest text-center">Cover ★</div>' : ''}
+        <button onclick="window.__photosSetCover(${photo.photo_id}, '${photo.url}')" class="absolute top-1 left-1 bg-white/80 rounded-full w-7 h-7 flex items-center justify-center text-[11px] hover:bg-gold hover:text-white transition-all" style="transition:all 0.2s ease" title="Set as cover">★</button>
+        <button onclick="window.__photosRemovePhoto(${photo.photo_id}, ${idx})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm hover:bg-red-600 transition-all" style="transition:all 0.2s ease">×</button>
+      `;
+      grid.appendChild(slotDiv);
+    });
+
+    // Render empty upload slots (up to MAX_PHOTOS)
+    for (let i = photos.length; i < MAX_PHOTOS; i++) {
+      const isFirst = i === 0;
+      const slotDiv = document.createElement('div');
+      slotDiv.className = `relative rounded-2xl overflow-hidden aspect-square border-2 border-dashed border-sage/30 bg-white/50 flex items-center justify-center cursor-pointer hover:border-forest hover:bg-sage/5 active:scale-95 transition-all ${isFirst ? 'col-span-2 row-span-2' : ''}`;
+      slotDiv.style.transition = 'all 0.2s ease';
+      slotDiv.dataset.slot = i;
+      slotDiv.innerHTML = `
+        <div class="flex flex-col items-center gap-2 text-forest/40">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+          <span class="font-mono text-[9px] uppercase tracking-widest">${isFirst ? 'Cover Photo' : 'Add Photo'}</span>
+        </div>
+        <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" data-slot-index="${i}">
+      `;
+      slotDiv.querySelector('input[type="file"]').addEventListener('change', (e) => handleFileSelect(e, i));
+      grid.appendChild(slotDiv);
+    }
+  }
+
+  async function handleFileSelect(event, slotIndex) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Show spinner in this slot
+    const grid = document.getElementById('photo-grid');
+    const slotEl = grid.querySelector(`[data-slot="${slotIndex}"]`);
+    if (slotEl) {
+      slotEl.innerHTML = '<div class="w-8 h-8 border-4 border-forest border-t-transparent rounded-full animate-spin"></div>';
+      slotEl.classList.remove('cursor-pointer', 'hover:border-forest');
+    }
+
+    try {
+      const resp = await uploadPhoto(file, slotIndex);
+      const photoData = resp.data || resp;
+      const isCover = photos.length === 0; // first upload = cover
+      photos.push({
+        url: photoData.url,
+        photo_id: photoData.photo_id,
+        is_cover: isCover || photoData.is_cover
+      });
+      // Ensure only one cover flag
+      if (isCover) photos.forEach((p, i) => { p.is_cover = (i === photos.length - 1); });
+      renderGrid();
+      showToast('Photo uploaded!', 'success');
+    } catch (err) {
+      showToast('Upload failed: ' + err.message, 'error');
+      renderGrid(); // restore grid
+    }
+  }
+
+  window.__photosRemovePhoto = async function(photoId, slotIndex) {
+    const draftId = sessionStorage.getItem('draft_id');
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/api/seller/listings/${draftId}/photos/${photoId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      photos = photos.filter(p => p.photo_id !== photoId);
+      if (photos.length > 0 && !photos.some(p => p.is_cover)) photos[0].is_cover = true;
+      renderGrid();
+      showToast('Photo removed.', 'success');
+    } catch (err) {
+      photos = photos.filter(p => p.photo_id !== photoId);
+      renderGrid();
+    }
+  };
+
+  window.__photosSetCover = async function(photoId, photoUrl) {
+    const draftId = sessionStorage.getItem('draft_id');
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ cover_photo_url: photoUrl })
+      });
+      photos.forEach(p => { p.is_cover = (p.photo_id === photoId); });
+      renderGrid();
+      showToast('Cover photo updated!', 'success');
+    } catch (err) {
+      showToast('Could not set cover: ' + err.message, 'error');
+    }
+  };
+
+  async function discardDraft() {
+    const draftId = sessionStorage.getItem('draft_id');
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/api/seller/listings/${draftId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+    } catch (_) {}
+    sessionStorage.removeItem('draft_id');
+    sessionStorage.removeItem('draft_data');
+    window.location.href = '/mobile-seller/catalog.html';
+  }
+
+  function continueToDetails() {
+    if (photos.length < 1) {
+      showToast('Please upload at least one product photo before continuing.', 'error');
+      return;
+    }
+    window.location.href = '/mobile-seller/listing-pricing-a.html';
+  }
+
+  // Update back button click
+  const backBtn = document.getElementById('btn-back') || document.querySelector('header button');
+  if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = '/mobile-seller/listing-details.html';
+    });
+  }
+
+  ['btn-continue', 'btn-continue-desktop', 'btn-continue-mobile'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', continueToDetails);
+  });
+  ['btn-keep-draft', 'btn-keep-draft-desktop', 'btn-keep-draft-mobile'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => {
+      window.location.href = '/mobile-seller/catalog.html';
+    });
+  });
+  ['btn-discard', 'btn-discard-desktop', 'btn-discard-mobile'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', discardDraft);
+  });
+
+  loadListingPhotos();
+})();
+</script>
+</body></html>

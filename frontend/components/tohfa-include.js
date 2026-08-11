@@ -34,6 +34,19 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    // Helper to execute scripts in dynamic HTML container
+    function executeFooterScripts(container) {
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+            });
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    }
+
     // Load Footer
     if (footerContainer) {
         fetch(`${baseDir}/tohfa-footer.html`)
@@ -43,13 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(html => {
                 footerContainer.innerHTML = html;
+                executeFooterScripts(footerContainer);
             })
             .catch(err => {
                 console.error("Error loading footer:", err);
                 // Fallback attempt using standard relative path just in case
                 fetch("/components/tohfa-footer.html")
                     .then(res => res.text())
-                    .then(html => { footerContainer.innerHTML = html; })
+                    .then(html => {
+                        footerContainer.innerHTML = html;
+                        executeFooterScripts(footerContainer);
+                    })
                     .catch(e => console.error("Fallback footer load failed:", e));
             });
     }

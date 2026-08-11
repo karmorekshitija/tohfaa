@@ -5,7 +5,7 @@ const db = require('./db');
 const whatsappService = require('./services/whatsappService');
 const whatsappBotService = require('./services/whatsappBotService');
 
-const JWT_SECRET = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
+const JWT_SECRET = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET;
 
 // Authentication middleware
 async function authenticateToken(req, res, next) {
@@ -276,7 +276,12 @@ router.get('/whatsapp/webhook', (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  const localVerifyToken = process.env.META_WHATSAPP_VERIFY_TOKEN || 'tohfa_whatsapp_verify_token';
+  if (!process.env.META_WHATSAPP_VERIFY_TOKEN) {
+    console.error('CRITICAL: META_WHATSAPP_VERIFY_TOKEN environment variable is missing!');
+    return res.status(500).send('Server configuration error: META_WHATSAPP_VERIFY_TOKEN missing');
+  }
+
+  const localVerifyToken = process.env.META_WHATSAPP_VERIFY_TOKEN;
 
   if (mode === 'subscribe' && token === localVerifyToken) {
     console.log('WhatsApp Webhook Handshake verified successfully.');

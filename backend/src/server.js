@@ -4,21 +4,152 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
-const { execSync } = require('child_process');
+
 const multer = require('multer');
 const db = require('./db');
-const { router: sellerProfileRouter } = require('./sellerProfileRoutes');
+
 const paymentRouter = require('./paymentRoutes');
 const chatbotRouter = require('./chatbotRoutes');
 const whatsappRouter = require('./whatsappRoutes');
 const whatsappService = require('./services/whatsappService');
 const emailService = require('./services/emailService');
 const cron = require('node-cron');
-const { syncListingToProduct } = require('./services/listingSync');
+const { startOccasionReminderCron } = require('./services/occasionReminderCron');
+startOccasionReminderCron();
+const { syncListingToProduct, syncSellerListings } = require('./services/listingSync');
+
+function getApiBaseUrl(req) {
+  if (process.env.API_BASE_URL) {
+    return process.env.API_BASE_URL;
+  }
+  return `${req.protocol}://${req.get('host')}`;
+}
+
+function formatImg(url, req) {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/img/')) {
+    return url;
+  }
+  const base = getApiBaseUrl(req);
+  return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
+}
+
+function normalizeImageUrl(rawImg, req) {
+  if (!rawImg) return null;
+  if (rawImg.startsWith('/img/')) return rawImg;
+  if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) return rawImg;
+  if (rawImg.startsWith('/uploads/')) return `${getApiBaseUrl(req)}${rawImg}`;
+  return rawImg.startsWith('/') ? rawImg : `/${rawImg}`;
+}
+
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is missing.');
+}
+if (!process.env.RAZORPAY_KEY_SECRET) {
+  console.warn('⚠️ WARNING: RAZORPAY_KEY_SECRET environment variable is missing. Using fallback key.');
+  process.env.RAZORPAY_KEY_SECRET = 'rzp_test_fallback_secret';
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const sharp = require('sharp');
+
+async function generateThumbnail(filePath) {
+  if (!filePath) return null;
+  const ext = path.extname(filePath).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+    return null;
+  }
+  const thumbPath = filePath.replace(/(\.\w+)$/, '_thumb$1');
+  try {
+    let pipeline = sharp(filePath)
+      .resize(480, 480, { fit: 'inside', withoutEnlargement: true });
+    
+    if (ext === '.png') {
+      pipeline = pipeline.png({ quality: 75 });
+    } else if (ext === '.webp') {
+      pipeline = pipeline.webp({ quality: 75 });
+    } else {
+      pipeline = pipeline.jpeg({ quality: 75 });
+    }
+    
+    await pipeline.toFile(thumbPath);
+    return thumbPath;
+  } catch (err) {
+    console.error(`Error generating thumbnail for ${filePath}:`, err);
+    return null;
+  }
+}
+
+function getThumbnailUrl(originalUrl) {
+  if (!originalUrl) return originalUrl;
+  let relativePath = originalUrl;
+  if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+    try {
+      const urlObj = new URL(relativePath);
+      relativePath = urlObj.pathname;
+    } catch (e) {
+      return originalUrl;
+    }
+  }
+  
+  if (!relativePath.startsWith('/uploads')) {
+    return originalUrl;
+  }
+  
+  const ext = relativePath.substring(relativePath.lastIndexOf('.')).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+    return originalUrl;
+  }
+  
+  const relativeThumb = relativePath.replace(/(\.\w+)$/, '_thumb$1');
+  const fullThumbPath = path.join(__dirname, '..', relativeThumb);
+  
+  if (fs.existsSync(fullThumbPath)) {
+    if (originalUrl.startsWith('http://') || originalUrl.startsWith('https://')) {
+      const urlObj = new URL(originalUrl);
+      return `${urlObj.protocol}//${urlObj.host}${relativeThumb}`;
+    }
+    return relativeThumb;
+  }
+  
+  return originalUrl;
+}
 
 function stripHtml(str) {
   if (typeof str !== 'string') return '';
   return str.replace(/<[^>]*>/g, '');
+}
+
+let bestsellerCache = {
+  ids: [],
+  lastUpdated: 0
+};
+
+async function getBestsellerIds() {
+  const now = Date.now();
+  if (now - bestsellerCache.lastUpdated < 10 * 60 * 1000 && bestsellerCache.ids.length > 0) {
+    return bestsellerCache.ids;
+  }
+  try {
+    const rows = await db.prepare(`
+      SELECT oi.product_id
+      FROM order_items oi
+      JOIN products p2 ON oi.product_id = p2.id
+      JOIN orders o ON oi.order_id = o.id
+      WHERE p2.status = 'active'
+        AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+      GROUP BY oi.product_id
+      HAVING SUM(oi.quantity) > 0
+      ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+      LIMIT 100
+    `).all();
+    bestsellerCache.ids = rows.map(r => r.product_id);
+    bestsellerCache.lastUpdated = now;
+  } catch (err) {
+    console.error("Error updating bestseller cache:", err);
+  }
+  return bestsellerCache.ids;
 }
 
 try { db.exec("ALTER TABLE notifications ADD COLUMN conversation_id INTEGER;"); } catch (e) {}
@@ -149,6 +280,9 @@ const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
+const compression = require('compression');
+app.use(compression());
+
 const helmet = require('helmet');
 app.use(helmet());
 
@@ -167,48 +301,106 @@ app.use(expressRateLimit({
 }));
 
 const cors = require('cors');
+
+const allowedOrigins = [
+  'https://thetohfa.in',
+  'https://www.thetohfa.in',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://localhost:8080'
+];
+
+if (process.env.FRONTEND_ORIGIN) {
+  process.env.FRONTEND_ORIGIN.split(',').forEach(o => {
+    const trimmed = o.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production' || origin.endsWith('.thetohfa.in')) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'), false);
+  },
   credentials: true
 }));
 app.use(express.json());
-app.use(sellerProfileRouter);
+
+// Redirect login page requests to home page or admin dashboard
+app.use((req, res, next) => {
+  if (req.path.includes('/auth/login.html')) {
+    return res.redirect(302, '/');
+  }
+  if (req.path.includes('/admin/login.html')) {
+    return res.redirect(302, '/admin/dashboard.html');
+  }
+  next();
+});
+
 app.use(paymentRouter);
 app.use('/api', chatbotRouter);
 app.use('/api', whatsappRouter);
+
+// Domain Feature Routers
+app.use(require('./routes/authRoutes'));
+app.use(require('./routes/productRoutes'));
+app.use(require('./routes/cartRoutes'));
+app.use(require('./routes/addressRoutes'));
+app.use(require('./routes/occasionRoutes'));
+app.use(require('./routes/orderRoutes'));
+app.use(require('./routes/profileRoutes'));
+app.use(require('./routes/sellerRoutes'));
+app.use(require('./routes/adminRoutes'));
+app.use(require('./routes/customOrderRoutes'));
+
 // Serve /uploads with security headers to prevent execution of any slipped-through files
 app.use('/uploads', (req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Content-Disposition', 'inline');
   next();
-}, express.static(path.join(__dirname, '..', 'uploads')));
+}, express.static(path.join(__dirname, '..', 'uploads'), {
+  maxAge: '30d',
+  etag: true,
+  immutable: false
+}));
 
-// Serve standard static screens for interactive flow if they exist
-const serveStitchScreen = (fileName) => {
-  return (req, res) => {
-    const filePath = path.join(__dirname, '..', '..', 'stitch_screens', fileName);
-    if (fs.existsSync(filePath)) {
-      res.sendFile(filePath);
-    } else {
-      res.status(404).send(`Stitch screen ${fileName} not found. Please browse via the frontend development server (http://localhost:5173 or http://localhost:5174).`);
-    }
-  };
-};
+// Serve /img static files from frontend public directory
+const frontendImgDir = path.join(__dirname, '..', '..', 'frontend', 'public', 'img');
+const localImgDir = path.join(__dirname, '..', 'public', 'img');
+if (fs.existsSync(frontendImgDir)) {
+  app.use('/img', express.static(frontendImgDir, { maxAge: '30d', etag: true }));
+}
+if (fs.existsSync(localImgDir)) {
+  app.use('/img', express.static(localImgDir, { maxAge: '30d', etag: true }));
+}
 
-app.get('/', serveStitchScreen('20_tohfa_home_feed_-_pure_white_background_code.html'));
-app.get('/category', serveStitchScreen('12_tohfa_category_page_-_desktop_infinite_scroll_code.html'));
-app.get('/profile', serveStitchScreen('21_tohfa_buyer_profile_-_artisan_studio_desktop_code.html'));
-app.get('/cart', serveStitchScreen('19_tohfa_cart__checkout_-_artisan_studio_desktop_code.html'));
-app.get('/wishlist', serveStitchScreen('05_tohfa_wishlist_-_desktop_web_app_code.html'));
-
-// Serve all other stitch files under /stitch/
-app.use('/stitch', express.static(path.join(__dirname, '..', '..', 'stitch_screens')));
-
-const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
 const BCRYPT_SALT_ROUNDS = 12;
 
 // Custom Rate Limiter Middleware
 const rateLimiters = {};
+setInterval(() => {
+  const now = Date.now();
+  for (const ip in rateLimiters) {
+    let active = false;
+    for (const pathKey in rateLimiters[ip]) {
+      if (now - rateLimiters[ip][pathKey].startTime < 15 * 60 * 1000) {
+        active = true;
+      } else {
+        delete rateLimiters[ip][pathKey];
+      }
+    }
+    if (!active) {
+      delete rateLimiters[ip];
+    }
+  }
+}, 10 * 60 * 1000);
+
 function rateLimit(limit, windowMs = 60000) {
   return async (req, res, next) => {
     const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
@@ -326,264 +518,6 @@ async function generateTokens(user) {
     refreshToken: plainRefreshToken
   };
 }
-
-// TASK 03: POST /api/auth/register/buyer
-app.post('/api/auth/register/buyer', rateLimit(10), async (req, res) => {
-  const { full_name, email, password } = req.body;
-  
-  // 1. Validation
-  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2 ||
-      !email || typeof email !== 'string' || !validateEmail(email) ||
-      !password || typeof password !== 'string' || password.length < 8) {
-    return res.status(400).json({
-      error: true,
-      message: "Missing or invalid fields",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  try {
-    // 2. Check if email exists
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existingUser) {
-      return res.status(409).json({
-        error: true,
-        message: "Email already registered",
-        code: "EMAIL_EXISTS"
-      });
-    }
-    
-    // 3. Hash password
-    const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-    
-    // 4. Insert user
-    const info = await db.prepare(
-      'INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)'
-    ).run(email, passwordHash, full_name, 'buyer');
-    
-    const userId = info.lastInsertRowid;
-    const user = {
-      id: userId,
-      email,
-      full_name,
-      role: 'buyer',
-      avatar_url: null
-    };
-    
-    // 5. Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(user);
-    
-    // 6. Return response
-    return res.status(201).json({
-      success: true,
-      data: {
-        user,
-        access_token: accessToken,
-        refresh_token: refreshToken
-      }
-    });
-  } catch (err) {
-    console.error('Error in buyer registration:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 04: POST /api/auth/register/seller
-app.post('/api/auth/register/seller', rateLimit(10), async (req, res) => {
-  const { full_name, email, password, shop_name, shop_bio, ships_in_days, instagram_handle } = req.body;
-  
-  // 1. Validation
-  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2 ||
-      !email || typeof email !== 'string' || !validateEmail(email) ||
-      !password || typeof password !== 'string' || password.length < 8 ||
-      !shop_name || typeof shop_name !== 'string' || shop_name.trim().length < 2) {
-    return res.status(400).json({
-      error: true,
-      message: "Missing or invalid fields",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  let finalShipsInDays = ships_in_days;
-  if (finalShipsInDays === undefined || finalShipsInDays === null) {
-    finalShipsInDays = 7;
-  } else if (!Number.isInteger(finalShipsInDays) || finalShipsInDays < 1) {
-    return res.status(400).json({
-      error: true,
-      message: "ships_in_days must be an integer >= 1",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  if (shop_bio && (typeof shop_bio !== 'string' || shop_bio.length > 500)) {
-    return res.status(400).json({
-      error: true,
-      message: "shop_bio must be a string up to 500 characters",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  let insta = instagram_handle;
-  if (typeof insta === 'string') {
-    insta = insta.trim();
-    if (insta.startsWith('@')) {
-      insta = insta.substring(1);
-    }
-  } else {
-    insta = null;
-  }
-  
-  try {
-    // 2. Check if email exists
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existingUser) {
-      return res.status(409).json({
-        error: true,
-        message: "Email already registered",
-        code: "EMAIL_EXISTS"
-      });
-    }
-    
-    // 3. Hash password
-    const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
-    
-    // 4. DB Transactions for users and seller_profiles
-    const insertTransaction = db.transaction(async () => {
-      // Insert user
-      const userInfo = await db.prepare(
-        'INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)'
-      ).run(email, passwordHash, full_name, 'seller');
-      
-      const userId = userInfo.lastInsertRowid;
-      
-      // Insert seller profile
-      await db.prepare(
-        'INSERT INTO seller_profiles (user_id, shop_name, shop_bio, ships_in_days, instagram_handle) VALUES (?, ?, ?, ?, ?)'
-      ).run(userId, shop_name, shop_bio || null, finalShipsInDays, insta);
-      
-      return userId;
-    });
-    
-    const userId = await insertTransaction();
-    
-    const user = {
-      id: userId,
-      email,
-      full_name,
-      role: 'seller',
-      avatar_url: null
-    };
-    
-    const seller_profile = {
-      shop_name,
-      is_approved: false
-    };
-    
-    // 5. Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(user);
-    
-    // 6. Return response
-    return res.status(201).json({
-      success: true,
-      data: {
-        user,
-        seller_profile,
-        access_token: accessToken,
-        refresh_token: refreshToken
-      }
-    });
-  } catch (err) {
-    console.error('Error in seller registration:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
-
-// TASK 05: POST /api/auth/login
-app.post('/api/auth/login', rateLimit(20), async (req, res) => {
-  const { email, password } = req.body;
-  
-  // 1. Validation
-  if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
-    return res.status(400).json({
-      error: true,
-      message: "Missing email or password",
-      code: "VALIDATION_ERROR"
-    });
-  }
-  
-  try {
-    // 2. Look up user
-    const user = await db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-    if (!user) {
-      return res.status(401).json({
-        error: true,
-        message: "Hm, that credential set doesn't seem right.",
-        code: "INVALID_CREDENTIALS"
-      });
-    }
-    
-    // 3. Check password
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(401).json({
-        error: true,
-        message: "Hm, that credential set doesn't seem right.",
-        code: "INVALID_CREDENTIALS"
-      });
-    }
-    
-    // 4. Check active/banned status
-    if (user.is_banned === 1) {
-      return res.status(403).json({
-        error: true,
-        message: "Account banned",
-        code: "ACCOUNT_BANNED"
-      });
-    }
-    
-    if (user.is_active === 0) {
-      return res.status(403).json({
-        error: true,
-        message: "Account inactive",
-        code: "ACCOUNT_INACTIVE"
-      });
-    }
-    
-    // 5. Generate tokens
-    const { accessToken, refreshToken } = await generateTokens(user);
-    
-    // 6. Return response
-    return res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          full_name: user.full_name,
-          role: user.role,
-          avatar_url: user.avatar_url
-        },
-        access_token: accessToken,
-        refresh_token: refreshToken
-      }
-    });
-  } catch (err) {
-    console.error('Error in login:', err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal server error",
-      code: "INTERNAL_SERVER_ERROR"
-    });
-  }
-});
 
 // Authentication middleware
 async function authenticateToken(req, res, next) {
@@ -890,11 +824,12 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       SELECT 
         p.id, p.name AS alt_text,
         COALESCE(
-          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
+          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url
       FROM products p
-      WHERE p.status = 'active'
+      JOIN users u ON p.seller_id = u.id
+      WHERE p.status = 'active' AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY RANDOM() LIMIT 6
     `;
     const rows = await db.prepare(query).all();
@@ -904,38 +839,23 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       slides = rows.map(r => ({
         id: r.id,
         product_id: r.id,
-        image_url: r.image_url || 'https://placehold.co/800x600?text=Handcrafted+Treasure',
+        image_url: r.image_url ? normalizeImageUrl(r.image_url, req) : null,
         alt_text: r.alt_text || 'Artisan Craft'
-      }));
+      })).filter(s => s.image_url !== null);
     }
-    
+
     if (slides.length === 0) {
-      // Fallback if no database products are active
       slides = [
-        {
-          id: 1,
-          product_id: 1,
-          image_url: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&w=1200&q=80',
-          alt_text: 'Handcrafted Ceramics'
-        },
-        {
-          id: 2,
-          product_id: 2,
-          image_url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1200&q=80',
-          alt_text: 'Artisan Pottery Wheel'
-        },
-        {
-          id: 3,
-          product_id: 3,
-          image_url: 'https://images.unsplash.com/photo-1606744824163-985d376605aa?auto=format&fit=crop&w=1200&q=80',
-          alt_text: 'Weaving & Textiles'
-        }
+        { id: 1, product_id: 1, image_url: '/img/ceramic_bowls.jpg', alt_text: 'Handcrafted Ceramic Bowls' },
+        { id: 2, product_id: 2, image_url: '/img/stoneware_vase.jpg', alt_text: 'Artisan Stoneware Vase' },
+        { id: 3, product_id: 3, image_url: '/img/linen_journal.jpg', alt_text: 'Handmade Linen Journal' },
+        { id: 4, product_id: 4, image_url: '/img/incense_holder.jpg', alt_text: 'Terracotta Incense Holder' }
       ];
     }
 
     return res.status(200).json({
       success: true,
-      data: slides
+      data: { slides }
     });
   } catch (err) {
     console.error('Error in hero slides:', err);
@@ -943,6 +863,102 @@ app.get('/api/hero-slides', rateLimit(120), async (req, res) => {
       error: true,
       message: "Internal server error"
     });
+  }
+});
+
+// GET /api/ui-settings/public
+app.get('/api/ui-settings/public', rateLimit(120), async (req, res) => {
+  try {
+    const rows = await db.prepare(`
+      SELECT slot_name, slot_type, content_url, content_ref_id, label
+      FROM ui_settings
+      ORDER BY id ASC
+    `).all();
+
+    const data = {};
+
+    for (const row of rows) {
+      const normalizedUrl = normalizeImageUrl(row.content_url, req);
+      let resolved_content = null;
+
+      if (row.slot_type === 'featured_product_id' && row.content_ref_id) {
+        try {
+          const prod = await db.prepare(`
+            SELECT 
+              p.id, p.name, p.price_paise, p.seller_id, p.listing_type, p.type,
+              s.shop_name AS seller_name,
+              u.username AS seller_username,
+              COALESCE(
+                (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
+                (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+              ) AS image_url,
+              COALESCE((SELECT COUNT(*) FROM reviews WHERE listing_id = p.id), 0) AS review_count,
+              COALESCE((SELECT AVG(rating) FROM reviews WHERE listing_id = p.id), 4.5) AS avg_rating
+            FROM products p
+            JOIN users u ON p.seller_id = u.id
+            LEFT JOIN seller_profiles s ON s.user_id = u.id
+            WHERE p.id = ? AND p.status = 'active' AND u.is_banned = 0 AND u.is_active = 1
+          `).get(row.content_ref_id);
+
+          if (prod) {
+            resolved_content = {
+              id: prod.id,
+              name: prod.name,
+              price_paise: prod.price_paise,
+              image_url: normalizeImageUrl(prod.image_url, req),
+              seller_id: prod.seller_id,
+              seller_name: prod.seller_name || prod.seller_username || 'Artisan',
+              review_count: Number(prod.review_count || 0),
+              avg_rating: Number(prod.avg_rating || 4.5),
+              listing_type: prod.listing_type || 'physical',
+              type: prod.type || 'standard'
+            };
+          }
+        } catch (e) {
+          console.error(`Error resolving featured product for slot ${row.slot_name}:`, e);
+        }
+      } else if (row.slot_type === 'category_override' && row.content_ref_id) {
+        try {
+          const cat = await db.prepare(`
+            SELECT c.id, c.display_name, c.slug, c.image_url,
+              (
+                COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
+                +
+                COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
+              ) AS product_count
+            FROM categories c
+            WHERE c.id = ? AND c.is_active = 1
+          `).get(row.content_ref_id);
+
+          if (cat) {
+            resolved_content = {
+              id: cat.id,
+              display_name: cat.display_name,
+              slug: cat.slug,
+              image_url: normalizeImageUrl(cat.image_url, req),
+              product_count: Number(cat.product_count || 0)
+            };
+          }
+        } catch (e) {
+          console.error(`Error resolving category override for slot ${row.slot_name}:`, e);
+        }
+      }
+
+      data[row.slot_name] = {
+        slot_type: row.slot_type,
+        content_url: normalizedUrl,
+        label: row.label,
+        resolved_content
+      };
+    }
+
+    return res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (err) {
+    console.error('GET /api/ui-settings/public error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
 
@@ -990,6 +1006,9 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
     }
     
     const userId = req.user ? req.user.user_id : null;
+    const bestsellerIds = await getBestsellerIds();
+    const bestsellerList = bestsellerIds.length > 0 ? bestsellerIds.join(',') : '0';
+
     let queryStr = `
       SELECT 
         p.id, p.name, p.price_paise, p.ships_in_days, p.avg_rating, p.review_count, p.status, p.seller_id,
@@ -999,19 +1018,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       queryStr += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1022,7 +1029,7 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC
       LIMIT 12
     `;
@@ -1034,12 +1041,23 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
       p.avg_rating = p.avg_rating !== null && p.avg_rating !== undefined ? parseFloat(p.avg_rating) : 0.0;
       p.review_count = p.review_count !== null && p.review_count !== undefined ? parseInt(p.review_count, 10) : 0;
     });
     
     // Query all categories
-    const categories = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY item_count DESC").all();
+    const cats = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY item_count DESC").all();
+    const categories = cats.map(c => {
+      let imgUrl = c.image_url;
+      if (imgUrl && !imgUrl.startsWith('http://') && !imgUrl.startsWith('https://')) {
+        imgUrl = `${getApiBaseUrl(req)}${imgUrl}`;
+      }
+      return {
+        ...c,
+        image_url: imgUrl
+      };
+    });
     
     return res.status(200).json({
       success: true,
@@ -1063,6 +1081,8 @@ app.get('/api/home/feed', rateLimit(60), optionalAuthenticateToken, async (req, 
 app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (req, res) => {
   try {
     const userId = req.user ? req.user.user_id : null;
+    const bestsellerIds = await getBestsellerIds();
+    const bestsellerList = bestsellerIds.length > 0 ? bestsellerIds.join(',') : '0';
     
     // 1. Get Sponsored Products
     let sponsoredQuery = `
@@ -1074,19 +1094,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       sponsoredQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1098,7 +1106,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       JOIN sponsored_products sp_prod ON sp_prod.product_id = p.id
-      WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND sp_prod.is_sponsored = 1 AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY p.created_at DESC, p.id DESC
     `;
     
@@ -1108,6 +1116,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
     });
 
     // 2. Get Bestsellers (excluding sponsored)
@@ -1124,19 +1133,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT SUM(quantity) FROM order_items WHERE product_id = p.id), 0) AS sales_rank,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       bestsellerQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1147,7 +1144,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.status = 'active' AND p.id NOT IN (${sponsoredPlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
       ORDER BY sales_rank DESC, p.created_at DESC, p.id DESC
       LIMIT 8
     `;
@@ -1159,6 +1156,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
     });
 
     // 3. Get Regular Products (excluding sponsored and bestsellers)
@@ -1174,19 +1172,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       regularQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1197,8 +1183,8 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1
-      ORDER BY p.created_at DESC, p.id DESC
+      WHERE p.status = 'active' AND p.id NOT IN (${excludePlaceholder}) AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
+      ORDER BY COALESCE(p.is_tohfa_original, 0) DESC, RANDOM()
     `;
 
     const regularParams = userId ? [userId, ...excludeIds] : [...excludeIds];
@@ -1208,6 +1194,7 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
       p.is_wishlisted = !!p.is_wishlisted;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
     });
 
     // Combine them
@@ -1243,28 +1230,54 @@ app.get('/api/products/feed', rateLimit(60), optionalAuthenticateToken, async (r
 // TASK 16: GET /api/categories
 app.get('/api/categories', rateLimit(120), async (req, res) => {
   try {
-    const cats = await db.prepare("SELECT * FROM categories WHERE is_active = 1 ORDER BY sort_order ASC, id ASC").all();
+    const cats = await db.prepare(`
+      SELECT c.*,
+        (
+          COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
+          +
+          COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
+        ) AS live_product_count
+      FROM categories c 
+      WHERE c.is_active = 1 
+      ORDER BY c.sort_order ASC, c.id ASC
+    `).all();
     let subcats = [];
     try {
       subcats = await db.prepare("SELECT * FROM subcategories ORDER BY name ASC").all();
     } catch (e) {
       console.warn("subcategories fetch failed:", e);
     }
-    const categories = cats.map(c => ({
-      id: c.id,
-      display_name: c.display_name || c.name,
-      slug: c.slug,
-      emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
-      description: c.description || null,
-      image_url: c.image_url || null,
-      subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
-        id: sc.id,
-        category_id: sc.category_id,
-        name: sc.name,
-        slug: sc.slug,
-        description: sc.description || null
-      }))
-    }));
+    const categories = cats.map(c => {
+      let rawImg = c.image_url;
+      let finalImg = null;
+      if (rawImg) {
+        if (rawImg.startsWith('/img/')) {
+          finalImg = rawImg;
+        } else if (rawImg.startsWith('http://') || rawImg.startsWith('https://')) {
+          finalImg = rawImg;
+        } else if (rawImg.startsWith('/uploads/')) {
+          finalImg = `${getApiBaseUrl(req)}${rawImg}`;
+        } else {
+          finalImg = rawImg.startsWith('/') ? rawImg : `/${rawImg}`;
+        }
+      }
+      return {
+        id: c.id,
+        display_name: c.display_name || c.name,
+        slug: c.slug,
+        emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
+        description: c.description || null,
+        image_url: finalImg,
+        product_count: parseInt(c.live_product_count || 0, 10),
+        subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
+          id: sc.id,
+          category_id: sc.category_id,
+          name: sc.name,
+          slug: sc.slug,
+          description: sc.description || null
+        }))
+      };
+    });
     return res.status(200).json({
       success: true,
       data: {
@@ -1290,13 +1303,30 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
   const sub = req.query.sub;
   
   try {
-    // 1. Resolve category
-    const category = await db.prepare('SELECT * FROM categories WHERE slug = ?').get(slug);
+    // 1. Resolve category with slug alias fallback
+    let category = await db.prepare('SELECT * FROM categories WHERE slug = ? OR REPLACE(slug, \'-\', \'\') = REPLACE(?, \'-\', \'\')').get(slug, slug);
     if (!category) {
-      return res.status(404).json({
-        error: true,
-        message: "Category not found",
-        code: "CATEGORY_NOT_FOUND"
+      const aliasMap = {
+        'ceramics': 'ceramics-pottery',
+        'journals': 'journals-stationery',
+        'candles': 'candles-fragrance',
+        'textiles': 'textile-arts',
+        'paper-crafts': 'journals-stationery',
+        'home': 'home-decor',
+        'art': 'art-portraits'
+      };
+      const targetSlug = aliasMap[slug.toLowerCase()] || slug;
+      category = await db.prepare('SELECT * FROM categories WHERE slug = ? OR slug LIKE ?').get(targetSlug, `%${targetSlug}%`);
+    }
+
+    if (!category) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          category: { id: 0, name: slug, slug: slug },
+          products: [],
+          pagination: { has_more: false, next_cursor: null, total: 0 }
+        }
       });
     }
     
@@ -1397,6 +1427,9 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
     }
     
     let userId = req.user ? req.user.user_id : null;
+    const bestsellerIds = await getBestsellerIds();
+    const bestsellerList = bestsellerIds.length > 0 ? bestsellerIds.join(',') : '0';
+
     let sql = `
       SELECT 
         p.id, p.name, p.price_paise, p.ships_in_days, p.avg_rating, p.review_count, p.status, p.seller_id,
@@ -1407,19 +1440,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         (p.ships_in_days <= 1) AS ready_to_ship,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        (p.id IN (${bestsellerList})) AS is_bestseller
     `;
     if (userId) {
       sql += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -1430,7 +1451,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
+      WHERE p.category_id = ? AND p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
     `;
     
     if (queryParts.length > 0) {
@@ -1459,6 +1480,7 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       p.ready_to_ship = !!p.ready_to_ship;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
       p.avg_rating = p.avg_rating !== null && p.avg_rating !== undefined ? parseFloat(p.avg_rating) : 0.0;
       p.review_count = p.review_count !== null && p.review_count !== undefined ? parseInt(p.review_count, 10) : 0;
     });
@@ -1470,8 +1492,13 @@ app.get('/api/categories/:slug/products', rateLimit(60), optionalAuthenticateTok
       data: {
         category: {
           id: category.id,
+          display_name: category.display_name || category.name,
           name: category.name,
           slug: category.slug,
+          emoji_icon: category.emoji_icon || category.icon_emoji || '🏷️',
+          description: category.description || null,
+          image_url: category.image_url ? (category.image_url.startsWith('http') || category.image_url.startsWith('/img/') ? category.image_url : `${getApiBaseUrl(req)}${category.image_url}`) : null,
+          banner_image_url: category.banner_image_url ? (category.banner_image_url.startsWith('http') || category.banner_image_url.startsWith('/img/') ? category.banner_image_url : `${getApiBaseUrl(req)}${category.banner_image_url}`) : null,
           item_count: category.item_count
         },
         products,
@@ -1508,7 +1535,7 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
   try {
     const userId = req.user ? req.user.user_id : null;
 
-    // Log search query in trending_searches
+    // Log search query in trending_searches & buyer_search_history
     if (q && q.trim().length > 1) {
       const cleanQ = q.trim().toLowerCase();
       try {
@@ -1521,6 +1548,17 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
         `).run(cleanQ);
       } catch (logErr) {
         console.error('Error logging trending search:', logErr);
+      }
+
+      if (userId) {
+        try {
+          await db.prepare(`
+            INSERT INTO buyer_search_history (user_id, search_query, searched_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+          `).run(userId, q.trim());
+        } catch (buyerLogErr) {
+          console.error('Error logging buyer search history:', buyerLogErr);
+        }
       }
     }
 
@@ -1537,6 +1575,8 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
     let queryParts = [
       "p.status = 'active'",
       "COALESCE(sp.is_approved, 0) = 1",
+      "u.is_banned = 0",
+      "u.is_active = 1",
       "(p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR COALESCE(c.display_name, c.name) LIKE ? OR sp.shop_name LIKE ? OR u.full_name LIKE ?)"
     ];
     let queryParams = [];
@@ -1559,19 +1599,7 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
       SELECT
         p.id, p.name, p.price_paise, p.ships_in_days, p.ready_to_ship, p.avg_rating, p.review_count, p.seller_id,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
         ${wishlistSelect},
         COALESCE(
           (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
@@ -1582,6 +1610,18 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
       LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE ${queryParts.join(' AND ')}
       ORDER BY ${orderBy}
       LIMIT ?
@@ -1606,6 +1646,7 @@ app.get('/api/products/search', rateLimit(60), optionalAuthenticateToken, async 
       p.ready_to_ship = !!p.ready_to_ship;
       p.is_bestseller = !!p.is_bestseller;
       p.listing_type = p.listing_type || 'pre-made';
+      p.image_url = getThumbnailUrl(p.image_url);
       p.avg_rating = p.avg_rating !== null && p.avg_rating !== undefined ? parseFloat(p.avg_rating) : 0.0;
       p.review_count = p.review_count !== null && p.review_count !== undefined ? parseInt(p.review_count, 10) : 0;
     });
@@ -1656,7 +1697,7 @@ app.get('/api/products/search-suggestions', rateLimit(120), async (req, res) => 
       SELECT DISTINCT p.name FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND (p.name LIKE ? OR p.description LIKE ?)
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1 AND (p.name LIKE ? OR p.description LIKE ?)
       LIMIT 7
     `).all(`%${q}%`, `%${q}%`).map(row => row.name);
     
@@ -1884,6 +1925,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         p.paused_at, p.pause_reason, p.resume_estimate_date, COALESCE(p.remake_eligible, FALSE) AS remake_eligible,
         c.name AS category_name, c.slug AS category_slug,
         COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline, COALESCE(sp.is_approved, 0) AS is_approved,
+        u.is_banned, u.is_active,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
         COALESCE((SELECT tags FROM listings WHERE title = p.name LIMIT 1), '[]') AS listing_tags
     `;
@@ -1904,6 +1946,14 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
     const productData = userId ? await stmt.get(userId, numericId, numericId) : await stmt.get(numericId, numericId);
     
     if (!productData) {
+      return res.status(404).json({
+        error: true,
+        message: "Product not found",
+        code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    if (productData.is_banned === 1 || productData.is_active === 0) {
       return res.status(404).json({
         error: true,
         message: "Product not found",
@@ -1968,7 +2018,7 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
       seller: {
         id: productData.seller_id,
         seller_name: productData.seller_name,
-        avatar_url: productData.avatar_url,
+        avatar_url: formatImg(productData.avatar_url, req),
         shop_tagline: productData.shop_tagline
       },
       category: {
@@ -1976,7 +2026,10 @@ app.get('/api/products/:id', rateLimit(120), optionalAuthenticateToken, async (r
         name: productData.category_name,
         slug: productData.category_slug
       },
-      recent_reviews: recentReviews,
+      recent_reviews: recentReviews.map(rev => ({
+        ...rev,
+        reviewer_avatar: formatImg(rev.reviewer_avatar, req)
+      })),
       is_customized: productData.category_slug === 'customized-gifts',
       is_sponsored: !!(await db.prepare("SELECT 1 FROM sponsored_products WHERE product_id = ? AND is_sponsored = 1").get(productData.id)),
       is_best_seller: (await db.prepare(`
@@ -3923,11 +3976,11 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
   if (conversation_id !== undefined && offer_id !== undefined) {
     try {
       // 1. Verify Razorpay signature
-      const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_mocksecret12345';
+      const secret = process.env.RAZORPAY_KEY_SECRET;
       const expected = crypto.createHmac('sha256', secret)
         .update(razorpay_order_id + '|' + razorpay_payment_id)
         .digest('hex');
-      if (razorpay_signature !== expected && razorpay_signature !== 'mock_signature') {
+      if (razorpay_signature !== expected) {
         return res.status(400).json({ error: "Payment verification failed", code: "INVALID_SIGNATURE" });
       }
 
@@ -4109,13 +4162,13 @@ app.post('/api/payments/verify', rateLimit(60), authenticateToken, async (req, r
       });
     }
     
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_secret_mocksecret12345';
+    const secret = process.env.RAZORPAY_KEY_SECRET;
     const generated_signature = crypto
       .createHmac('sha256', secret)
       .update(razorpay_order_id + '|' + razorpay_payment_id)
       .digest('hex');
       
-    if (razorpay_signature !== generated_signature && razorpay_signature !== 'mock_signature') {
+    if (razorpay_signature !== generated_signature) {
       return res.status(402).json({
         error: true,
         message: "Signature verification failed",
@@ -4297,7 +4350,15 @@ app.get('/api/wishlist', rateLimit(60), authenticateToken, async (req, res) => {
 // TASK 37: POST /api/wishlist/:productId
 app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
-  const productId = req.params.productId;
+  const productId = parseInt(req.params.productId, 10);
+
+  if (isNaN(productId)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid product ID",
+      code: "VALIDATION_ERROR"
+    });
+  }
 
   try {
     const product = await db.prepare("SELECT id, seller_id FROM products WHERE id = ? AND status != 'archived'").get(productId);
@@ -4335,7 +4396,7 @@ app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (re
     console.error('Error adding to wishlist:', err);
     return res.status(500).json({
       error: true,
-      message: "Internal server error",
+      message: err.message || "Internal server error",
       code: "INTERNAL_SERVER_ERROR"
     });
   }
@@ -4344,7 +4405,15 @@ app.post('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (re
 // TASK 38: DELETE /api/wishlist/:productId
 app.delete('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (req, res) => {
   const userId = req.user.user_id;
-  const productId = req.params.productId;
+  const productId = parseInt(req.params.productId, 10);
+
+  if (isNaN(productId)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid product ID",
+      code: "VALIDATION_ERROR"
+    });
+  }
 
   try {
     const product = await db.prepare("SELECT id FROM products WHERE id = ? AND status != 'archived'").get(productId);
@@ -4366,7 +4435,7 @@ app.delete('/api/wishlist/:productId', rateLimit(60), authenticateToken, async (
     console.error('Error removing from wishlist:', err);
     return res.status(500).json({
       error: true,
-      message: "Internal server error",
+      message: err.message || "Internal server error",
       code: "INTERNAL_SERVER_ERROR"
     });
   }
@@ -4404,7 +4473,7 @@ app.get('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) =>
         display_name: user.display_name,
         email: user.email,
         phone: user.phone || null,
-        avatar_url: user.avatar_url,
+        avatar_url: formatImg(user.avatar_url, req),
         role: user.role,
         bio: user.bio,
         location: user.location,
@@ -4545,7 +4614,7 @@ app.patch('/api/profile/me', rateLimit(60), authenticateToken, async (req, res) 
         display_name: updatedUser.display_name || updatedUser.full_name,
         email: updatedUser.email,
         phone: updatedUser.phone || null,
-        avatar_url: updatedUser.avatar_url,
+        avatar_url: formatImg(updatedUser.avatar_url, req),
         role: updatedUser.role,
         bio: updatedUser.bio,
         location: updatedUser.location,
@@ -4622,22 +4691,26 @@ app.post('/api/profile/me/avatar', rateLimit(60), authenticateToken, uploadAvata
   }
 
   try {
-    const host = req.get('host');
-    const protocol = req.protocol;
-    const avatarUrl = `${protocol}://${host}/uploads/avatars/${req.file.filename}`;
+    const relativePath = `/uploads/avatars/${req.file.filename}`;
 
-    await db.prepare("UPDATE users SET avatar_url = ? WHERE id = ?").run(avatarUrl, userId);
+    await generateThumbnail(req.file.path);
+
+    await db.prepare("UPDATE users SET avatar_url = ? WHERE id = ?").run(relativePath, userId);
 
     return res.status(200).json({
       success: true,
       data: {
-        avatar_url: avatarUrl
+        avatar_url: formatImg(relativePath, req)
       }
     });
   } catch (err) {
     console.error('Error uploading avatar:', err);
     if (req.file) {
       fs.unlinkSync(req.file.path);
+      try {
+        const thumbPath = req.file.path.replace(/(\.\w+)$/, '_thumb$1');
+        if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+      } catch (e) {}
     }
     return res.status(500).json({
       error: true,
@@ -5290,7 +5363,7 @@ async function syncListingCategoryToProduct(listingId) {
 }
 
 // Helper: build seller profile response shape
-async function buildSellerProfileResponse(seller) {
+async function buildSellerProfileResponse(seller, req = null) {
   // Pending payouts balance
   const bal = await db.prepare("SELECT COALESCE(SUM(amount_paise),0) as total FROM payout_history WHERE seller_id = ? AND status = 'pending'").get(seller.id);
   const nextPayout = await db.prepare("SELECT scheduled_at FROM payout_history WHERE seller_id = ? AND status = 'pending' ORDER BY scheduled_at ASC LIMIT 1").get(seller.id);
@@ -5313,7 +5386,7 @@ async function buildSellerProfileResponse(seller) {
     location: seller.location,
     website: seller.website,
     artisan_story: seller.artisan_story,
-    avatar_url: seller.avatar_url,
+    avatar_url: formatImg(seller.avatar_url, req),
     store_slug: seller.store_slug,
     is_accepting_orders: seller.is_accepting_orders === 1,
     default_language: seller.default_language || 'en',
@@ -5623,7 +5696,7 @@ app.get('/api/seller/dashboard', rateLimit(60), requireSeller, async (req, res) 
 // ============================================================
 app.get('/api/seller/profile', requireSeller, async (req, res) => {
   try {
-    return res.json({ success: true, data: await buildSellerProfileResponse(req.seller) });
+    return res.json({ success: true, data: await buildSellerProfileResponse(req.seller, req) });
   } catch (err) {
     console.error('GET /api/seller/profile error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
@@ -5706,7 +5779,7 @@ app.put('/api/seller/profile', requireSeller, async (req, res) => {
     );
 
     const updated = await db.prepare('SELECT * FROM seller_profiles WHERE id = ?').get(seller.id);
-    return res.json({ success: true, data: await buildSellerProfileResponse(updated) });
+    return res.json({ success: true, data: await buildSellerProfileResponse(updated, req) });
   } catch (err) {
     console.error('PUT /api/seller/profile error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
@@ -5734,10 +5807,11 @@ app.post('/api/seller/profile/photo', requireSeller, (req, res, next) => {
   });
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
-  const url = `${req.protocol}://${req.get('host')}/uploads/avatars/${req.file.filename}`;
-  await db.prepare('UPDATE seller_profiles SET avatar_url = ? WHERE user_id = ?').run(url, req.user.user_id);
-  await db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(url, req.user.user_id);
-  return res.json({ success: true, data: { avatar_url: url } });
+  await generateThumbnail(req.file.path);
+  const relativePath = `/uploads/avatars/${req.file.filename}`;
+  await db.prepare('UPDATE seller_profiles SET avatar_url = ? WHERE user_id = ?').run(relativePath, req.user.user_id);
+  await db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(relativePath, req.user.user_id);
+  return res.json({ success: true, data: { avatar_url: formatImg(relativePath, req) } });
 });
 
 // POST /api/seller/profile/banner — upload seller banner
@@ -5761,7 +5835,8 @@ app.post('/api/seller/profile/banner', requireSeller, (req, res, next) => {
   });
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
-  const url = `${req.protocol}://${req.get('host')}/uploads/banners/${req.file.filename}`;
+  await generateThumbnail(req.file.path);
+  const url = `${getApiBaseUrl(req)}/uploads/banners/${req.file.filename}`;
   // UPSERT store_config row for this seller
   await db.prepare(`
     INSERT INTO store_config (seller_id, banner_url) VALUES (?, ?)
@@ -5794,7 +5869,8 @@ app.post('/api/seller/profile/about-image', requireSeller, (req, res, next) => {
   });
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: true, message: 'No file uploaded' });
-  const url = `${req.protocol}://${req.get('host')}/uploads/about/${req.file.filename}`;
+  await generateThumbnail(req.file.path);
+  const url = `${getApiBaseUrl(req)}/uploads/about/${req.file.filename}`;
   await db.prepare('UPDATE seller_profiles SET about_image_url = ? WHERE user_id = ?').run(url, req.user.user_id);
   return res.json({ success: true, data: { about_image_url: url } });
 });
@@ -6641,6 +6717,9 @@ app.delete('/api/seller/listings/:id', requireSeller, async (req, res) => {
     const targetStatus = action === 'pause' ? 'paused' : 'deleted';
     await db.prepare("UPDATE listings SET status = ?, updated_at = datetime('now') WHERE id = ?").run(targetStatus, listingId);
 
+    // Synchronize listing changes to product catalog
+    await syncListingToProduct(listingId);
+
     return res.json({
       success: true,
       data: {
@@ -6651,6 +6730,41 @@ app.delete('/api/seller/listings/:id', requireSeller, async (req, res) => {
     });
   } catch (err) {
     console.error('DELETE /api/seller/listings/:id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/products/:id/event
+// Tracks clicks and views for a product
+app.post('/api/products/:id/event', rateLimit(120), optionalAuthenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { event_type, session_id } = req.body;
+    const userId = req.user ? req.user.user_id : null;
+
+    if (!event_type || !['view', 'click', 'cart_add'].includes(event_type)) {
+      return res.status(400).json({ error: true, message: 'Invalid or missing event_type' });
+    }
+
+    if (!session_id) {
+      return res.status(400).json({ error: true, message: 'Missing session_id' });
+    }
+
+    const productId = parseInt(id, 10);
+    if (isNaN(productId)) {
+      return res.status(200).json({ success: true, message: 'Mock event ignored' });
+    }
+
+    // Insert the event into product_events table
+    const query = `
+      INSERT INTO product_events (product_id, event_type, user_id, session_id)
+      VALUES (?, ?, ?, ?)
+    `;
+    await db.prepare(query).run(productId, event_type, userId, session_id);
+
+    return res.status(200).json({ success: true, message: 'Event logged successfully' });
+  } catch (err) {
+    console.error('POST /api/products/:id/event error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -6692,6 +6806,8 @@ app.get('/api/products/:id/similar', rateLimit(120), optionalAuthenticateToken, 
         AND p.status = 'active'
         AND p.stock_qty > 0
         AND COALESCE(sc.vacation_mode, 0) = 0
+        AND u.is_banned = 0
+        AND u.is_active = 1
         AND COALESCE(sp.is_approved, 0) = 1
       ORDER BY p.avg_rating DESC, p.review_count DESC, p.id DESC
       LIMIT ?
@@ -6741,19 +6857,7 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
         ) AS image_url,
         COALESCE(sp.shop_name, u.full_name) AS seller_name,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
 
     if (userId) {
@@ -6766,7 +6870,19 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
       FROM products p
       JOIN users u ON p.seller_id = u.id
       LEFT JOIN seller_profiles sp ON u.id = sp.user_id
-      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
+      WHERE p.status = 'active' AND COALESCE(sp.is_approved, 0) = 1 AND u.is_banned = 0 AND u.is_active = 1
         AND p.stock_qty > 0
         AND p.id != ?
         AND (
@@ -6799,6 +6915,38 @@ app.get('/api/products/:id/recommendations', rateLimit(120), optionalAuthenticat
       is_bestseller: !!r.is_bestseller,
       is_wishlisted: !!r.is_wishlisted
     }));
+
+    if (formattedRows.length < 4) {
+      try {
+        const fallbackQuery = `
+          SELECT
+            p.id, p.name, p.price_paise, p.avg_rating, p.review_count, p.status, p.stock_qty, p.seller_id,
+            COALESCE(
+              (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1),
+              (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+            ) AS image_url,
+            COALESCE(sp.shop_name, u.full_name) AS seller_name,
+            'pre-made' AS listing_type,
+            0 AS is_bestseller,
+            0 AS is_wishlisted
+          FROM products p
+          JOIN users u ON p.seller_id = u.id
+          LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+          WHERE p.status = 'active' AND p.id != ?
+          ORDER BY p.avg_rating DESC, p.id DESC
+          LIMIT 4
+        `;
+        const fallbacks = await db.prepare(fallbackQuery).all(actualProductId);
+        const existingIds = new Set(formattedRows.map(r => r.id));
+        for (const fb of fallbacks) {
+          if (!existingIds.has(fb.id) && formattedRows.length < 4) {
+            formattedRows.push(fb);
+          }
+        }
+      } catch (fbErr) {
+        console.warn("Recommendations fallback query warning:", fbErr.message);
+      }
+    }
 
     return res.status(200).json({ success: true, data: formattedRows });
   } catch (err) {
@@ -7118,6 +7266,10 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     const sortOrder = parseInt(req.body.sort_order) || 0;
     const url = `/uploads/listings/${listingId}/${req.file.filename}`;
 
+    if (!isVideo) {
+      await generateThumbnail(req.file.path);
+    }
+
     if (isCover) {
       await db.prepare('UPDATE listing_photos SET is_cover = 0 WHERE listing_id = ?').run(listingId);
     }
@@ -7134,6 +7286,8 @@ app.post('/api/seller/listings/:id/photos', rateLimit(20), requireSeller, upload
     const updatedListing = await db.prepare('SELECT * FROM listings WHERE id = ?').get(listingId);
     const score = computeListingScore(updatedListing, photoCount);
     await db.prepare('UPDATE listings SET listing_score = ? WHERE id = ?').run(score, listingId);
+
+    await syncListingToProduct(listingId);
 
     return res.status(201).json({ success: true, data: { photo_id: photoId, url, is_cover: isCover, is_video: isVideo, sort_order: sortOrder } });
   } catch (err) {
@@ -7182,6 +7336,8 @@ app.delete('/api/seller/listings/:id/photos/:photoId', rateLimit(20), requireSel
     const photoCount = await db.prepare('SELECT COUNT(*) as c FROM listing_photos WHERE listing_id = ?').get(listingId).c;
     const score = computeListingScore(listing, photoCount);
     await db.prepare('UPDATE listings SET listing_score = ? WHERE id = ?').run(score, listingId);
+
+    await syncListingToProduct(listingId);
 
     return res.json({ success: true, message: 'Photo deleted successfully' });
   } catch (err) {
@@ -9262,7 +9418,7 @@ app.post('/api/seller/become', rateLimit(5), authenticateToken, async (req, res)
 // ============================================================
 app.post('/api/seller/apply', rateLimit(5), authenticateToken, async (req, res) => {
   try {
-    const { full_name, email, phone, whatsapp, instagram_handle, bio, categories, agreed_terms, agreed_handmade } = req.body;
+    const { full_name, email, phone, whatsapp, instagram_handle, bio, categories, agreed_terms, agreed_handmade, address } = req.body;
     
     if (!full_name || !email || !phone || !categories || !agreed_terms || !agreed_handmade) {
       return res.status(400).json({ error: true, message: 'Required fields are missing', code: 'VALIDATION_ERROR' });
@@ -9279,8 +9435,8 @@ app.post('/api/seller/apply', rateLimit(5), authenticateToken, async (req, res) 
     }
 
     await db.prepare(`
-      INSERT INTO seller_applications (user_id, full_name, email, phone, whatsapp, instagram_handle, bio, categories, agreed_terms, agreed_handmade, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+      INSERT INTO seller_applications (user_id, full_name, email, phone, whatsapp, instagram_handle, bio, categories, agreed_terms, agreed_handmade, status, address)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
     `).run(
       req.user.user_id,
       full_name,
@@ -9291,8 +9447,21 @@ app.post('/api/seller/apply', rateLimit(5), authenticateToken, async (req, res) 
       bio || null,
       categories,
       agreed_terms ? true : false,
-      agreed_handmade ? true : false
+      agreed_handmade ? true : false,
+      address || null
     );
+
+    // Outbound WhatsApp Notification to Admin
+    try {
+      const adminMsg = `🆕 New Seller Application Submitted!
+Name: ${full_name}
+Email: ${email}
+Phone: ${phone}
+Categories: ${categories}`;
+      await whatsappService.notifyAdmin(adminMsg);
+    } catch (notifErr) {
+      console.error('Failed to dispatch admin WhatsApp notification:', notifErr);
+    }
 
     return res.status(200).json({ success: true, message: 'Application submitted' });
   } catch (err) {
@@ -9384,9 +9553,11 @@ app.post('/api/admin/seller-applications/:id/approve', authenticateAdminToken, a
       }
 
       await db.prepare(`
-        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step)
-        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0)
-      `).run(appInfo.user_id, display_name, appInfo.bio, display_name, handle, storeSlug);
+        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step, is_approved, whatsapp_number, whatsapp_verified_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0, 1, ?, CURRENT_TIMESTAMP)
+      `).run(appInfo.user_id, display_name, appInfo.bio, display_name, handle, storeSlug, appInfo.whatsapp || appInfo.phone || null);
+    } else {
+      await db.prepare('UPDATE seller_profiles SET is_approved = 1, whatsapp_number = COALESCE(whatsapp_number, ?), whatsapp_verified_at = COALESCE(whatsapp_verified_at, CURRENT_TIMESTAMP) WHERE user_id = ?').run(appInfo.whatsapp || appInfo.phone || null, appInfo.user_id);
     }
 
     await writeAuditLog(
@@ -9400,9 +9571,73 @@ app.post('/api/admin/seller-applications/:id/approve', authenticateAdminToken, a
       { status: 'approved' }
     );
 
+    // Auto-sync seller listings to active buyer products catalog
+    await syncSellerListings(appInfo.user_id);
+
     return res.status(200).json({ success: true, message: 'Application approved' });
   } catch (err) {
     console.error('POST /api/admin/seller-applications/:id/approve error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// ============================================================
+// POST /api/admin/sellers/user/:user_id/approve (approve seller by user ID)
+// ============================================================
+app.post('/api/admin/sellers/user/:user_id/approve', authenticateAdminToken, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.user_id, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: true, message: 'Invalid user ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const user = await db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    if (!user) {
+      return res.status(404).json({ error: true, message: 'User not found', code: 'NOT_FOUND' });
+    }
+
+    await db.prepare("UPDATE users SET role = 'seller' WHERE id = ?").run(userId);
+
+    const existingProfile = await db.prepare('SELECT id FROM seller_profiles WHERE user_id = ?').get(userId);
+    if (!existingProfile) {
+      const displayName = user.full_name || user.display_name || 'Artisan Seller';
+      const storeSlug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `seller-${userId}`;
+      let handle = user.full_name ? user.full_name.toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '') : `artisan_${userId}`;
+      const handleTaken = await db.prepare('SELECT id FROM seller_profiles WHERE handle = ?').get(handle);
+      if (handleTaken) {
+        handle = handle + '_' + userId;
+      }
+      await db.prepare(`
+        INSERT INTO seller_profiles (user_id, shop_name, shop_bio, display_name, handle, store_slug, store_currency, platform_fee_pct, is_accepting_orders, onboarding_step, is_approved, whatsapp_number, whatsapp_verified_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'INR', 8, 1, 0, 1, ?, CURRENT_TIMESTAMP)
+      `).run(userId, displayName, user.bio || '', displayName, handle, storeSlug, user.phone || null);
+    } else {
+      await db.prepare('UPDATE seller_profiles SET is_approved = 1, whatsapp_number = COALESCE(whatsapp_number, ?), whatsapp_verified_at = COALESCE(whatsapp_verified_at, CURRENT_TIMESTAMP) WHERE user_id = ?').run(user.phone || null, userId);
+    }
+
+    await db.prepare(`
+      UPDATE seller_applications 
+      SET status = 'approved', reviewed_at = CURRENT_TIMESTAMP, reviewed_by = ? 
+      WHERE user_id = ? AND status = 'pending'
+    `).run(req.admin.id, userId);
+
+    await writeAuditLog(
+      "admin.seller.approve",
+      req.admin.id,
+      req.admin.display_name,
+      "users",
+      userId,
+      `Approved seller application for ${user.full_name || user.email}`,
+      { is_approved: 0 },
+      { is_approved: 1 }
+    );
+
+    // Auto-sync seller listings to active buyer products catalog
+    await syncSellerListings(userId);
+
+    return res.status(200).json({ success: true, message: 'Seller approved and activated successfully' });
+  } catch (err) {
+    console.error('POST /api/admin/sellers/user/:user_id/approve error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -9461,6 +9696,7 @@ const ADMIN_ROLE_MAPPING = {
   'GET /api/admin/orders/:order_id': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/categories': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/products': ['admin', 'super_admin', 'superadmin'],
+  'GET /api/admin/products/:product_id': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/audit-logs': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/audit-logs/:log_id/diff': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/payment-health': ['admin', 'super_admin', 'superadmin'],
@@ -9474,9 +9710,10 @@ const ADMIN_ROLE_MAPPING = {
   'GET /api/admin/payments/ledger/all': ['admin', 'super_admin', 'superadmin'],
   'GET /api/admin/reports': ['admin', 'super_admin', 'superadmin'],
 
-  // POST/PUT/PATCH/DELETE routes - only 'super_admin'
-  'POST /api/admin/seller-applications/:id/approve': ['super_admin', 'superadmin'],
-  'POST /api/admin/seller-applications/:id/reject': ['super_admin', 'superadmin'],
+  // POST/PUT/PATCH/DELETE routes
+  'POST /api/admin/seller-applications/:id/approve': ['admin', 'super_admin', 'superadmin'],
+  'POST /api/admin/seller-applications/:id/reject': ['admin', 'super_admin', 'superadmin'],
+  'POST /api/admin/sellers/user/:user_id/approve': ['admin', 'super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/ban': ['super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/unban': ['super_admin', 'superadmin'],
   'POST /api/admin/sellers/:seller_id/verify': ['admin', 'super_admin', 'superadmin'],
@@ -9489,6 +9726,7 @@ const ADMIN_ROLE_MAPPING = {
   'PATCH /api/admin/subcategories/:id': ['super_admin', 'superadmin'],
   'DELETE /api/admin/subcategories/:id': ['super_admin', 'superadmin'],
   'PATCH /api/admin/products/:product_id/sponsored': ['super_admin', 'superadmin'],
+  'PATCH /api/admin/products/:id/tohfa-original': ['admin', 'super_admin', 'superadmin'],
   'POST /api/admin/payment-health/run-check': ['super_admin', 'superadmin'],
   'PUT /api/admin/ui-settings/:slot_name': ['super_admin', 'superadmin'],
   'POST /api/admin/ui-settings/:slot_name/activate-seasonal': ['super_admin', 'superadmin'],
@@ -9958,7 +10196,9 @@ app.get('/api/admin/sellers/:seller_id', authenticateAdminToken, async (req, res
 
     // Active ban check
     const activeBan = await db.prepare("SELECT 1 FROM seller_bans WHERE seller_id = ? AND unbanned_at IS NULL").get(sellerId);
-    const sellerStatus = (user.is_banned === 1 || activeBan) ? 'banned' : 'active';
+    const sellerStatus = (user.is_banned === 1 || activeBan)
+      ? 'banned'
+      : (sp && sp.is_approved === 1 ? 'active' : 'pending_verification');
 
     // Recent products
     const recentProducts = await db.prepare(`
@@ -10018,6 +10258,7 @@ app.get('/api/admin/sellers/:seller_id', authenticateAdminToken, async (req, res
         joined_display: formatJoinedDisplay(user.created_at),
         bio: sp ? (sp.bio || sp.shop_bio) : null,
         status: sellerStatus,
+        is_approved: sp ? sp.is_approved : 0,
         total_products: productCount,
         total_sales_paise: totalSalesPaise,
         total_sales_display: formatMoney(totalSalesPaise),
@@ -10137,7 +10378,29 @@ app.post('/api/admin/sellers/:seller_id/unban', authenticateAdminToken, async (r
 
     const unbanTransaction = db.transaction(async () => {
       await db.prepare("UPDATE users SET is_banned = 0, updated_at = datetime('now') WHERE id = ?").run(sellerId);
-      await db.prepare("UPDATE products SET status = 'active', updated_at = datetime('now') WHERE seller_id = ? AND status = 'archived'").run(sellerId);
+      
+      const archivedProducts = await db.prepare("SELECT id, source_listing_id FROM products WHERE seller_id = ? AND status = 'archived'").all(sellerId);
+      for (const prod of archivedProducts) {
+        if (prod.source_listing_id) {
+          const listing = await db.prepare("SELECT status FROM listings WHERE id = ?").get(prod.source_listing_id);
+          if (listing) {
+            let targetStatus = 'active';
+            if (listing.status === 'paused') {
+              targetStatus = 'paused';
+            } else if (listing.status === 'draft') {
+              targetStatus = 'draft';
+            } else if (listing.status === 'deleted') {
+              targetStatus = 'archived';
+            }
+            await db.prepare("UPDATE products SET status = ?, updated_at = datetime('now') WHERE id = ?").run(targetStatus, prod.id);
+          } else {
+            await db.prepare("UPDATE products SET status = 'active', updated_at = datetime('now') WHERE id = ?").run(prod.id);
+          }
+        } else {
+          await db.prepare("UPDATE products SET status = 'active', updated_at = datetime('now') WHERE id = ?").run(prod.id);
+        }
+      }
+
       await db.prepare("UPDATE seller_bans SET unbanned_at = datetime('now'), unbanned_by = ? WHERE seller_id = ? AND unbanned_at IS NULL").run(req.admin.id, sellerId);
       await writeAuditLog(
         'admin.seller.unbanned', req.admin.id, req.admin.display_name,
@@ -10428,32 +10691,65 @@ const uploadCategory = multer({
 // TASK 17: GET /api/admin/categories
 app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
   try {
-    const cats = await db.prepare('SELECT * FROM categories ORDER BY sort_order ASC, id ASC').all();
+    const cats = await db.prepare(`
+      SELECT c.*,
+        (
+          COALESCE((SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.status = 'active'), 0)
+          +
+          COALESCE((SELECT COUNT(*) FROM listings l WHERE l.category_id = c.id AND l.status = 'active'), 0)
+        ) AS live_product_count
+      FROM categories c 
+      ORDER BY c.sort_order ASC, c.id ASC
+    `).all();
     let subcats = [];
     try {
       subcats = await db.prepare('SELECT * FROM subcategories ORDER BY name ASC').all();
     } catch (e) {
       console.warn("subcategories table read failed:", e);
     }
-    const categories = cats.map(c => ({
-      id: c.id,
-      display_name: c.display_name || c.name,
-      slug: c.slug,
-      emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
-      description: c.description || null,
-      sort_order: c.sort_order || 0,
-      is_active: c.is_active !== undefined ? !!c.is_active : true,
-      status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
-      product_count: c.product_count || c.item_count || 0,
-      image_url: c.image_url || null,
-      subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
-        id: sc.id,
-        category_id: sc.category_id,
-        name: sc.name,
-        slug: sc.slug,
-        description: sc.description || null
-      }))
-    }));
+    const categories = cats.map(c => {
+      let rawImg = c.image_url;
+      if (!rawImg) {
+        const catMap = {
+          'customized-gifts': '/img/categories/art_prints.jpg',
+          'jewellery': '/img/categories/jewellery.jpg',
+          'hampers': '/img/categories/dried_florals.jpg',
+          'wedding-rituals': '/img/categories/candles.jpg',
+          'crochet': '/img/categories/journals.jpg',
+          'fabric-crafts': '/img/categories/skincare.jpg',
+          'festivals': '/img/categories/candles.jpg',
+          'couples': '/img/categories/custom_portraits.jpg',
+          'home-decor': '/img/categories/ceramics.jpg',
+          'art-portraits': '/img/categories/art_prints.jpg'
+        };
+        rawImg = catMap[c.slug] || '/img/categories/ceramics.jpg';
+      }
+      let rawBanner = c.banner_image_url || rawImg;
+      if (rawBanner.includes('unsplash.com')) rawBanner = rawImg;
+
+      const formatImg = (url) => url ? (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/img/') ? url : `${getApiBaseUrl(req)}${url}`) : null;
+
+      return {
+        id: c.id,
+        display_name: c.display_name || c.name,
+        slug: c.slug,
+        emoji_icon: c.emoji_icon || c.icon_emoji || '🏷️',
+        description: c.description || null,
+        sort_order: c.sort_order || 0,
+        is_active: c.is_active !== undefined ? !!c.is_active : true,
+        status_label: (c.is_active === 0 || c.is_active === false) ? 'Hidden' : 'Active',
+        product_count: parseInt(c.live_product_count || 0, 10),
+        image_url: formatImg(rawImg),
+        banner_image_url: formatImg(rawBanner),
+        subcategories: subcats.filter(sc => sc.category_id === c.id).map(sc => ({
+          id: sc.id,
+          category_id: sc.category_id,
+          name: sc.name,
+          slug: sc.slug,
+          description: sc.description || null
+        }))
+      };
+    });
     return res.status(200).json({ success: true, data: { categories, total: categories.length } });
   } catch (err) {
     console.error('GET /api/admin/categories error:', err);
@@ -10462,9 +10758,9 @@ app.get('/api/admin/categories', authenticateAdminToken, async (req, res) => {
 });
 
 // TASK 18: POST /api/admin/categories
-app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single('image'), async (req, res) => {
+app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.fields([{ name: 'image', maxCount: 1 }, { name: 'banner', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
   try {
-    const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
+    const { emoji_icon, display_name, slug, description, sort_order, is_active, image_url } = req.body;
     if (!emoji_icon || !display_name || !slug || sort_order === undefined || is_active === undefined) {
       return res.status(400).json({ error: true, message: 'emoji_icon, display_name, slug, sort_order, is_active are required', code: 'VALIDATION_ERROR' });
     }
@@ -10475,19 +10771,22 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
     if (existing) return res.status(409).json({ error: true, message: 'Slug already exists', code: 'SLUG_CONFLICT' });
 
     let imageUrl = null;
-    if (req.file) {
-      imageUrl = '/uploads/categories/' + req.file.filename;
+    const fileObj = req.file || (req.files && (req.files.image?.[0] || req.files.banner?.[0] || req.files.file?.[0]));
+    if (fileObj) {
+      imageUrl = '/uploads/categories/' + fileObj.filename;
+    } else if (image_url) {
+      imageUrl = image_url;
     } else {
-      imageUrl = `https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800&auto=format&fit=crop`;
+      imageUrl = `/img/categories/ceramics.jpg`;
     }
 
     const sortOrderVal = parseInt(sort_order, 10) || 0;
     const isActiveVal = (is_active === 'true' || is_active === '1' || is_active === 1 || is_active === true) ? 1 : 0;
 
     const result = await db.prepare(`
-      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at, image_url)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), ?)
-    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sortOrderVal, isActiveVal, imageUrl);
+      INSERT INTO categories (display_name, name, slug, emoji_icon, icon_emoji, description, sort_order, is_active, product_count, updated_at, image_url, banner_image_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'), ?, ?)
+    `).run(display_name, display_name, slug, emoji_icon, emoji_icon, description || null, sortOrderVal, isActiveVal, imageUrl, imageUrl);
 
     await writeAuditLog('admin.category.created', req.admin.id, req.admin.display_name, 'category', result.lastInsertRowid, `Category: ${display_name}`);
 
@@ -10503,7 +10802,8 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
         is_active: !!newCat.is_active,
         status_label: newCat.is_active ? 'Active' : 'Hidden',
         product_count: 0,
-        image_url: newCat.image_url
+        image_url: newCat.image_url ? (newCat.image_url.startsWith('http://') || newCat.image_url.startsWith('https://') || newCat.image_url.startsWith('/img/') ? newCat.image_url : `${getApiBaseUrl(req)}${newCat.image_url}`) : null,
+        banner_image_url: newCat.banner_image_url ? (newCat.banner_image_url.startsWith('http://') || newCat.banner_image_url.startsWith('https://') || newCat.banner_image_url.startsWith('/img/') ? newCat.banner_image_url : `${getApiBaseUrl(req)}${newCat.banner_image_url}`) : null
       }
     });
   } catch (err) {
@@ -10513,13 +10813,13 @@ app.post('/api/admin/categories', authenticateAdminToken, uploadCategory.single(
 });
 
 // TASK 19: PATCH /api/admin/categories/:category_id
-app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCategory.single('image'), async (req, res) => {
+app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCategory.fields([{ name: 'image', maxCount: 1 }, { name: 'banner', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
   try {
     const catId = parseInt(req.params.category_id);
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
-    const { emoji_icon, display_name, slug, description, sort_order, is_active } = req.body;
+    const { emoji_icon, display_name, slug, description, sort_order, is_active, image_url, banner_image_url } = req.body;
     if (slug !== undefined) {
       if (!/^[a-z0-9-]+$/.test(slug)) {
         return res.status(400).json({ error: true, message: 'Invalid slug format', code: 'INVALID_SLUG' });
@@ -10538,10 +10838,21 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
     if (description !== undefined) { updates.push('description = ?'); params.push(description); }
     if (sort_order !== undefined) { updates.push('sort_order = ?'); params.push(parseInt(sort_order, 10)); }
     if (is_active !== undefined) { updates.push('is_active = ?'); params.push((is_active === 'true' || is_active === '1' || is_active === 1 || is_active === true) ? 1 : 0); }
-    if (req.file) {
-      const imageUrl = '/uploads/categories/' + req.file.filename;
-      updates.push('image_url = ?');
-      params.push(imageUrl);
+
+    const fileObj = req.file || (req.files && (req.files.image?.[0] || req.files.banner?.[0] || req.files.file?.[0]));
+    if (fileObj) {
+      const uploadedUrl = '/uploads/categories/' + fileObj.filename;
+      updates.push('image_url = ?', 'banner_image_url = ?');
+      params.push(uploadedUrl, uploadedUrl);
+    } else {
+      if (image_url !== undefined && image_url !== null) {
+        updates.push('image_url = ?');
+        params.push(image_url);
+      }
+      if (banner_image_url !== undefined && banner_image_url !== null) {
+        updates.push('banner_image_url = ?');
+        params.push(banner_image_url);
+      }
     }
 
     updates.push("updated_at = datetime('now')");
@@ -10551,6 +10862,8 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
 
     const updated = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     await writeAuditLog('admin.category.updated', req.admin.id, req.admin.display_name, 'category', catId, `Category: ${updated.display_name}`, beforeJson, { display_name: updated.display_name, slug: updated.slug, is_active: updated.is_active, image_url: updated.image_url });
+
+    const formatImg = (url) => url ? (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/img/') ? url : `${getApiBaseUrl(req)}${url}`) : null;
 
     return res.status(200).json({
       success: true,
@@ -10563,7 +10876,8 @@ app.patch('/api/admin/categories/:category_id', authenticateAdminToken, uploadCa
         is_active: !!updated.is_active,
         status_label: updated.is_active ? 'Active' : 'Hidden',
         product_count: updated.product_count || updated.item_count || 0,
-        image_url: updated.image_url
+        image_url: formatImg(updated.image_url),
+        banner_image_url: formatImg(updated.banner_image_url || updated.image_url)
       }
     });
   } catch (err) {
@@ -10579,13 +10893,18 @@ app.delete('/api/admin/categories/:category_id', authenticateAdminToken, async (
     const cat = await db.prepare('SELECT * FROM categories WHERE id = ?').get(catId);
     if (!cat) return res.status(404).json({ error: true, message: 'Category not found', code: 'NOT_FOUND' });
 
-    const productCount = await db.prepare("SELECT COUNT(*) AS c FROM products WHERE category_id = ? AND status = 'active'").get(catId).c;
-    if (productCount > 0) {
+    const productCountRes = await db.prepare("SELECT COUNT(*) AS c FROM products WHERE category_id = ? AND status = 'active'").get(catId);
+    const listingCountRes = await db.prepare("SELECT COUNT(*) AS c FROM listings WHERE category_id = ? AND status = 'active'").get(catId);
+    const productCount = parseInt(productCountRes.c || 0, 10);
+    const listingCount = parseInt(listingCountRes.c || 0, 10);
+
+    if (productCount > 0 || listingCount > 0) {
       return res.status(400).json({
         error: true,
-        message: `Cannot delete: this category has ${productCount} active products.`,
-        code: 'HAS_ACTIVE_PRODUCTS',
-        product_count: productCount
+        message: `Cannot delete: ${productCount} active products and ${listingCount} active listings are assigned to this category.`,
+        code: 'HAS_ACTIVE_ITEMS',
+        product_count: productCount,
+        listing_count: listingCount
       });
     }
 
@@ -10680,14 +10999,18 @@ app.delete('/api/admin/subcategories/:id', authenticateAdminToken, async (req, r
     const subcat = await db.prepare('SELECT * FROM subcategories WHERE id = ?').get(subcatId);
     if (!subcat) return res.status(404).json({ error: true, message: 'Subcategory not found', code: 'NOT_FOUND' });
 
-    const productLink = await db.prepare("SELECT COUNT(*) AS c FROM product_subcategories WHERE subcategory_id = ?").get(subcatId);
-    const listingLink = await db.prepare("SELECT COUNT(*) AS c FROM listing_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const productLinkRes = await db.prepare("SELECT COUNT(*) AS c FROM product_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const listingLinkRes = await db.prepare("SELECT COUNT(*) AS c FROM listing_subcategories WHERE subcategory_id = ?").get(subcatId);
+    const productLink = parseInt(productLinkRes.c || 0, 10);
+    const listingLink = parseInt(listingLinkRes.c || 0, 10);
     
-    if (productLink.c > 0 || listingLink.c > 0) {
+    if (productLink > 0 || listingLink > 0) {
       return res.status(400).json({
         error: true,
-        message: 'Cannot delete: this subcategory is linked to active listings/products.',
-        code: 'HAS_LINKED_PRODUCTS'
+        message: `Cannot delete: ${productLink} products and ${listingLink} listings are assigned to this subcategory.`,
+        code: 'HAS_LINKED_PRODUCTS',
+        product_count: productLink,
+        listing_count: listingLink
       });
     }
 
@@ -10737,7 +11060,11 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
       SELECT p.id, p.name, p.price_paise, p.seller_id,
         COALESCE(u.full_name, '') AS seller_name,
         COALESCE(cat.name, 'Uncategorised') AS category_name,
-        COALESCE(sp_prod.is_sponsored, 0) AS is_sponsored
+        COALESCE(sp_prod.is_sponsored, 0) AS is_sponsored,
+        COALESCE(
+          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
+          (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
+        ) AS image_url
       FROM products p
       LEFT JOIN users u ON u.id = p.seller_id
       LEFT JOIN categories cat ON cat.id = p.category_id
@@ -10757,7 +11084,8 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
       price_paise: r.price_paise,
       price_display: formatMoney(r.price_paise),
       is_sponsored: !!r.is_sponsored,
-      sponsored_status_label: r.is_sponsored ? 'Sponsored' : '—'
+      sponsored_status_label: r.is_sponsored ? 'Sponsored' : '—',
+      image_url: normalizeImageUrl(r.image_url, req)
     }));
 
     return res.status(200).json({
@@ -10766,6 +11094,89 @@ app.get('/api/admin/products', authenticateAdminToken, async (req, res) => {
     });
   } catch (err) {
     console.error('GET /api/admin/products error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// GET /api/admin/products/:product_id - Get product detail for admin
+app.get('/api/admin/products/:product_id', authenticateAdminToken, async (req, res) => {
+  try {
+    const productId = parseInt(req.params.product_id, 10);
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: true, message: 'Invalid product ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const productData = await db.prepare(`
+      SELECT 
+        p.id, p.seller_id, p.category_id, p.name, p.description, p.price_paise, p.stock_qty, p.ships_in_days, p.avg_rating, p.review_count, p.status,
+        p.paused_at, p.pause_reason, p.resume_estimate_date, COALESCE(p.remake_eligible, FALSE) AS remake_eligible,
+        c.name AS category_name, c.slug AS category_slug,
+        COALESCE(sp.shop_name, u.full_name) AS seller_name, u.avatar_url, sp.shop_bio AS shop_tagline, COALESCE(sp.is_approved, 0) AS is_approved,
+        u.is_banned, u.is_active,
+        COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
+        COALESCE((SELECT tags FROM listings WHERE title = p.name LIMIT 1), '[]') AS listing_tags
+      FROM products p
+      JOIN users u ON p.seller_id = u.id
+      LEFT JOIN seller_profiles sp ON u.id = sp.user_id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.id = ?
+    `).get(productId);
+
+    if (!productData) {
+      return res.status(404).json({
+        error: true,
+        message: "Product not found",
+        code: "PRODUCT_NOT_FOUND"
+      });
+    }
+
+    const images = await db.prepare('SELECT url, is_primary, sort_order FROM product_images WHERE product_id = ? ORDER BY sort_order ASC').all(productId);
+    
+    const recentReviews = await db.prepare(`
+      SELECT COALESCE(u.display_name, u.full_name) AS reviewer_name, u.avatar_url AS reviewer_avatar, r.rating, r.body, r.created_at
+      FROM reviews r
+      JOIN users u ON r.reviewer_id = u.id
+      WHERE r.product_id = ?
+      ORDER BY r.created_at DESC, r.id DESC
+      LIMIT 10
+    `).all(productId);
+    
+    const isSponsored = await db.prepare("SELECT 1 FROM sponsored_products WHERE product_id = ? AND is_sponsored = 1").get(productId);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: productData.id,
+        name: productData.name,
+        description: productData.description,
+        price_paise: productData.price_paise,
+        stock_qty: productData.stock_qty,
+        ships_in_days: productData.ships_in_days,
+        avg_rating: productData.avg_rating,
+        review_count: productData.review_count,
+        status: productData.status,
+        images: images,
+        seller: {
+          id: productData.seller_id,
+          seller_name: productData.seller_name,
+          avatar_url: productData.avatar_url,
+          shop_tagline: productData.shop_tagline,
+          is_banned: productData.is_banned,
+          is_active: productData.is_active
+        },
+        category: {
+          id: productData.category_id,
+          name: productData.category_name,
+          slug: productData.category_slug
+        },
+        recent_reviews: recentReviews,
+        is_sponsored: !!isSponsored,
+        listing_type: productData.listing_type,
+        listing_tags: JSON.parse(productData.listing_tags)
+      }
+    });
+  } catch (err) {
+    console.error('GET /api/admin/products/:product_id error:', err);
     return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
   }
 });
@@ -10821,14 +11232,112 @@ app.patch('/api/admin/products/:product_id/sponsored', authenticateAdminToken, a
   }
 });
 
+// DELETE /api/admin/products/:id - Soft delete product
+app.delete('/api/admin/products/:id', authenticateAdminToken, async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: true, message: 'Invalid product ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const product = await db.prepare('SELECT * FROM products WHERE id = ?').get(productId);
+    if (!product) {
+      return res.status(404).json({ error: true, message: 'Product not found', code: 'NOT_FOUND' });
+    }
+
+    const deleteTransaction = db.transaction(async () => {
+      // 1. Soft delete product
+      await db.prepare("UPDATE products SET status = 'archived', updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(productId);
+
+      // 2. Soft delete corresponding listing
+      if (product.source_listing_id) {
+        await db.prepare("UPDATE listings SET status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(product.source_listing_id);
+      }
+
+      // 3. Remove from sponsored
+      await db.prepare("DELETE FROM sponsored_products WHERE product_id = ?").run(productId);
+
+      // 4. Audit Log
+      await writeAuditLog(
+        'admin.product.deleted', req.admin.id, req.admin.display_name,
+        'product', productId, `Product: ${product.name}`,
+        { status: product.status },
+        { status: 'archived' }
+      );
+    });
+    await deleteTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Product successfully archived'
+    });
+  } catch (err) {
+    console.error('DELETE /api/admin/products/:id error:', err);
+    return res.status(500).json({ error: true, message: err.message || 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// DELETE /api/admin/sellers/:id - Soft delete seller
+app.delete('/api/admin/sellers/:id', authenticateAdminToken, async (req, res) => {
+  try {
+    const sellerId = parseInt(req.params.id, 10);
+    if (isNaN(sellerId)) {
+      return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
+    }
+
+    const user = await db.prepare('SELECT * FROM users WHERE id = ? AND role = \'seller\'').get(sellerId);
+    if (!user) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
+    }
+
+    const deleteTransaction = db.transaction(async () => {
+      // 1. Deactivate seller
+      await db.prepare("UPDATE users SET is_active = 0, updated_at = datetime('now') WHERE id = ?").run(sellerId);
+
+      // 2. Soft delete all products
+      await db.prepare("UPDATE products SET status = 'archived', updated_at = datetime('now') WHERE seller_id = ?").run(sellerId);
+
+      // 3. Soft delete all listings
+      await db.prepare("UPDATE listings SET status = 'deleted', updated_at = datetime('now') WHERE seller_id = ?").run(sellerId);
+
+      // 4. Remove sponsored products
+      const products = await db.prepare("SELECT id FROM products WHERE seller_id = ?").all(sellerId);
+      if (products.length > 0) {
+        const placeholders = products.map(() => '?').join(',');
+        const prodIds = products.map(p => p.id);
+        await db.prepare(`DELETE FROM sponsored_products WHERE product_id IN (${placeholders})`).run(...prodIds);
+      }
+
+      // 5. Audit Log
+      await writeAuditLog(
+        'admin.seller.deleted', req.admin.id, req.admin.display_name,
+        'seller', sellerId, `Seller: ${user.full_name}`,
+        { is_active: user.is_active },
+        { is_active: 0 }
+      );
+    });
+    await deleteTransaction();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Seller successfully deactivated and listings archived'
+    });
+  } catch (err) {
+    console.error('DELETE /api/admin/sellers/:id error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
 // Helper: map event_type → event_label
 function auditEventLabel(eventType) {
   const map = {
     'admin.seller.banned': 'Seller Banned',
     'admin.seller.unbanned': 'Seller Unbanned',
+    'admin.seller.deleted': 'Seller Deleted',
     'admin.order.status_overridden': 'Order Override',
     'admin.order.refund_flagged': 'Order Flagged',
     'admin.product.sponsored_toggled': 'Sponsored Toggle',
+    'admin.product.deleted': 'Product Deleted',
     'admin.category.created': 'Category Created',
     'admin.category.updated': 'Category Change',
     'admin.category.deleted': 'Category Deleted',
@@ -11113,7 +11622,7 @@ app.get('/api/admin/dashboard/revenue-chart', authenticateAdminToken, async (req
       whereClause = "AND created_at BETWEEN ? AND ?";
       params = [start, end];
     } else {
-      whereClause = "AND created_at >= date('now', '-" + daysLimit + " days')";
+      whereClause = `AND created_at >= CURRENT_DATE - INTERVAL '${daysLimit} days'`;
     }
 
     const query = `
@@ -11212,7 +11721,8 @@ app.get('/api/admin/dashboard/top-products', authenticateAdminToken, async (req,
         COALESCE(SUM(CASE WHEN pe.event_type = 'view' THEN 1 ELSE 0 END), 0) as views,
         COALESCE(SUM(CASE WHEN pe.event_type = 'click' THEN 1 ELSE 0 END), 0) as clicks
       FROM listings l
-      LEFT JOIN product_events pe ON l.id = pe.product_id
+      LEFT JOIN products p ON l.id = p.source_listing_id
+      LEFT JOIN product_events pe ON p.id = pe.product_id
       GROUP BY l.id, l.title
       ORDER BY views DESC, clicks DESC
       LIMIT ?
@@ -11764,7 +12274,7 @@ app.get(['/api/customizations', '/customizations'], async (req, res) => {
         listing_id: row.listing_id,
         seller_id: row.seller_id,
         seller_name: row.shop_name || row.full_name || '',
-        seller_avatar_url: row.seller_avatar_url || null,
+        seller_avatar_url: formatImg(row.seller_avatar_url, req),
         product_type_tag: row.product_type_tag || null,
         product_name: row.product_name || '',
         base_price: row.base_price / 100,
@@ -12052,11 +12562,12 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
       });
     }
     
-    // Check if open conversation exists
+    // Check if open conversation exists between this buyer and seller
     let existing = await db.prepare(`
       SELECT * FROM conversations 
-      WHERE buyer_id = ? AND seller_id = ? AND listing_id = ? AND product_type_tag = ? AND status NOT IN ('completed', 'closed')
-    `).get(buyer_id, seller_id, listing_id, product_type_tag);
+      WHERE buyer_id = ? AND seller_id = ? AND status NOT IN ('completed', 'closed')
+      ORDER BY updated_at DESC LIMIT 1
+    `).get(buyer_id, seller_id);
     
     const questionCountRow = await db.prepare(`
       SELECT COUNT(*) as count FROM intake_question_templates 
@@ -12068,19 +12579,28 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
     const isBypass = bypass_intake === true || bypass_intake === 'true' || question_count === 0;
     
     if (existing) {
-      let isIntakeComplete = existing.intake_complete === 1;
+      let isIntakeComplete = isBypass;
+
+      // Mark previous pending offers in this conversation as superseded so they become read-only
+      await db.prepare(`
+        UPDATE custom_offers SET status = 'superseded' WHERE conversation_id = ? AND status = 'pending'
+      `).run(existing.id);
+
+      // Insert bot intake header to visually demarcate the new custom product inquiry session
+      const headerText = `Starting new custom product inquiry: "${listing.title}"`;
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, type, content, sent_at, is_read)
+        VALUES (?, 0, 'system', 'text', 'bot_intake_header', ?, datetime('now'), 0)
+      `).run(existing.id, headerText);
       
       if (isBypass) {
-        if (existing.status === 'intake_in_progress') {
-          await db.prepare(`
-            UPDATE conversations
-            SET status = 'awaiting_seller', intake_complete = 1, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-          `).run(existing.id);
-          isIntakeComplete = true;
-        }
+        await db.prepare(`
+          UPDATE conversations
+          SET listing_id = ?, product_type_tag = ?, status = 'awaiting_seller', intake_complete = 1, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(listing_id, product_type_tag, existing.id);
         
-        // Insert product inquiry message
+        // Insert product inquiry message for new product
         const inquiryContent = JSON.stringify({
           product_id: listing.id,
           product_name: listing.title,
@@ -12094,11 +12614,19 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
           VALUES (?, ?, 'buyer', 'text', 'product_inquiry', ?, ?, datetime('now'), 0)
         `).run(existing.id, buyer_id, inquiryContent, listing.cover_photo_url);
         
-        // Create notification for seller
         await db.prepare(`
           INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
-          VALUES (?, 'new_message', 'You have a new custom/overflow inquiry message', ?, 0, datetime('now'))
+          VALUES (?, 'new_message', 'You have a new custom product inquiry message', ?, 0, datetime('now'))
         `).run(seller_id, existing.id);
+      } else {
+        // Reset intake responses for fresh inquiry cycle
+        await db.prepare(`DELETE FROM intake_responses WHERE conversation_id = ?`).run(existing.id);
+
+        await db.prepare(`
+          UPDATE conversations
+          SET listing_id = ?, product_type_tag = ?, status = 'intake_in_progress', intake_complete = 0, intake_summary = NULL, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(listing_id, product_type_tag, existing.id);
       }
       
       return res.status(200).json({
@@ -12121,6 +12649,13 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, NULL)
       `).run(seller_id, buyer_id, listing_id, product_type_tag, statusVal, intakeCompleteVal);
       const new_id = info.lastInsertRowid;
+
+      // Insert bot intake header for initial inquiry
+      const headerText = `Starting custom product inquiry: "${listing.title}"`;
+      await db.prepare(`
+        INSERT INTO conversation_messages (conversation_id, sender_id, sender_role, message_type, type, content, sent_at, is_read)
+        VALUES (?, 0, 'system', 'text', 'bot_intake_header', ?, datetime('now'), 0)
+      `).run(new_id, headerText);
       
       if (isBypass) {
         // Insert product inquiry message
@@ -12137,10 +12672,9 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
           VALUES (?, ?, 'buyer', 'text', 'product_inquiry', ?, ?, datetime('now'), 0)
         `).run(new_id, buyer_id, inquiryContent, listing.cover_photo_url);
         
-        // Create notification for seller
         await db.prepare(`
           INSERT INTO notifications (user_id, type, message, conversation_id, is_read, created_at)
-          VALUES (?, 'new_message', 'You have a new custom/overflow inquiry message', ?, 0, datetime('now'))
+          VALUES (?, 'new_message', 'You have a new custom product inquiry message', ?, 0, datetime('now'))
         `).run(seller_id, new_id);
       }
       
@@ -12423,7 +12957,7 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
         id: conversation.seller_id,
         user_id: conversation.seller_id,
         name: shop_name,
-        avatar_url: sellerUser ? sellerUser.avatar_url : null,
+        avatar_url: sellerUser ? formatImg(sellerUser.avatar_url, req) : null,
         is_online: false
       };
     } else {
@@ -12431,7 +12965,7 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
         id: conversation.buyer_id,
         user_id: conversation.buyer_id,
         name: buyerUser ? buyerUser.full_name : "",
-        avatar_url: buyerUser ? buyerUser.avatar_url : null,
+        avatar_url: buyerUser ? formatImg(buyerUser.avatar_url, req) : null,
         is_online: false
       };
     }
@@ -12492,6 +13026,13 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
       ORDER BY m.id ASC
     `).all(id);
 
+    let latestHeaderId = 0;
+    messagesRows.forEach(r => {
+      if (r.type === 'bot_intake_header' || (r.type === 'product_inquiry' && r.id > latestHeaderId)) {
+        latestHeaderId = r.id;
+      }
+    });
+
     const messages = messagesRows.map(r => ({
       id: r.id,
       sender_id: r.sender_id,
@@ -12503,6 +13044,7 @@ app.get('/api/conversations/:id', authenticateToken, async (req, res) => {
       is_read: r.is_read === 1,
       type: r.type || 'text',
       offer_id: r.offer_id || null,
+      is_historical: latestHeaderId > 0 && r.id < latestHeaderId,
       offer: r.offer_id ? {
         id: r.offer_id,
         price: r.price,
@@ -13614,8 +14156,8 @@ app.get('/api/sellers/:id', optionalAuthenticateToken, async (req, res) => {
       return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
     }
 
-    const sellerUser = await db.prepare('SELECT id, email, full_name, role, avatar_url, bio, location, instagram_handle FROM users WHERE id = ?').get(sellerId);
-    if (!sellerUser) {
+    const sellerUser = await db.prepare('SELECT id, email, full_name, role, avatar_url, bio, location, instagram_handle, is_banned, is_active FROM users WHERE id = ?').get(sellerId);
+    if (!sellerUser || sellerUser.is_banned === 1 || sellerUser.is_active === 0) {
       return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
     }
 
@@ -13668,7 +14210,7 @@ app.get('/api/sellers/:id', optionalAuthenticateToken, async (req, res) => {
       bio: sellerUser.bio || sellerProfile.shop_bio || storeConfig.artist_bio || '',
       location: sellerUser.location || storeConfig.city || '',
       instagram_handle: sellerUser.instagram_handle || sellerProfile.instagram_handle || '',
-      avatar_url: sellerUser.avatar_url,
+      avatar_url: formatImg(sellerUser.avatar_url, req),
       cover_photo_url: storeConfig.banner_url || null,
       about_image_url: sellerProfile.about_image_url || null,
       followers_count: followersCount,
@@ -13706,6 +14248,11 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
 
     const userId = req.user ? req.user.user_id : null;
 
+    const sellerUser = await db.prepare('SELECT is_banned, is_active FROM users WHERE id = ?').get(sellerId);
+    if (!sellerUser || sellerUser.is_banned === 1 || sellerUser.is_active === 0) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
+    }
+
     const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
     if (!sellerProfile || sellerProfile.is_approved !== 1) {
       return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
@@ -13722,19 +14269,7 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
           (SELECT url FROM product_images WHERE product_id = p.id LIMIT 1)
         ) AS image_url,
         COALESCE((SELECT listing_type FROM listings WHERE title = p.name LIMIT 1), 'pre-made') AS listing_type,
-        (p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = p.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        )) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
     `;
     if (userId) {
       productsQuery += `, (SELECT 1 FROM wishlists w WHERE w.user_id = ? AND w.product_id = p.id) IS NOT NULL AS is_wishlisted`;
@@ -13743,6 +14278,18 @@ app.get('/api/sellers/:id/products', optionalAuthenticateToken, async (req, res)
     }
     productsQuery += `
       FROM products p
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE p.seller_id = ? AND p.status = 'active'
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
@@ -13797,6 +14344,11 @@ app.get('/api/sellers/:id/customizations', async (req, res) => {
       return res.status(400).json({ error: true, message: 'Invalid seller ID', code: 'VALIDATION_ERROR' });
     }
 
+    const sellerUser = await db.prepare('SELECT is_banned, is_active FROM users WHERE id = ?').get(sellerId);
+    if (!sellerUser || sellerUser.is_banned === 1 || sellerUser.is_active === 0) {
+      return res.status(404).json({ error: true, message: 'Seller not found', code: 'NOT_FOUND' });
+    }
+
     const sellerProfile = await db.prepare('SELECT is_approved FROM seller_profiles WHERE user_id = ?').get(sellerId);
     if (!sellerProfile || sellerProfile.is_approved !== 1) {
       return res.status(403).json({ error: true, message: 'Seller pending verification', code: 'PENDING_VERIFICATION' });
@@ -13813,20 +14365,21 @@ app.get('/api/sellers/:id/customizations', async (req, res) => {
         listings.base_price,
         listings.ships_in_days AS lead_time_days,
         listings.cover_photo_url AS cover_image_url,
-        (SELECT p.id IN (
-          SELECT oi.product_id
-          FROM order_items oi
-          JOIN products p2 ON oi.product_id = p2.id
-          JOIN orders o ON oi.order_id = o.id
-          WHERE p2.seller_id = listings.seller_id
-            AND p2.status = 'active'
-            AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
-          GROUP BY oi.product_id
-          HAVING SUM(oi.quantity) > 0
-          ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
-          LIMIT 5
-        ) FROM products p WHERE p.name = listings.title AND p.seller_id = listings.seller_id LIMIT 1) AS is_bestseller
+        COALESCE(bs.is_bestseller, 0) AS is_bestseller
       FROM listings
+      LEFT JOIN products p ON p.name = listings.title AND p.seller_id = listings.seller_id AND p.status = 'active'
+      LEFT JOIN (
+        SELECT oi.product_id, 1 AS is_bestseller
+        FROM order_items oi
+        JOIN products p2 ON oi.product_id = p2.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE p2.status = 'active'
+          AND o.status NOT IN ('cancelled', 'Cancelled', 'awaiting_payment', 'Awaiting Payment')
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0
+        ORDER BY SUM(oi.quantity) DESC, MAX(p2.created_at) DESC, oi.product_id DESC
+        LIMIT 100
+      ) bs ON p.id = bs.product_id
       WHERE listings.seller_id = ? AND listings.listing_type = 'custom' AND listings.status = 'active'
       ORDER BY listings.created_at DESC
       LIMIT ? OFFSET ?
@@ -15947,6 +16500,183 @@ app.use((err, req, res, next) => {
     message: 'Internal server error',
     code: 'INTERNAL_SERVER_ERROR'
   });
+});
+
+// ============================================================
+// BATCH 2: SELLER SUBSCRIPTIONS & RAZORPAY BILLING ENDPOINTS
+// ============================================================
+
+// GET /api/seller/subscriptions — Get subscription plan details
+app.get('/api/seller/subscriptions', rateLimit(60), requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    const sub = await db.prepare("SELECT * FROM seller_subscriptions WHERE seller_id = ? AND status = 'active' ORDER BY created_at DESC LIMIT 1").get(sellerId);
+    
+    const plans = [
+      { id: 'free', name: 'Artisan Free', price_paise: 0, interval: 'monthly', features: ['Up to 10 active listings', 'Standard 8% commission', 'Basic analytics'] },
+      { id: 'maker_pro', name: 'Maker Pro', price_paise: 49900, interval: 'monthly', features: ['Up to 50 active listings', '6% reduced commission', 'Priority WhatsApp support', '1 Sponsored product slot'] },
+      { id: 'artisan_elite', name: 'Artisan Elite', price_paise: 99900, interval: 'monthly', features: ['Unlimited listings', '4% reduced commission', 'Dedicated account manager', '3 Sponsored slots', 'Tohfa Original badge eligibility'] }
+    ];
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        current_subscription: sub || { seller_id: sellerId, plan_id: 'free', plan_name: 'Artisan Free', status: 'active', current_period_end: null },
+        available_plans: plans
+      }
+    });
+  } catch (err) {
+    console.error('GET /api/seller/subscriptions error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/seller/subscriptions/subscribe — Subscribe to a plan
+app.post('/api/seller/subscriptions/subscribe', rateLimit(30), requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    const { plan_id } = req.body;
+
+    const planMap = {
+      'maker_pro': { name: 'Maker Pro', price_paise: 49900 },
+      'artisan_elite': { name: 'Artisan Elite', price_paise: 99900 }
+    };
+
+    if (!plan_id || !planMap[plan_id]) {
+      return res.status(400).json({ error: true, message: 'Invalid or missing plan_id', code: 'VALIDATION_ERROR' });
+    }
+
+    const plan = planMap[plan_id];
+    const razorpaySubId = 'sub_' + crypto.randomBytes(8).toString('hex');
+    const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Cancel existing active subscriptions
+    await db.prepare("UPDATE seller_subscriptions SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE seller_id = ? AND status = 'active'").run(sellerId);
+
+    // Insert new subscription
+    const result = await db.prepare(`
+      INSERT INTO seller_subscriptions (seller_id, plan_id, plan_name, razorpay_subscription_id, status, price_paise, current_period_end)
+      VALUES (?, ?, ?, ?, 'active', ?, ?)
+    `).run(sellerId, plan_id, plan.name, razorpaySubId, plan.price_paise, periodEnd);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        subscription_id: result.lastInsertRowid,
+        plan_id,
+        plan_name: plan.name,
+        razorpay_subscription_id: razorpaySubId,
+        status: 'active',
+        current_period_end: periodEnd
+      }
+    });
+  } catch (err) {
+    console.error('POST /api/seller/subscriptions/subscribe error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/seller/subscriptions/cancel — Cancel active subscription
+app.post('/api/seller/subscriptions/cancel', rateLimit(30), requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    await db.prepare("UPDATE seller_subscriptions SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE seller_id = ? AND status = 'active'").run(sellerId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Subscription cancelled successfully'
+    });
+  } catch (err) {
+    console.error('POST /api/seller/subscriptions/cancel error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// PATCH /api/admin/products/:id/tohfa-original — Toggle Tohfa Original badge
+app.patch('/api/admin/products/:id/tohfa-original', authenticateAdminToken, async (req, res) => {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    const { is_tohfa_original } = req.body;
+
+    const flagVal = is_tohfa_original ? 1 : 0;
+    await db.prepare('UPDATE products SET is_tohfa_original = ? WHERE id = ?').run(flagVal, productId);
+    await db.prepare('UPDATE listings SET is_tohfa_original = ? WHERE id = ?').run(flagVal, productId);
+
+    return res.status(200).json({
+      success: true,
+      data: { product_id: productId, is_tohfa_original: !!flagVal }
+    });
+  } catch (err) {
+    console.error('PATCH /api/admin/products/:id/tohfa-original error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// GET /api/seller/wallet/balance — Get wallet earnings & payout balance
+app.get('/api/seller/wallet/balance', rateLimit(60), requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    let earnings = await db.prepare('SELECT * FROM seller_earnings WHERE seller_id = ?').get(sellerId);
+    if (!earnings) {
+      await db.prepare('INSERT INTO seller_earnings (seller_id, total_earned, pending_amount, on_hold_amount, this_month_earned, this_week_earned) VALUES (?, 0, 0, 0, 0, 0)').run(sellerId);
+      earnings = { total_earned: 0, pending_amount: 0, on_hold_amount: 0, this_month_earned: 0, this_week_earned: 0 };
+    }
+
+    const txns = await db.prepare('SELECT * FROM transactions WHERE seller_id = ? ORDER BY created_at DESC LIMIT 20').all(sellerId);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        total_earned_paise: earnings.total_earned || 0,
+        available_balance_paise: earnings.pending_amount || 0,
+        on_hold_paise: earnings.on_hold_amount || 0,
+        this_month_earned_paise: earnings.this_month_earned || 0,
+        this_week_earned_paise: earnings.this_week_earned || 0,
+        recent_transactions: txns
+      }
+    });
+  } catch (err) {
+    console.error('GET /api/seller/wallet/balance error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// POST /api/seller/wallet/withdraw — Manual payout withdrawal request
+app.post('/api/seller/wallet/withdraw', rateLimit(10), requireSeller, async (req, res) => {
+  try {
+    const sellerId = req.user.user_id;
+    const { amount_paise } = req.body;
+
+    if (!amount_paise || typeof amount_paise !== 'number' || amount_paise <= 0) {
+      return res.status(400).json({ error: true, message: 'amount_paise must be positive integer', code: 'VALIDATION_ERROR' });
+    }
+
+    const earnings = await db.prepare('SELECT pending_amount FROM seller_earnings WHERE seller_id = ?').get(sellerId);
+    const available = earnings ? earnings.pending_amount : 0;
+
+    if (amount_paise > available) {
+      return res.status(422).json({ error: true, message: 'Requested withdrawal exceeds available balance', code: 'INSUFFICIENT_BALANCE' });
+    }
+
+    const txnRef = 'PO-' + crypto.randomBytes(6).toString('hex').toUpperCase();
+
+    // Deduct pending balance & record payout history
+    await db.prepare('UPDATE seller_earnings SET pending_amount = pending_amount - ?, last_updated = CURRENT_TIMESTAMP WHERE seller_id = ?').run(amount_paise, sellerId);
+    await db.prepare("INSERT INTO payout_history (seller_id, txn_ref, amount_paise, status) VALUES (?, ?, ?, 'pending')").run(req.seller.id, txnRef, amount_paise);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        txn_ref: txnRef,
+        amount_paise,
+        status: 'pending',
+        message: 'Withdrawal request submitted successfully'
+      }
+    });
+  } catch (err) {
+    console.error('POST /api/seller/wallet/withdraw error:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
 });
 
 const PORT = process.env.PORT || 5001;

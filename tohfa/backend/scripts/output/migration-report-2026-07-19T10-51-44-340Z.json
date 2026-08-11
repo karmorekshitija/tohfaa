@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-07-19T10:52:06.844Z",
+  "mode": "COMMIT MODE",
+  "subcategories_newly_inserted": 0,
+  "categories_deleted": 0,
+  "skipped_due_to_safety_recheck": [],
+  "already_migrated_previously": 0,
+  "idempotent_subcategory_skips": 0,
+  "final_row_counts": {
+    "categories": 10,
+    "subcategories": 0
+  }
+}

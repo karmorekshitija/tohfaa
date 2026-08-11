@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <title>Tohfa | Studio Ceramics Category</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -203,7 +203,7 @@
 </header>
 <main class="max-w-[1440px] mx-auto pb-24">
 <!-- 2. CATEGORY IDENTITY HEADER -->
-<section class="h-[140px] w-full watercolour-wash relative flex items-center px-margin-desktop overflow-hidden border-b border-outline-variant/30">
+<section id="category-hero-header" class="h-[140px] w-full watercolour-wash relative flex items-center px-margin-desktop overflow-hidden border-b border-outline-variant/30">
 <div class="absolute inset-0 opacity-[0.08] artisan-pattern pointer-events-none"></div>
 <div class="flex items-center gap-lg z-10">
 <div id="category-emoji" class="text-[56px] drop-shadow-sm">🏺</div>
@@ -279,7 +279,7 @@
 <div class="absolute bottom-60 right-20 opacity-[0.05] pointer-events-none">
 <span class="material-symbols-outlined text-[150px]">texture</span>
 </div>
-<div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+<div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
 <!-- Card 1 -->
 <div class="bg-[#F7F3EC] border border-outline-variant rounded-xl p-sm shadow-[0_4px_12px_rgba(58,51,40,0.08)] group hover:-translate-y-1 transition-all">
 <div class="relative overflow-hidden rounded-lg aspect-square bg-[#FFFFFF]">
@@ -472,7 +472,7 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -481,19 +481,16 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </div>
     <!-- Support -->
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -668,6 +665,22 @@
               document.getElementById('category-title').innerText = cat.display_name || cat.name;
               document.getElementById('category-emoji').innerText = cat.emoji_icon || cat.icon_emoji || '🏺';
               document.getElementById('category-product-count').innerText = `${cat.product_count !== undefined ? cat.product_count : (cat.item_count || 0)} active makes`;
+
+              const bannerBg = cat.banner_image_url || cat.image_url;
+              const heroHeader = document.getElementById('category-hero-header');
+              if (heroHeader && bannerBg) {
+                let imgUrl = bannerBg;
+                if (imgUrl.includes('/img/categories/')) {
+                  const match = imgUrl.match(/(\/img\/categories\/[^?#]+)/);
+                  if (match) imgUrl = match[1];
+                } else if (imgUrl.includes('/img/')) {
+                  const match = imgUrl.match(/(\/img\/[^?#]+)/);
+                  if (match) imgUrl = match[1];
+                }
+                heroHeader.style.backgroundImage = `linear-gradient(rgba(247, 243, 236, 0.85), rgba(247, 243, 236, 0.95)), url('${imgUrl}')`;
+                heroHeader.style.backgroundSize = 'cover';
+                heroHeader.style.backgroundPosition = 'center';
+              }
             }
           }
         }
@@ -1033,9 +1046,9 @@
     }
 
     async function handleTalkToSeller(productId, btn) {
-      const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+      const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return;
       }
 
@@ -1066,7 +1079,7 @@
     async function handleAddToCart(productId) {
       const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return;
       }
 
@@ -1083,7 +1096,7 @@
     async function handleToggleWishlist(productId, isWishlisted, btn) {
       const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return;
       }
 
@@ -1180,7 +1193,7 @@
             if (authContainer) {
                 authContainer.innerHTML = `
                     <div class="flex items-center gap-md">
-                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
                         <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
                     </div>
                 `;
@@ -1191,5 +1204,112 @@
     checkAuthState();
 </script>
 
+
+
+<script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
+</script>
 </body>
 </html>

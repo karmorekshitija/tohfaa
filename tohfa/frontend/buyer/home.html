@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <title>Tohfa | Handcrafted Treasures</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
+        .watermark-lavender {
+            position: absolute;
+            pointer-events: none;
+            color: #8FAF82;
+            z-index: 0;
+        }
+        .sketch-float {
+            animation: sketchFloat 4s ease-in-out infinite;
+        }
+        @keyframes sketchFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Diagonal Corner Ribbon Styles */
+        .ribbon-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .ribbon-tag {
+            position: absolute;
+            top: 22px;
+            left: -32px;
+            width: 160px;
+            transform: rotate(-45deg);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #ffffff;
+            line-height: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        .ribbon-tag::before, .ribbon-tag::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            border-top: 3px solid rgba(0,0,0,0.4);
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+        }
+        .ribbon-tag::before { left: 0; }
+        .ribbon-tag::after { right: 0; }
+
+        .ribbon-sponsored {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .ribbon-bestseller {
+            background: #C85A32;
+        }
+        .ribbon-custom {
+            background: #B492B7;
+        }
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
+        .ribbon-custom-double {
+            top: 30px !important;
+            left: -24px !important;
+        }
+        .ribbon-bestseller-double {
+            top: 13px !important;
+            left: -41px !important;
+        }
+        .ribbon-custom-double {
+            top: 30px !important;
+            left: -24px !important;
+        }
+        
+        /* Shimmer Animation for Skeletons */
+        .shimmer {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Redefine Ribbon to Flat top-left pills for both desktop and mobile */
+        .ribbon-wrapper {
+            position: absolute !important;
+            top: 8px !important;  /* Matches top-2 on mobile */
+            left: 8px !important; /* Matches left-2 on mobile */
+            width: auto !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            z-index: 20 !important;
+            overflow: visible !important;
+            pointer-events: none !important;
+        }
+
+        @media (min-width: 640px) {
+            .ribbon-wrapper {
+                top: 12px !important;  /* Matches top-3 on desktop */
+                left: 12px !important; /* Matches left-3 on desktop */
+            }
+        }
+
+        .ribbon-tag {
+            position: static !important;
+            width: auto !important;
+            transform: none !important;
+            text-align: center !important;
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em !important;
+            color: #ffffff !important;
+            line-height: 1 !important;
+            padding: 4px 8px !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            display: inline-block !important;
+            white-space: nowrap !important;
+        }
+
+        .ribbon-tag::before,
+        .ribbon-tag::after {
+            display: none !important;
+        }
+
+        .ribbon-bestseller-double,
+        .ribbon-custom-double {
+            top: auto !important;
+            left: auto !important;
+            position: static !important;
+        }
+
+        /* Force Filled White Heart with Green Border style */
+        .toggle-wishlist-btn .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1 !important;
+            -webkit-text-stroke: 1.5px #3D6B4F !important;
+            color: #ffffff !important;
+        }
+
+        .toggle-wishlist-btn[data-wishlisted="true"] .material-symbols-outlined,
+        .toggle-wishlist-btn .text-red-500 {
+            -webkit-text-stroke: 1.5px #ef4444 !important;
+            color: #ef4444 !important;
+        }
+    </style>
+</head>
+<body class="text-on-surface selection:bg-secondary-container bg-white">
+<!-- TopNavBar -->
+<!-- Standardised Top Navigation Bar (Task 57) -->
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="/buyer/home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="/buyer/home.html" class="flex items-center gap-xs text-[#3D6B4F] border-b-2 border-[#3D6B4F] h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="/buyer/categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- ZipGift -->
+    <a href="/buyer/zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
+    </a>
+    <!-- Profile -->
+    <a href="/buyer/profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="/buyer/search.html?focus=true" id="header-search-btn" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="/buyer/saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="/buyer/notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+  
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+<main class="relative overflow-hidden">
+<!-- Watermark Sprigs (Absolute Background Elements) -->
+<div class="watermark-lavender top-24 left-12 w-32 h-32 rotate-12">
+<span class="material-symbols-outlined text-9xl opacity-20">filter_vintage</span>
+</div>
+<div class="watermark-lavender top-[800px] right-24 w-40 h-40 -rotate-12">
+<span class="material-symbols-outlined text-9xl opacity-20">eco</span>
+</div>
+
+<!-- Explore Collection Hero -->
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-xl">
+<div class="grid grid-cols-12 gap-xl items-center">
+<div class="col-span-12 lg:col-span-7 relative">
+<div id="hero-slideshow-container" class="rounded-xl overflow-hidden aspect-[16/10] shadow-xl relative group">
+<!-- Slides will be injected here via JS -->
+<div id="hero-slides-wrapper" class="w-full h-full relative">
+    <div class="absolute inset-0 bg-surface-variant animate-pulse"></div> <!-- Skeleton -->
+</div>
+
+<!-- Navigation Arrows (Hidden by default, shown on hover) -->
+<button id="hero-slide-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md backdrop-blur-sm active:scale-95">
+    <span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button id="hero-slide-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-primary p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-md backdrop-blur-sm active:scale-95">
+    <span class="material-symbols-outlined">chevron_right</span>
+</button>
+
+<!-- Dot Indicators -->
+<div id="hero-slide-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+    <!-- Dots injected via JS -->
+</div>
+</div>
+<!-- Floating Quote Card -->
+<div class="absolute -bottom-10 -right-10 md:right-12 bg-surface-bright p-lg rounded-xl border border-outline-variant shadow-lg max-w-xs z-20">
+
+<p class="font-title-serif italic text-body-md text-on-surface-variant leading-relaxed">
+                            "Every piece tells a story of the hands that shaped it."
+                        </p>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-5 lg:pl-xl pt-16 lg:pt-0">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-lg leading-tight">
+                        Artisan crafts for a <span class="italic">slower, intentional</span> life.
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-xl leading-relaxed">
+                        Discover our curated collection of hand-carved ceramics, sustainable textiles, and hand-crafted stationery crafted by local artisans.
+                    </p>
+<div class="flex gap-md">
+<button onclick="window.location.href='/buyer/categories.html'" class="bg-primary text-on-primary px-xl py-md rounded-lg font-body-md hover:opacity-90 transition-all active:scale-98">
+                            Explore Collection
+                        </button>
+<button onclick="window.location.href='/buyer/our-story.html'" class="border border-outline px-xl py-md rounded-lg font-body-md text-primary hover:bg-surface-variant transition-all active:scale-98">
+                            Our Story
+                        </button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Sponsored Section -->
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
+    <div class="bg-[#F7F3EC] rounded-xl border border-outline-variant p-6 md:p-8">
+        <div class="flex justify-between items-end mb-lg">
+            <div>
+                <h3 class="font-headline-lg text-headline-lg text-primary flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-[#C8973A]" style="font-variation-settings: 'FILL' 1;">star</span>
+                    <span>Sponsored</span>
+                </h3>
+                <p class="font-body-md text-on-surface-variant">Featured treasures from our creative community</p>
+            </div>
+        </div>
+        
+        <!-- Sponsored Product Grid -->
+        <div id="sponsored-product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
+            <!-- Dynamic sponsored product cards will load here -->
+        </div>
+    </div>
+</section>
+
+<!-- For You (Capped at 15 products) -->
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
+    <div class="flex justify-between items-end mb-xl">
+        <div>
+            <h3 class="font-headline-lg text-headline-lg text-primary">For You</h3>
+            <p class="font-body-md text-on-surface-variant">Handpicked treasures just for you</p>
+        </div>
+    </div>
+    
+    <!-- Product Grid: 2 columns on mobile, 4 columns on desktop -->
+    <div id="product-feed-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-lg relative">
+        <!-- Dynamic product cards will load here -->
+    </div>
+    
+    <!-- Skeleton Loaders -->
+    <div id="feed-skeletons" class="grid grid-cols-2 lg:grid-cols-4 gap-lg mt-lg hidden">
+        <!-- Skeleton Card 1 -->
+        <div class="bg-surface-bright rounded-xl border border-outline-variant p-md flex flex-col justify-between min-h-[350px]">
+            <div class="aspect-square rounded-lg shimmer mb-md w-full"></div>
+            <div class="h-4 w-1/3 shimmer mb-sm rounded"></div>
+            <div class="h-6 w-3/4 shimmer mb-xs rounded"></div>
+            <div class="h-4 w-1/2 shimmer mb-md rounded"></div>
+            <div class="h-10 w-full shimmer rounded-lg"></div>
+        </div>
+        <!-- Skeleton Card 2 -->
+        <div class="bg-surface-bright rounded-xl border border-outline-variant p-md flex flex-col justify-between min-h-[350px]">
+            <div class="aspect-square rounded-lg shimmer mb-md w-full"></div>
+            <div class="h-4 w-1/3 shimmer mb-sm rounded"></div>
+            <div class="h-6 w-3/4 shimmer mb-xs rounded"></div>
+            <div class="h-4 w-1/2 shimmer mb-md rounded"></div>
+            <div class="h-10 w-full shimmer rounded-lg"></div>
+        </div>
+        <!-- Skeleton Card 3 -->
+        <div class="bg-surface-bright rounded-xl border border-outline-variant p-md flex flex-col justify-between min-h-[350px]">
+            <div class="aspect-square rounded-lg shimmer mb-md w-full"></div>
+            <div class="h-4 w-1/3 shimmer mb-sm rounded"></div>
+            <div class="h-6 w-3/4 shimmer mb-xs rounded"></div>
+            <div class="h-4 w-1/2 shimmer mb-md rounded"></div>
+            <div class="h-10 w-full shimmer rounded-lg"></div>
+        </div>
+        <!-- Skeleton Card 4 -->
+        <div class="bg-surface-bright rounded-xl border border-outline-variant p-md flex flex-col justify-between min-h-[350px]">
+            <div class="aspect-square rounded-lg shimmer mb-md w-full"></div>
+            <div class="h-4 w-1/3 shimmer mb-sm rounded"></div>
+            <div class="h-6 w-3/4 shimmer mb-xs rounded"></div>
+            <div class="h-4 w-1/2 shimmer mb-md rounded"></div>
+            <div class="h-10 w-full shimmer rounded-lg"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Section 3 — Category Rows -->
+<section class="py-xl px-margin-desktop max-w-[1440px] mx-auto mt-24">
+    <div id="category-rows-container" class="flex flex-col gap-16">
+        <!-- Dynamic category rows will load here -->
+    </div>
+</section>
+</main>
+
+<!-- Footer -->
+<!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding-top:64px;padding-bottom:32px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-10%;right:-5%;opacity:0.04;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:600px;color:white;">local_florist</span>
+  </div>
+  <!-- Main grid -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(1,1fr);gap:48px;margin-bottom:80px;position:relative;z-index:10;" class="tohfa-footer-grid">
+    <!-- Brand -->
+    <div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-style:italic;color:#C9972C;margin-bottom:16px;">Tohfa.</h2>
+      <p style="font-family:'DM Sans',sans-serif;color:#F7F2E8;margin-bottom:8px;font-weight:500;">Thoughtful Gifting, Made Effortless.</p>
+      <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;margin-bottom:32px;line-height:1.6;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+      
+    </div>
+    <!-- Company -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Company</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+        
+      </ul>
+    </div>
+    <!-- For Sellers -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+        
+      </ul>
+    </div>
+    <!-- For Buyers -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </div>
+    <!-- Support -->
+    <div>
+      <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- Divider -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:32px;">
+    <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);position:relative;">
+      <div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);display:flex;gap:16px;color:rgba(201,151,44,0.3);">
+        <span class="material-symbols-outlined" style="font-size:16px;">stars</span>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom bar -->
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:10;" class="tohfa-footer-bottom">
+    
+    <div style="display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:18px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+  <style>
+    @media (min-width: 768px) {
+      .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
+      .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
+    }
+  </style>
+</footer>
+
+<script type="module">
+    import apiClient from '../src/utils/apiClient.js';
+    import { logout } from '/src/utils/auth.js';
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function isProductOwned(sellerId) {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user'));
+            return user && Number(user.id) === Number(sellerId);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    const grid = document.getElementById('product-feed-grid');
+    const skeletons = document.getElementById('feed-skeletons');
+
+    // Helper to generate ribbon HTML
+    function getRibbonHtml(product) {
+        if (product && product.type === 'sponsored') {
+            return `
+                <div class="ribbon-wrapper">
+                    <div class="ribbon-tag ribbon-sponsored">Sponsored</div>
+                </div>
+            `;
+        }
+        if (product && product.is_bestseller && product.listing_type === 'custom') {
+            return `
+                <div class="ribbon-wrapper">
+                    <div class="ribbon-tag ribbon-bestseller ribbon-bestseller-double">BEST SELLER</div>
+                    <div class="ribbon-tag ribbon-custom ribbon-custom-double">CUSTOM</div>
+                </div>
+            `;
+        }
+        if (product && product.is_bestseller) {
+            return `
+                <div class="ribbon-wrapper">
+                    <div class="ribbon-tag ribbon-bestseller">BEST SELLER</div>
+                </div>
+            `;
+        }
+        if (product && product.listing_type === 'custom') {
+            return `
+                <div class="ribbon-wrapper">
+                    <div class="ribbon-tag ribbon-custom">CUSTOM</div>
+                </div>
+            `;
+        }
+        return '';
+    }
+
+    const isWishlistUpdating = {};
+
+    async function handleTalkToSeller(productId, btn) {
+        if (!isLoggedIn) {
+            window.Toast?.show("Please log in to contact the seller", "error");
+            setTimeout(() => {
+                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            }, 1500);
+            return;
+        }
+
+        btn.disabled = true;
+        const originalText = btn.innerText;
+        btn.innerText = 'Starting chat...';
+
+        try {
+            const res = await apiClient.post('/requests', {
+                listing_id: Number(productId),
+                request_type: 'customization',
+                quantity: 1
+            });
+            if (res.data && res.data.success) {
+                const convId = res.data.conversation_id;
+                window.location.href = `/buyer/chat.html?conversationId=${convId}`;
+            } else {
+                throw new Error("Invalid response");
+            }
+        } catch (err) {
+            console.error("Failed to start customization request:", err);
+            window.Toast?.show("Failed to start chat. Please try again.", "error");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+
+    async function handleAddToCart(productId) {
+        if (!isLoggedIn) {
+            window.Toast?.show("Please log in to purchase items", "error");
+            setTimeout(() => {
+                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            }, 1500);
+            return;
+        }
+
+        try {
+            const res = await apiClient.post('/cart/items', { product_id: Number(productId), quantity: 1 });
+            if (res.data && res.data.success) {
+                window.Toast?.show("Added to cart successfully!", "success");
+                await updateCartBadge();
+            }
+        } catch (err) {
+            console.error("Cart error:", err);
+        }
+    }
+
+    async function handleToggleWishlist(productId, isWishlisted, btn) {
+        if (!isLoggedIn) {
+            window.Toast?.show("Please log in to add to wishlist", "error");
+            setTimeout(() => {
+                window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            }, 1500);
+            return;
+        }
+
+        if (isWishlistUpdating[productId]) return;
+        isWishlistUpdating[productId] = true;
+
+        try {
+            const iconEl = btn.querySelector('.material-symbols-outlined');
+            if (isWishlisted) {
+                const res = await apiClient.delete(`/wishlist/${productId}`);
+                if (res.data && res.data.success) {
+                    btn.setAttribute('data-wishlisted', 'false');
+                    if (iconEl) {
+                        iconEl.classList.remove('fill-icon', 'text-red-500');
+                        iconEl.classList.add('text-secondary');
+                        iconEl.style.fontVariationSettings = "'FILL' 0";
+                    }
+                    window.Toast?.show("Removed from wishlist!", "success");
+                }
+            } else {
+                const res = await apiClient.post(`/wishlist/${productId}`);
+                if (res.data && res.data.success) {
+                    btn.setAttribute('data-wishlisted', 'true');
+                    if (iconEl) {
+                        iconEl.classList.add('fill-icon', 'text-red-500');
+                        iconEl.classList.remove('text-secondary');
+                        iconEl.style.fontVariationSettings = "'FILL' 1";
+                    }
+                    window.Toast?.show("Added to wishlist!", "success");
+                }
+            }
+            await updateWishlistBadge();
+        } catch (err) {
+            console.error("Wishlist error:", err);
+        } finally {
+            isWishlistUpdating[productId] = false;
+        }
+    }
+
+    async function updateWishlistBadge() {
+        try {
+            const res = await apiClient.get('/wishlist');
+            if (res.data && res.data.success) {
+                const items = res.data.data.items || res.data.data || [];
+                const count = res.data.data.count !== undefined ? res.data.data.count : items.length;
+                const badge = document.getElementById('nav-wishlist-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.innerText = count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    async function updateCartBadge() {
+        try {
+            const res = await apiClient.get('/cart');
+            if (res.data && res.data.success) {
+                const count = res.data.data.item_count || 0;
+                const badge = document.getElementById('nav-cart-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.innerText = count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    // Helper to create product card template (reusable)
+    function createProductCard(product, extraClasses = '') {
+        const card = document.createElement('div');
+        card.className = `group bg-white border border-[#c3c8c1] rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer opacity-0 translate-y-10 ${extraClasses}`;
+        card.onclick = () => window.location.href = `/buyer/product.html?id=${product.id}`;
+
+        const ribbonHtml = getRibbonHtml(product);
+        const formattedPrice = `₹${(product.price_paise / 100).toLocaleString('en-IN')}`;
+        const isWishlisted = !!product.is_wishlisted;
+
+        const isOwner = isProductOwned(product.seller_id);
+        const wishlistBtnHtml = isOwner
+            ? `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent opacity-50 cursor-not-allowed flex items-center justify-center z-10" disabled onclick="event.stopPropagation();">
+                   <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] text-secondary" style="font-variation-settings: 'FILL' 0;">favorite</span>
+               </button>`
+            : `<button class="absolute top-2 right-2 sm:top-3 sm:right-3 p-1 sm:p-1.5 md:p-2 bg-transparent hover:scale-110 active:scale-95 transition-all duration-200 toggle-wishlist-btn flex items-center justify-center cursor-pointer z-10" data-id="${product.id}" data-wishlisted="${isWishlisted}" onclick="event.stopPropagation();">
+                   <span class="material-symbols-outlined text-[14px] sm:text-[16px] md:text-[20px] transition-all ${isWishlisted ? 'fill-icon text-red-500' : 'text-secondary'}" style="font-variation-settings: 'FILL' ${isWishlisted ? 1 : 0};">favorite</span>
+               </button>`;
+
+        const isCustomized = product.listing_type === 'custom';
+        const addToCartBtnHtml = isOwner
+            ? `<button class="w-full bg-[#3D6B4F]/20 text-[#605e57] py-2 rounded-lg font-semibold opacity-50 cursor-not-allowed text-sm" disabled onclick="event.stopPropagation();">
+                   Own Product
+               </button>`
+            : isCustomized
+                ? `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm talk-to-seller-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                       Talk to Seller
+                   </button>`
+                : `<button class="w-full bg-[#3D6B4F] text-white py-2 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all text-sm add-to-cart-btn" data-id="${product.id}" onclick="event.stopPropagation();">
+                       Add to Cart
+                   </button>`;
+
+        card.innerHTML = `
+            <div>
+                <div class="relative aspect-square overflow-hidden rounded-xl bg-surface-container-lowest mb-4">
+                    ${ribbonHtml}
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="${product.image_url || '/img/incense_holder.jpg'}" alt="${product.name}" loading="lazy">
+                    ${wishlistBtnHtml}
+                </div>
+                <div class="flex flex-col mb-4">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <span class="font-bold text-lg text-[#C8973A]">${formattedPrice}</span>
+                        ${parseInt(product.review_count || 0, 10) > 0
+                            ? `<div class="flex items-center gap-1 text-xs text-[#605e57]">
+                                <span class="text-[#C8973A] font-bold">★</span>
+                                <span class="font-semibold text-on-surface">${parseFloat(product.avg_rating).toFixed(1)}</span>
+                                <span>(${parseInt(product.review_count, 10)})</span>
+                              </div>`
+                            : `<span class="bg-[#3D6B4F]/10 text-[#3D6B4F] text-[10px] font-mono font-bold px-2 py-0.5 rounded tracking-wider uppercase">New</span>`}
+                    </div>
+                    <h4 class="font-headline-lg font-bold text-on-surface line-clamp-1 mb-1" style="font-family: 'Playfair Display', serif;">${escapeHtml(product.name)}</h4>
+                    <span class="text-xs text-[#605e57] hover:underline cursor-pointer" onclick="event.stopPropagation(); window.location.href='/buyer/seller-profile.html?id=${product.seller_id}'">By ${escapeHtml(product.seller_name)}</span>
+                </div>
+            </div>
+            <div class="w-full">
+                ${addToCartBtnHtml}
+            </div>
+        `;
+
+        // Bind wishlist and cart events
+        const wishlistBtn = card.querySelector('.toggle-wishlist-btn');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const wishlisted = wishlistBtn.getAttribute('data-wishlisted') === 'true';
+                await handleToggleWishlist(product.id, wishlisted, wishlistBtn);
+            });
+        }
+
+        const addToCartBtn = card.querySelector('.add-to-cart-btn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await handleAddToCart(product.id);
+            });
+        }
+
+        const talkToSellerBtn = card.querySelector('.talk-to-seller-btn');
+        if (talkToSellerBtn) {
+            talkToSellerBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await handleTalkToSeller(product.id, talkToSellerBtn);
+            });
+        }
+
+        setTimeout(() => {
+            card.classList.remove('opacity-0', 'translate-y-10');
+            card.classList.add('opacity-100', 'translate-y-0');
+        }, 50);
+
+        return card;
+    }
+
+    async function loadForYouProducts() {
+        skeletons.classList.remove('hidden');
+        try {
+            // Fetch 30 products to ensure we have at least 15 non-sponsored items
+            const response = await apiClient.get('/products/feed?page=1&limit=30');
+            const { products } = response.data.data;
+            const filteredProducts = products.filter(product => product.type !== 'sponsored');
+            const forYouProducts = filteredProducts.slice(0, 15);
+
+            grid.innerHTML = '';
+            forYouProducts.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Failed to load For You products:', error);
+        } finally {
+            skeletons.classList.add('hidden');
+        }
+    }
+
+    async function loadCategoryRows() {
+        const container = document.getElementById('category-rows-container');
+        if (!container) return;
+
+        try {
+            const categoriesRes = await apiClient.get('/categories');
+            if (!categoriesRes.data || !categoriesRes.data.success) return;
+
+            const categories = categoriesRes.data.data.categories;
+
+            // Fetch products for all categories concurrently
+            const categoryPromises = categories.map(async (category) => {
+                try {
+                    const productsRes = await apiClient.get(`/categories/${category.slug}/products?limit=20`);
+                    if (productsRes.data && productsRes.data.success) {
+                        return {
+                            category,
+                            products: productsRes.data.data.products || []
+                        };
+                    }
+                } catch (err) {
+                    console.error(`Failed to load products for category ${category.slug}:`, err);
+                }
+                return { category, products: [] };
+            });
+
+            const results = await Promise.all(categoryPromises);
+
+            for (const { category, products } of results) {
+                if (products.length === 0) continue; // Only show row if it has products
+
+                const rowWrapper = document.createElement('div');
+                rowWrapper.className = 'category-row-wrapper relative';
+
+                rowWrapper.innerHTML = `
+                    <div class="flex justify-between items-baseline mb-6">
+                        <h3 class="font-headline-lg text-2xl text-primary font-semibold">${category.display_name}</h3>
+                        <a href="/buyer/category.html?slug=${category.slug}" class="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
+                            <span>View All</span>
+                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                        </a>
+                    </div>
+                    <div class="relative group">
+                        <!-- Scroll Left Button -->
+                        <button class="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white hover:bg-[#3D6B4F] text-primary hover:text-white p-2 rounded-full border border-[#8FAF82] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-all duration-200 active:scale-95 scroll-left-btn">
+                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </button>
+                        
+                        <!-- Horizontally Scrollable Content -->
+                        <div class="flex gap-6 overflow-x-auto scroll-smooth pb-4 snap-x snap-mandatory scrollbar-none" style="display: flex !important; scrollbar-width: none; -ms-overflow-style: none;">
+                            <!-- Product Cards will load here -->
+                        </div>
+
+                        <!-- Scroll Right Button -->
+                        <button class="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white hover:bg-[#3D6B4F] text-primary hover:text-white p-2 rounded-full border border-[#8FAF82] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-all duration-200 active:scale-95 scroll-right-btn">
+                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </button>
+                    </div>
+                `;
+
+                const scrollContent = rowWrapper.querySelector('.scrollbar-none');
+                const leftBtn = rowWrapper.querySelector('.scroll-left-btn');
+                const rightBtn = rowWrapper.querySelector('.scroll-right-btn');
+
+                products.forEach(product => {
+                    // Render using the same card layout with fixed width for horizontal scrolling
+                    const card = createProductCard(product, 'w-[280px] flex-shrink-0 snap-start');
+                    scrollContent.appendChild(card);
+                });
+
+                const getPageWidth = () => scrollContent.clientWidth > 0 ? (scrollContent.clientWidth + 24) : 1216;
+
+                // Left & Right arrow actions
+                leftBtn.onclick = () => {
+                    const targetScroll = scrollContent.scrollLeft - getPageWidth();
+                    scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                };
+
+                rightBtn.onclick = () => {
+                    const targetScroll = scrollContent.scrollLeft + getPageWidth();
+                    scrollContent.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                };
+
+                container.appendChild(rowWrapper);
+            }
+        } catch (error) {
+            console.error('Failed to load category rows:', error);
+        }
+    }
+
+    // --- Hero Slideshow Logic ---
+    let currentSlide = 0;
+    let slides = [];
+    let slideInterval;
+    const SLIDE_DURATION = 4000;
+
+    const wrapper = document.getElementById('hero-slides-wrapper');
+    const dotsContainer = document.getElementById('hero-slide-dots');
+    const prevBtn = document.getElementById('hero-slide-prev');
+    const nextBtn = document.getElementById('hero-slide-next');
+
+    async function loadHeroSlides() {
+        try {
+            const response = await apiClient.get('/hero-slides');
+            if (response.data && response.data.success && response.data.data.length > 0) {
+                slides = response.data.data;
+                renderSlides();
+                startSlideshow();
+            } else {
+                // Fallback static image if no slides configured
+                wrapper.innerHTML = `<img class="w-full h-full object-cover" src="/img/ceramic_bowls.jpg" alt="Ceramic Artisan" loading="lazy">`;
+            }
+        } catch (error) {
+            console.error('Failed to load hero slides:', error);
+            wrapper.innerHTML = `<img class="w-full h-full object-cover" src="/img/ceramic_bowls.jpg" alt="Ceramic Artisan" loading="lazy">`;
+        }
+    }
+
+    function renderSlides() {
+        wrapper.innerHTML = '';
+        dotsContainer.innerHTML = '';
+
+        slides.forEach((slide, index) => {
+            // Slide Image
+            const img = document.createElement('img');
+            img.src = slide.imageUrl || slide.image_url;
+            img.alt = slide.altText || slide.alt_text || 'Artisan Craft';
+            // Smooth fade classes with pointer cursor
+            img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out cursor-pointer ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+            img.id = `hero-slide-${index}`;
+            img.onclick = () => {
+                const prodId = slide.productId || slide.product_id || slide.id;
+                window.location.href = `/buyer/product.html?id=${prodId}`;
+            };
+            wrapper.appendChild(img);
+
+            // Dot Indicator
+            const dot = document.createElement('button');
+            dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'}`;
+            dot.onclick = () => goToSlide(index);
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    function goToSlide(index) {
+        if (slides.length === 0) return;
+
+        // Hide current
+        document.getElementById(`hero-slide-${currentSlide}`).classList.replace('opacity-100', 'opacity-0');
+        dotsContainer.children[currentSlide].classList.replace('bg-white', 'bg-white/50');
+        dotsContainer.children[currentSlide].classList.remove('scale-125');
+
+        // Update index
+        currentSlide = index;
+        if (currentSlide < 0) currentSlide = slides.length - 1;
+        if (currentSlide >= slides.length) currentSlide = 0;
+
+        // Show new
+        document.getElementById(`hero-slide-${currentSlide}`).classList.replace('opacity-0', 'opacity-100');
+        dotsContainer.children[currentSlide].classList.replace('bg-white/50', 'bg-white');
+        dotsContainer.children[currentSlide].classList.add('scale-125');
+
+        // Reset timer when manually interacted
+        resetSlideshow();
+    }
+
+    function nextSlide() {
+        goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        goToSlide(currentSlide - 1);
+    }
+
+    function startSlideshow() {
+        slideInterval = setInterval(nextSlide, SLIDE_DURATION);
+    }
+
+    function resetSlideshow() {
+        clearInterval(slideInterval);
+        startSlideshow();
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+
+    const FALLBACK_SPONSORED = [
+        {
+            id: "mock-sp-1",
+            name: "Handcrafted Ceramic Bowls (Set of 2)",
+            seller_name: "Earth & Clay Studio",
+            price_paise: 185000,
+            image_url: "/img/ceramic_bowls.jpg",
+            type: "sponsored"
+        },
+        {
+            id: "mock-sp-2",
+            name: "Handmade Linen Journal",
+            seller_name: "The Paper Loom",
+            price_paise: 95000,
+            image_url: "/img/linen_journal.jpg",
+            type: "sponsored"
+        },
+        {
+            id: "mock-sp-3",
+            name: "Solid Brass Incense Holder",
+            seller_name: "Aura Metals",
+            price_paise: 120000,
+            image_url: "/img/incense_holder.jpg",
+            type: "sponsored"
+        },
+        {
+            id: "mock-sp-4",
+            name: "Minimalist Stoneware Vase",
+            seller_name: "Nordic Craft Co.",
+            price_paise: 240000,
+            image_url: "/img/stoneware_vase.jpg",
+            type: "sponsored"
+        }
+    ];
+
+    async function loadSponsoredProducts() {
+        const sponsoredGrid = document.getElementById('sponsored-product-grid');
+        if (!sponsoredGrid) return;
+
+        let sponsoredProducts = [];
+        try {
+            const response = await apiClient.get('/products/feed?page=1&limit=24');
+            if (response.data && response.data.success && response.data.data && response.data.data.products) {
+                const products = response.data.data.products;
+                sponsoredProducts = products.filter(p => p.type === 'sponsored');
+            }
+        } catch (error) {
+            console.error('Failed to load sponsored products from API:', error);
+        }
+
+        if (sponsoredProducts.length === 0) {
+            sponsoredProducts = FALLBACK_SPONSORED;
+        }
+
+        sponsoredGrid.innerHTML = '';
+        sponsoredProducts.forEach(product => {
+            const card = createProductCard(product);
+            sponsoredGrid.appendChild(card);
+        });
+    }
+
+    // Initialize
+    loadHeroSlides();
+    loadSponsoredProducts();
+    loadForYouProducts();
+    loadCategoryRows();
+
+    let isLoggedIn = false;
+    async function checkAuthState() {
+        const token = sessionStorage.getItem('tohfa_access_token');
+        const authContainer = document.getElementById('auth-buttons-container');
+        
+        if (token) {
+            isLoggedIn = true;
+            try {
+                let avatarUrl = null;
+                let initial = 'A';
+                try {
+                    const res = await apiClient.get('/profile/me');
+                    if (res.data && res.data.success) {
+                        avatarUrl = res.data.data.avatar_url;
+                        if (res.data.data.full_name) {
+                            initial = res.data.data.full_name.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile avatar:", err);
+                }
+                
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
+                } else {
+                    avatarHtml = `
+                        <a href="/buyer/profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                            ${initial}
+                        </a>
+                    `;
+                }
+
+                if (authContainer) {
+                    authContainer.innerHTML = avatarHtml;
+                }
+                updateWishlistBadge();
+                updateCartBadge();
+            } catch(e) {
+                console.error("Failed to parse token:", e);
+                logout();
+            }
+        } else {
+            isLoggedIn = false;
+            if (authContainer) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-md">
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    checkAuthState();
+</script>
+</body>
+</html>

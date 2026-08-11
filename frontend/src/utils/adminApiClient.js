@@ -7,6 +7,16 @@ const adminApiClient = axios.create({
 
 // Attach admin token to every request
 adminApiClient.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    if (config.headers) {
+      delete config.headers['Content-Type'];
+      delete config.headers['content-type'];
+      if (typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type');
+        config.headers.delete('content-type');
+      }
+    }
+  }
   const token = sessionStorage.getItem('tohfa_admin_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
@@ -26,9 +36,34 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+function prefixRelativeUrls(obj) {
+  if (!obj) return obj;
+  if (typeof obj === 'string') {
+    if (obj.startsWith('/uploads/') || obj.startsWith('/media/')) {
+      const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : 'https://api.thetohfa.in';
+      return apiHost + obj;
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(prefixRelativeUrls);
+  }
+  if (typeof obj === 'object') {
+    for (const key of Object.keys(obj)) {
+      obj[key] = prefixRelativeUrls(obj[key]);
+    }
+  }
+  return obj;
+}
+
 // Redirect to login on 401/403 or try silent refresh
 adminApiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data) {
+      response.data = prefixRelativeUrls(response.data);
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
@@ -73,13 +108,13 @@ adminApiClient.interceptors.response.use(
           isRefreshing = false;
           sessionStorage.removeItem('tohfa_admin_token');
           sessionStorage.removeItem('tohfa_admin_refresh_token');
-          window.location.href = '/admin/login.html';
+          // login redirect removed';
           return Promise.reject(refreshError);
         }
       } else {
         isRefreshing = false;
         sessionStorage.removeItem('tohfa_admin_token');
-        window.location.href = '/admin/login.html';
+        // login redirect removed';
       }
     }
     return Promise.reject(error);
@@ -87,3 +122,4 @@ adminApiClient.interceptors.response.use(
 );
 
 export default adminApiClient;
+t;

@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+<script src="/src/components/ReportWidget.js" defer></script>
+<script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <title>Tohfa | Product Details</title>
+    <meta name="description" content="Explore and purchase unique handcrafted products directly from independent artisans."/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+      <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .watercolour-wash { background: linear-gradient(135deg, #F7F3EC 0%, #8FAF82 100%); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .carousel-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 0.2s ease; cursor: pointer; }
+    </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack layout sections */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Product grids must be 2 columns */
+    #product-grid, #results-grid, #related-treasures-grid, #catalog-grid, #custom-grid, #recommended-products-grid,
+    .product-grid, .search-results-grid, .category-product-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+    }
+    /* Convert tables to cards */
+    table {
+      display: block !important;
+      width: 100% !important;
+    }
+    thead {
+      display: none !important;
+    }
+    tbody, tr, td {
+      display: block !important;
+      width: 100% !important;
+    }
+    tr {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(61,107,79,0.12) !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: 0 2px 8px rgba(61,107,79,0.06) !important;
+    }
+    td {
+      border: none !important;
+      padding: 4px 0 !important;
+      text-align: left !important;
+    }
+  }
+</style>
+
+<!-- Product Custom Layout Mobile Styling -->
+<style>
+  @media (max-width: 768px) {
+    #product-details-container {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    /* Gallery container first */
+    #product-details-container > div:nth-child(1) {
+      order: 1 !important;
+      width: 100% !important;
+    }
+    /* Info container second */
+    #product-details-container > div:nth-child(2) {
+      order: 2 !important;
+      width: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    /* Reorder inside Info container: Name/price, Add to Cart widget, Description, Seller link */
+    #product-details-container > div:nth-child(2) > div:nth-child(1) {
+      order: 1 !important; /* Title + Price block */
+    }
+    #product-details-container > div:nth-child(2) > div:nth-child(4) {
+      order: 2 !important; /* Add to Cart Widget */
+    }
+    #product-details-container > div:nth-child(2) > div:nth-child(3) {
+      order: 3 !important; /* Description block */
+    }
+    #product-details-container > div:nth-child(2) > a {
+      order: 4 !important; /* Seller Profile link */
+    }
+    /* Add to Cart button styles */
+    #add-to-cart-btn {
+      width: 100% !important;
+      min-height: 48px !important;
+      background-color: #3D6B4F !important;
+      color: #FFFFFF !important;
+      border-radius: 8px !important;
+      font-family: 'DM Sans', sans-serif !important;
+    }
+  }
+</style>
+
+</head>
+<body class="bg-white text-on-background min-h-screen font-body-md overflow-x-hidden">
+    <!-- TopNavBar -->
+    <!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-[#F7F3EC] border-b border-[#8FAF82] flex justify-between items-center px-margin-desktop h-20">
+  <!-- Brand Logo (Task 59) -->
+  <div class="flex items-center flex-1">
+    <a class="font-['Playfair_Display'] text-[32px] italic text-[#3D6B4F] select-none" href="./home.html">
+      Tohfa<span class="text-[#C8973A]">.</span>
+    </a>
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="./home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="./categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
+    </a>
+    <!-- Profile -->
+    <a href="./profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+  
+  <!-- Right side items -->
+  <div class="flex items-center justify-end flex-1 gap-lg">
+    <a href="./categories.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center">
+      <span class="material-symbols-outlined">search</span>
+    </a>
+    <a href="./saved-makes.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+      <span id="nav-wishlist-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="./cart.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span id="nav-cart-badge" class="absolute -top-1 -right-1 bg-[#C8973A] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
+    </a>
+    <a href="./notifications.html" class="text-[#3D6B4F] p-2 hover:bg-[#8FAF82]/20 rounded-full active:scale-95 duration-200 transition-all flex items-center justify-center relative">
+      <span class="material-symbols-outlined">notifications</span>
+      <span id="nav-notifications-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+      <span id="nav-notif-badge" class="absolute -top-1.5 -right-1.5 w-2 h-2 bg-[#C8973A] rounded-full hidden"></span>
+    </a>
+  
+    <div id="auth-buttons-container" class="flex items-center gap-md ml-4"></div>
+  </div>
+</header>
+
+    <main class="max-w-[1440px] mx-auto px-margin-desktop py-12">
+        <!-- 1. BREADCRUMBS & BACK NAV -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-2 text-xs text-outline font-label-caps uppercase tracking-wider">
+                <a href="./home.html" class="hover:text-primary transition-colors">Home</a>
+                <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                <a id="breadcrumb-category" href="#" class="hover:text-primary transition-colors">Category</a>
+                <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                <span id="breadcrumb-product" class="text-primary font-bold">Product</span>
+            </div>
+            <button onclick="window.history.back()" class="flex items-center gap-xs text-secondary hover:text-primary transition-colors text-sm font-semibold group focus:outline-none">
+                <span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                <span>Back</span>
+            </button>
+        </div>
+
+        <div id="product-details-container" class="grid grid-cols-1 lg:grid-cols-12 gap-xl items-start">
+            <!-- Left: Horizontal Swipeable Product Image Gallery -->
+            <div class="lg:col-span-7 flex flex-col gap-md">
+                <div class="relative bg-[#F7F3EC] border border-outline-variant/60 rounded-2xl overflow-hidden shadow-sm aspect-square">
+                    <!-- Horizontal Swipe Container -->
+                    <div id="product-carousel" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+                        <!-- Dynamically populated <img> slides -->
+                    </div>
+                    <!-- Wishlist toggle -->
+                    <button id="wishlist-toggle-btn" class="absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none z-10">
+                        <span id="wishlist-icon" class="material-symbols-outlined text-2xl">favorite</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right: Product Information -->
+            <div class="lg:col-span-5 space-y-lg bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl">
+                <div class="space-y-sm">
+                    <div id="product-tags-container" class="flex flex-wrap gap-2 mb-2"></div>
+                    <h1 id="product-name" class="font-headline-lg text-primary text-3xl leading-tight font-semibold">Product Name</h1>
+                    <div id="product-rating-container" class="flex items-center gap-1.5 text-amber-500 text-sm mt-1 hidden"></div>
+                    <div class="flex items-center gap-md pt-sm">
+                        <span class="text-2xl font-data-price text-secondary-fixed-variant font-bold" id="product-price">₹0.00</span>
+                        <span class="text-xs bg-success-container/20 text-success border border-success/20 px-sm py-[2px] rounded font-semibold" id="product-stock-badge">In Stock</span>
+                    </div>
+                </div>
+
+                <a id="seller-profile-link" href="#" class="border-t border-b border-outline-variant/20 py-md flex items-center gap-md hover:opacity-85 transition-opacity duration-200">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm" id="seller-avatar">S</div>
+                    <div>
+                        <p class="text-xs text-outline uppercase tracking-wider font-label-caps">Shaped By</p>
+                        <p class="font-title-serif text-primary text-base font-semibold" id="product-seller">Seller Name</p>
+                    </div>
+                </a>
+
+                <div class="space-y-sm">
+                    <h4 class="font-label-caps text-outline text-xs tracking-wider uppercase">Description</h4>
+                    <p id="product-description" class="text-secondary text-sm leading-relaxed whitespace-pre-line">Loading details...</p>
+                    <div id="product-subcategories-container" class="flex flex-wrap gap-2 pt-2"></div>
+                </div>
+
+                <!-- Add to Cart Widget -->
+                <div class="space-y-md pt-md border-t border-outline-variant/20">
+                    <div id="qty-selector-container" class="flex items-center justify-between">
+                        <span class="font-label-caps text-outline text-xs tracking-wider uppercase">Quantity</span>
+                        <div class="flex items-center border border-outline-variant rounded-lg bg-white overflow-hidden shadow-sm">
+                            <button id="qty-decrease" class="px-md py-sm hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none">-</button>
+                            <input type="number" id="qty-input" value="1" min="1" max="99" class="w-12 text-center border-none focus:ring-0 text-sm font-semibold text-primary p-0">
+                            <button id="qty-increase" class="px-md py-sm hover:bg-surface-container transition-colors text-primary font-bold focus:outline-none">+</button>
+                        </div>
+                    </div>
+                    <button id="add-to-cart-btn" class="w-full bg-primary hover:bg-[#3D6B4F] text-white py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span>Add to Cart</span>
+                    </button>
+                    <div id="overflow-container" class="hidden space-y-xs">
+                        <button id="chat-with-seller-btn" class="w-full bg-primary hover:bg-[#3D6B4F] text-white py-4 rounded-xl font-semibold uppercase tracking-widest hover:shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-sm">
+                            <span class="material-symbols-outlined">chat</span>
+                            <span>Chat with Seller</span>
+                        </button>
+                        <p id="overflow-msg" class="text-xs text-amber-700 bg-amber-50/50 border border-amber-200/60 rounded-lg p-sm leading-relaxed">
+                            Today's daily fulfillment limit for this product has been reached. Chat with the seller to arrange your order.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Phase 2: Paused state container (hidden by default) -->
+                <div id="paused-state-container" class="hidden"></div>
+
+                <!-- Phase 4: Last-unit contention overlay -->
+                <div id="contention-overlay" class="hidden w-full p-4 bg-amber-50 border border-amber-200 rounded-2xl text-center">
+                    <div class="animate-spin w-6 h-6 border-4 border-amber-300 border-t-amber-600 rounded-full mx-auto mb-2"></div>
+                    <p class="text-sm font-semibold text-amber-800">Almost there — confirming availability…</p>
+                    <p class="text-xs text-amber-600 mt-1">Only 1 left. Checking if it's still yours.</p>
+                </div>
+
+                <!-- Phase 4: Contention lost banner -->
+                <div id="contention-lost" class="hidden w-full p-4 bg-red-50 border border-red-200 rounded-2xl text-center">
+                    <span class="text-2xl">😔</span>
+                    <p class="text-sm font-semibold text-red-800 mt-1">Someone else grabbed the last one.</p>
+                    <p class="text-xs text-red-600 mt-0.5 mb-3">You were a split second late.</p>
+                    <button id="mob-remake-request-btn" class="px-4 py-2 bg-primary text-white rounded-xl text-xs font-semibold hover:bg-primary/90 active:scale-95 transition-all">
+                        Request a Custom Remake
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 5. REVIEWS SECTION -->
+        <section class="mt-16 border-t border-outline-variant/30 pt-12 max-w-4xl" id="reviews-section">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="font-headline-lg text-primary text-2xl">Artisan Reviews</h2>
+                    <p class="text-xs text-outline tracking-wider uppercase mt-1" id="reviews-summary-text">0 reviews</p>
+                </div>
+                <div class="flex items-center gap-xs text-amber-500 font-bold" id="reviews-rating-summary">
+                    <!-- Rating summary -->
+                </div>
+            </div>
+
+            <div id="reviews-list" class="space-y-6">
+                <!-- Reviews injected here -->
+            </div>
+
+            <!-- Write a Review Form -->
+            <div id="write-review-container" class="mt-12 bg-[#F7F3EC] p-lg border border-outline-variant/60 rounded-2xl hidden">
+                <h3 class="font-title-serif text-primary text-xl mb-md">Write a Review</h3>
+                <form id="review-form" class="space-y-md">
+                    <div>
+                        <label class="block text-xs font-label-caps text-outline uppercase tracking-wider mb-sm">Rating</label>
+                        <div class="flex items-center gap-sm text-amber-500" id="star-input-container">
+                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="1">
+                                <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+                            </button>
+                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="2">
+                                <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+                            </button>
+                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="3">
+                                <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+                            </button>
+                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="4">
+                                <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+                            </button>
+                            <button type="button" class="star-btn focus:outline-none text-3xl transition-transform hover:scale-110 active:scale-95" data-rating="5">
+                                <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 0;">star</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="review-body" class="block text-xs font-label-caps text-outline uppercase tracking-wider mb-sm">Review Comments</label>
+                        <textarea id="review-body" rows="4" class="w-full rounded-xl border border-outline-variant bg-white p-4 text-sm focus:border-primary focus:ring-0 focus:outline-none" placeholder="Share your experience with this handmade piece..."></textarea>
+                    </div>
+                    <button type="submit" class="bg-primary hover:bg-[#3D6B4F] text-white px-lg py-md rounded-xl font-semibold uppercase tracking-wider transition-all active:scale-95">
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+            <div id="review-gating-notice" class="mt-12 p-md bg-[#F7F3EC] border border-dashed border-outline-variant/60 rounded-xl text-center text-secondary text-sm">
+                Only verified buyers who received this item can write a review.
+            </div>
+        </section>
+
+        <!-- Recommended Products Section -->
+        <section class="mt-16 border-t border-outline-variant/30 pt-12 max-w-4xl" id="recommended-section">
+            <div class="mb-6">
+                <h2 class="font-headline-lg text-primary text-2xl" style="font-family: 'Playfair Display', serif;">Recommended Treasures</h2>
+                <p class="text-xs text-outline tracking-wider uppercase mt-1">Handcrafted items you might also love</p>
+            </div>
+            <div id="recommended-products-grid" class="grid grid-cols-2 gap-3">
+                <!-- Recommendations will be dynamically injected here -->
+            </div>
+            <div id="recommended-empty-state" class="hidden text-center py-8">
+                <p class="text-secondary text-sm italic">No similar handcrafted treasures available right now.</p>
+            </div>
+        </section>
+
+        <!-- Product Error State -->
+        <div id="product-error-container" class="hidden text-center py-24">
+            <span class="material-symbols-outlined text-6xl text-error mb-4">error</span>
+            <h3 class="font-headline-lg text-headline-lg mb-2">Product Not Found</h3>
+            <p class="text-secondary max-w-md mx-auto mb-6">The product you're looking for might have been removed, deactivated, or does not exist.</p>
+            <button onclick="window.location.href='category.html'" class="bg-primary text-background px-8 py-3 rounded-lg font-semibold uppercase tracking-wider">Back to Browse</button>
+        </div>
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="hidden md:flex items-center justify-center gap-xl h-full">
+    <!-- Home -->
+    <a href="./home.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">home</span>
+      <span>Home</span>
+    </a>
+    <!-- Category -->
+    <a href="./categories.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">category</span>
+      <span>Category</span>
+    </a>
+    <!-- ZipGift -->
+    <a href="./zipgift.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">bolt</span>
+      <span>ZipGift</span>
+    </a>
+    <!-- Profile -->
+    <a href="./profile.html" class="flex items-center gap-xs text-[#414942] hover:text-[#3D6B4F] transition-colors h-full px-1 font-['DM_Sans'] text-[16px] font-normal">
+      <span class="material-symbols-outlined text-[20px]">person</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+    <!-- Footer -->
+    <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+<footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;padding:48px 24px 32px 24px;">
+  <!-- Ghost watermark -->
+  <div style="position:absolute;bottom:-5%;right:-10%;opacity:0.03;pointer-events:none;user-select:none;">
+    <span class="material-symbols-outlined" style="font-size:320px;color:white;">local_florist</span>
+  </div>
+  <!-- Brand -->
+  <div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#C9972C;margin-bottom:12px;">Tohfa.</h2>
+    <p style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#F7F2E8;margin-bottom:8px;text-transform:uppercase;">Thoughtful Gifting, Made Effortless.</p>
+    <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;font-size:13px;line-height:1.6;margin-bottom:24px;max-width:320px;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+    
+  </div>
+  <!-- Accordions -->
+  <div style="border-top:1px solid rgba(255,255,255,0.1);margin-bottom:32px;">
+    <!-- Company -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Company</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+        <li><a href="/mobile-buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Sellers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Sellers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+        
+      </ul>
+    </details>
+    <!-- For Buyers -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>For Buyers</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+      </ul>
+    </details>
+    <!-- Support -->
+    <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+      <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+        <span>Support</span>
+        <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+      </summary>
+      <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+        <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+      </ul>
+    </details>
+  </div>
+  <!-- Bottom bar -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+    
+    <div style="display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:#F7F2E8;">
+      <span>Made with</span>
+      <span class="material-symbols-outlined" style="color:#C9972C;font-size:16px;font-variation-settings:'FILL' 1;">favorite</span>
+      <span>in India</span>
+    </div>
+  </div>
+  <style>
+    .tohfa-footer-details summary::-webkit-details-marker {
+      display: none !important;
+    }
+    .tohfa-footer-details[open] summary span.material-symbols-outlined {
+      transform: rotate(180deg) !important;
+    }
+  </style>
+</footer>
+
+    <script type="module">
+    function getTohfaToken() {
+        try {
+            const user = JSON.parse(sessionStorage.getItem('tohfa_user') || '{}');
+            return user.token || user.accessToken || user.access_token || sessionStorage.getItem('tohfa_access_token') || null;
+        } catch(e) {
+            return sessionStorage.getItem('tohfa_access_token') || null;
+        }
+    }
+
+        import apiClient from '/src/utils/apiClient.js';
+        import { formatPaise } from '/src/utils/currency.js';
+        import { logout } from '/src/utils/auth.js';
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Set search active style since we are browsing a product
+        (function() {
+            const activeEl = document.getElementById('tab-search');
+            if (activeEl) {
+                activeEl.style.color = '#3D6B4F';
+                const icon = activeEl.querySelector('.material-symbols-outlined');
+                if (icon) {
+                    icon.style.fontVariationSettings = "'FILL' 1, 'wght' 600";
+                }
+            }
+        })();
+
+        // Extract Product ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id') || '';
+
+        async function logProductEvent(eventType) {
+            try {
+                let sessionId = localStorage.getItem('tohfa_chat_session_id');
+                if (!sessionId) {
+                    sessionId = 'session_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+                    localStorage.setItem('tohfa_chat_session_id', sessionId);
+                }
+                await apiClient.post(`/products/${productId}/event`, {
+                    event_type: eventType,
+                    session_id: sessionId
+                });
+            } catch (err) {
+                console.error(`Failed to log product event ${eventType}:`, err);
+            }
+        }
+
+        let product = null;
+        let isCustomized = false;
+        let isSoldOut = false;
+        let isWishlisted = false;
+        let qty = 1;
+        let maxStock = 99;
+        let isLoggedIn = false;
+        let matchedOrderId = null;
+        let selectedRating = 0;
+        let currentUser = null;
+
+    async function checkAuthState() {
+        const token = getTohfaToken();
+        const authContainer = document.getElementById('auth-buttons-container');
+        
+        if (token) {
+            isLoggedIn = true;
+            try {
+                let avatarUrl = null;
+                let initial = 'A';
+                try {
+                    const res = await apiClient.get('/profile/me');
+                    if (res.data && res.data.success) {
+                        currentUser = res.data.data;
+                        avatarUrl = res.data.data.avatar_url;
+                        if (res.data.data.full_name) {
+                            initial = res.data.data.full_name.charAt(0).toUpperCase();
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile avatar:", err);
+                }
+                
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="Profile" class="w-10 h-10 rounded-full border border-[#8FAF82] object-cover cursor-pointer" onclick="window.location.href='profile.html'" loading="lazy" />`;
+                } else {
+                    avatarHtml = `
+                        <a href="./profile.html" class="w-10 h-10 rounded-full bg-[#3D6B4F] flex items-center justify-center text-white font-bold border border-[#8FAF82] text-sm overflow-hidden flex-shrink-0 cursor-pointer">
+                            ${initial}
+                        </a>
+                    `;
+                }
+
+                if (authContainer) {
+                    authContainer.innerHTML = '';
+                }
+            } catch(e) {
+                console.error("Failed to parse token:", e);
+                logout();
+            }
+        } else {
+            isLoggedIn = false;
+            if (authContainer) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-md">
+                        <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+                        <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
+                    </div>
+                `;
+            }
+        }
+    }
+
+        async function loadProduct() {
+            if (!productId) {
+                showErrorState();
+                return;
+            }
+
+            try {
+                const response = await apiClient.get(`/products/${productId}`);
+                if (response.data && response.data.success) {
+                    product = response.data.data;
+                    maxStock = product.stock_qty || 0;
+                    isWishlisted = !!product.is_wishlisted;
+
+                    // Update UI Info
+                    document.getElementById('product-name').innerText = product.name;
+                    document.getElementById('product-description').innerText = product.description || 'Crafted with love and care, this piece is a heartfelt creation by an independent artisan.\nEvery detail is thoughtfully made by hand — a little treasure, made just for you.';
+                    
+                    const subcontainer = document.getElementById('product-subcategories-container');
+                    if (subcontainer) {
+                        subcontainer.innerHTML = '';
+                        
+                        // Render Category first
+                        if (product.category && product.category.name) {
+                            const catSpan = document.createElement('span');
+                            catSpan.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary text-white border border-primary/20 font-body";
+                            catSpan.textContent = `Category: ${product.category.name}`;
+                            subcontainer.appendChild(catSpan);
+                        }
+                        
+                        // Render Subcategories
+                        if (product.subcategories && product.subcategories.length > 0) {
+                            product.subcategories.forEach(sub => {
+                                const span = document.createElement('span');
+                                span.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#E8F0E6] text-[#3D6B4F] border border-[#C5D9C2] font-body";
+                                span.textContent = sub.name;
+                                subcontainer.appendChild(span);
+                            });
+                        }
+                    }
+
+                    document.getElementById('product-price').innerText = formatPaise(product.price_paise);
+                    document.getElementById('product-seller').innerText = product.seller?.seller_name || 'Artisan';
+                    
+                    const ratingContainer = document.getElementById('product-rating-container');
+                    if (ratingContainer) {
+                        if (product.review_count > 0) {
+                            const avg = product.avg_rating || 0;
+                            ratingContainer.innerHTML = `
+                                <div class="flex items-center text-amber-500">
+                                    ${Array.from({ length: 5 }, (_, i) => `
+                                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' ${i < Math.round(avg) ? 1 : 0};">star</span>
+                                    `).join('')}
+                                </div>
+                                <span class="text-[#3D6B4F] text-xs font-semibold hover:underline cursor-pointer" onclick="document.getElementById('reviews-section').scrollIntoView({ behavior: 'smooth' })">
+                                    ${avg.toFixed(1)} (${product.review_count} reviews)
+                                </span>
+                            `;
+                            ratingContainer.classList.remove('hidden');
+                        } else {
+                            ratingContainer.innerHTML = '';
+                            ratingContainer.classList.add('hidden');
+                        }
+                    }
+                    
+                    const avatarEl = document.getElementById('seller-avatar');
+                    if (product.seller?.avatar_url) {
+                        avatarEl.innerHTML = `<img src="${product.seller.avatar_url}" alt="Seller Avatar" class="w-full h-full object-cover rounded-full" loading="lazy" />`;
+                        avatarEl.classList.remove('bg-primary/20', 'text-primary');
+                    } else {
+                        avatarEl.innerText = (product.seller?.seller_name || 'A').charAt(0).toUpperCase();
+                    }
+
+                    const sellerLink = document.getElementById('seller-profile-link');
+                    if (sellerLink && product.seller?.id) {
+                        sellerLink.href = `./seller-profile.html?id=${product.seller.id}`;
+                    }
+
+                    const isBulk = product.tags?.includes('bulk') || product.category?.slug === 'bulk-orders';
+                    isCustomized = product.is_customized || product.category?.slug === 'customized-gifts' || isBulk;
+                    isSoldOut = !isCustomized && (product.status === 'sold_out' || maxStock === 0);
+                    const isPaused = product.status === 'paused';
+
+                    // Populate badges/tags in the tags container
+                    const tagsContainer = document.getElementById('product-tags-container');
+                    if (tagsContainer) {
+                        tagsContainer.innerHTML = '';
+                        
+                        // Check Customized
+                        if (isCustomized) {
+                            const customTag = document.createElement('span');
+                            customTag.innerText = isBulk ? 'Bulk Available' : 'Customized';
+                            customTag.className = 'font-data-price text-xs bg-[#3D6B4F] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            tagsContainer.appendChild(customTag);
+                        }
+                        
+                        // Check Sponsored
+                        if (product.is_sponsored) {
+                            const sponsoredTag = document.createElement('span');
+                            sponsoredTag.innerText = 'Sponsored';
+                            sponsoredTag.className = 'font-data-price text-xs bg-[#d97706] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            tagsContainer.appendChild(sponsoredTag);
+                        }
+                        
+                        // Check Best Seller
+                        if (product.is_best_seller) {
+                            const bestSellerTag = document.createElement('span');
+                            bestSellerTag.innerText = 'Best Seller';
+                            bestSellerTag.className = 'font-data-price text-xs bg-[#C4622D] text-white px-3 py-[2px] rounded-full inline-block font-semibold';
+                            tagsContainer.appendChild(bestSellerTag);
+                        }
+                    }
+
+                    // Show/hide qty selector and modify button
+                    const qtySelector = document.getElementById('qty-selector-container');
+                    const addToCartBtn = document.getElementById('add-to-cart-btn');
+                    if (isCustomized || isSoldOut) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'chat';
+                            addToCartBtn.querySelector('span:last-child').innerText = isSoldOut ? 'Chat with Seller' : 'Request seller';
+                        }
+                    } else {
+                        if (qtySelector) qtySelector.style.display = 'flex';
+                        if (addToCartBtn) {
+                            addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'shopping_cart';
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Add to Cart';
+                        }
+                    }
+
+                    // Stock badge
+                    const stockBadge = document.getElementById('product-stock-badge');
+                    if (isCustomized) {
+                        stockBadge.innerText = 'Made to Order';
+                        stockBadge.className = 'text-xs bg-purple-100 text-purple-700 border border-purple-200 px-sm py-[2px] rounded font-semibold';
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    } else if (isSoldOut) {
+                        stockBadge.innerText = 'Sold Out';
+                        stockBadge.className = 'text-xs bg-red-100 text-red-700 border border-red-200 px-sm py-[2px] rounded font-semibold';
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    } else if (maxStock <= 3) {
+                        stockBadge.innerText = `Only ${maxStock} left!`;
+                        stockBadge.className = 'text-xs bg-amber-100 text-amber-700 border border-amber-200 px-sm py-[2px] rounded font-semibold';
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    } else {
+                        stockBadge.innerText = 'In Stock';
+                        stockBadge.className = 'text-xs bg-green-100 text-green-700 border border-green-200 px-sm py-[2px] rounded font-semibold';
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    }
+
+                    // Images
+                    const carousel = document.getElementById('product-carousel');
+                    const dotsContainer = document.getElementById('carousel-dots-container');
+                    
+                    const productImages = product.images || [];
+                    if (productImages.length === 0) {
+                        carousel.innerHTML = `
+                            <div class="w-full h-full flex-shrink-0 snap-center flex items-center justify-center p-6">
+                                <img class="max-w-full max-h-full object-contain" src="https://placehold.co/600x600/f4ede3/516447?text=Handcrafted" alt="Placeholder Image" />
+                            </div>
+                        `;
+                        if (dotsContainer) dotsContainer.innerHTML = '';
+                    } else {
+                        // Render slides
+                        carousel.innerHTML = productImages.map((img, idx) => `
+                            <div class="w-full h-full flex-shrink-0 snap-center flex items-center justify-center p-6">
+                                <img class="max-w-full max-h-full object-contain" src="${img.url}" alt="${product.name} - Image ${idx + 1}" loading="lazy" />
+                            </div>
+                        `).join('');
+
+                        // Render dots
+                        if (dotsContainer) {
+                            dotsContainer.innerHTML = productImages.map((img, idx) => {
+                                const activeClass = idx === 0 ? 'bg-primary' : 'bg-outline-variant/60';
+                                return `<button class="carousel-dot ${activeClass}" data-index="${idx}"></button>`;
+                            }).join('');
+
+                            // Wire dots clicks
+                            dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
+                                dot.addEventListener('click', () => {
+                                    const idx = Number(dot.getAttribute('data-index'));
+                                    const slideWidth = carousel.offsetWidth;
+                                    carousel.scrollTo({ left: idx * slideWidth, behavior: 'smooth' });
+                                });
+                            });
+                        }
+
+                        // Sync scroll to update dots
+                        carousel.addEventListener('scroll', () => {
+                            const width = carousel.offsetWidth;
+                            if (width <= 0) return;
+                            const index = Math.round(carousel.scrollLeft / width);
+                            if (dotsContainer) {
+                                const dots = dotsContainer.querySelectorAll('.carousel-dot');
+                                dots.forEach((d, idx) => {
+                                    if (idx === index) {
+                                        d.classList.add('bg-primary');
+                                        d.classList.remove('bg-outline-variant/60');
+                                    } else {
+                                        d.classList.remove('bg-primary');
+                                        d.classList.add('bg-outline-variant/60');
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    // Breadcrumb
+                    const categoryBreadcrumb = document.getElementById('breadcrumb-category');
+                    const productBreadcrumb = document.getElementById('breadcrumb-product');
+                    if (product.category) {
+                        categoryBreadcrumb.innerText = product.category.name;
+                        categoryBreadcrumb.href = `category.html?slug=${product.category.slug}`;
+                    } else {
+                        categoryBreadcrumb.innerText = 'Products';
+                        categoryBreadcrumb.href = 'category.html';
+                    }
+                    productBreadcrumb.innerText = product.name;
+
+                    // Wishlist state
+                    updateWishlistButtonUI();
+
+                    // Reviews Summary & list
+                    renderReviewsSection();
+
+                    // Check if user has bought this item to gate review submission
+                    await checkReviewEligibility();
+
+                    // Check capacity on page load for pre-made items
+                    if (!product.holiday_mode_active && !isCustomized && !isSoldOut && product.status !== 'sold_out' && maxStock > 0) {
+                        try {
+                            const checkRes = await apiClient.post('/capacity/check', { 
+                                product_id: Number(productId), 
+                                quantity: 1, 
+                                preview: true 
+                            });
+                            if (checkRes.data && checkRes.data.overflow) {
+                                showOverflowState("Today's capacity reached — next available: tomorrow");
+                            }
+                        } catch (e) {
+                            console.error("Error checking capacity status on load:", e);
+                        }
+                    }
+
+                    // Holiday Mode enforcement
+                    if (product.holiday_mode_active) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.querySelector('span.material-symbols-outlined').innerText = 'beach_access';
+                            addToCartBtn.querySelector('span:last-child').innerText = 'Shop on Break';
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        const chatBtn = document.getElementById('chat-with-seller-btn');
+                        if (chatBtn) {
+                            chatBtn.disabled = true;
+                            chatBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        // Insert notice below the button group
+                        const btnContainer = addToCartBtn?.parentElement;
+                        if (btnContainer && !document.getElementById('holiday-notice')) {
+                            const notice = document.createElement('p');
+                            notice.id = 'holiday-notice';
+                            notice.className = 'text-xs text-on-surface-variant italic text-center mt-2';
+                            notice.textContent = 'This artisan is currently on a break. Check back soon.';
+                            btnContainer.insertAdjacentElement('afterend', notice);
+                        }
+                    }
+                    // ── Phase 2: Paused state ──────────────────────────────────────────────
+                    if (isPaused) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) addToCartBtn.style.display = 'none';
+                        document.getElementById('overflow-container')?.classList.add('hidden');
+                        const pausedEl = document.getElementById('paused-state-container');
+                        if (pausedEl) {
+                            pausedEl.classList.remove('hidden');
+                            const resumeStr = product.resume_estimate_date
+                                ? `<p class="text-xs text-purple-600 mt-1">Expected back: <strong>${new Date(product.resume_estimate_date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</strong></p>`
+                                : '';
+                            pausedEl.innerHTML = `
+                                <div class="w-full p-4 bg-purple-50 border border-purple-200 rounded-2xl text-center">
+                                    <span class="text-2xl">⏸️</span>
+                                    <p class="text-sm font-semibold text-purple-800 mt-2">
+                                        ${product.pause_reason ? product.pause_reason : 'Temporarily paused by the artisan.'}
+                                    </p>
+                                    ${resumeStr}
+                                    <a href="/mobile-buyer/home.html" class="mt-3 inline-block text-xs text-primary underline">Browse similar products</a>
+                                </div>`;
+                        }
+                    }
+
+                    // Owner Restrictions
+                    const isOwner = currentUser && product.seller && currentUser.id === product.seller.id;
+                    if (isOwner) {
+                        if (qtySelector) qtySelector.style.display = 'none';
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                            const spanLabel = addToCartBtn.querySelector('span:last-child');
+                            if (spanLabel) spanLabel.innerText = 'Own Product';
+                        }
+                        const chatBtn = document.getElementById('chat-with-seller-btn');
+                        if (chatBtn) {
+                            chatBtn.disabled = true;
+                            chatBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                            const spanLabel = chatBtn.querySelector('span:last-child');
+                            if (spanLabel) spanLabel.innerText = 'Own Shop';
+                        }
+                        const remakeBtn = document.getElementById('mob-remake-request-btn');
+                        if (remakeBtn) {
+                            remakeBtn.disabled = true;
+                            remakeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        const wishlistBtn = document.getElementById('wishlist-toggle-btn');
+                        if (wishlistBtn) {
+                            wishlistBtn.disabled = true;
+                            wishlistBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                        
+                        // Insert notice below the button group
+                        const btnContainer = addToCartBtn?.parentElement;
+                        if (btnContainer && !document.getElementById('owner-notice')) {
+                            const notice = document.createElement('p');
+                            notice.id = 'owner-notice';
+                            notice.className = 'text-xs text-on-surface-variant italic text-center mt-2 text-[#C9972C] font-semibold';
+                            notice.textContent = 'You cannot buy/wishlist/chat your own product.';
+                            btnContainer.insertAdjacentElement('afterend', notice);
+                        }
+                    }
+                    // ─────────────────────────────────────────────────────────────────────
+
+                    // Track views and clicks
+                    logProductEvent('view');
+                    const ref = document.referrer;
+                    if (ref && (ref.includes(window.location.host) || ref.includes('/buyer/'))) {
+                        logProductEvent('click');
+                    }
+
+                } else {
+                    showErrorState();
+                }
+            } catch (err) {
+                console.error("Failed to load product details:", err);
+                showErrorState();
+            }
+        }
+
+        function updateWishlistButtonUI() {
+            const wishlistIcon = document.getElementById('wishlist-icon');
+            const wishlistBtn = document.getElementById('wishlist-toggle-btn');
+            const isOwner = currentUser && product && product.seller && currentUser.id === product.seller.id;
+            if (isOwner) {
+                wishlistIcon.style.fontVariationSettings = "'FILL' 0";
+                wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md transition-all text-outline opacity-50 cursor-not-allowed focus:outline-none";
+                wishlistBtn.disabled = true;
+                return;
+            }
+            if (isWishlisted) {
+                wishlistIcon.style.fontVariationSettings = "'FILL' 1";
+                wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-red-600 focus:outline-none";
+            } else {
+                wishlistIcon.style.fontVariationSettings = "'FILL' 0";
+                wishlistBtn.className = "absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-all text-outline hover:text-primary focus:outline-none";
+            }
+        }
+
+        async function handleToggleWishlist() {
+            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                window.Toast?.show("Sellers cannot wishlist their own products", "error");
+                return;
+            }
+            if (!isLoggedIn) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            try {
+                if (isWishlisted) {
+                    const res = await apiClient.delete(`/wishlist/${productId}`);
+                    if (res.data && res.data.success) {
+                        isWishlisted = false;
+                        updateWishlistButtonUI();
+                        window.Toast?.show("Removed from wishlist!", "success");
+                    }
+                } else {
+                    const res = await apiClient.post(`/wishlist/${productId}`);
+                    if (res.data && res.data.success) {
+                        isWishlisted = true;
+                        updateWishlistButtonUI();
+                        window.Toast?.show("Added to wishlist!", "success");
+                    }
+                }
+            } catch (err) {
+                console.error("Wishlist error:", err);
+            }
+        }
+
+        function renderReviewsSection() {
+            const list = document.getElementById('reviews-list');
+            const ratingSummary = document.getElementById('reviews-rating-summary');
+            const summaryText = document.getElementById('reviews-summary-text');
+            
+            const reviews = product.recent_reviews || [];
+            
+            summaryText.innerText = `${product.review_count || 0} reviews`;
+
+            if (product.review_count > 0) {
+                const avg = product.avg_rating || 0;
+                ratingSummary.innerHTML = `
+                    <span class="text-sm">${avg.toFixed(1)}</span>
+                    <div class="flex items-center text-amber-500">
+                        ${Array.from({ length: 5 }, (_, i) => `
+                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${i < Math.round(avg) ? 1 : 0};">star</span>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                ratingSummary.innerHTML = '';
+            }
+
+            if (reviews.length === 0) {
+                list.innerHTML = `<p class="text-secondary text-sm italic py-4">No reviews yet for this product. Be the first to share your thoughts!</p>`;
+            } else {
+                list.innerHTML = reviews.map(r => {
+                    const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently';
+                    const initials = r.reviewer_name ? r.reviewer_name.charAt(0).toUpperCase() : 'A';
+                    const avatarHtml = r.reviewer_avatar ? 
+                        `<img src="${r.reviewer_avatar}" class="w-10 h-10 rounded-full object-cover border border-sage/20 flex-shrink-0" alt="Reviewer Avatar" />` :
+                        `<div class="w-10 h-10 rounded-full bg-[#8FAF82]/20 text-[#3D6B4F] flex items-center justify-center font-bold text-sm flex-shrink-0">${initials}</div>`;
+                    
+                    return `
+                        <div class="bg-[#F7F3EC] p-md rounded-2xl border border-outline-variant/40 space-y-sm animate-fade-in flex gap-md items-start">
+                            ${avatarHtml}
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="font-semibold text-sm text-primary block">${escapeHtml(r.reviewer_name || 'Anonymous')}</span>
+                                        <span class="text-[10px] text-outline">${dateStr}</span>
+                                    </div>
+                                    <div class="flex items-center text-amber-500">
+                                        ${Array.from({ length: 5 }, (_, i) => `
+                                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' ${i < r.rating ? 1 : 0};">star</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <p class="text-secondary text-sm leading-relaxed mt-2">${escapeHtml(r.body || '')}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        async function checkReviewEligibility() {
+            if (!isLoggedIn) {
+                document.getElementById('write-review-container').classList.add('hidden');
+                document.getElementById('review-gating-notice').classList.remove('hidden');
+                return;
+            }
+
+            try {
+                // Fetch user's delivered orders
+                const res = await apiClient.get('/orders', { params: { status: 'Delivered' } });
+                if (res.data && res.data.success) {
+                    let orders = res.data.data || [];
+                    if (!Array.isArray(orders)) {
+                        orders = orders.orders || [];
+                    }
+                    if (!Array.isArray(orders)) {
+                        orders = [];
+                    }
+                    
+                    // Search for order item matching product
+                    for (const order of orders) {
+                        const detailRes = await apiClient.get(`/orders/${order.id}`);
+                        if (detailRes.data && detailRes.data.success) {
+                            const orderDetails = detailRes.data.data;
+                            const hasItem = orderDetails.items?.some(item => String(item.product_id) === String(productId) && !item.is_reviewed);
+                            if (hasItem) {
+                                matchedOrderId = order.id;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (matchedOrderId) {
+                        document.getElementById('write-review-container').classList.remove('hidden');
+                        document.getElementById('review-gating-notice').classList.add('hidden');
+                    } else {
+                        document.getElementById('write-review-container').classList.add('hidden');
+                        document.getElementById('review-gating-notice').classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to check order history for review gating:", err);
+            }
+        }
+
+        function resetOverflowState() {
+            document.getElementById('add-to-cart-btn')?.classList.remove('hidden');
+            document.getElementById('overflow-container')?.classList.add('hidden');
+        }
+
+        function showOverflowState(msg) {
+            document.getElementById('add-to-cart-btn')?.classList.add('hidden');
+            const container = document.getElementById('overflow-container');
+            if (container) {
+                container.classList.remove('hidden');
+                if (msg) {
+                    document.getElementById('overflow-msg').innerText = msg;
+                }
+            }
+        }
+
+        async function handleChatWithSeller() {
+            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                window.Toast?.show("Sellers cannot start a chat with themselves", "error");
+                return;
+            }
+            if (product && product.holiday_mode_active) return;
+            if (!isLoggedIn) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+            const btn = document.getElementById('chat-with-seller-btn');
+            if (!btn) return;
+            btn.disabled = true;
+            btn.querySelector('span:last-child').innerText = 'Starting chat...';
+
+            try {
+                const productListingType = product?.listing_type || product?.product_type_tag || '';
+                const isBulkProduct = productListingType === 'bulk' || product?.tags?.includes('bulk') || product?.category?.slug === 'bulk-orders';
+                const requestType = isBulkProduct ? 'bulk' : 'customization';
+
+                const res = await apiClient.post('/requests', {
+                    listing_id: Number(productId),
+                    request_type: requestType,
+                    quantity: qty || 1
+                });
+                const convId = res.data.conversation_id;
+                window.location.href = `./chat.html?conversationId=${convId}`;
+            } catch (e) {
+                console.error("Failed to start chat with seller:", e);
+                window.Toast?.show("Failed to start chat. Please try again.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('span:last-child').innerText = 'Chat with Seller';
+            }
+        }
+
+        async function handleAddToCart() {
+            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                window.Toast?.show("Sellers cannot purchase their own products", "error");
+                return;
+            }
+            if (product && product.holiday_mode_active) return;
+            if (isCustomized) {
+                if (!isLoggedIn) {
+                    window.location.href = '/auth/login.html';
+                    return;
+                }
+                const btn = document.getElementById('add-to-cart-btn');
+                btn.disabled = true;
+                btn.querySelector('span:last-child').innerText = 'Starting chat...';
+                try {
+                    const productListingType = product?.listing_type || product?.product_type_tag || '';
+                    const isBulkProduct = productListingType === 'bulk' || product?.tags?.includes('bulk') || product?.category?.slug === 'bulk-orders';
+                    const requestType = isBulkProduct ? 'bulk' : 'customization';
+
+                    const res = await apiClient.post('/requests', {
+                        listing_id: Number(productId),
+                        request_type: requestType,
+                        quantity: qty
+                    });
+                    const convId = res.data.conversation_id;
+                    window.location.href = `./chat.html?conversationId=${convId}`;
+                } catch (e) {
+                    console.error("Failed to start chat with seller:", e);
+                    window.Toast?.show("Failed to start chat. Please try again.", "error");
+                } finally {
+                    btn.disabled = false;
+                    btn.querySelector('span:last-child').innerText = 'Request seller';
+                }
+                return;
+            }
+
+            if (isSoldOut) {
+                if (!isLoggedIn) {
+                    window.location.href = '/auth/login.html';
+                    return;
+                }
+                const btn = document.getElementById('add-to-cart-btn');
+                btn.disabled = true;
+                btn.querySelector('span:last-child').innerText = 'Starting chat...';
+                try {
+                    const res = await apiClient.post('/conversations', {
+                        listing_id: Number(productId),
+                        product_type_tag: 'sold_out'
+                    });
+                    const convId = res.data.conversation_id;
+                    window.location.href = `./chat.html?conversationId=${convId}`;
+                } catch (e) {
+                    console.error("Failed to start chat with seller:", e);
+                    window.Toast?.show("Failed to start chat. Please try again.", "error");
+                } finally {
+                    btn.disabled = false;
+                    btn.querySelector('span:last-child').innerText = 'Chat with Seller';
+                }
+                return;
+            }
+
+            if (!isLoggedIn) {
+                window.location.href = '/auth/login.html';
+                return;
+            }
+
+            const btn = document.getElementById('add-to-cart-btn');
+            btn.disabled = true;
+            btn.querySelector('span:last-child').innerText = 'Checking...';
+
+            try {
+                // Check capacity first
+                const checkRes = await apiClient.post('/capacity/check', { product_id: Number(productId), quantity: qty });
+                if (checkRes.data && checkRes.data.overflow) {
+                    showOverflowState(checkRes.data.message || "Fulfillment capacity exceeded for this date. Would you like to request a reschedule?");
+                    return;
+                }
+
+                btn.querySelector('span:last-child').innerText = 'Adding...';
+                const response = await apiClient.post('/cart/items', { product_id: Number(productId), quantity: qty });
+                if (response.data && response.data.success) {
+                    logProductEvent('cart_add');
+                    // ── Phase 4: Contention check ──
+                    if (response.data.status === 'contention_pending' && response.data.attempt_id) {
+                        const attemptId = response.data.attempt_id;
+                        btn.style.display = 'none';
+                        document.getElementById('qty-selector-container').style.display = 'none';
+                        const overlay = document.getElementById('contention-overlay');
+                        overlay.classList.remove('hidden');
+
+                        let polls = 0;
+                        const MAX_POLLS = 12;
+                        const POLL_MS = 1500;
+
+                        const pollId = setInterval(async () => {
+                            polls++;
+                            try {
+                                const pollRes = await apiClient.get(`/checkout/contention/${attemptId}`);
+                                const pData = pollRes.data?.data || pollRes.data;
+                                if (pData?.status === 'won') {
+                                    clearInterval(pollId);
+                                    overlay.classList.add('hidden');
+                                    window.Toast?.show('It\'s yours! Added to cart.', 'success');
+                                    btn.style.display = '';
+                                    document.getElementById('qty-selector-container').style.display = '';
+                                    btn.disabled = false;
+                                    btn.querySelector('span:last-child').innerText = 'Add to Cart';
+                                    return;
+                                }
+                                if (pData?.status === 'lost') {
+                                    clearInterval(pollId);
+                                    overlay.classList.add('hidden');
+                                    document.getElementById('contention-lost').classList.remove('hidden');
+                                    btn.style.display = 'none';
+                                    return;
+                                }
+                            } catch (_) { /* continue polling */ }
+
+                            if (polls >= MAX_POLLS) {
+                                clearInterval(pollId);
+                                overlay.classList.add('hidden');
+                                window.Toast?.show('Could not confirm availability. Please try again.', 'error');
+                                btn.style.display = '';
+                                btn.disabled = false;
+                                btn.querySelector('span:last-child').innerText = 'Add to Cart';
+                            }
+                        }, POLL_MS);
+
+                        // Wire remake button
+                        document.getElementById('mob-remake-request-btn')?.addEventListener('click', async () => {
+                            if (currentUser && product && product.seller && currentUser.id === product.seller.id) {
+                                window.Toast?.show("Sellers cannot request a remake of their own product", "error");
+                                return;
+                            }
+                            try {
+                                const res = await apiClient.post('/conversations', { listing_id: Number(productId), product_type_tag: 'remake_request' });
+                                const convId = res.data.conversation_id;
+                                window.location.href = `./chat.html?conversationId=${convId}`;
+                            } catch (e) {
+                                window.Toast?.show('Failed to start chat.', 'error');
+                            }
+                        });
+                        return; // Don't re-enable button yet
+                    }
+                    // ── End contention ──
+                    window.Toast?.show("Added to cart successfully!", "success");
+                }
+            } catch (e) {
+                console.error("Error adding to cart:", e);
+                window.Toast?.show(e.response?.data?.message || "Failed to add to cart.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('span:last-child').innerText = 'Add to Cart';
+            }
+        }
+
+        function setupQuantityControls() {
+            const decreaseBtn = document.getElementById('qty-decrease');
+            const increaseBtn = document.getElementById('qty-increase');
+            const qtyInput = document.getElementById('qty-input');
+
+            decreaseBtn.addEventListener('click', () => {
+                if (qty > 1) {
+                    qty--;
+                    qtyInput.value = qty;
+                    resetOverflowState();
+                }
+            });
+
+            increaseBtn.addEventListener('click', () => {
+                if (qty < maxStock) {
+                    qty++;
+                    qtyInput.value = qty;
+                    resetOverflowState();
+                }
+            });
+
+            qtyInput.addEventListener('change', () => {
+                let val = parseInt(qtyInput.value) || 1;
+                if (val < 1) val = 1;
+                if (val > maxStock) val = maxStock;
+                qty = val;
+                qtyInput.value = qty;
+                resetOverflowState();
+            });
+        }
+
+        function setupReviewForm() {
+            const stars = document.querySelectorAll('.star-btn');
+            const form = document.getElementById('review-form');
+            const bodyInput = document.getElementById('review-body');
+
+            stars.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const rating = parseInt(btn.getAttribute('data-rating'));
+                    selectedRating = rating;
+
+                    // Update UI fill
+                    stars.forEach((b, idx) => {
+                        const icon = b.querySelector('.material-symbols-outlined');
+                        if (idx < rating) {
+                            icon.style.fontVariationSettings = "'FILL' 1";
+                        } else {
+                            icon.style.fontVariationSettings = "'FILL' 0";
+                        }
+                    });
+                });
+
+                btn.addEventListener('mouseenter', () => {
+                    const rating = parseInt(btn.getAttribute('data-rating'));
+                    stars.forEach((b, idx) => {
+                        const icon = b.querySelector('.material-symbols-outlined');
+                        if (idx < rating) {
+                            icon.style.fontVariationSettings = "'FILL' 1";
+                        } else {
+                            icon.style.fontVariationSettings = "'FILL' 0";
+                        }
+                    });
+                });
+            });
+
+            const starContainer = document.getElementById('star-input-container');
+            if (starContainer) {
+                starContainer.addEventListener('mouseleave', () => {
+                    stars.forEach((b, idx) => {
+                        const icon = b.querySelector('.material-symbols-outlined');
+                        if (idx < selectedRating) {
+                            icon.style.fontVariationSettings = "'FILL' 1";
+                        } else {
+                            icon.style.fontVariationSettings = "'FILL' 0";
+                        }
+                    });
+                });
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (selectedRating === 0) {
+                    window.Toast?.show("Please select a star rating", "error");
+                    return;
+                }
+
+                const body = bodyInput.value.trim();
+                try {
+                    const res = await apiClient.post('/reviews', {
+                        product_id: Number(productId),
+                        order_id: matchedOrderId,
+                        rating: selectedRating,
+                        body: body
+                    });
+
+                    if (res.data && res.data.success) {
+                        window.Toast?.show("Review submitted successfully!", "success");
+                        bodyInput.value = '';
+                        selectedRating = 0;
+                        stars.forEach(b => {
+                            b.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                        });
+                        
+                        // Reload product to show new review
+                        await loadProduct();
+                    }
+                } catch (err) {
+                    console.error("Failed to submit review:", err);
+                }
+            });
+        }
+
+        async function loadRecommendedProducts() {
+            if (!productId) return;
+            const grid = document.getElementById('recommended-products-grid');
+            const emptyState = document.getElementById('recommended-empty-state');
+            if (!grid) return;
+
+            try {
+                const response = await apiClient.get(`/products/${productId}/similar?limit=10`);
+                if (response.data && response.data.success) {
+                    const products = response.data.data || [];
+                    if (products.length === 0) {
+                        grid.innerHTML = '';
+                        emptyState.classList.remove('hidden');
+                        return;
+                    }
+
+                    emptyState.classList.add('hidden');
+                    grid.innerHTML = products.map(p => {
+                        const formattedPrice = `₹${(p.price_paise / 100).toLocaleString('en-IN')}`;
+                        const ratingVal = parseFloat(p.avg_rating || 0).toFixed(1);
+                        const isBestSeller = p.is_best_seller || p.is_bestseller;
+                        const isCustom = p.is_customized || p.listing_type === 'custom';
+                        
+                        let badgeHtml = '';
+                        if (isBestSeller) {
+                            badgeHtml = `<span class="absolute top-2 left-2 bg-[#C8973A] text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider z-10">Best Seller</span>`;
+                        } else if (isCustom) {
+                            badgeHtml = `<span class="absolute top-2 left-2 bg-[#3D6B4F] text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider z-10">Custom</span>`;
+                        }
+
+                        const reviewCount = parseInt(p.review_count || p.total_reviews || 0, 10);
+                        const ratingHtml = reviewCount > 0
+                            ? `<div class="flex items-center gap-1">
+                                   <span class="text-[#C8973A] text-[11px] font-bold">★</span>
+                                   <span class="text-[11px] font-semibold text-[#1f1b15]">${ratingVal}</span>
+                               </div>`
+                            : `<span class="bg-[#3D6B4F]/10 text-[#3D6B4F] text-[9px] font-mono font-bold px-1.5 py-0.5 rounded tracking-wider uppercase">New</span>`;
+
+                        return `
+                            <div class="bg-white border border-[#c3c8c1] rounded-xl overflow-hidden shadow-sm flex flex-col justify-between cursor-pointer" onclick="window.location.href='./product.html?id=${p.id}'">
+                                <div>
+                                    <div class="relative aspect-square bg-[#F7F3EC]">
+                                        <img src="${p.image_url || 'https://placehold.co/400x400/f4ede3/516447?text=Handcrafted'}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+                                        ${badgeHtml}
+                                    </div>
+                                    <div class="p-2.5">
+                                        <div class="flex items-center justify-between mb-0.5">
+                                            <p class="text-[13px] font-bold text-[#C8973A] leading-tight" style="font-family: 'DM Sans', sans-serif;">${formattedPrice}</p>
+                                            ${ratingHtml}
+                                        </div>
+                                        <h4 class="text-[13px] font-semibold text-[#1f1b15] leading-snug line-clamp-1 mb-0.5" style="font-family: 'Playfair Display', serif;">${p.name}</h4>
+                                        <p class="text-[10px] text-[#605e57] mb-2">By ${p.seller_name}</p>
+                                    </div>
+                                </div>
+                                <div class="p-2.5 pt-0">
+                                    <button class="w-full bg-[#3D6B4F] text-white text-[11px] font-semibold py-1.5 rounded-lg active:scale-95 transition-transform" onclick="event.stopPropagation(); window.location.href='./product.html?id=${p.id}'">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    grid.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Failed to load recommended products:", err);
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+            }
+        }
+
+        function showErrorState() {
+            document.getElementById('product-details-container').classList.add('hidden');
+            document.getElementById('reviews-section')?.classList.add('hidden');
+            document.getElementById('recommended-section')?.classList.add('hidden');
+            document.getElementById('product-error-container').classList.remove('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await checkAuthState();
+            await loadProduct();
+            await loadRecommendedProducts();
+            setupQuantityControls();
+            setupReviewForm();
+
+            document.getElementById('wishlist-toggle-btn')?.addEventListener('click', handleToggleWishlist);
+            document.getElementById('add-to-cart-btn')?.addEventListener('click', handleAddToCart);
+            document.getElementById('chat-with-seller-btn')?.addEventListener('click', handleChatWithSeller);
+        });
+    </script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileBuyerTopBar } from '/components/MobileBuyerTopBar.js';
+  import { initMobileBuyerNav } from '/components/MobileBuyerNav.js';
+  initMobileBuyerTopBar();
+  initMobileBuyerNav('');
+</script>
+
+</body>
+</html>

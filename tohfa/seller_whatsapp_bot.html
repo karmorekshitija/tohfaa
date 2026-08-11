@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tohfa — Seller WhatsApp Assistant — Antigravity Implementation Prompt</title>
+</head>
+<body>
+
+<h1>TASK: Seller WhatsApp Assistant (Gemini-powered, scoped to seller's own data)</h1>
+
+<p><strong>Stack:</strong> Express backend, SQLite/Postgres (whichever the current session DB is — confirm before writing migrations), Gemini API for parsing/summarization, Meta WhatsApp Cloud API for messaging, pdfkit for PDF generation.</p>
+
+<p><strong>Mode:</strong> Implement ONE numbered section at a time. Stop after each section, run/verify against its checklist, then wait for explicit go-ahead before starting the next section. Do not skip ahead. Do not silently change schema/route names from what's specified below — flag and ask if something doesn't fit the existing codebase.</p>
+
+<hr>
+
+<h2>Non-negotiable security rule (applies to every section below)</h2>
+<p>Every single DB read or write triggered from the WhatsApp webhook MUST be scoped with <code>WHERE seller_id = &lt;resolved seller's own id&gt;</code>. There is no code path in this feature that touches another seller's rows, and no admin/global action is ever exposed through this handler. If a section's logic can't cleanly enforce this, stop and flag it instead of writing a workaround.</p>
+
+<hr>
+
+<h2>SECTION 1 — Schema: link sellers to WhatsApp numbers</h2>
+<ul>
+<li>Add <code>whatsapp_number</code> (string, nullable, unique) to the sellers table.</li>
+<li>Add <code>whatsapp_verified_at</code> (timestamp, nullable).</li>
+<li>Write the migration (Alembic if Postgres/FastAPI-style migrations are in use in this codebase; plain SQL migration file otherwise — match existing migration pattern in the repo).</li>
+<li>Do NOT touch any other tables in this section.</li>
+</ul>
+<p><strong>Checklist:</strong> migration runs cleanly on a fresh copy of the DB; existing seller rows are unaffected (both new columns null); rollback works.</p>
+
+<hr>
+
+<h2>SECTION 2 — Phone number linking + OTP verification</h2>
+<ul>
+<li>New endpoint (seller must be logged in via existing website auth): seller submits a phone number from account settings.</li>
+<li>Backend generates a 6-digit OTP, stores it with a short expiry (5 min) against that seller's row (or a separate otp table — match existing patterns), and sends it via WhatsApp template message using the Meta Cloud API.</li>
+<li>Seller submits the OTP back; on match, set <code>whatsapp_number</code> and <code>whatsapp_verified_at</code>.</li>
+<li>Reject if the number is already verified+linked to a different seller.</li>
+<li>Rate-limit OTP requests per seller (e.g. max 5 per hour) to avoid abuse of the WhatsApp send.</li>
+</ul>
+<p><strong>Checklist:</strong> correct OTP links the number; expired OTP is rejected; reused/duplicate number across two sellers is rejected; rate limit triggers correctly on repeated requests.</p>
+
+<hr>
+
+<h2>SECTION 3 — Webhook receiver + identity resolution middleware</h2>
+<ul>
+<li>One Express route for Meta's WhatsApp webhook (handle both the GET verification handshake and POST message events).</li>
+<li>On incoming message: extract sender's phone number, look up <code>seller_id</code> via <code>whatsapp_number</code>.</li>
+<li>If no match: reply "This number isn't linked to a Tohfa seller account yet. Please link it from your seller dashboard settings." and stop — no further processing, no data touched.</li>
+<li>If matched: attach resolved <code>seller_id</code> to the request context for every downstream step in this feature. This is the ONLY place seller_id is resolved from a WhatsApp message — every other section below must receive it from here, never re-derive it independently.</li>
+</ul>
+<p><strong>Checklist:</strong> unknown number gets the link-first reply and zero DB reads beyond the lookup itself; known number resolves to the correct seller_id; verify against two different test sellers that each only ever sees their own id resolved.</p>
+
+<hr>
+
+<h2>SECTION 4 — Gemini intent parsing layer</h2>
+<ul>
+<li>Single wrapper function: takes the raw message text, sends to Gemini with a system prompt instructing it to return ONLY structured JSON matching a fixed action schema (see allowed actions in Sections 5–9 below).</li>
+<li>Schema should include an explicit <code>action</code> field (enum of allowed actions) plus action-specific parameters, and a fallback <code>action: "unclear"</code> with a <code>clarifying_question</code> field for anything Gemini can't confidently map.</li>
+<li>If Gemini returns <code>unclear</code>, send the clarifying question back to the seller as the WhatsApp reply and stop — no business logic runs.</li>
+<li>Validate Gemini's JSON output against the schema in code before acting on it (don't trust it blindly — malformed/unexpected fields should fail safe, not execute).</li>
+</ul>
+<p><strong>Checklist:</strong> a clear message like "pause Blue Mug" maps to the correct action+params; an ambiguous message returns a clarifying question and does NOT touch the DB; a malformed Gemini response is caught and fails safe rather than crashing or executing partial data.</p>
+
+<hr>
+
+<h2>SECTION 5 — Action: Add product</h2>
+<ul>
+<li>Parses name, price, stock (and any other required fields your product schema already has) from the message.</li>
+<li>Before writing: send the seller a confirmation message summarizing what will be added, and require an explicit "yes"/"confirm" reply before the write happens. Don't auto-write on the first message.</li>
+<li>Reuses the existing <code>addProduct</code> (or equivalent) function/logic your website already calls — do not write a parallel implementation.</li>
+<li>Write is scoped with the seller_id resolved in Section 3.</li>
+</ul>
+<p><strong>Checklist:</strong> product is added only after explicit confirmation; product is correctly attributed to the messaging seller; declining the confirmation does not create the product.</p>
+
+<hr>
+
+<h2>SECTION 6 — Action: Pause / resume product</h2>
+<ul>
+<li>Seller can say something like "pause Blue Mug" or "resume Blue Mug".</li>
+<li>Resolve the product by name within that seller's own product list only — if there's no match or the name is ambiguous (matches multiple of the seller's products), ask which one rather than guessing.</li>
+<li>Toggles the existing active/paused flag on the product (reuse existing field/logic — do not introduce a new status system if one already exists).</li>
+<li>Confirm back to the seller once done ("Blue Mug is now paused and hidden from buyers.").</li>
+</ul>
+<p><strong>Checklist:</strong> pause/resume only ever affects a product owned by the messaging seller; ambiguous product name triggers a disambiguation question instead of acting on a guess; a product name that doesn't exist in that seller's catalog returns a clear "not found" message.</p>
+
+<hr>
+
+<h2>SECTION 7 — Action: Order status + pickup/cutoff scheduling</h2>
+<ul>
+<li>Seller can ask things like "show today's orders", "what's my order status", "which orders get picked up tomorrow", "till when can orders come in for tomorrow's pickup".</li>
+<li>All of this reads from existing order + shipping data (Shiprocket/Delhivery pickup windows, order cutoff times) already present in the system — do not invent a new scheduling engine. If pickup cutoff data isn't already tracked anywhere in the current schema, stop and flag this rather than guessing a cutoff rule.</li>
+<li>Response is a readable WhatsApp text summary (not a dump of raw rows) — group/format it like a short digest.</li>
+<li>Strictly scoped to orders belonging to that seller's products only.</li>
+</ul>
+<p><strong>Checklist:</strong> order/status answers only ever include the messaging seller's own orders; pickup cutoff and next-day pickup list match what the existing shipping integration actually has on record; if no cutoff data exists yet in the schema, this is flagged back to the user instead of fabricated.</p>
+
+<hr>
+
+<h2>SECTION 8 — Scheduled automated messages</h2>
+<ul>
+<li>Cron job(s) reusing the same WhatsApp send function from Section 3/5 (no separate notification system):
+  <ul>
+  <li>Daily order digest at a fixed time (configurable), sent to each verified seller, scoped to their own orders.</li>
+  <li>Pickup reminder ahead of the cutoff time ("Orders must be confirmed by 6pm for tomorrow's pickup — you have 3 pending.").</li>
+  </ul>
+</li>
+<li>Sellers who haven't linked/verified WhatsApp are simply skipped — no error, no retry storm.</li>
+<li>Log each automated send (seller_id, message type, timestamp) for debugging — don't log message content if it contains order/customer details beyond what's necessary.</li>
+</ul>
+<p><strong>Checklist:</strong> digest and reminder only go to verified sellers; each seller's digest contains only their own data; an unlinked seller produces no errors in the job run; logs show sends without leaking unnecessary customer PII.</p>
+
+<hr>
+
+<h2>SECTION 9 — Action: Monthly analytics PDF</h2>
+<ul>
+<li>Seller asks for "analytics" / "my report" / similar via WhatsApp.</li>
+<li>Backend pulls that seller's own data for the trailing 30 days (or current calendar month — pick whichever your existing analytics/admin reporting already uses, for consistency) only.</li>
+<li>Generate a PDF (using pdfkit) containing: total orders, revenue, top products, pending vs completed orders, and any other metrics already exposed in the seller's existing dashboard analytics — reuse those calculations, don't recompute a different set of numbers.</li>
+<li>Send the generated PDF to the seller as a WhatsApp document attachment via the Meta Cloud API's media upload + document message flow.</li>
+<li>Generate the PDF to a temp location, send it, then delete the temp file — don't accumulate generated reports on disk.</li>
+</ul>
+<p><strong>Checklist:</strong> PDF contains only the requesting seller's own data; numbers in the PDF match what that seller's website dashboard already shows for the same period; PDF is successfully delivered as a WhatsApp document; temp file is cleaned up after send; requesting analytics with zero orders in the period produces a valid PDF with zeroes, not a crash.</p>
+
+<hr>
+
+<h2>General implementation notes</h2>
+<ul>
+<li>Reuse existing business logic functions wherever they exist (product CRUD, order queries, analytics calculations). This feature is a new input channel, not a parallel system.</li>
+<li>All WhatsApp replies should be sent through one shared "send WhatsApp message" function — don't duplicate Meta API call code across sections.</li>
+<li>Confirm which DB (SQLite vs Postgres) and ORM/query style this specific codebase session is using before Section 1 — do not assume.</li>
+<li>If Alembic migrations are used elsewhere in this repo, signal the migration clearly (per existing project convention) so the frontend/partner side knows a schema change shipped.</li>
+</ul>
+
+</body>
+</html>

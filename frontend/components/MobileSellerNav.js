@@ -1,6 +1,3 @@
-export function initMobileSellerNav() {
-  console.log('MobileSellerNav initialized');
-}
-export function initMobileSellerTopBar() {
-  console.log('MobileSellerTopBar initialized');
-}
+// Nav is rendered directly in each HTML page. These exports exist for import compatibility only.
+export function initMobileSellerNav() {}
+export function initMobileSellerTopBar() {}

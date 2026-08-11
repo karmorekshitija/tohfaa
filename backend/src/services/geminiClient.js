@@ -26,19 +26,33 @@ async function generateText(prompt, systemInstruction = null) {
     return "Thank you for your message. Gemini API key is currently not configured.";
   }
 
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const runCall = async (modelName) => {
+    const model = genAI.getGenerativeModel({ model: modelName });
     const contents = [];
     if (systemInstruction) {
       contents.push({ role: "user", parts: [{ text: `System Instruction:\n${systemInstruction}` }] });
     }
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
-    const result = await model.generateContent({ contents });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Gemini API call timed out")), 8000)
+    );
+
+    const apiPromise = model.generateContent({ contents });
+    const result = await Promise.race([apiPromise, timeoutPromise]);
     return result.response.text();
+  };
+
+  try {
+    return await runCall("gemini-1.5-flash");
   } catch (err) {
-    console.error("Gemini text generation error:", err);
-    throw err;
+    console.warn("[GEMINI CLIENT] gemini-1.5-flash text generation failed, trying gemini-2.0-flash...", err.message);
+    try {
+      return await runCall("gemini-2.0-flash");
+    } catch (fallbackErr) {
+      console.error("[GEMINI CLIENT] Text generation failed:", fallbackErr.message);
+      throw fallbackErr;
+    }
   }
 }
 
@@ -51,9 +65,9 @@ async function generateJson(prompt, systemInstruction = null) {
     return {};
   }
 
-  const runCall = async () => {
+  const runCall = async (modelName) => {
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: modelName,
       generationConfig: { responseMimeType: "application/json" }
     });
     const contents = [];
@@ -62,22 +76,35 @@ async function generateJson(prompt, systemInstruction = null) {
     }
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
-    const result = await model.generateContent({ contents });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Gemini API JSON call timed out")), 8000)
+    );
+
+    const apiPromise = model.generateContent({ contents });
+    const result = await Promise.race([apiPromise, timeoutPromise]);
     const text = result.response.text();
     const cleaned = cleanJsonString(text);
-    return JSON.parse(cleaned);
+    
+    try {
+      return JSON.parse(cleaned);
+    } catch (parseErr) {
+      const intentMatch = text.match(/"intent"\s*:\s*"([^"]+)"/i);
+      if (intentMatch) {
+        return { intent: intentMatch[1].toLowerCase() };
+      }
+      throw parseErr;
+    }
   };
 
   try {
-    return await runCall();
-  } catch (firstErr) {
-    console.warn("First Gemini JSON attempt failed, retrying once...", firstErr.message);
+    return await runCall("gemini-1.5-flash");
+  } catch (err) {
+    console.warn("[GEMINI CLIENT] gemini-1.5-flash JSON generation failed, trying gemini-2.0-flash...", err.message);
     try {
-      // Retry once
-      return await runCall();
-    } catch (secondErr) {
-      console.error("Gemini JSON generation failed after retry:", secondErr);
-      throw secondErr;
+      return await runCall("gemini-2.0-flash");
+    } catch (fallbackErr) {
+      console.error("[GEMINI CLIENT] JSON generation failed:", fallbackErr.message);
+      throw fallbackErr;
     }
   }
 }

@@ -4,9 +4,9 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-<script src="/src/components/ReportWidget.js" defer></script>
-<script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+<script type="module" src="/src/components/ReportWidget.js" defer></script>
+<script type="module" src="/src/components/ProtectedRoute.js"></script>
     <meta charset="utf-8"/>
     <title>Tohfa | Artisan Studio Profile</title>
     <meta name="description" content="Explore artisan creations, custom works, reels, reviews, and stories."/>
@@ -353,12 +353,12 @@
                             <span id="filter-btn-text" class="text-sm font-body-md pr-1">Filter</span>
                         </button>
                     </div>
-                    <div id="category-pills-container" class="flex items-center gap-sm overflow-x-auto scrollbar-hide flex-grow">
+                    <div id="category-pills-container" class="flex flex-nowrap items-center gap-sm overflow-x-auto whitespace-nowrap scrollbar-hide flex-grow min-w-0">
                         <!-- Category pills will be injected dynamically -->
                     </div>
                 </div>
 
-                <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+                <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
                     <!-- Loaded dynamically -->
                 </div>
                 <div id="catalog-empty" class="py-16 text-center text-on-surface-variant font-label-md hidden">
@@ -368,7 +368,7 @@
 
             <!-- 2. Customised Tab Panel -->
             <div id="panel-customised" class="tab-panel animate-fade-in hidden">
-                <div id="custom-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+                <div id="custom-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
                     <!-- Loaded dynamically -->
                 </div>
                 <div id="custom-empty" class="py-16 text-center text-on-surface-variant font-label-md hidden">
@@ -544,7 +544,7 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+        <li><a onclick="handleFooterSellerLink(event)" href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
         
       </ul>
@@ -553,19 +553,16 @@
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+        
       </ul>
     </div>
     <!-- Support -->
     <div>
       <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
         <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-        <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+        <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
         <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
         <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
       </ul>
@@ -756,6 +753,9 @@
     <script type="module">
         import apiClient from '/src/utils/apiClient.js';
         import { logout } from '/src/utils/auth.js';
+        import { initSearchOverlay } from '/buyer/searchOverlay.js';
+
+        initSearchOverlay();
 
         function escapeHtml(str) {
             if (!str) return '';
@@ -868,7 +868,7 @@
                 if (authContainer) {
                     authContainer.innerHTML = `
                         <div class="flex items-center gap-4">
-                            <a href="/auth/login.html" class="text-primary hover:underline text-sm font-semibold font-label-md uppercase tracking-wider">Login</a>
+                            <a href="/" class="text-primary hover:underline text-sm font-semibold font-label-md uppercase tracking-wider">Login</a>
                             <a href="/auth/signup-buyer.html" class="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all font-label-md uppercase tracking-wider">Register</a>
                         </div>
                     `;
@@ -1084,7 +1084,7 @@
                 const activeClasses = "bg-primary-container text-white shadow-md font-bold";
                 const inactiveClasses = "bg-[#F7F3EC] border border-outline-variant text-on-surface-variant font-body-md text-sm hover:border-primary hover:text-primary";
                 return `
-                    <button class="flex-shrink-0 px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-id="${cat.id}">
+                    <button class="flex-shrink-0 whitespace-nowrap px-lg py-sm rounded-full font-body-md text-sm transition-all ${isActive ? activeClasses : inactiveClasses}" data-id="${cat.id}">
                         ${cat.display_name || cat.name}
                     </button>
                 `;
@@ -1553,7 +1553,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to follow artisans", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
             if (!sellerProfile) return;
@@ -1590,7 +1590,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to contact the seller", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1625,7 +1625,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to contact the seller", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1663,7 +1663,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to purchase items", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1689,7 +1689,7 @@
             }
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to add to wishlist", "error");
-                setTimeout(() => window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`, 1500);
+                /* login bypassed */
                 return;
             }
 
@@ -1774,7 +1774,7 @@
             if (!isLoggedIn) {
                 window.Toast?.show("Please log in to request customization", "error");
                 setTimeout(() => {
-                    window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                    // login check bypassed
                 }, 1500);
                 return;
             }
@@ -2119,5 +2119,112 @@
         initPage();
 
     </script>
+
+
+<script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
+</script>
 </body>
 </html>

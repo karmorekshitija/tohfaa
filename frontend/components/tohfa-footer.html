@@ -39,19 +39,16 @@
       <div>
         <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
         <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+          
         </ul>
       </div>
       <!-- Support -->
       <div>
         <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
         <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+          <li><a href="javascript:void(0)" onclick="openContactModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+          <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
           <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
           <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
         </ul>
@@ -122,10 +119,8 @@
           <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
         </summary>
         <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">How it Works</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">AI Gift Guide</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Occasion Reminders</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Track My Order</a></li>
+          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+          
         </ul>
       </details>
       <!-- Support -->
@@ -135,9 +130,8 @@
           <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
         </summary>
         <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Help Center</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
-          <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+          <li><a href="javascript:void(0)" onclick="openContactModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+          <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
           <li><a href="/buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
           <li><a href="/buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
         </ul>
@@ -172,7 +166,273 @@
       .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
       .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
     }
+
+    /* Modal styling */
+    .tohfa-contact-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .tohfa-contact-modal.is-open {
+      display: flex !important;
+    }
+    .tohfa-contact-card {
+      background: #1E3D0F;
+      color: #F7F2E8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 40px 32px 32px 32px;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-sizing: border-box;
+    }
+    .tohfa-contact-modal.is-open .tohfa-contact-card {
+      transform: scale(1);
+    }
+    .tohfa-contact-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #F7F2E8;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .tohfa-contact-close:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+    .tohfa-contact-close:active {
+      transform: scale(0.95);
+    }
+    .tohfa-contact-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: #FFFFFF;
+    }
+    .tohfa-contact-card p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      color: #A8B89A;
+    }
+    .tohfa-contact-email-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 16px;
+      color: #C9972C;
+      text-decoration: none;
+      border: 1px solid rgba(201, 151, 44, 0.3);
+      padding: 12px 24px;
+      border-radius: 8px;
+      background: rgba(201, 151, 44, 0.05);
+      transition: all 0.2s ease;
+    }
+    .tohfa-contact-email-link:hover {
+      background: rgba(201, 151, 44, 0.15);
+      border-color: rgba(201, 151, 44, 0.6);
+      color: #F7F2E8;
+      transform: translateY(-2px);
+    }
+    .tohfa-contact-email-link:active {
+      transform: translateY(0);
+    }
+
+    /* Refunds & Disputes Modal styling */
+    .tohfa-refunds-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .tohfa-refunds-modal.is-open {
+      display: flex !important;
+    }
+    .tohfa-refunds-card {
+      background: #1E3D0F;
+      color: #F7F2E8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 40px 32px 32px 32px;
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: left;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .tohfa-refunds-modal.is-open .tohfa-refunds-card {
+      transform: scale(1);
+    }
+    .tohfa-refunds-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #F7F2E8;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .tohfa-refunds-close:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+    .tohfa-refunds-close:active {
+      transform: scale(0.95);
+    }
+    .tohfa-refunds-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #FFFFFF;
+      text-align: center;
+    }
+    .tohfa-refunds-card p {
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      color: #A8B89A;
+    }
+    .tohfa-refunds-card p:last-child {
+      margin-bottom: 0;
+    }
+    @media (min-width: 768px) {
+      .tohfa-refunds-card p {
+        font-size: 17px;
+      }
+    }
+
+    /* ─── Mobile fixes: Contact & Refunds modals ─── */
+    @media (max-width: 640px) {
+      /* Contact modal overlay */
+      .tohfa-contact-modal {
+        padding: 16px;
+      }
+      /* Contact card */
+      .tohfa-contact-card {
+        padding: 28px 18px 24px 18px !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .tohfa-contact-card h3 {
+        font-size: 22px !important;
+        margin-bottom: 10px !important;
+      }
+      /* Make email link full-width so it never clips */
+      .tohfa-contact-email-link {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        word-break: break-all !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Refunds modal overlay — safe-area-aware bottom-sheet */
+      .tohfa-refunds-modal {
+        padding: 0 !important;
+        align-items: flex-end !important;
+      }
+      .tohfa-refunds-card {
+        padding: 24px 18px 20px 18px !important;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+        border-radius: 20px 20px 0 0 !important;
+        /* Use dvh so the browser chrome is excluded from the height calculation */
+        max-height: 80dvh !important;
+        /* Fallback for browsers without dvh support */
+        max-height: min(80dvh, calc(100vh - 80px)) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        overscroll-behavior: contain !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .tohfa-refunds-card h3 {
+        font-size: 21px !important;
+        margin-bottom: 14px !important;
+      }
+      .tohfa-refunds-card p {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        color: #D4E4C8 !important;
+      }
+    }
   </style>
+
+  <!-- Contact Us Modal -->
+  <div id="tohfa-contact-modal" class="tohfa-contact-modal" onclick="if(event.target === this) closeContactModal()">
+    <div class="tohfa-contact-card" onclick="event.stopPropagation()">
+      <button class="tohfa-contact-close" onclick="closeContactModal()" aria-label="Close modal">&times;</button>
+      <h3>Get in Touch</h3>
+      <p>Reach us at</p>
+      <a href="mailto:tohfa126@gmail.com" class="tohfa-contact-email-link">
+        <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">mail</span>
+        <span>tohfa126@gmail.com</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Refunds & Disputes Modal -->
+  <div id="tohfa-refunds-modal" class="tohfa-refunds-modal" onclick="if(event.target === this) closeRefundsModal()">
+    <div class="tohfa-refunds-card" onclick="event.stopPropagation()">
+      <button class="tohfa-refunds-close" onclick="closeRefundsModal()" aria-label="Close modal">&times;</button>
+      <h3>Refunds &amp; Disputes</h3>
+      <p>Most Tohfa products are handmade or customized just for you, so we're unable to accept returns or offer refunds once an order is placed.</p>
+      <p>If your order arrives damaged, we'll gladly offer a replacement or refund — provided you share an unedited unboxing video (starting before the package is opened) within 48 hours of delivery. As we're now in an age where images can be easily edited or AI-generated, <strong style="color: #C9972C; font-weight: 700;">we're only able to accept video proof, not photos, to verify a claim.</strong></p>
+      <p>Please note: refunds aren't available for change of mind, customization changes after production starts, or minor handmade variations — these are natural, since every piece is made by hand.</p>
+    </div>
+  </div>
 </footer>
 
 <script>
@@ -181,27 +441,102 @@ async function handleFooterSellerLink(e) {
   const isMobile = window.innerWidth < 768;
   const token = sessionStorage.getItem('tohfa_access_token');
   if (!token) {
-    window.location.href = '/auth/login.html?next=become-seller';
-    return;
-  }
-  
-  const client = typeof apiClient !== 'undefined' ? apiClient : null;
-  if (!client) {
-    window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
     return;
   }
 
   try {
-    const res = await client.get('/profile/me');
-    if (res.data?.success) {
-      const role = res.data.data.role;
-      if (role === 'seller') {
-        window.location.href = '/seller/dashboard.html';
-        return;
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
       }
     }
-  } catch(err) {}
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
   
   window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
 }
 </script>

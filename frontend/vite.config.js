@@ -9,7 +9,15 @@ function getHtmlEntries(dir, list = {}) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
     if (stat.isDirectory()) {
-      if (file !== 'node_modules' && file !== 'dist' && !file.startsWith('.')) {
+      if (
+        file !== 'node_modules' && 
+        file !== 'dist' && 
+        !file.startsWith('.') &&
+        !file.startsWith('stitch') &&
+        !file.startsWith('scratch') &&
+        !file.startsWith('footer') &&
+        !file.includes('unzipped')
+      ) {
         getHtmlEntries(filePath, list);
       }
     } else if (file.endsWith('.html')) {

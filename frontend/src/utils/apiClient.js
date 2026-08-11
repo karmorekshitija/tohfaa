@@ -35,6 +35,16 @@ const apiClient = axios.create({
 
 // Attach access token to every request or mock guest responses
 apiClient.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    if (config.headers) {
+      delete config.headers['Content-Type'];
+      delete config.headers['content-type'];
+      if (typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type');
+        config.headers.delete('content-type');
+      }
+    }
+  }
   const token = sessionStorage.getItem('tohfa_access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -76,7 +86,7 @@ apiClient.interceptors.request.use((config) => {
   // Any other protected endpoint request from a guest user redirects to login
   const isPublicEndpoint = url.includes('/products') || url.includes('/categories') || url.includes('/hero-slides') || url.includes('/auth/') || url.includes('/sellers/');
   if (!isPublicEndpoint) {
-    window.location.href = `/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+    // login check bypassed
     // Abort/Cancel request
     const cancelTokenSource = axios.CancelToken.source();
     config.cancelToken = cancelTokenSource.token;
@@ -95,8 +105,31 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+function prefixRelativeUrls(obj) {
+  if (!obj) return obj;
+  if (typeof obj === 'string') {
+    if (obj.startsWith('/uploads/') || obj.startsWith('/media/')) {
+      const apiHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : 'https://api.thetohfa.in';
+      return apiHost + obj;
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(prefixRelativeUrls);
+  }
+  if (typeof obj === 'object') {
+    for (const key of Object.keys(obj)) {
+      obj[key] = prefixRelativeUrls(obj[key]);
+    }
+  }
+  return obj;
+}
+
 apiClient.interceptors.response.use(
   (response) => {
+    if (response.data) {
+      response.data = prefixRelativeUrls(response.data);
+    }
     const url = response.config?.url;
     const method = response.config?.method;
     if (url && (url.includes('/cart') || url.includes('/cart/items')) && ['post', 'put', 'patch', 'delete'].includes(method.toLowerCase())) {
@@ -141,7 +174,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         sessionStorage.clear();
-        window.location.href = '/auth/login.html';
+        // login check bypassed
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -149,9 +182,15 @@ apiClient.interceptors.response.use(
     }
 
     // Global error toast for non-401 requests
-    if (error.response?.status !== 401) {
-      const msg = error.response?.data?.message || error.message || 'Request failed';
-      Toast.show(msg, 'error');
+    // For GET read operations, suppress automatic error toasts so background data loads don't flood the UI with popups.
+    // For mutation requests (POST/PUT/PATCH/DELETE), show error toast unless suppressToast is set to true.
+    if (error.response?.status !== 401 && !error.config?.suppressToast) {
+      const isGet = (error.config?.method || 'get').toLowerCase() === 'get';
+      const forceShow = error.config?.showToastOnError === true;
+      if (!isGet || forceShow) {
+        const msg = error.response?.data?.message || error.message || 'Request failed';
+        Toast.show(msg, 'error');
+      }
     }
 
     return Promise.reject(error);

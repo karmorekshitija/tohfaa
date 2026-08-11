@@ -203,8 +203,21 @@ async function sendWhatsAppDocument(to, filePath, filename, caption = '') {
   }
 }
 
+/**
+ * Send outbound notification message to Admin
+ */
+async function notifyAdmin(message) {
+  const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER;
+  if (!adminPhone) {
+    console.warn('[WhatsApp] ADMIN_WHATSAPP_NUMBER env var not set. Admin notification skipped.');
+    return { mock: true, skipped: true };
+  }
+  return await sendWhatsAppTextMessage(adminPhone, message);
+}
+
 module.exports = {
   sendWhatsAppOTP,
   sendWhatsAppTextMessage,
-  sendWhatsAppDocument
+  sendWhatsAppDocument,
+  notifyAdmin
 };

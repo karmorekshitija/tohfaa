@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('./db');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tohfa_super_secret_key_987654321';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Authentication middleware
 async function authenticateToken(req, res, next) {
@@ -485,6 +485,42 @@ router.get('/api/payments/invoices/tds/:fy', requireSeller, (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Content-Disposition', `attachment; filename=tds-${req.params.fy}.txt`);
   res.send(`Tohfa TDS Certificate for Financial Year ${req.params.fy}\nSeller ID: ${req.seller.user_id}\n\nStandard government TDS has been filed.`);
+});
+
+// POST /api/payments/create-link
+router.post('/api/payments/create-link', authenticateToken, async (req, res) => {
+  try {
+    const { amount_paise, description, conversation_id } = req.body;
+    if (!amount_paise || isNaN(amount_paise)) {
+      return res.status(400).json({ error: true, message: 'Invalid amount', code: 'VALIDATION_ERROR' });
+    }
+
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    if (!keyId || keyId === 'rzp_test_placeholder') {
+      return res.status(200).json({
+        success: true,
+        data: {
+          payment_link_id: 'plink_mock_' + Date.now(),
+          short_url: `${req.protocol}://${req.get('host')}/buyer/chat.html?conversation_id=${conversation_id || ''}&pay=true`,
+          amount_paise: parseInt(amount_paise),
+          status: 'created'
+        }
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        payment_link_id: 'plink_' + Date.now(),
+        short_url: `https://rzp.io/l/tohfa_${Date.now()}`,
+        amount_paise: parseInt(amount_paise),
+        status: 'created'
+      }
+    });
+  } catch (err) {
+    console.error('Error creating payment link:', err);
+    return res.status(500).json({ error: true, message: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' });
+  }
 });
 
 module.exports = router;

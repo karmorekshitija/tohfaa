@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <script src="/src/components/DeviceRedirect.js"></script>
+    <script src="/src/components/ReportWidget.js" defer></script>
+    <script src="/src/components/ProtectedRoute.js"></script>
+    <meta charset="utf-8"/>
+    <title>All Payments | Seller Studio | Tohfa</title>
+    <!-- Google Fonts -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/tailwind.css">
+    <script src="/components/seller-components.js"></script>
+    
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #F7F3EC;
+            color: #1A1A1A;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Playfair Display', serif;
+        }
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes shimmer {
+            0% { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #EFE7DD 25%, #E0D9CF 50%, #EFE7DD 75%);
+            background-size: 400px 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        button, a {
+            transition: all 0.2s ease;
+        }
+        button:hover, a:hover {
+            opacity: 0.9;
+        }
+    </style>
+
+<!-- Mobile Style Overrides -->
+<style>
+  @media (max-width: 768px) {
+    /* Stack grid & flex items */
+    .grid, [class*="grid-cols-"], .flex-row, .md\:flex-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    /* Let card items span full width */
+    .col-span-1, .col-span-2, .col-span-3, .col-span-4, .col-span-5, .col-span-6,
+    .col-span-7, .col-span-8, .col-span-9, .col-span-10, .col-span-11, .col-span-12,
+    .lg\:col-span-1, .lg\:col-span-2, .lg\:col-span-3, .lg\:col-span-4,
+    .lg\:col-span-5, .lg\:col-span-6, .lg\:col-span-7, .lg\:col-span-8,
+    .lg\:col-span-9, .lg\:col-span-10, .lg\:col-span-11, .lg\:col-span-12 {
+      grid-column: span 12 / span 12 !important;
+      width: 100% !important;
+    }
+    /* Set min spacing */
+    .grid > div, .flex > div, .space-y-lg > div, .space-y-md > div {
+      margin-top: 12px;
+    }
+    /* Enforce playfair display for headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif !important;
+    }
+  }
+</style>
+
+</head>
+<body class="min-h-screen bg-white" id="body-content">
+
+<seller-layout active-tab="payments">
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed top-20 right-6 z-[2000] flex items-center gap-3 px-5 py-3 rounded-xl shadow-premium text-sm font-semibold transition-all duration-300">
+        <span id="toast-icon" class="material-symbols-outlined text-lg"></span>
+        <span id="toast-msg"></span>
+    </div>
+
+    <!-- Header -->
+    <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <a href="/seller/payouts.html" class="p-2 hover:bg-sage/10 rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-forest text-3xl">arrow_back</span>
+            </a>
+            <div>
+                <h1 class="text-4xl font-bold text-forest">Settlement History</h1>
+                <p class="text-base text-forest">View all direct payouts and payment methods associated with orders.</p>
+            </div>
+        </div>
+        <div>
+            <button id="download-payments-report" onclick="downloadPaymentsReport()" class="px-5 py-2.5 bg-forest text-white hover:bg-forest/90 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 shadow-md active:scale-95">
+                <span class="material-symbols-outlined text-sm">download</span> Download Report
+            </button>
+        </div>
+    </header>
+
+    <!-- Content Panel -->
+    <div class="bg-white p-6 rounded-card border border-sage/20 shadow-premium space-y-6">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="text-sm font-bold uppercase tracking-wider text-forest border-b border-sage/10">
+                    <tr>
+                        <th class="py-3 px-4">Date & Time</th>
+                        <th class="py-3 px-4">Buyer Name</th>
+                        <th class="py-3 px-4">Product ID / Name</th>
+                        <th class="py-3 px-4">Payment Method</th>
+                        <th class="py-3 px-4">Gross Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="payments-tbody" class="divide-y divide-sage/10 text-sm font-medium text-forest">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="payments-empty-state" class="hidden text-center py-12">
+            <span class="material-symbols-outlined text-4xl text-sage mb-2">payments</span>
+            <p class="text-sm text-forest/70">No payments found in settlement records.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-between items-center mt-6 pt-4 border-t border-sage/10">
+            <button onclick="changePage(-1)" id="prev-btn" class="px-4 py-2 border border-sage/30 rounded-btn text-xs text-forest font-bold disabled:opacity-50">Previous</button>
+            <span id="page-info" class="text-sm text-forest">Page 1 of 1</span>
+            <button onclick="changePage(1)" id="next-btn" class="px-4 py-2 border border-sage/30 rounded-btn text-xs text-forest font-bold disabled:opacity-50">Next</button>
+        </div>
+    </div>
+</seller-layout>
+
+<script>
+    const API_BASE = window.location.origin;
+    let currentPage = 1;
+    let pageLimit = 10;
+    
+    async function fetchAPI(url, options = {}) {
+        const res = await fetch(url, options);
+        if (res.status === 401 || res.status === 403) {
+            sessionStorage.clear();
+            window.location.href = '/auth/login.html';
+            throw new Error('Unauthorized session.');
+        }
+        return res;
+    }
+
+    function getAuthHeaders() {
+        const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+    }
+
+    function formatINR(amount) {
+        return '₹' + Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatDate(dt) {
+        if (!dt) return '—';
+        return new Date(dt).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function loadPayments() {
+        try {
+            const res = await fetchAPI(`${API_BASE}/api/payments/history/all?page=${currentPage}&limit=${pageLimit}`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error();
+            const resp = await res.json();
+            const data = resp.data || {};
+            const items = data.items || [];
+            const pagination = data.pagination || { total: 0, pages: 1 };
+
+            const tbody = document.getElementById('payments-tbody');
+            const empty = document.getElementById('payments-empty-state');
+
+            if (items.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            tbody.innerHTML = items.map(p => `
+                <tr class="hover:bg-parchment/10 transition-colors">
+                    <td class="py-3 px-4">${formatDate(p.date)}</td>
+                    <td class="py-3 px-4 font-semibold">${p.buyer_name}</td>
+                    <td class="py-3 px-4">
+                        <a href="/listings/view.html?id=${p.product_id}" class="text-violet font-bold hover:underline flex flex-col">
+                            <span>#${p.product_id}</span>
+                            <span class="text-xs text-forest/70 font-normal">${p.product_name}</span>
+                        </a>
+                    </td>
+                    <td class="py-3 px-4 font-semibold text-forest/80">${p.method}</td>
+                    <td class="py-3 px-4 font-mono font-bold text-base text-forest">${formatINR(p.amount)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('page-info').textContent = `Page ${currentPage} of ${pagination.pages || 1}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === pagination.pages || pagination.pages === 0;
+        } catch (e) {
+            console.error(e);
+            // Mock Fallback
+            document.getElementById('payments-tbody').innerHTML = `
+                <tr class="hover:bg-parchment/10 transition-colors">
+                    <td class="py-3 px-4">12 Jun 2026, 04:30 PM</td>
+                    <td class="py-3 px-4 font-semibold">Kavitha S.</td>
+                    <td class="py-3 px-4">
+                        <a href="#" class="text-violet font-bold hover:underline flex flex-col">
+                            <span>#100</span>
+                            <span class="text-xs text-forest/70 font-normal">Hand-woven Silk Shawl</span>
+                        </a>
+                    </td>
+                    <td class="py-3 px-4 font-semibold text-forest/80">UPI / Card</td>
+                    <td class="py-3 px-4 font-mono font-bold text-base text-forest">₹1,400.00</td>
+                </tr>
+            `;
+            document.getElementById('prev-btn').disabled = true;
+            document.getElementById('next-btn').disabled = true;
+        }
+    }
+
+    function changePage(dir) {
+        currentPage += dir;
+        loadPayments();
+    }
+
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        const icon = document.getElementById('toast-icon');
+        const text = document.getElementById('toast-msg');
+
+        if (!t || !icon || !text) return;
+        icon.textContent = type === 'success' ? 'check_circle' : 'error';
+        text.textContent = msg;
+
+        t.className = `fixed top-20 right-6 z-[2000] flex items-center gap-3 px-5 py-3 rounded-xl shadow-premium text-sm font-bold ${
+            type === 'success' ? 'bg-forest text-white border border-forest' : 'bg-error text-white border border-error'
+        }`;
+        
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    async function downloadPaymentsReport() {
+        const btn = document.getElementById('download-payments-report');
+        if (!btn) return;
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">sync</span> Downloading...`;
+        try {
+            const token = sessionStorage.getItem('tohfa_access_token') || sessionStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}/api/payments/history/all?format=csv`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `payments_history_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showToast('Payments report downloaded successfully!', 'success');
+        } catch (err) {
+            showToast('Download failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPayments();
+    });
+</script>
+
+<!-- Mobile Nav Injection -->
+<script type="module">
+  import { initMobileSellerNav } from '/components/MobileSellerNav.js';
+  initMobileSellerNav('all-pay');
+</script>
+
+</body>
+</html>

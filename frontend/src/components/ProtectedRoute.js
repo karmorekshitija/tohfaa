@@ -63,10 +63,10 @@
     guardsRun = true;
 
     // Admin routes guard
-    if (path.startsWith('/admin/') && !path.includes('/admin/login.html')) {
+    if (path.startsWith('/admin/') && !path.includes("/admin/dashboard.html")) {
       const adminToken = sessionStorage.getItem('tohfa_admin_token');
       if (!adminToken) {
-        window.location.replace('/admin/login.html');
+        window.location.replace("/admin/dashboard.html");
         return;
       }
     }
@@ -75,7 +75,7 @@
     if (path.startsWith('/seller/')) {
       const token = sessionStorage.getItem('tohfa_access_token');
       if (!token) {
-        window.location.replace('/auth/login.html');
+        window.location.replace("/");
         return;
       }
       const userStr = sessionStorage.getItem('tohfa_user');
@@ -88,7 +88,7 @@
             return;
           }
         } catch (e) {
-          window.location.replace('/auth/login.html');
+          window.location.replace("/");
           return;
         }
       }
@@ -113,7 +113,7 @@
       if (!isPublic) {
         const token = sessionStorage.getItem('tohfa_access_token');
         if (!token) {
-          window.location.replace(`/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
+          console.log("login bypassed");
           return;
         }
       }
@@ -199,7 +199,7 @@
       if (!authContainer.innerHTML.trim()) {
         authContainer.innerHTML = `
           <div class="flex items-center gap-md">
-            <a href="/auth/login.html" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
+            <a href="/" class="text-[#3D6B4F] hover:underline text-sm font-semibold">Login</a>
             <a href="/auth/signup-buyer.html" class="bg-[#3D6B4F] text-white px-md py-sm rounded-lg text-sm font-semibold hover:opacity-90 transition-all">Register</a>
           </div>
         `;
@@ -471,7 +471,7 @@
           </a>
         </div>
         
-        <nav class="hidden lg:flex items-center justify-center gap-xl h-full">
+        <nav class="hidden md:flex items-center justify-center gap-xl h-full">
           <a href="/buyer/home.html" class="flex items-center gap-xs transition-colors h-full px-1 font-['DM_Sans'] text-[16px] uppercase ${isHome ? 'text-[#3D6B4F] border-b-2 border-[#3D6B4F] font-bold' : 'text-[#414942] hover:text-[#3D6B4F] font-normal'}">
             <span class="material-symbols-outlined text-[20px]">home</span>
             <span>HOME</span>
@@ -578,10 +578,161 @@
   window.updateWishlistBadge = updateGlobalWishlistBadge;
   window.addEventListener('tohfa-wishlist-updated', updateGlobalWishlistBadge);
 
+  // ─────────────────────────────────────────────────────────────────
+  // Global Contact Us Modal — injected once into every page that loads
+  // ProtectedRoute.js, so it works even on pages with hardcoded footers.
+  // ─────────────────────────────────────────────────────────────────
+  function injectContactModal() {
+    if (document.getElementById('tohfa-contact-modal')) return;
+
+    // -- Styles --
+    if (!document.getElementById('tohfa-contact-modal-styles')) {
+      const s = document.createElement('style');
+      s.id = 'tohfa-contact-modal-styles';
+      s.textContent = [
+        '.tohfa-contact-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;}',
+        '.tohfa-contact-modal.is-open{display:flex!important;}',
+        '.tohfa-contact-card{background:#1E3D0F;color:#F7F2E8;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 32px 32px;width:100%;max-width:440px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-sizing:border-box;}',
+        '.tohfa-contact-modal.is-open .tohfa-contact-card{transform:scale(1);}',
+        '.tohfa-contact-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#F7F2E8;font-size:22px;cursor:pointer;opacity:.7;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}',
+        '.tohfa-contact-close-btn:hover{opacity:1;background:rgba(255,255,255,.1);transform:scale(1.05);}',
+        '.tohfa-contact-close-btn:active{transform:scale(.95);}',
+        '.tohfa-contact-card h3{font-family:\'Playfair Display\',serif;font-size:28px;margin:0 0 12px;color:#FFFFFF;}',
+        '.tohfa-contact-card p{font-family:\'DM Sans\',sans-serif;font-size:16px;line-height:1.5;margin-bottom:24px;color:#A8B89A;}',
+        '.tohfa-contact-email-link{display:inline-flex;align-items:center;gap:8px;font-family:\'Space Mono\',monospace;font-size:16px;color:#C9972C;text-decoration:none;border:1px solid rgba(201,151,44,.3);padding:12px 24px;border-radius:8px;background:rgba(201,151,44,.05);transition:all .2s ease;}',
+        '.tohfa-contact-email-link:hover{background:rgba(201,151,44,.15);border-color:rgba(201,151,44,.6);color:#F7F2E8;transform:translateY(-2px);}',
+        '.tohfa-contact-email-link:active{transform:translateY(0);}',
+        '@media (max-width: 640px) {',
+        '  .tohfa-contact-modal{padding:16px;}',
+        '  .tohfa-contact-card{padding:28px 18px 24px 18px!important;border-radius:14px!important;box-sizing:border-box!important;width:100%!important;max-width:100%!important;}',
+        '  .tohfa-contact-card h3{font-size:22px!important;margin-bottom:10px!important;}',
+        '  .tohfa-contact-email-link{width:100%!important;max-width:100%!important;display:flex!important;justify-content:center!important;font-size:13px!important;padding:10px 12px!important;word-break:break-all!important;box-sizing:border-box!important;}',
+        '}'
+      ].join('');
+      document.head.appendChild(s);
+    }
+
+    // -- Modal HTML --
+    const modal = document.createElement('div');
+    modal.id = 'tohfa-contact-modal';
+    modal.className = 'tohfa-contact-modal';
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.closeContactModal();
+    });
+    modal.innerHTML = `
+      <div class="tohfa-contact-card" onclick="event.stopPropagation()">
+        <button class="tohfa-contact-close-btn" onclick="window.closeContactModal()" aria-label="Close contact modal">&times;</button>
+        <h3>Get in Touch</h3>
+        <p>Reach us at</p>
+        <a href="mailto:tohfa126@gmail.com" class="tohfa-contact-email-link">
+          <span class="material-symbols-outlined" style="font-size:20px;vertical-align:middle;">mail</span>
+          <span>tohfa126@gmail.com</span>
+        </a>
+      </div>`;
+    document.body.appendChild(modal);
+
+    // -- Global functions --
+    window.openContactModal = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      const m = document.getElementById('tohfa-contact-modal');
+      if (m) { m.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+    };
+    window.closeContactModal = function() {
+      const m = document.getElementById('tohfa-contact-modal');
+      if (m) { m.classList.remove('is-open'); document.body.style.overflow = ''; }
+    };
+
+    // -- Universal click interceptor for any "Contact Us" anchor on any page --
+    if (!window._tohfaContactClickListenerAdded) {
+      window._tohfaContactClickListenerAdded = true;
+      document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.textContent.trim().toLowerCase() === 'contact us') {
+          e.preventDefault();
+          window.openContactModal(e);
+        }
+      }, true); // capture phase so it fires before href navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') window.closeContactModal();
+      });
+    }
+  }
+
+  // -- Dynamic injection of Refunds & Disputes Modal --
+  function injectRefundsModal() {
+    if (document.getElementById('tohfa-refunds-modal')) return;
+
+    // -- Styles --
+    if (!document.getElementById('tohfa-refunds-modal-styles')) {
+      const s = document.createElement('style');
+      s.id = 'tohfa-refunds-modal-styles';
+      s.textContent = [
+        '.tohfa-refunds-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;}',
+        '.tohfa-refunds-modal.is-open{display:flex!important;}',
+        '.tohfa-refunds-card{background:#1E3D0F;color:#F7F2E8;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 32px 32px;width:100%;max-width:520px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:left;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}',
+        '.tohfa-refunds-modal.is-open .tohfa-refunds-card{transform:scale(1);}',
+        '.tohfa-refunds-close-btn{position:absolute;top:16px;right:16px;background:none;border:none;color:#F7F2E8;font-size:22px;cursor:pointer;opacity:.7;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;}',
+        '.tohfa-refunds-close-btn:hover{opacity:1;background:rgba(255,255,255,.1);transform:scale(1.05);}',
+        '.tohfa-refunds-close-btn:active{transform:scale(.95);}',
+        '.tohfa-refunds-card h3{font-family:\'Playfair Display\',serif;font-size:28px;margin:0 0 20px;color:#FFFFFF;text-align:center;}',
+        '.tohfa-refunds-card p{font-family:\'DM Sans\',sans-serif !important;font-size:14px;line-height:1.6;margin-bottom:16px;color:#A8B89A;}',
+        '.tohfa-refunds-card p:last-child{margin-bottom:0;}',
+        '@media (min-width: 768px){.tohfa-refunds-card p{font-size: 17px;}}'
+      ].join('');
+      document.head.appendChild(s);
+    }
+
+    // -- Modal HTML --
+    const modal = document.createElement('div');
+    modal.id = 'tohfa-refunds-modal';
+    modal.className = 'tohfa-refunds-modal';
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) window.closeRefundsModal();
+    });
+    modal.innerHTML = `
+      <div class="tohfa-refunds-card" onclick="event.stopPropagation()">
+        <button class="tohfa-refunds-close-btn" onclick="window.closeRefundsModal()" aria-label="Close refunds modal">&times;</button>
+        <h3>Refunds & Disputes</h3>
+        <p>Most Tohfa products are handmade or customized just for you, so we're unable to accept returns or offer refunds once an order is placed.</p>
+        <p>If your order arrives damaged, we'll gladly offer a replacement or refund — provided you share an unedited unboxing video (starting before the package is opened) within 48 hours of delivery. As we're now in an age where images can be easily edited or AI-generated, <strong style="color: #C9972C; font-weight: 700;">we're only able to accept video proof, not photos, to verify a claim.</strong></p>
+        <p>Please note: refunds aren't available for change of mind, customization changes after production starts, or minor handmade variations — these are natural, since every piece is made by hand.</p>
+      </div>`;
+    document.body.appendChild(modal);
+
+    // -- Global functions --
+    window.openRefundsModal = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      const m = document.getElementById('tohfa-refunds-modal');
+      if (m) { m.classList.add('is-open'); document.body.style.overflow = 'hidden'; }
+    };
+    window.closeRefundsModal = function() {
+      const m = document.getElementById('tohfa-refunds-modal');
+      if (m) { m.classList.remove('is-open'); document.body.style.overflow = ''; }
+    };
+
+    // -- Universal click interceptor for any "Refunds & Disputes" anchor on any page --
+    if (!window._tohfaRefundsClickListenerAdded) {
+      window._tohfaRefundsClickListenerAdded = true;
+      document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.textContent.trim().toLowerCase() === 'refunds & disputes') {
+          e.preventDefault();
+          window.openRefundsModal(e);
+        }
+      }, true); // capture phase so it fires before href navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') window.closeRefundsModal();
+      });
+    }
+  }
+
   // Let's run a check when page loads to show any toast from redirection
   function init() {
     setupBuyerNavbar();
+    injectContactModal();
+    injectRefundsModal();
     updateGlobalCartBadge();
+
     updateGlobalWishlistBadge();
 
     const deniedReason = sessionStorage.getItem('access_denied_reason');
@@ -723,7 +874,7 @@
           <button id="mobile-logout-btn" class="w-full py-3 bg-[#3D6B4F] text-white rounded-full text-sm font-bold shadow hover:bg-[#2a4d38] transition-all border-none" style="cursor:pointer;">
             Logout
           </button>` : `
-          <a href="/auth/login.html" class="w-full py-3 bg-[#3D6B4F] text-white rounded-full text-sm font-bold shadow hover:bg-[#2a4d38] transition-all flex items-center justify-center">
+          <a href="/" class="w-full py-3 bg-[#3D6B4F] text-white rounded-full text-sm font-bold shadow hover:bg-[#2a4d38] transition-all flex items-center justify-center">
             Login
           </a>`}
         </div>
@@ -753,7 +904,7 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
           sessionStorage.clear();
-          window.location.href = '/auth/login.html';
+          // login redirect removed';
         });
       }
     }

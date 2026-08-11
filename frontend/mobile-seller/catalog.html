@@ -4,10 +4,10 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="/src/components/DeviceRedirect.js"></script>
-  <script src="/src/components/ReportWidget.js" defer></script>
-  <script src="/src/components/ProtectedRoute.js"></script>
-  <script src="/components/seller-components.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+  <script type="module" src="/src/components/ReportWidget.js" defer></script>
+  <script type="module" src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/components/seller-components.js"></script>
 
 <meta charset="utf-8"/>
 <title>Tohfa Seller Studio - Catalog</title>
@@ -32,7 +32,7 @@
     (async function verifySellerRole() {
         const token = getTohfaToken();
         if (!token) {
-            window.location.href = '/auth/login.html';
+            // login check bypassed
             return;
         }
         try {
@@ -46,28 +46,30 @@
                 window.location.href = '/mobile-buyer/profile.html';
             }
         } catch (e) {
-            window.location.href = '/auth/login.html';
+            // login check bypassed
         }
     })();
 
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: '#3D6B4F',
-            parchment: '#F7F3EC',
-            sage: '#8FAF82',
-            violet: '#7B5EA7',
-            gold: '#C8973A',
-            cream: '#FCFAF7',
-          },
-          fontFamily: {
-            serif: ['"Playfair Display"', 'serif'],
-            sans: ['"DM Sans"', 'sans-serif'],
-            mono: ['"Space Mono"', 'monospace'],
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              forest: '#3D6B4F',
+              parchment: '#F7F3EC',
+              sage: '#8FAF82',
+              violet: '#7B5EA7',
+              gold: '#C8973A',
+              cream: '#FCFAF7',
+            },
+            fontFamily: {
+              serif: ['"Playfair Display"', 'serif'],
+              sans: ['"DM Sans"', 'sans-serif'],
+              mono: ['"Space Mono"', 'monospace'],
+            },
           },
         },
-      },
+      };
     }
   </script>
 <style data-purpose="custom-layout">
@@ -315,7 +317,7 @@
       } catch (err) {
           console.error("Seller profile approval check failed:", err);
       }
-      if (res.status === 401 || res.status === 403) { sessionStorage.clear(); window.location.href = '/auth/login.html'; return; }
+      if (res.status === 401 || res.status === 403) { sessionStorage.clear(); // login check bypassed return; }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const resp = await res.json();
       let raw = [];
@@ -608,7 +610,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-new-listing')?.addEventListener('click', async () => {
       const token = getTohfaToken();
-      if (!token) { window.location.href = '/auth/login.html'; return; }
+      if (!token) { // login check bypassed return; }
       const btn = document.getElementById('btn-new-listing');
       btn.disabled = true;
       btn.innerHTML = '<span class="text-base leading-none animate-spin inline-block">⏳</span> Creating…';

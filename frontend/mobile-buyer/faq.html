@@ -6,9 +6,9 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Tohfa | Frequently Asked Questions</title>
-  <script src="/src/components/DeviceRedirect.js"></script>
-  <script src="/src/components/ReportWidget.js" defer></script>
-  <script src="/src/components/ProtectedRoute.js"></script>
+  <script type="module" src="/src/components/DeviceRedirect.js"></script>
+  <script type="module" src="/src/components/ReportWidget.js" defer></script>
+  <script type="module" src="/src/components/ProtectedRoute.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Space+Mono&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -83,6 +83,423 @@
       </button>
     </div>
   </section>
+  </main>
+
+  <!-- Tohfa Footer Component -->
+  <!-- NEW TOHFA FOOTER — footer_stitch v1 -->
+  <footer style="position:relative;overflow:hidden;background:#1E3D0F;color:#F7F2E8;" class="tohfa-responsive-footer">
+    
+    <!-- DESKTOP FOOTER (min-width: 768px) -->
+    <div class="tohfa-desktop-footer" style="padding-top:64px;padding-bottom:32px;">
+      <!-- Ghost watermark -->
+      <div style="position:absolute;bottom:-10%;right:-5%;opacity:0.04;pointer-events:none;user-select:none;">
+        <span class="material-symbols-outlined" style="font-size:600px;color:white;">local_florist</span>
+      </div>
+      <!-- Main grid -->
+      <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(1,1fr);gap:48px;margin-bottom:80px;position:relative;z-index:10;" class="tohfa-footer-grid">
+        <!-- Brand -->
+        <div>
+          <h2 style="font-family:'Playfair Display',serif;font-size:44px;font-style:italic;color:#C9972C;margin-bottom:16px;">Tohfa.</h2>
+          <p style="font-family:'DM Sans',sans-serif;color:#F7F2E8;margin-bottom:8px;font-weight:500;">Thoughtful Gifting, Made Effortless.</p>
+          <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;margin-bottom:32px;line-height:1.6;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+          
+        </div>
+        <!-- Company -->
+        <div>
+          <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Company</h3>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+            <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+            <li><a href="/mobile-buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+            
+          </ul>
+        </div>
+        <!-- For Sellers -->
+        <div>
+          <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Sellers</h3>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+            <li><a href="#" onclick="handleFooterSellerLink(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+            <li><a href="#" onclick="handleFooterSellerLink(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+            
+          </ul>
+        </div>
+        <!-- For Buyers -->
+        <div>
+          <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">For Buyers</h3>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+            <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+            
+          </ul>
+        </div>
+        <!-- Support -->
+        <div>
+          <h3 style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;margin-bottom:32px;">Support</h3>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+            <li><a href="javascript:void(0)" onclick="openContactModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+            <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+            <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+            <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- Divider -->
+      <div style="max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:32px;">
+        <div style="width:100%;height:1px;background:rgba(255,255,255,0.1);position:relative;">
+          <div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);display:flex;gap:16px;color:rgba(201,151,44,0.3);">
+            <span class="material-symbols-outlined" style="font-size:16px;">stars</span>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom bar -->
+      <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;z-index:10;" class="tohfa-footer-bottom">
+        
+        <div style="display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:#F7F2E8;">
+          <span>Made with</span>
+          <span class="material-symbols-outlined" style="color:#C9972C;font-size:18px;font-variation-settings:'FILL' 1;">favorite</span>
+          <span>in India</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE ACCORDION FOOTER (max-width: 767px) -->
+    <div class="tohfa-mobile-footer" style="padding:48px 24px 32px 24px;">
+      <!-- Ghost watermark -->
+      <div style="position:absolute;bottom:-5%;right:-10%;opacity:0.03;pointer-events:none;user-select:none;">
+        <span class="material-symbols-outlined" style="font-size:320px;color:white;">local_florist</span>
+      </div>
+      <!-- Brand -->
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#C9972C;margin-bottom:12px;">Tohfa.</h2>
+        <p style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;color:#F7F2E8;margin-bottom:8px;text-transform:uppercase;">Thoughtful Gifting, Made Effortless.</p>
+        <p style="font-family:'DM Sans',sans-serif;color:#A8B89A;font-size:13px;line-height:1.6;margin-bottom:24px;max-width:320px;">India's first home for handcrafted gifts, celebrating the soul of artisanal craftsmanship.</p>
+        
+      </div>
+      <!-- Accordions -->
+      <div style="border-top:1px solid rgba(255,255,255,0.1);margin-bottom:32px;">
+        <!-- Company -->
+        <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+          <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+            <span>Company</span>
+            <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+          </summary>
+          <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">About Us</a></li>
+            <li><a href="/mobile-buyer/our-story.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Our Story</a></li>
+            
+          </ul>
+        </details>
+        <!-- For Sellers -->
+        <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+          <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+            <span>For Sellers</span>
+            <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+          </summary>
+          <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li><a href="#" onclick="handleFooterSellerLink(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Sell on Tohfa</a></li>
+            <li><a href="#" onclick="handleFooterSellerLink(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Seller Dashboard</a></li>
+            
+          </ul>
+        </details>
+        <!-- For Buyers -->
+        <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+          <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+            <span>For Buyers</span>
+            <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+          </summary>
+          <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li><a href="#" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'" onclick="event.preventDefault(); if (window.openTohfaChat) { window.openTohfaChat('Find me a gift'); } else { window.__tohfaChatQueue = window.__tohfaChatQueue || []; window.__tohfaChatQueue.push('Find me a gift'); }">AI Gift Guide</a></li>
+            
+          </ul>
+        </details>
+        <!-- Support -->
+        <details class="tohfa-footer-details" style="border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 0;outline:none;">
+          <summary style="display:flex;justify-content:space-between;align-items:center;list-style:none;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#C9972C;cursor:pointer;outline:none;">
+            <span>Support</span>
+            <span class="material-symbols-outlined" style="font-size:18px;transition:transform 0.2s;">expand_more</span>
+          </summary>
+          <ul style="list-style:none;padding:12px 0 0 0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li><a href="javascript:void(0)" onclick="openContactModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Contact Us</a></li>
+            <li><a href="javascript:void(0)" onclick="openRefundsModal(event)" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Refunds &amp; Disputes</a></li>
+            <li><a href="/mobile-buyer/terms-conditions.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">Terms and Conditions</a></li>
+            <li><a href="/mobile-buyer/faq.html" style="font-family:'DM Sans',sans-serif;color:#F7F2E8;text-decoration:none;font-size:14px;" onmouseover="this.style.color='#C9972C'" onmouseout="this.style.color='#F7F2E8'">FAQs</a></li>
+          </ul>
+        </details>
+      </div>
+      <!-- Bottom bar -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        
+        <div style="display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:#F7F2E8;">
+          <span>Made with</span>
+          <span class="material-symbols-outlined" style="color:#C9972C;font-size:16px;font-variation-settings:'FILL' 1;">favorite</span>
+          <span>in India</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Default Responsive styles */
+      .tohfa-mobile-footer { display: block !important; }
+      .tohfa-desktop-footer { display: none !important; }
+      
+      .tohfa-footer-details summary::-webkit-details-marker {
+        display: none !important;
+      }
+      .tohfa-footer-details[open] summary span.material-symbols-outlined {
+        transform: rotate(180deg) !important;
+      }
+
+      @media (min-width: 768px) {
+        .tohfa-mobile-footer { display: none !important; }
+        .tohfa-desktop-footer { display: block !important; }
+        .tohfa-footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important; }
+        .tohfa-footer-bottom { flex-direction: row !important; justify-content: space-between !important; }
+      }
+
+      /* Modal styling */
+      .tohfa-contact-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .tohfa-contact-modal.is-open {
+        display: flex !important;
+      }
+      .tohfa-contact-card {
+        background: #1E3D0F;
+        color: #F7F2E8;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 40px 32px 32px 32px;
+        width: 100%;
+        max-width: 440px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-sizing: border-box;
+      }
+      .tohfa-contact-modal.is-open .tohfa-contact-card {
+        transform: scale(1);
+      }
+      .tohfa-contact-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: #F7F2E8;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+      .tohfa-contact-close:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.05);
+      }
+      .tohfa-contact-close:active {
+        transform: scale(0.95);
+      }
+      .tohfa-contact-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        margin-top: 0;
+        margin-bottom: 12px;
+        color: #FFFFFF;
+      }
+      .tohfa-contact-card p {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 24px;
+        color: #A8B89A;
+      }
+      .tohfa-contact-email-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 16px;
+        color: #C9972C;
+        text-decoration: none;
+        border: 1px solid rgba(201, 151, 44, 0.3);
+        padding: 12px 24px;
+        border-radius: 8px;
+        background: rgba(201, 151, 44, 0.05);
+        transition: all 0.2s ease;
+      }
+      .tohfa-contact-email-link:hover {
+        background: rgba(201, 151, 44, 0.15);
+        border-color: rgba(201, 151, 44, 0.6);
+        color: #F7F2E8;
+        transform: translateY(-2px);
+      }
+      .tohfa-contact-email-link:active {
+        transform: translateY(0);
+      }
+
+      /* Mobile fixes: Contact modal */
+      @media (max-width: 640px) {
+        .tohfa-contact-modal {
+          padding: 16px;
+        }
+        .tohfa-contact-card {
+          padding: 28px 18px 24px 18px !important;
+          border-radius: 14px !important;
+          box-sizing: border-box !important;
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .tohfa-contact-card h3 {
+          font-size: 22px !important;
+          margin-bottom: 10px !important;
+        }
+        .tohfa-contact-email-link {
+          width: 100% !important;
+          max-width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          font-size: 13px !important;
+          padding: 10px 12px !important;
+          word-break: break-all !important;
+          box-sizing: border-box !important;
+        }
+      }
+    </style>
+
+    <!-- Contact Us Modal -->
+    <div id="tohfa-contact-modal" class="tohfa-contact-modal" onclick="if(event.target === this) closeContactModal()">
+      <div class="tohfa-contact-card" onclick="event.stopPropagation()">
+        <button class="tohfa-contact-close" onclick="closeContactModal()" aria-label="Close modal">&times;</button>
+        <h3>Get in Touch</h3>
+        <p>Reach us at</p>
+        <a href="mailto:tohfa126@gmail.com" class="tohfa-contact-email-link">
+          <span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">mail</span>
+          <span>tohfa126@gmail.com</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+async function handleFooterSellerLink(e) {
+  if (e) e.preventDefault();
+  const isMobile = window.innerWidth < 768;
+  const token = sessionStorage.getItem('tohfa_access_token');
+  if (!token) {
+    sessionStorage.setItem('tohfa_redirect_seller', 'true');
+    /* login bypassed */(window.location.pathname + window.location.search);
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/profile/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        const role = data.data.role;
+        if (role === 'seller') {
+          window.location.href = isMobile ? '/mobile-seller/dashboard.html' : '/seller/dashboard.html';
+          return;
+        }
+      }
+    }
+  } catch(err) {
+    console.error("Error checking seller status:", err);
+  }
+  
+  window.location.href = isMobile ? '/mobile-buyer/become-seller.html' : '/buyer/become-seller.html';
+}
+
+// Check if we need to auto-redirect back to dashboard/signup after login redirect
+document.addEventListener("DOMContentLoaded", () => {
+  const needsRedirect = sessionStorage.getItem('tohfa_redirect_seller');
+  if (needsRedirect === 'true') {
+    sessionStorage.removeItem('tohfa_redirect_seller');
+    const token = sessionStorage.getItem('tohfa_access_token');
+    if (token) {
+      handleFooterSellerLink();
+    }
+  }
+});
+
+window.openContactModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeContactModal = function() {
+  const modal = document.getElementById('tohfa-contact-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasContactModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeContactModal();
+    }
+  });
+  window.hasContactModalEscListener = true;
+}
+
+window.openRefundsModal = function(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closeRefundsModal = function() {
+  const modal = document.getElementById('tohfa-refunds-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
+if (!window.hasRefundsModalEscListener) {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      window.closeRefundsModal();
+    }
+  });
+  window.hasRefundsModalEscListener = true;
+}
+</script>
 </main>
 
 <!-- Bottom Navigation (managed by ProtectedRoute) -->
@@ -113,9 +530,9 @@
     { q: "What is Tohfa?", a: "Tohfa is a curated marketplace for artisanal, handcrafted heritage products from across India." },
     { q: "How do I place an order?", a: "Browse our collections, add items to your cart, and proceed to checkout with our secure payment gateway." },
     { q: "Are the products authentic?", a: "Yes, every product is sourced directly from verified master artisans and heritage craft clusters." },
-    { q: "What are the shipping charges?", a: "Shipping is calculated at checkout based on weight and destination. We offer free shipping on orders over ₹5000." },
+    { q: "What are the shipping charges?", a: "We charge a flat ₹89 shipping fee on all products, with free shipping on orders above ₹999." },
     { q: "Do you ship internationally?", a: "Currently, we ship within India. International shipping is in our immediate roadmap." },
-    { q: "How can I track my order?", a: "Once shipped, you will receive a tracking link via email and SMS." },
+    { q: "How can I track my order?", a: "You can track your order directly from the Orders tab in your Profile panel." },
     { q: "What is the return policy?", a: "We accept returns for damaged or defective items within 48 hours of delivery." },
     { q: "Can I customize a gift?", a: "Many of our artisans offer personalization. Look for the 'Customize' tag on product pages." },
     { q: "What payment methods are accepted?", a: "We accept UPI, Credit/Debit Cards, and Net Banking." },
@@ -124,7 +541,7 @@
     { q: "Do you offer gift wrapping?", a: "Yes, we offer premium, eco-friendly gift wrapping inspired by traditional textiles." },
     { q: "Can I include a gift message?", a: "Absolutely. You can add a handwritten note during the checkout process." },
     { q: "What if I receive a broken item?", a: "Please take a photo and contact our support team immediately for a replacement or refund." },
-    { q: "How long does delivery take?", a: "Standard delivery takes 5-7 business days. Custom items may take longer." },
+    { q: "How long does delivery take?", a: "Standard delivery takes 5–10 business days. Customised items may take longer." },
     { q: "Can I cancel my order?", a: "Orders can be cancelled within 12 hours of placement, before they are processed by artisans." },
     { q: "Do you have a loyalty program?", a: "Our Patron Circle is coming soon, offering early access to limited collections.", badge: true },
     { q: "Can I book an artisan workshop?", a: "We are preparing to launch virtual 'Meet the Maker' sessions soon.", badge: true },
@@ -132,13 +549,12 @@
   ];
 
   const sellerFAQs = [
-    { q: "How do I become a Tohfa seller?", a: "Apply through our Founding Sellers portal with photos of your craftwork." },
+    { q: "How do I become a Tohfa seller?", a: "You can apply by navigating to the Login page and clicking the 'Sell on Tohfa' button." },
     { q: "What crafts are eligible?", a: "We focus on GI-tagged crafts, heritage handlooms, and traditional Indian handicrafts." },
     { q: "What is the commission fee?", a: "Tohfa charges a nominal commission on successful sales to maintain the platform and logistics." },
     { q: "How do I get paid?", a: "Payments are settled directly to your registered bank account 7 days after successful delivery." },
     { q: "Who handles the shipping?", a: "Tohfa provides integrated logistics. You just need to pack the item securely." },
     { q: "What are the packaging guidelines?", a: "We require specific sustainable packaging standards to ensure product safety and brand consistency." },
-    { q: "Do I need a GST number?", a: "Yes, as per Indian e-commerce regulations, a valid GSTIN is required for all sellers." },
     { q: "Can I sell personalized items?", a: "Yes, we encourage artisans to offer bespoke services through our customization tool." },
     { q: "How do I manage my inventory?", a: "Our Seller Hub provides a simple dashboard to update stock and manage orders." },
     { q: "Is there a registration fee?", a: "No, there is zero upfront cost to join Tohfa as an artisan." },
@@ -147,7 +563,7 @@
     { q: "How are returns handled?", a: "In case of manufacturing defects, sellers are responsible. For other cases, Tohfa assists." },
     { q: "Do you help with export?", a: "We are currently streamlining export documentation for our sellers." },
     { q: "How do I update my artisan story?", a: "You can edit your profile and craft history via the Seller Hub at any time." },
-    { q: "Can I see sales analytics?", a: "Advanced insights and trend forecasting for artisans is launching next quarter.", badge: true }
+    { q: "Can I see sales analytics?", a: "Advanced insights and trend forecasting for artisans is launching next quarter." }
   ];
 
   function createFAQItem(item) {

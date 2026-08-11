@@ -1,0 +1,943 @@
+{
+  "generated_at": "2026-07-19T10:26:11.056Z",
+  "true_parents": [
+    {
+      "id": 60,
+      "name": "Customized Gifts",
+      "slug": "customized-gifts"
+    },
+    {
+      "id": 74,
+      "name": "Jewellery",
+      "slug": "jewellery"
+    },
+    {
+      "id": 87,
+      "name": "Hampers",
+      "slug": "hampers"
+    },
+    {
+      "id": 107,
+      "name": "Wedding & Rituals",
+      "slug": "wedding-rituals"
+    },
+    {
+      "id": 115,
+      "name": "Crochet",
+      "slug": "crochet"
+    },
+    {
+      "id": 124,
+      "name": "Fabric Crafts",
+      "slug": "fabric-crafts"
+    },
+    {
+      "id": 128,
+      "name": "Festivals",
+      "slug": "festivals"
+    },
+    {
+      "id": 136,
+      "name": "Couples",
+      "slug": "couples"
+    },
+    {
+      "id": 151,
+      "name": "Home Decor",
+      "slug": "home-decor"
+    },
+    {
+      "id": 159,
+      "name": "Art & Portraits",
+      "slug": "art-portraits"
+    },
+    {
+      "id": 169,
+      "name": "Ceramics & Pottery",
+      "slug": "ceramics-pottery"
+    }
+  ],
+  "proposed_children": [
+    {
+      "child_id": 61,
+      "child_name": "Spotify Plaques",
+      "child_slug": "customized-gifts-spotify-plaques",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 62,
+      "child_name": "Polaroid Sets",
+      "child_slug": "customized-gifts-polaroid-sets",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 63,
+      "child_name": "Frames",
+      "child_slug": "customized-gifts-frames",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 64,
+      "child_name": "Name Lamps",
+      "child_slug": "customized-gifts-name-lamps",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 65,
+      "child_name": "Keychains",
+      "child_slug": "customized-gifts-keychains",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 66,
+      "child_name": "QR Code Gifts",
+      "child_slug": "customized-gifts-qr-code-gifts",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 67,
+      "child_name": "Personalized Bottles",
+      "child_slug": "customized-gifts-personalized-bottles",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 68,
+      "child_name": "Name Plates",
+      "child_slug": "customized-gifts-name-plates",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 69,
+      "child_name": "Coasters",
+      "child_slug": "customized-gifts-coasters",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 70,
+      "child_name": "Phone Covers",
+      "child_slug": "customized-gifts-phone-covers",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 71,
+      "child_name": "Memory Books",
+      "child_slug": "customized-gifts-memory-books",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 72,
+      "child_name": "Scrapbooks",
+      "child_slug": "customized-gifts-scrapbooks",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 73,
+      "child_name": "Letters",
+      "child_slug": "customized-gifts-letters",
+      "proposed_parent_id": 60,
+      "proposed_parent_name": "Customized Gifts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 75,
+      "child_name": "Necklaces",
+      "child_slug": "jewellery-necklaces",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 76,
+      "child_name": "Pendants",
+      "child_slug": "jewellery-pendants",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 77,
+      "child_name": "Earrings",
+      "child_slug": "jewellery-earrings",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 78,
+      "child_name": "Rings",
+      "child_slug": "jewellery-rings",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 79,
+      "child_name": "Anklets",
+      "child_slug": "jewellery-anklets",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 80,
+      "child_name": "Hair Accessories",
+      "child_slug": "jewellery-hair-accessories",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 81,
+      "child_name": "Resin Jewellery",
+      "child_slug": "jewellery-resin-jewellery",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 82,
+      "child_name": "Beaded Jewellery",
+      "child_slug": "jewellery-beaded-jewellery",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 83,
+      "child_name": "Crochet Jewellery",
+      "child_slug": "jewellery-crochet-jewellery",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 84,
+      "child_name": "Personalized Jewellery",
+      "child_slug": "jewellery-personalized-jewellery",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 85,
+      "child_name": "Clay Jewellery",
+      "child_slug": "jewellery-clay-jewellery",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 86,
+      "child_name": "Couple Jewellery",
+      "child_slug": "jewellery-couple-jewellery",
+      "proposed_parent_id": 74,
+      "proposed_parent_name": "Jewellery",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 88,
+      "child_name": "Wedding Hampers",
+      "child_slug": "hampers-wedding-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 89,
+      "child_name": "Birthday Hampers",
+      "child_slug": "hampers-birthday-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 90,
+      "child_name": "Couple Hampers",
+      "child_slug": "hampers-couple-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 91,
+      "child_name": "Anniversary Hampers",
+      "child_slug": "hampers-anniversary-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 92,
+      "child_name": "Rakhi Hampers",
+      "child_slug": "hampers-rakhi-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 93,
+      "child_name": "Diwali Hampers",
+      "child_slug": "hampers-diwali-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 94,
+      "child_name": "Holi Hampers",
+      "child_slug": "hampers-holi-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 95,
+      "child_name": "Valentine Hampers",
+      "child_slug": "hampers-valentine-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 96,
+      "child_name": "Baby Shower Hampers",
+      "child_slug": "hampers-baby-shower-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 97,
+      "child_name": "Farewell Hampers",
+      "child_slug": "hampers-farewell-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 98,
+      "child_name": "Corporate Hampers",
+      "child_slug": "hampers-corporate-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 99,
+      "child_name": "Chocolate Hampers",
+      "child_slug": "hampers-chocolate-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 100,
+      "child_name": "Sweet Hampers",
+      "child_slug": "hampers-sweet-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 101,
+      "child_name": "Anime Hampers",
+      "child_slug": "hampers-anime-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 102,
+      "child_name": "Bridesmaid Hampers",
+      "child_slug": "hampers-bridesmaid-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 103,
+      "child_name": "Groom Gang Hampers",
+      "child_slug": "hampers-groom-gang-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 104,
+      "child_name": "Skincare Hampers",
+      "child_slug": "hampers-skincare-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 105,
+      "child_name": "Period Comfort Hampers",
+      "child_slug": "hampers-period-comfort-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 106,
+      "child_name": "Friendship Hampers",
+      "child_slug": "hampers-friendship-hampers",
+      "proposed_parent_id": 87,
+      "proposed_parent_name": "Hampers",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 108,
+      "child_name": "Shagun Envelopes",
+      "child_slug": "wedding-rituals-shagun-envelopes",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 109,
+      "child_name": "Wedding Hampers",
+      "child_slug": "wedding-rituals-wedding-hampers",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 110,
+      "child_name": "Mehendi Essentials",
+      "child_slug": "wedding-rituals-mehendi-essentials",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 111,
+      "child_name": "Haldi Essentials",
+      "child_slug": "wedding-rituals-haldi-essentials",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 112,
+      "child_name": "Wedding Decor",
+      "child_slug": "wedding-rituals-wedding-decor",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 113,
+      "child_name": "Return Gifts",
+      "child_slug": "wedding-rituals-return-gifts",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 114,
+      "child_name": "Wedding Nameplates",
+      "child_slug": "wedding-rituals-wedding-nameplates",
+      "proposed_parent_id": 107,
+      "proposed_parent_name": "Wedding & Rituals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 116,
+      "child_name": "Sunflowers",
+      "child_slug": "crochet-sunflowers",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 117,
+      "child_name": "Roses",
+      "child_slug": "crochet-roses",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 118,
+      "child_name": "Flower Bouquets",
+      "child_slug": "crochet-flower-bouquets",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 119,
+      "child_name": "Other Flowers",
+      "child_slug": "crochet-other-flowers",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 120,
+      "child_name": "Bags",
+      "child_slug": "crochet-bags",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 121,
+      "child_name": "Plushies",
+      "child_slug": "crochet-plushies",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 122,
+      "child_name": "Phone Cases",
+      "child_slug": "crochet-phone-cases",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 123,
+      "child_name": "Keychains",
+      "child_slug": "crochet-keychains",
+      "proposed_parent_id": 115,
+      "proposed_parent_name": "Crochet",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 125,
+      "child_name": "Tote Bags",
+      "child_slug": "fabric-crafts-tote-bags",
+      "proposed_parent_id": 124,
+      "proposed_parent_name": "Fabric Crafts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 126,
+      "child_name": "Knitted Items",
+      "child_slug": "fabric-crafts-knitted-items",
+      "proposed_parent_id": 124,
+      "proposed_parent_name": "Fabric Crafts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 127,
+      "child_name": "Embroidery",
+      "child_slug": "fabric-crafts-embroidery",
+      "proposed_parent_id": 124,
+      "proposed_parent_name": "Fabric Crafts",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 129,
+      "child_name": "Rakhi",
+      "child_slug": "festivals-rakhi",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 130,
+      "child_name": "Diwali",
+      "child_slug": "festivals-diwali",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 131,
+      "child_name": "Navratri",
+      "child_slug": "festivals-navratri",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 132,
+      "child_name": "Holi",
+      "child_slug": "festivals-holi",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 133,
+      "child_name": "Christmas",
+      "child_slug": "festivals-christmas",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 134,
+      "child_name": "Eid",
+      "child_slug": "festivals-eid",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 135,
+      "child_name": "Karwa Chauth",
+      "child_slug": "festivals-karwa-chauth",
+      "proposed_parent_id": 128,
+      "proposed_parent_name": "Festivals",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 137,
+      "child_name": "Hampers",
+      "child_slug": "couples-hampers",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 138,
+      "child_name": "Customized Gifts",
+      "child_slug": "couples-customized-gifts",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 139,
+      "child_name": "Jewellery",
+      "child_slug": "couples-jewellery",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 140,
+      "child_name": "Portraits",
+      "child_slug": "couples-portraits",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 141,
+      "child_name": "Scrapbooks & Memory Books",
+      "child_slug": "couples-scrapbooks-memory-books",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 142,
+      "child_name": "Letters & Cards",
+      "child_slug": "couples-letters-cards",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 143,
+      "child_name": "Flowers",
+      "child_slug": "couples-flowers",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 144,
+      "child_name": "Lamps",
+      "child_slug": "couples-lamps",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 145,
+      "child_name": "Keychains",
+      "child_slug": "couples-keychains",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 146,
+      "child_name": "Home Decor",
+      "child_slug": "couples-home-decor",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 147,
+      "child_name": "Candles",
+      "child_slug": "couples-candles",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 148,
+      "child_name": "Proposal Gifts",
+      "child_slug": "couples-proposal-gifts",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 149,
+      "child_name": "Anniversary Gifts",
+      "child_slug": "couples-anniversary-gifts",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 150,
+      "child_name": "Matching Accessories",
+      "child_slug": "couples-matching-accessories",
+      "proposed_parent_id": 136,
+      "proposed_parent_name": "Couples",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 152,
+      "child_name": "Candles",
+      "child_slug": "home-decor-candles",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 153,
+      "child_name": "Wall Art",
+      "child_slug": "home-decor-wall-art",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 154,
+      "child_name": "Clay Articles",
+      "child_slug": "home-decor-clay-articles",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 155,
+      "child_name": "Resin Decor",
+      "child_slug": "home-decor-resin-decor",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 156,
+      "child_name": "Name Boards",
+      "child_slug": "home-decor-name-boards",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 157,
+      "child_name": "Decorative Frames",
+      "child_slug": "home-decor-decorative-frames",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 158,
+      "child_name": "Planters",
+      "child_slug": "home-decor-planters",
+      "proposed_parent_id": 151,
+      "proposed_parent_name": "Home Decor",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 160,
+      "child_name": "Digital Portraits",
+      "child_slug": "art-portraits-digital-portraits",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 161,
+      "child_name": "Couple Portraits",
+      "child_slug": "art-portraits-couple-portraits",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 162,
+      "child_name": "Family Portraits",
+      "child_slug": "art-portraits-family-portraits",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 163,
+      "child_name": "Pet Portraits",
+      "child_slug": "art-portraits-pet-portraits",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 164,
+      "child_name": "Paintings",
+      "child_slug": "art-portraits-paintings",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 165,
+      "child_name": "Sketches",
+      "child_slug": "art-portraits-sketches",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    },
+    {
+      "child_id": 166,
+      "child_name": "Caricatures",
+      "child_slug": "art-portraits-caricatures",
+      "proposed_parent_id": 159,
+      "proposed_parent_name": "Art & Portraits",
+      "products_pointing_here": 0,
+      "listings_pointing_here": 0
+    }
+  ],
+  "ambiguous": [],
+  "summary": {
+    "total_categories": 108,
+    "true_parent_count": 11,
+    "proposed_child_count": 97,
+    "ambiguous_count": 0,
+    "children_with_products_or_listings_attached": 0
+  }
+}

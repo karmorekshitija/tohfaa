@@ -272,4 +272,17 @@ async function syncListingToProduct(listingId) {
   }
 }
 
-module.exports = { syncListingToProduct };
+async function syncSellerListings(sellerUserId) {
+  try {
+    const listings = await db.prepare('SELECT id FROM listings WHERE seller_id = ?').all(sellerUserId);
+    for (const l of listings) {
+      await syncListingToProduct(l.id);
+    }
+    return { success: true, count: listings.length };
+  } catch (err) {
+    console.error(`[syncSellerListings] Error syncing listings for seller ${sellerUserId}:`, err);
+    return { success: false, error: err.message };
+  }
+}
+
+module.exports = { syncListingToProduct, syncSellerListings };
